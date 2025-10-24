@@ -3,14 +3,14 @@ cmake_minimum_required(VERSION 3.15...3.27)
 option(ZONOOPT_BUILD_PYTHON_BINDINGS "Build Python bindings" OFF)
 message(STATUS "ZONOOPT_BUILD_PYTHON_BINDINGS set to: ${ZONOOPT_BUILD_PYTHON_BINDINGS}")
 
-option(ZONOOPT_INSTALL_BUILD "Build with install rules" OFF)
+option(ZONOOPT_INSTALL "Build with install rules" OFF)
 if(ZONOOPT_BUILD_PYTHON_BINDINGS)
-    set(ZONOOPT_INSTALL_BUILD OFF CACHE BOOL "Disable install build when building Python bindings" FORCE)
+    set(ZONOOPT_INSTALL OFF CACHE BOOL "Disable install build when building Python bindings" FORCE)
 endif()
-message(STATUS "ZONOOPT_INSTALL_BUILD set to: ${ZONOOPT_INSTALL_BUILD}")
+message(STATUS "ZONOOPT_INSTALL set to: ${ZONOOPT_INSTALL}")
 
 option(ZONOOPT_USE_NATIVE "Enable native vectorization (march=native)" ON)
-if(ZONOOPT_INSTALL_BUILD)
+if(ZONOOPT_INSTALL)
     set(ZONOOPT_USE_NATIVE OFF CACHE BOOL "Disable march=native for install builds" FORCE)
 endif()
 message(STATUS "ZONOOPT_USE_NATIVE set to: ${ZONOOPT_USE_NATIVE}")
@@ -57,13 +57,17 @@ include(FetchContent)
 
 find_package(Eigen3 3.3 QUIET NO_MODULE)
 if (NOT Eigen3_FOUND)
-    message(STATUS "Eigen3 not found, fetching 5.0.0 via FetchContent...")
-    FetchContent_Declare(
-            eigen_default
-            GIT_REPOSITORY "https://gitlab.com/libeigen/eigen.git"
-            GIT_TAG        "5.0.0"
-    )
-    FetchContent_MakeAvailable(eigen_default)
+    if (ZONOOPT_INSTALL)
+        message(FATAL_ERROR "Eigen3 not found on system. Required for ZONOOPT_INSTALL.")
+    else()
+        message(STATUS "Eigen3 not found, fetching 5.0.0 via FetchContent...")
+        FetchContent_Declare(
+                eigen_default
+                GIT_REPOSITORY "https://gitlab.com/libeigen/eigen.git"
+                GIT_TAG        "5.0.0"
+        )
+        FetchContent_MakeAvailable(eigen_default)
+    endif()
 endif()
 
 if (NOT TARGET Eigen3::Eigen)
@@ -158,11 +162,10 @@ if (ZONOOPT_BUILD_EXAMPLE)
     add_subdirectory(test)
 endif()
 
-if (ZONOOPT_INSTALL_BUILD)
+if (ZONOOPT_INSTALL)
     include(CMakePackageConfigHelpers)
 
     # Install the target
-    install(TARGETS Eigen_Headers EXPORT ZonoOptTargets)
     install(TARGETS ${TARGET_VAR}
             EXPORT ZonoOptTargets
             ARCHIVE DESTINATION lib
@@ -173,7 +176,6 @@ if (ZONOOPT_INSTALL_BUILD)
 
     # Install headers
     install(DIRECTORY include/ DESTINATION include)
-    install(DIRECTORY extern/eigen/ DESTINATION include/extern/eigen)
 
     # Export the targets
     install(EXPORT ZonoOptTargets
