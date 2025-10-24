@@ -503,7 +503,11 @@ namespace ZonoOpt
                 triplets.emplace_back(i, i, d);
             }
             Eigen::SparseMatrix<zono_float> D(Z1.nG, Z1.nG);
+#if EIGEN_VERSION_AT_LEAST(5,0,0)
             D.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
+            D.setFromTriplets(triplets.begin(), triplets.end());
+#endif
 
             return std::make_unique<ConZono>(Z1.G * D, Z1.c - Z2_zono.c, Z1.A * D, Z1.b, false);
         }
@@ -1505,7 +1509,11 @@ namespace ZonoOpt
             tripvec.emplace_back(i, i - n_dims, one);
         }
         Eigen::SparseMatrix<zono_float> Gb(n_out, n_polys);
+#if EIGEN_VERSION_AT_LEAST(5,0,0)
         Gb.setFromSortedTriplets(tripvec.begin(), tripvec.end());
+#else
+        Gb.setFromTriplets(tripvec.begin(), tripvec.end());
+#endif
 
         // c = 0
         Eigen::Vector<zono_float, -1> c(n_out);
@@ -1592,7 +1600,11 @@ namespace ZonoOpt
         {
             triplets.emplace_back(i, i, box[i].width() / two);
         }
+#if EIGEN_VERSION_AT_LEAST(5,0,0)
         G.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
+        G.setFromTriplets(triplets.begin(), triplets.end());
+#endif
 
         // center
         Eigen::Vector<zono_float, -1> c = box.center();
@@ -1887,7 +1899,11 @@ namespace ZonoOpt
                 triplets.emplace_back(i, this->nG + this->nC, Qinv_e_j(i));
             }
             Eigen::SparseMatrix<zono_float> M(this->nG + this->nC + 1, this->nG + this->nC + 1);
+#if EIGEN_VERSION_AT_LEAST(5,0,0)
             M.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
+            M.setFromTriplets(triplets.begin(), triplets.end());
+#endif
 
             // RHS for linear system
             Eigen::Vector<zono_float, -1> rhs(this->nG + this->nC + 1);
@@ -1957,7 +1973,11 @@ namespace ZonoOpt
             triplets.emplace_back(j, j - 1, one);
         }
         Eigen::SparseMatrix<zono_float> dG(this->nG, this->nG - 1);
+#if EIGEN_VERSION_AT_LEAST(5,0,0)
         dG.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
+        dG.setFromTriplets(triplets.begin(), triplets.end());
+#endif
 
         // constraint removal matrix
         triplets.clear();
@@ -1970,7 +1990,11 @@ namespace ZonoOpt
             triplets.emplace_back(i - 1, i, one);
         }
         Eigen::SparseMatrix<zono_float> dA(this->nC - 1, this->nC);
+#if EIGEN_VERSION_AT_LEAST(5,0,0)
         dA.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
+        dA.setFromTriplets(triplets.begin(), triplets.end());
+#endif
 
         // update
         this->set(Gp * dG, cp, dA * Ap * dG, dA * bp, false);
@@ -1989,8 +2013,13 @@ namespace ZonoOpt
         }
 
         // compute SVD of A
+#if EIGEN_VERSION_AT_LEAST(5,0,0)
         const Eigen::BDCSVD<Eigen::Matrix<zono_float, -1, -1>, Eigen::ComputeFullV | Eigen::ComputeFullU> svd(
             this->A.toDense());
+#else
+        const Eigen::BDCSVD<Eigen::Matrix<zono_float, -1, -1>> svd(
+            this->A.toDense(), Eigen::ComputeFullV | Eigen::ComputeFullU);
+#endif
         const Eigen::Vector<zono_float, -1>& sin_vals = svd.singularValues();
 
         const int n = this->nG;
