@@ -146,7 +146,11 @@ namespace ZonoOpt
                 triplets.emplace_back(static_cast<int>(it.row()), i, it.value());
             }
         }
+#if EIGEN_VERSION_AT_LEAST(5,0,0)
         G_K.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
+        G_K.setFromTriplets(triplets.begin(), triplets.end());
+#endif
         const Zono K(G_K, this->c);
 
         // zonotope to over-approximate
@@ -160,7 +164,11 @@ namespace ZonoOpt
                 triplets.emplace_back(static_cast<int>(it.row()), i - n_K, it.value());
             }
         }
+#if EIGEN_VERSION_AT_LEAST(5,0,0)
         G_L.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
+        G_L.setFromTriplets(triplets.begin(), triplets.end());
+#endif
         Zono L(G_L, Eigen::Vector<zono_float, -1>::Zero(this->n));
 
         // get bounding box
@@ -216,7 +224,11 @@ namespace ZonoOpt
 
         for (const auto& comb : combs)
         {
+#if EIGEN_VERSION_AT_LEAST(5,0,0)
             const Eigen::Matrix<zono_float, -1, -1> G_comb = Gd(Eigen::placeholders::all, comb);
+#else
+            const Eigen::Matrix<zono_float, -1, -1> G_comb = Gd(Eigen::all, comb);
+#endif
             const Eigen::Matrix<zono_float, -1, -1> GT_G = G_comb.transpose() * G_comb;
             ldlt.compute(GT_G);
             const Eigen::Vector<zono_float, -1> D = ldlt.vectorD();

@@ -3,15 +3,15 @@ cmake_minimum_required(VERSION 3.15...3.27)
 option(ZONOOPT_BUILD_PYTHON_BINDINGS "Build Python bindings" OFF)
 message(STATUS "ZONOOPT_BUILD_PYTHON_BINDINGS set to: ${ZONOOPT_BUILD_PYTHON_BINDINGS}")
 
-option(ZONOOPT_INSTALL_BUILD "Build with install rules" OFF)
+option(ZONOOPT_INSTALL "Build with install rules" OFF)
 if(ZONOOPT_BUILD_PYTHON_BINDINGS)
-    set(ZONOOPT_INSTALL_BUILD OFF CACHE BOOL "Disable install build when building Python bindings" FORCE)
+    set(ZONOOPT_INSTALL OFF CACHE BOOL "Disable install build when building Python bindings" FORCE)
 endif()
-message(STATUS "ZONOOPT_INSTALL_BUILD set to: ${ZONOOPT_INSTALL_BUILD}")
+message(STATUS "ZONOOPT_INSTALL set to: ${ZONOOPT_INSTALL}")
 
 option(ZONOOPT_USE_NATIVE "Enable native vectorization (march=native)" ON)
-if(ZONOOPT_INSTALL_BUILD)
-    set(ZONOOPT_USE_NATIVE OFF CACHE BOOL "Disable march=native for install builds" FORCE)
+if(ZONOOPT_INSTALL OR "$ENV{CIBUILDWHEEL}" STREQUAL "1")
+    set(ZONOOPT_USE_NATIVE OFF CACHE BOOL "Disable march=native for install and PyPI builds" FORCE)
 endif()
 message(STATUS "ZONOOPT_USE_NATIVE set to: ${ZONOOPT_USE_NATIVE}")
 
@@ -32,53 +32,54 @@ if (ZONOOPT_BUILD_PYTHON_BINDINGS)
     # Scikit-build-core sets these values for you, or you can just hard-code the
     # name and version.
     project(
-        ${SKBUILD_PROJECT_NAME}
-        VERSION ${SKBUILD_PROJECT_VERSION}
-        LANGUAGES CXX
+            ${SKBUILD_PROJECT_NAME}
+            VERSION ${SKBUILD_PROJECT_VERSION}
+            LANGUAGES CXX
     )
-    
+
     set(TARGET_VAR _core)
 else()
     project(ZonoOpt
-        VERSION 2.0.1
-        LANGUAGES CXX
+            VERSION 2.0.1
+            LANGUAGES CXX
     )
     set(TARGET_VAR ZonoOpt)
 endif()
 
 # release / debug
 if(NOT CMAKE_BUILD_TYPE)
-  message(STATUS "Setting build type to 'Release' by default.")
-  set(CMAKE_BUILD_TYPE Release)
+    message(STATUS "Setting build type to 'Release' by default.")
+    set(CMAKE_BUILD_TYPE Release)
 endif()
 
+# Eigen dependency
+include(FetchContent)
+
+find_package(Eigen3 3.3 QUIET NO_MODULE)
+if (NOT Eigen3_FOUND)
+    if (ZONOOPT_INSTALL)
+        message(FATAL_ERROR "Eigen3 not found on system. Required for ZONOOPT_INSTALL.")
+    else()
+        message(STATUS "Eigen3 not found, fetching 5.0.0 via FetchContent...")
+        FetchContent_Declare(
+                eigen_default
+                GIT_REPOSITORY "https://gitlab.com/libeigen/eigen.git"
+                GIT_TAG        "5.0.0"
+        )
+        FetchContent_MakeAvailable(eigen_default)
+    endif()
+endif()
+
+if (NOT TARGET Eigen3::Eigen)
+    message(FATAL_ERROR "Failed to fetch Eigen dependency.")
+endif()
+
+# python dependencies
 if (ZONOOPT_BUILD_PYTHON_BINDINGS)
     # Find the module development requirements (requires FindPython from 3.17 or
     # scikit-build-core's built-in backport)
     find_package(Python REQUIRED COMPONENTS Interpreter Development.Module)
     find_package(pybind11 CONFIG REQUIRED)
-endif()
-
-# submodule
-if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
-    message(STATUS "Updating Git submodules...")
-
-    # Execute 'git submodule update --init --recursive'
-    execute_process(
-        COMMAND git submodule update --init --recursive
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        RESULT_VARIABLE GIT_SUBMODULE_RESULT
-        OUTPUT_VARIABLE GIT_SUBMODULE_OUTPUT
-        ERROR_VARIABLE GIT_SUBMODULE_ERROR
-    )
-
-    if (NOT GIT_SUBMODULE_RESULT EQUAL "0")
-        message(STATUS "Failed to update Git submodules: ${GIT_SUBMODULE_ERROR}")
-    else()
-        message(STATUS "Git submodules updated successfully.")
-    endif()
-else()
-    message(STATUS "Not a Git repository, skipping submodule update.")
 endif()
 
 # source files
@@ -100,9 +101,9 @@ if (ZONOOPT_BUILD_PYTHON_BINDINGS)
     # Add a library using FindPython's tooling (pybind11 also provides a helper like
     # this)
     python_add_library(${TARGET_VAR} MODULE
-        python/src/zonoopt_py.cpp
-        ${SOURCE_FILES}
-        WITH_SOABI
+            python/src/zonoopt_py.cpp
+            ${SOURCE_FILES}
+            WITH_SOABI
     )
 
     # link libraries
@@ -115,35 +116,28 @@ if (ZONOOPT_BUILD_PYTHON_BINDINGS)
     install(TARGETS ${TARGET_VAR} DESTINATION zonoopt)
 else()
     add_library(${TARGET_VAR} STATIC
-        ${SOURCE_FILES}
+            ${SOURCE_FILES}
     )
 endif()
 
+# link Eigen
+target_link_libraries(${TARGET_VAR} PUBLIC Eigen3::Eigen)
 
+# include directories
 target_include_directories(${TARGET_VAR} PUBLIC
         $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
-# Eigen
-add_library(Eigen_Headers INTERFACE)
-
-target_include_directories(Eigen_Headers INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/extern/eigen>
-    $<INSTALL_INTERFACE:include/extern/eigen>
-)
-
-target_link_libraries(${TARGET_VAR} PUBLIC Eigen_Headers)
-
 # C++ standard
-target_compile_features(${TARGET_VAR} 
-    PUBLIC cxx_std_17
+target_compile_features(${TARGET_VAR}
+        PUBLIC cxx_std_17
 )
 
 # preprocessor definitions
 target_compile_definitions(${TARGET_VAR} PRIVATE
-    zono_float=${ZONO_FLOAT}
-    zono_eps=${ZONO_EPS}
+        zono_float=${ZONO_FLOAT}
+        zono_eps=${ZONO_EPS}
 )
 
 # debug flags
@@ -168,11 +162,10 @@ if (ZONOOPT_BUILD_EXAMPLE)
     add_subdirectory(test)
 endif()
 
-if (ZONOOPT_INSTALL_BUILD)
+if (ZONOOPT_INSTALL)
     include(CMakePackageConfigHelpers)
 
     # Install the target
-    install(TARGETS Eigen_Headers EXPORT ZonoOptTargets)
     install(TARGETS ${TARGET_VAR}
             EXPORT ZonoOptTargets
             ARCHIVE DESTINATION lib
@@ -183,7 +176,6 @@ if (ZONOOPT_INSTALL_BUILD)
 
     # Install headers
     install(DIRECTORY include/ DESTINATION include)
-    install(DIRECTORY extern/eigen/ DESTINATION include/extern/eigen)
 
     # Export the targets
     install(EXPORT ZonoOptTargets
