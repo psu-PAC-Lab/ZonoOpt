@@ -10,8 +10,8 @@ endif()
 message(STATUS "ZONOOPT_INSTALL set to: ${ZONOOPT_INSTALL}")
 
 option(ZONOOPT_USE_NATIVE "Enable native vectorization (march=native)" ON)
-if(ZONOOPT_INSTALL)
-    set(ZONOOPT_USE_NATIVE OFF CACHE BOOL "Disable march=native for install builds" FORCE)
+if(ZONOOPT_INSTALL OR "$ENV{CIBUILDWHEEL}" STREQUAL "1")
+    set(ZONOOPT_USE_NATIVE OFF CACHE BOOL "Disable march=native for install and PyPI builds" FORCE)
 endif()
 message(STATUS "ZONOOPT_USE_NATIVE set to: ${ZONOOPT_USE_NATIVE}")
 
@@ -84,16 +84,16 @@ endif()
 
 # source files
 set(SOURCE_FILES
-        src/PolymorphicFunctions.cpp
-        src/ADMM.cpp
-        src/CholeskyUtilities.cpp
-        src/HybZono.cpp
-        src/ConZono.cpp
-        src/Zono.cpp
-        src/Point.cpp
-        src/EmptySet.cpp
-        src/Intervals.cpp
-        src/MI_Solver.cpp
+    src/PolymorphicFunctions.cpp
+    src/ADMM.cpp
+    src/CholeskyUtilities.cpp
+    src/HybZono.cpp
+    src/ConZono.cpp
+    src/Zono.cpp
+    src/Point.cpp
+    src/EmptySet.cpp
+    src/Intervals.cpp
+    src/MI_Solver.cpp
 )
 
 # build
