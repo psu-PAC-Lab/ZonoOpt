@@ -37,14 +37,11 @@ jobs:
         uses: pypa/cibuildwheel@v3.2.0
         env:
           CIBW_BUILD_VERBOSITY: 3
+          CIBW_ENVIRONMENT: >
+            CMAKE_MESSAGE_LOG_LEVEL=VERBOSE
+            SKBUILD_VERBOSE=1
+            CMAKE_VERBOSE_MAKEFILE=ON
           CIBW_SKIP: "*-win32 *-musllinux_aarch64" 
-        # env:
-        #   CIBW_SOME_OPTION: value
-        #   ...
-        # with:
-        #   package-dir: .
-        #   output-dir: wheelhouse
-        #   config-file: "{package}/pyproject.toml"
 
       - uses: actions/upload-artifact@v4
         with:
