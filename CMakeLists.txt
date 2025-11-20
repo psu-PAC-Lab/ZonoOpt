@@ -46,12 +46,6 @@ else()
     set(TARGET_VAR ZonoOpt)
 endif()
 
-# release / debug
-if(NOT CMAKE_BUILD_TYPE)
-    message(STATUS "Setting build type to 'Release' by default.")
-    set(CMAKE_BUILD_TYPE Release)
-endif()
-
 # Eigen dependency
 include(FetchContent)
 
