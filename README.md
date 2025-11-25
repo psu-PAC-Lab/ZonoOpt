@@ -66,8 +66,8 @@ Some key features of the ZonoOpt library are as follows:
 ## Building and Installing
 Python bindings can be installed from PyPI with `pip install zonoopt`. To build the bindings from source, use `pip install .`. Note that a C++ compiler is required to build from source.
 
-This library can be used in CMake projects either via add_subdirectory or by installing the library. 
-Including the library via add_subdirectory is recommended when possible as it permits more aggressive CPU optimizations (i.e., -march=native).
+This library can be used in CMake projects either via `add_subdirectory` or by installing the library. 
+Including the library via `add_subdirectory` is recommended when possible as it permits more aggressive CPU optimizations (i.e., `-march=native`).
 When building the library for installation, you must set the option ZONOOPT_INSTALL to ON, i.e., `cmake -DZONOOPT_INSTALL=ON -S . -B build`.
 
 Example CMake usage is as follows:
@@ -130,10 +130,15 @@ O = zono.vrep_2_conzono(np.array([[1.3, 0.],
 print(f'10-step reachable set intersects unsafe set: {not zono.intersection(X, O).is_empty()}')
 
 # Plot the final reachable set
-zono.plot(X, color='b', alpha=0.2)
-zono.plot(O, color='r', alpha=0.2)
+fig, ax = plt.subplots(figsize=(4, 3), layout='tight')
+h = []
+h.append(zono.plot(X, ax=ax, color='b', alpha=0.2)[0])
+h.append(zono.plot(O, ax=ax, color='r', alpha=0.2)[0])
+ax.legend(h, ['X', 'O'])
 plt.show()
 ```
+
+![image](images/readme_example.svg)
 
 Equivalently, these calculations can be performed in C++ as follows:
 ```C++
