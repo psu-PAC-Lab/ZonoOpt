@@ -14,3 +14,9 @@ zonoopt documentation
    :caption: Contents:
 
    zonoopt
+
+..   This invisible block wakes up MathJax so the included MD math renders
+.. math::
+   :nowrap:
+
+   \phantom{x}

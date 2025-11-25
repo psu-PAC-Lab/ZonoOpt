@@ -9,7 +9,7 @@
 project = 'zonoopt'
 copyright = '2025, Joshua Robbins'
 author = 'Joshua Robbins'
-release = '1.0.0'
+release = '2.0.1'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -18,8 +18,27 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon', # Recommended for NumPy/Google style docstrings
     'sphinx.ext.autosummary', # Optional: for generating summary tables
+    'sphinx.ext.mathjax',
     'myst_parser'
 ]
+
+myst_enable_extensions = [
+    "dollarmath",
+    "amsmath",
+]
+
+mathjax3_config = {
+    'tex': {
+        # Force the 'ams' package to load
+        'packages': {'[+]': ['ams']},
+        # Ensure inline math works
+        'inlineMath': [['$', '$'], ['\\(', '\\)']]
+    },
+    'loader': {
+        # Load the ams component
+        'load': ['[tex]/ams']
+    }
+}
 
 templates_path = ['_templates']
 exclude_patterns = []
