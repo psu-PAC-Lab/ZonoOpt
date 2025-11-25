@@ -90,21 +90,21 @@ $(function() {
 <h1><a class="anchor" id="autotoc_md1"></a>
 Zonotopes, Constrained Zonotopes, and Hybrid Zonotopes</h1>
 <p>Zonotopes and their generalizations are set representations widely used for reachability analysis. A major advantage of these set representations when compared to alternatives such as halfspace representation (H-rep) or vertex representation (V-rep) polytopes is that they have efficient identities for many important set operations. This makes them well-suited to contexts where efficient online set computations are required, such as online safety verification and set-valued state estimation.</p>
-<p>This library focuses specifically on zonotopes, constrained zonotopes, and hybrid zonotopes. A set $ \mathcal{Z} $ is a zonotope if there exist a generator matrix $G$ and center vector $ c $ such that</p>
+<p>This library focuses specifically on zonotopes, constrained zonotopes, and hybrid zonotopes. A set $\mathcal{Z}$ is a zonotope if there exist a generator matrix $G$ and center vector $c$ such that</p>
 <p>$$ \mathcal{Z} = \left\lbrace G \xi + c \; : \; \xi \in [-1, 1]^{n_G} \right\rbrace \;. $$</p>
 <p>Zonotopes represent centrally symmetric, convex polytopes.</p>
 <div class="image">
 <object type="image/svg+xml" data="zono_plot.svg" style="pointer-events: none;"></object>
 <div class="caption">
 image</div></div>
-    <p>A set $ \mathcal{Z}_C $ is a constrained zonotope if there additionally exist a constraint matrix $ A $ and constraint vector $ b $ such that</p>
+    <p>A set $\mathcal{Z}_C$ is a constrained zonotope if there additionally exist a constraint matrix $A$ and constraint vector $b$ such that</p>
 <p>$$ \mathcal{Z}_C = \left\lbrace G \xi + c \; : \; \xi \in [-1, 1]^{n_G}, A \xi = b \right\rbrace \;. $$</p>
 <p>Constrained zonotopes represent convex polytopes.</p>
 <div class="image">
 <object type="image/svg+xml" data="conzono_plot.svg" style="pointer-events: none;"></object>
 <div class="caption">
 image</div></div>
-    <p>Hybrid zonotopes extend constrained zonotopes by allowing for a subset of the factors $ \xi $ to be binary-valued, i.e., $ \xi = [\xi_c \quad \xi_b]^T $ where $ \xi_c \in [-1, 1]^{n_{Gc}} $ and $ \xi_b \in \lbrace -1, 1 \rbrace^{n_{Gb}} $. A set $ \mathcal{Z}_H $ is then a hybrid zonotope if there exist generator matrices $ G_c $ and $ G_b $, center $ c $, and constraint matrices $A_c$ and $ A_b $, and constraint vector $ b $ such that</p>
+    <p>Hybrid zonotopes extend constrained zonotopes by allowing for a subset of the factors $\xi$ to be binary-valued, i.e., $\xi = [\xi_c \quad \xi_b]^T$ where $\xi_c \in [-1, 1]^{n_{Gc}}$ and $\xi_b \in \lbrace -1, 1 \rbrace^{n_{Gb}}$. A set $\mathcal{Z}_H$ is then a hybrid zonotope if there exist generator matrices $G_c$ and $G_b$, center $c$, and constraint matrices $A_c$ and $A_b$, and constraint vector $b$ such that</p>
 <p>$$ \mathcal{Z}_H = \left\lbrace \begin{bmatrix} G_c &amp; G_b \end{bmatrix} \begin{bmatrix} \xi_c \\ \xi_b \end{bmatrix} + c \; : \; \begin{matrix} \xi_c \in [-1, 1]^{n_{Gc}},\; \xi_b \in \lbrace -1, 1 \rbrace^{n_{Gb}}, \\ \begin{bmatrix} A_c &amp; A_b \end{bmatrix} \begin{bmatrix} \xi_c \\ \xi_b \end{bmatrix} = b \end{matrix} \right\rbrace \;. $$</p>
 <p>Hybrid zonotopes represent unions of non-convex polytopes.</p>
 <div class="image">
@@ -120,7 +120,8 @@ ZonoOpt Features</h1>
 <li>E.g., <code>support</code> is more efficient for zonotopes than for constrained zonotopes.</li>
 </ul>
 </li>
-<li>Factors are flexibly defined as either $ [\xi_c \quad \xi_b]^T \in [0,1]^{n_{Gc}} \times \lbrace 0,1 \rbrace^{n_{Gb}} $ or the more standard form $ [\xi_c \quad \xi_b]^T \in [-1,1]^{n_{Gc}} \times \lbrace -1,1 \rbrace^{n_{Gb}} $ to facilitate certain set operations.</li>
+<li>Factors are flexibly defined as either $[\xi_c \quad \xi_b]^T \in [0,1]^{n_{Gc}} \times \lbrace 0,1 \rbrace^{n_{Gb}}$ or the more standard form $[\xi_c \quad \xi_b]^T \in [-1,1]^{n_{Gc}} \times \lbrace -1,1 \rbrace^{n_{Gb}}$ to facilitate certain set operations.</li>
+<li>Basic interval arithmetic is provided via the <code>Interval</code> and <code>Box</code> classes.</li>
 </ul>
 <h1><a class="anchor" id="autotoc_md3"></a>
 Building and Installing</h1>
