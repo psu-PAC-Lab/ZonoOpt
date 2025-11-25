@@ -15,7 +15,7 @@ and set-valued state estimation.
 This library focuses specifically on zonotopes, constrained zonotopes, and hybrid zonotopes. 
 A set $\mathcal{Z}$ is a zonotope if there exist a generator matrix $G$ and center vector $c$ such that
 
-$$ \mathcal{Z} = \left\lbrace G \xi + c \\; : \\; \xi \in [-1, 1]^{n_G} \right\rbrace \\;. $$
+$$ \mathcal{Z} = \left\lbrace G \xi + c \\; : \\; \xi \in [-1, 1]^{nG} \right\rbrace \\;. $$
 
 Zonotopes represent centrally symmetric, convex polytopes.
 
@@ -26,7 +26,7 @@ A set $\mathcal{Z}_C$ is a constrained zonotope if there additionally exist a co
 $$ 
 \mathcal{Z}_C = 
 \left\lbrace 
-G \xi + c \\; : \\; \xi \in [-1, 1]^{n_G}, A \xi = b 
+G \xi + c \\; : \\; \xi \in [-1, 1]^{nG}, A \xi = b 
 \right\rbrace \\;. 
 $$
 
@@ -35,18 +35,19 @@ Constrained zonotopes represent convex polytopes.
 ![image](images/conzono_plot.svg)
 
 Hybrid zonotopes extend constrained zonotopes by allowing for a subset of the factors $\xi$ to be binary-valued, i.e.,
-$\xi = [\xi_c \quad \xi_b]^T$ where $\xi_c \in [-1, 1]^{n_{Gc}}$ and $\xi_b \in \lbrace -1, 1 \rbrace^{n_{Gb}}$.
+$\xi = [\xi_c \quad \xi_b]^T$ where $\xi_c \in [-1, 1]^{nGc}$ and $\xi_b \in \lbrace -1, 1 \rbrace^{nGb}$.
 A set $\mathcal{Z}_H$ is then a hybrid zonotope if there exist generator matrices $G_c$ and $G_b$, center $c$, 
 and constraint matrices $A_c$ and $A_b$, and constraint vector $b$ such that
 
-$$ \mathcal{Z}_H = \left\lbrace
-    \begin{bmatrix} G_c & G_b \end{bmatrix} \begin{bmatrix} \xi_c \\\\ \xi_b \end{bmatrix} + c 
-    \\; : \\;
-    \begin{matrix} 
-    \xi_c \in [-1, 1]^{n_{Gc}},\\; \xi_b \in \lbrace -1, 1 \rbrace^{n_{Gb}}, \\\\
-    \begin{bmatrix} A_c & A_b \end{bmatrix} \begin{bmatrix} \xi_c \\\\ \xi_b \end{bmatrix} = b
-    \end{matrix}
-    \right\rbrace \\;. $$
+$$
+\mathcal{Z}_H = \left\lbrace
+\begin{bmatrix} G_c & G_b \end{bmatrix} \begin{bmatrix} \xi_c \\\\ \xi_b \end{bmatrix} + c \\; : \\;
+\begin{matrix}
+\xi_c \in [-1, 1]^{nGc},\\; \xi_b \in \lbrace -1, 1 \rbrace^{nGb}, \\\\
+\begin{bmatrix} A_c & A_b \end{bmatrix} \begin{bmatrix} \xi_c \\\\ \xi_b \end{bmatrix} = b
+\end{matrix}
+\right\rbrace \\;.
+$$
 
 Hybrid zonotopes represent unions of non-convex polytopes.
 
@@ -61,7 +62,7 @@ Some key features of the ZonoOpt library are as follows:
 - ZonoOpt has no external dependencies beyond Eigen, making it easy to integrate into robotics projects using C++ or Python.
 - Polymorphism is used to provide a common interface for zonotopes, constrained zonotopes, and hybrid zonotopes while allowing for specialized implementations.
   - E.g., `support` is more efficient for zonotopes than for constrained zonotopes. 
-- Factors are flexibly defined as either $[\xi_c \quad \xi_b]^T \in [0,1]^{n_{Gc}} \times \lbrace 0,1 \rbrace^{n_{Gb}}$ or the more standard form $[\xi_c \quad \xi_b]^T \in [-1,1]^{n_{Gc}} \times \lbrace -1,1 \rbrace^{n_{Gb}}$ to facilitate certain set operations.
+- Factors are flexibly defined as either $[\xi_c \quad \xi_b]^T \in [0,1]^{nGc} \times \lbrace 0,1 \rbrace^{nGb}$ or the more standard form $[\xi_c \quad \xi_b]^T \in [-1,1]^{nGc} \times \lbrace -1,1 \rbrace^{nGb}$ to facilitate certain set operations.
 - Basic interval arithmetic is provided via the `Interval` and `Box` classes.
 
 ## Building and Installing
