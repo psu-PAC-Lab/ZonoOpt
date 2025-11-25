@@ -214,3 +214,6 @@ Auto-generated API documentation is available below.
 ## References
 More information about ZonoOpt can be found in the following publication. Please cite this if you publish work based on ZonoOpt:
 **Robbins, J.A., Siefert, J.A., and Pangborn, H.C., "Sparsity-Promoting Reachability Analysis and Optimization of Constrained Zonotopes," 2025. [https://arxiv.org/abs/2504.03885](https://doi.org/10.48550/arXiv.2504.03885).**
+
+## See Also
+For MATLAB users, [zonoLAB](https://github.com/ESCL-at-UTD/zonoLAB) provides classes and set operations for zonotopes, constrained zonotopes, and hybrid zonotopes.
