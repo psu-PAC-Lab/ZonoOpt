@@ -49,7 +49,7 @@ $$
 \right\rbrace \\;.
 $$
 
-Hybrid zonotopes represent unions of non-convex polytopes.
+Hybrid zonotopes represent unions of convex polytopes.
 
 ![image](images/hybzono_plot.svg)
 
