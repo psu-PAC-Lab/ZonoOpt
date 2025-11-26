@@ -36,8 +36,7 @@ Constrained zonotopes represent convex polytopes.
 
 Hybrid zonotopes extend constrained zonotopes by allowing for a subset of the factors $\xi$ to be binary-valued, i.e.,
 $\xi = [\xi_c \quad \xi_b]^T$ where $\xi_c \in [-1, 1]^{nGc}$ and $\xi_b \in \lbrace -1, 1 \rbrace^{nGb}$.
-A set $\mathcal{Z}_H$ is then a hybrid zonotope if there exist generator matrices $G_c$ and $G_b$, center $c$, 
-and constraint matrices $A_c$ and $A_b$, and constraint vector $b$ such that
+A set $\mathcal{Z}_H$ is then a hybrid zonotope if there exist generator matrices $G_c$ and $G_b$, center $c$, constraint matrices $A_c$ and $A_b$, and constraint vector $b$ such that
 
 $$
 \mathcal{Z}_H = \left\lbrace
