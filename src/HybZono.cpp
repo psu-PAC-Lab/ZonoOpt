@@ -77,8 +77,12 @@ namespace ZonoOpt
         }
     }
 
-    void HybZono::remove_redundancy(const int contractor_iter)
+    bool HybZono::remove_redundancy(const int contractor_iter)
     {
+        // initial complexity
+        const int nG_init = this->nG;
+        const int nC_init = this->nC;
+
         // declare vars
         std::set<int> idx_c_to_remove, idx_b_to_remove;
 
@@ -116,7 +120,7 @@ namespace ZonoOpt
             x_l.setConstant(-1);
         }
         x_u.setOnes();
-        Box box(x_l, x_u);
+        MI_Box box(x_l, x_u, {this->nGc, this->nGb}, this->zero_one_form);
         box.contract(this->A, this->b, contractor_iter);
 
         // find any variables whose values are fixed
@@ -181,6 +185,9 @@ namespace ZonoOpt
 
         // remove
         remove_all_generators(idx_c_to_remove, idx_b_to_remove);
+
+        // flag indicating success
+        return (this->nG < nG_init || this->nC < nC_init);
     }
 
     std::string HybZono::print() const
@@ -210,7 +217,8 @@ namespace ZonoOpt
 
     Eigen::Vector<zono_float, -1> HybZono::do_optimize_over(
         const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q, const zono_float c,
-        const OptSettings& settings, OptSolution* solution) const
+        const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+        const WarmStartParams& warm_start_params) const
     {
         // check dimensions
         if (P.rows() != this->n || P.cols() != this->n || q.size() != this->n)
@@ -224,7 +232,8 @@ namespace ZonoOpt
         zono_float delta_c = (0.5 * this->c.transpose() * P * this->c + q.transpose() * this->c)(0);
 
         // solve MIQP
-        OptSolution sol = this->mi_opt(P_fact, q_fact, c + delta_c, this->A, this->b, settings, solution);
+        OptSolution sol = this->mi_opt(P_fact, q_fact, c + delta_c, this->A, this->b, settings, solution,
+                                       warm_start_params);
         if (sol.infeasible)
             return Eigen::Vector<zono_float, -1>(this->nG);
         else
@@ -232,7 +241,9 @@ namespace ZonoOpt
     }
 
     Eigen::Vector<zono_float, -1> HybZono::do_project_point(const Eigen::Vector<zono_float, -1>& x,
-                                                            const OptSettings& settings, OptSolution* solution) const
+                                                            const OptSettings& settings,
+                                                            std::shared_ptr<OptSolution>* solution,
+                                                            const WarmStartParams& warm_start_params) const
     {
         // check dimensions
         if (this->n != x.size())
@@ -245,14 +256,15 @@ namespace ZonoOpt
         Eigen::Vector<zono_float, -1> q = this->G.transpose() * (this->c - x);
 
         // solve MIQP
-        const OptSolution sol = this->mi_opt(P, q, 0, this->A, this->b, settings, solution);
+        const OptSolution sol = this->mi_opt(P, q, 0, this->A, this->b, settings, solution, warm_start_params);
         if (sol.infeasible)
             throw std::runtime_error("Point projection: infeasible");
 
         return this->G * sol.z + this->c;
     }
 
-    bool HybZono::do_is_empty(const OptSettings& settings, OptSolution* solution) const
+    bool HybZono::do_is_empty(const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+                              const WarmStartParams&) const
     {
         // trivial case
         if (this->n == 0)
@@ -273,7 +285,8 @@ namespace ZonoOpt
     }
 
     bool HybZono::do_contains_point(const Eigen::Vector<zono_float, -1>& x, const OptSettings& settings,
-                                    OptSolution* solution) const
+                                    std::shared_ptr<OptSolution>* solution,
+                                    const WarmStartParams& warm_start_params) const
     {
         // check dimensions
         if (this->n != x.size())
@@ -292,7 +305,7 @@ namespace ZonoOpt
         b.segment(this->nC, this->n) = x - this->c;
 
         // solve MIQP
-        const OptSolution sol = this->mi_opt(P, q, 0, A, b, settings, solution);
+        const OptSolution sol = this->mi_opt(P, q, 0, A, b, settings, solution, warm_start_params);
         return !(sol.infeasible);
     }
 
@@ -300,7 +313,8 @@ namespace ZonoOpt
     OptSolution HybZono::mi_opt(const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q,
                                 const zono_float c, const Eigen::SparseMatrix<zono_float>& A,
                                 const Eigen::Vector<zono_float, -1>& b,
-                                const OptSettings& settings, OptSolution* solution) const
+                                const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+                                const WarmStartParams& warm_start_params) const
     {
         // QP data
         Eigen::Vector<zono_float, -1> xi_lb(this->nG);
@@ -321,11 +335,17 @@ namespace ZonoOpt
         // build MI_ADMM_solver object
         MI_Solver mi_solver(mi_data);
 
+        // warm start if applicable
+        if (warm_start_params.z.size() == this->nG)
+        {
+            mi_solver.warmstart(warm_start_params.z, warm_start_params.u);
+        }
+
         // solve optimization problem
         OptSolution sol = mi_solver.solve();
 
         if (solution != nullptr)
-            *solution = sol;
+            *solution = std::make_shared<OptSolution>(sol);
         return sol;
     }
 
@@ -333,7 +353,8 @@ namespace ZonoOpt
                                                       const Eigen::Vector<zono_float, -1>& q,
                                                       const zono_float c, const Eigen::SparseMatrix<zono_float>& A,
                                                       const Eigen::Vector<zono_float, -1>& b, int n_sols,
-                                                      const OptSettings& settings, OptSolution* solution) const
+                                                      const OptSettings& settings,
+                                                      std::shared_ptr<OptSolution>* solution) const
     {
         // ADMM data
         Eigen::Vector<zono_float, -1> xi_lb(this->nG);
@@ -357,7 +378,7 @@ namespace ZonoOpt
         // solve optimization problem
         auto [fst, snd] = mi_solver.multi_solve(n_sols);
         if (solution != nullptr)
-            *solution = snd;
+            *solution = std::make_shared<OptSolution>(snd);
         return fst;
     }
 
@@ -499,7 +520,8 @@ namespace ZonoOpt
     }
 
     std::vector<Eigen::Vector<zono_float, -1>> HybZono::get_bin_leaves(const OptSettings& settings,
-                                                                       OptSolution* solution, const int n_leaves) const
+                                                                       std::shared_ptr<OptSolution>* solution,
+                                                                       const int n_leaves) const
     {
         // optimize over P=I, q=0
         Eigen::SparseMatrix<zono_float> P(this->nG, this->nG);

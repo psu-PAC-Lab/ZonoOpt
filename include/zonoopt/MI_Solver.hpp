@@ -26,8 +26,8 @@
 #include "SolverDataStructures.hpp"
 #include "ADMM.hpp"
 
-namespace ZonoOpt::detail {
-
+namespace ZonoOpt::detail
+{
     class MI_Solver
     {
     public:
@@ -39,14 +39,21 @@ namespace ZonoOpt::detail {
         // branch and bound where all possible solutions are returned
         std::pair<std::vector<OptSolution>, OptSolution> multi_solve(int max_sols = std::numeric_limits<int>::max());
 
+        // warmstart - only used for ADMM-FP
+        void warmstart(const Eigen::Vector<zono_float, -1>& xi_ws, const Eigen::Vector<zono_float, -1>& u_ws)
+        {
+            this->xi_ws = xi_ws;
+            this->u_ws = u_ws;
+        }
 
     private:
-
         struct NodeDeleter
         {
             std::pmr::synchronized_pool_resource* pool_ptr;
 
-            explicit NodeDeleter(std::pmr::synchronized_pool_resource* pool_ptr) : pool_ptr(pool_ptr) {}
+            explicit NodeDeleter(std::pmr::synchronized_pool_resource* pool_ptr) : pool_ptr(pool_ptr)
+            {
+            }
 
             void operator()(Node* node) const
             {
@@ -60,7 +67,8 @@ namespace ZonoOpt::detail {
 
         struct NodeCompare
         {
-            bool operator()(const std::unique_ptr<Node, NodeDeleter>& n1, const std::unique_ptr<Node, NodeDeleter>& n2) const
+            bool operator()(const std::unique_ptr<Node, NodeDeleter>& n1,
+                            const std::unique_ptr<Node, NodeDeleter>& n2) const
             {
                 return n1->solution.J > n2->solution.J;
             }
@@ -72,16 +80,19 @@ namespace ZonoOpt::detail {
 
         PriorityQueuePrunable<std::unique_ptr<Node, NodeDeleter>, NodeCompare> node_queue; // priority queue for nodes
         mutable std::mutex pq_mtx;
-        std::condition_variable pq_cv_bnb; // condition variables for branch-and-bound threads
+        std::condition_variable pq_cv_bnb, pq_cv_admm_fp;
+        // condition variables for branch-and-bound and ADMM-FP threads
 
         bool multi_sol = false;
-        std::shared_ptr<ADMM_data> bnb_data; // data for branch-and-bound threads
+        std::shared_ptr<ADMM_data> bnb_data, admm_fp_data; // data for branch-and-bound threads / ADMM-FP threads
 
         std::atomic<bool> converged = false;
         std::atomic<bool> done = false;
         std::atomic<bool> feasible = false; // feasible solution found
+        std::atomic<bool> admm_fp_incumbent = false; // incumbent is from ADMM FP
         std::atomic<long int> qp_iter = 0; // number of QP iterations
         std::atomic<int> iter = 0; // number of iterations
+        std::atomic<int> iter_admm_fp = 0; // number of feasibility pump iterations
         std::atomic<zono_float> J_max = std::numeric_limits<zono_float>::infinity(); // upper bound
         ThreadSafeAccess<Eigen::Vector<zono_float, -1>> z, x, u; // solution vector
         std::atomic<zono_float> primal_residual = std::numeric_limits<zono_float>::infinity();
@@ -91,6 +102,9 @@ namespace ZonoOpt::detail {
         ThreadSafeMultiset J_threads; // threads for J values
         ThreadSafeVector<OptSolution> solutions; // solutions found
 
+        // warmstart variables
+        Eigen::Vector<zono_float, -1> xi_ws, u_ws;
+
         // allocate nodes
         std::unique_ptr<Node, NodeDeleter> make_node(const std::shared_ptr<ADMM_data>& data);
 
@@ -98,19 +112,23 @@ namespace ZonoOpt::detail {
 
         // solver core
         std::variant<OptSolution, std::pair<std::vector<OptSolution>, OptSolution>> solver_core(
-                int max_sols = std::numeric_limits<int>::max());
+            int max_sols = std::numeric_limits<int>::max());
 
         // solve node and branch
         void solve_and_branch(const std::unique_ptr<Node, NodeDeleter>& node);
 
+        void admm_fp_solve(const std::unique_ptr<ADMM_FP_solver>& node);
+
         // check if integer feasible, xb is vector of relaxed binary variables
-        bool is_integer_feasible(Eigen::Ref<const Eigen::Vector<zono_float,-1>> xb) const;
+        bool is_integer_feasible(const Eigen::Ref<const Eigen::Vector<zono_float, -1>> xb) const;
 
         // most fractional branching
         void branch_most_frac(const std::unique_ptr<Node, NodeDeleter>& node);
 
         // loop for multithreading
         void worker_loop();
+
+        void admm_fp_loop(std::unique_ptr<ADMM_FP_solver>&& node);
 
         // push node to queue
         void push_node(std::unique_ptr<Node, NodeDeleter>&& node);
@@ -120,12 +138,8 @@ namespace ZonoOpt::detail {
 
         // check if 2 solutions correspond to the same binaries
         bool check_bin_equal(const OptSolution& sol1, const OptSolution& sol2) const;
-
     };
-
 } // namespace ZonoOpt::detail
-     
-
 
 
 #endif

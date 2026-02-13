@@ -24,8 +24,8 @@
 #include "ADMM.hpp"
 #include "SolverDataStructures.hpp"
 
-namespace ZonoOpt::detail {
-
+namespace ZonoOpt::detail
+{
     struct MI_data
     {
         std::shared_ptr<ADMM_data> admm_data;
@@ -62,7 +62,9 @@ namespace ZonoOpt::detail {
     class ThreadSafeIncrementable
     {
     public:
-        explicit ThreadSafeIncrementable(T value) : data(value) {}
+        explicit ThreadSafeIncrementable(T value) : data(value)
+        {
+        }
 
         // get method
         T get() const
@@ -179,7 +181,7 @@ namespace ZonoOpt::detail {
         bool contains(const T& value, std::function<bool(const OptSolution&, const OptSolution&)>& compare) const
         {
             std::lock_guard<std::mutex> lock(mtx);
-            for (auto it=data.begin(); it!=data.end(); ++it)
+            for (auto it = data.begin(); it != data.end(); ++it)
             {
                 if (compare(*it, value)) return true;
             }
@@ -234,7 +236,7 @@ namespace ZonoOpt::detail {
         }
 
         // solve
-        void solve(std::atomic<bool>* stop=nullptr)
+        void solve(std::atomic<bool>* stop = nullptr)
         {
             this->solve_core(this->x_box, this->solution, stop);
         }
@@ -262,12 +264,16 @@ namespace ZonoOpt::detail {
     {
     public:
         // constructor
-        explicit PriorityQueuePrunable(const Compare& comp = Compare()) : std::priority_queue<T, std::vector<T>, Compare>(comp) {}
+        explicit PriorityQueuePrunable(const Compare& comp = Compare()) : std::priority_queue<
+            T, std::vector<T>, Compare>(comp)
+        {
+        }
 
         // prune queue
         void prune(const T& t)
         {
-            auto it_prune = std::find_if(this->c.begin(), this->c.end(), [&](const T& item) {
+            auto it_prune = std::find_if(this->c.begin(), this->c.end(), [&](const T& item)
+            {
                 return this->comp(item, t);
             });
             if (it_prune != this->c.end())
@@ -297,7 +303,6 @@ namespace ZonoOpt::detail {
                 this->pop();
         }
     };
-
 } // namespace ZonoOpt::detail
 
 

@@ -40,40 +40,46 @@ namespace ZonoOpt
 
     Eigen::Vector<zono_float, -1> EmptySet::do_optimize_over(
         const Eigen::SparseMatrix<zono_float>&, const Eigen::Vector<zono_float, -1>&, zono_float,
-        const OptSettings&, OptSolution* solution) const
+        const OptSettings&, std::shared_ptr<OptSolution>* solution,
+        const WarmStartParams&) const
     {
         if (solution)
         {
-            solution->infeasible = true;
+            (*solution)->infeasible = true;
         }
         return Eigen::Vector<zono_float, -1>::Constant(this->n, std::numeric_limits<zono_float>::quiet_NaN());
     }
 
     Eigen::Vector<zono_float, -1> EmptySet::do_project_point(const Eigen::Vector<zono_float, -1>&, const OptSettings&,
-                                                             OptSolution* solution) const
+                                                             std::shared_ptr<OptSolution>* solution,
+                                                             const WarmStartParams&) const
     {
         if (solution)
         {
-            solution->infeasible = true;
+            (*solution)->infeasible = true;
         }
         return Eigen::Vector<zono_float, -1>::Constant(this->n, std::numeric_limits<zono_float>::quiet_NaN());
     }
 
-    zono_float EmptySet::do_support(const Eigen::Vector<zono_float, -1>&, const OptSettings&, OptSolution* solution)
+    zono_float EmptySet::do_support(const Eigen::Vector<zono_float, -1>&, const OptSettings&,
+                                    std::shared_ptr<OptSolution>* solution,
+                                    const WarmStartParams&)
     {
         if (solution)
         {
-            solution->infeasible = true;
+            (*solution)->infeasible = true;
         }
         return std::numeric_limits<zono_float>::quiet_NaN();
     }
 
-    bool EmptySet::do_contains_point(const Eigen::Vector<zono_float, -1>&, const OptSettings&, OptSolution*) const
+    bool EmptySet::do_contains_point(const Eigen::Vector<zono_float, -1>&, const OptSettings&,
+                                     std::shared_ptr<OptSolution>*,
+                                     const WarmStartParams&) const
     {
         return false;
     }
 
-    Box EmptySet::do_bounding_box(const OptSettings&, OptSolution*)
+    Box EmptySet::do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>*, const WarmStartParams&)
     {
         const Eigen::Vector<zono_float, -1> x_l = Eigen::Vector<zono_float, -1>::Constant(
             this->n, std::numeric_limits<zono_float>::infinity());
@@ -82,13 +88,14 @@ namespace ZonoOpt
         return {x_l, x_u};
     }
 
-    bool EmptySet::do_is_empty(const OptSettings&, OptSolution*) const
+    bool EmptySet::do_is_empty(const OptSettings&, std::shared_ptr<OptSolution>*, const WarmStartParams&) const
     {
         return true;
     }
 
-    std::unique_ptr<HybZono> EmptySet::do_complement(zono_float delta_m, bool, const OptSettings&, OptSolution*, int,
-                                                     int)
+    std::unique_ptr<HybZono> EmptySet::do_complement(zono_float delta_m, bool, const OptSettings&,
+                                                     std::shared_ptr<OptSolution>*,
+                                                     int, int)
     {
         const zono_float m = delta_m + 1; // box width
         const Eigen::Vector<zono_float, -1> x_l = -Eigen::Vector<zono_float, -1>::Constant(this->n, m);

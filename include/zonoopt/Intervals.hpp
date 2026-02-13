@@ -4,7 +4,7 @@
 /**
  * @file Intervals.hpp
  * @author Josh Robbins (jrobbins@psu.edu)
- * @brief Interval and box classes.
+ * @brief Intervals and associated classes.
  * @version 1.0
  * @date 2025-06-04
  * 
@@ -27,14 +27,13 @@ Reference:
 Luc Jaulin, Michel Kieffer, Olivier Didrit, Eric Walter
 */
 
-namespace ZonoOpt {
-
+namespace ZonoOpt
+{
     using namespace detail;
 
     // forward declarations
     struct Interval;
     struct IntervalView;
-
 
     /**
      * @brief Base class for Interval and IntervalView
@@ -234,12 +233,22 @@ namespace ZonoOpt {
         }
 
         /**
+         * @brief sets interval to its radius (i.e., half the width, centered at zero)
+         */
+        void radius_assign()
+        {
+            zono_float w = width();
+            y_min() = -w / 2;
+            y_max() = w / 2;
+        }
+
+        /**
          * @brief compute interval containing sin(x) over x
          * @param x input interval
          */
         void sin_assign(const Derived& x)
         {
-            if (x.y_max() - x.y_min() >= two*pi)
+            if (x.y_max() - x.y_min() >= two * pi)
             {
                 y_max() = one;
                 y_min() = -one;
@@ -251,18 +260,22 @@ namespace ZonoOpt {
                 zono_float l = x.y_min(); // init
                 while (u > pi)
                 {
-                    u -= two*pi;
-                    l -= two*pi;
+                    u -= two * pi;
+                    l -= two * pi;
                 }
                 while (l < -pi)
                 {
-                    u += two*pi;
-                    l += two*pi;
+                    u += two * pi;
+                    l += two * pi;
                 }
 
                 // get bounds
-                y_max() = ((l < pi/two && pi/two < u) || (l < -3*pi/two && -3*pi/two < u)) ? one : std::max(std::sin(u), std::sin(l));
-                y_min() = ((l < -pi/two && -pi/two < u) || (l < 3*pi/two && 3*pi/two < u)) ? -one : std::min(std::sin(u), std::sin(l));
+                y_max() = ((l < pi / two && pi / two < u) || (l < -3 * pi / two && -3 * pi / two < u))
+                              ? one
+                              : std::max(std::sin(u), std::sin(l));
+                y_min() = ((l < -pi / two && -pi / two < u) || (l < 3 * pi / two && 3 * pi / two < u))
+                              ? -one
+                              : std::min(std::sin(u), std::sin(l));
             }
         }
 
@@ -273,7 +286,7 @@ namespace ZonoOpt {
         void cos_assign(const Derived& x)
         {
             Derived x_sin;
-            x_sin.set(x.y_min() + pi/two, x.y_max() + pi/two);
+            x_sin.set(x.y_min() + pi / two, x.y_max() + pi / two);
             sin_assign(x_sin);
         }
 
@@ -295,17 +308,17 @@ namespace ZonoOpt {
                 zono_float l = x.y_min(); // init
                 while (u > pi)
                 {
-                    u -= two*pi;
-                    l -= two*pi;
+                    u -= two * pi;
+                    l -= two * pi;
                 }
                 while (l < -pi)
                 {
-                    u += two*pi;
-                    l += two*pi;
+                    u += two * pi;
+                    l += two * pi;
                 }
 
                 // get bounds
-                if ((l < -pi/two && -pi/two < u) || (l < pi/two && pi/two < u))
+                if ((l < -pi / two && -pi / two < u) || (l < pi / two && pi / two < u))
                 {
                     y_max() = std::numeric_limits<zono_float>::infinity();
                     y_min() = -std::numeric_limits<zono_float>::infinity();
@@ -381,14 +394,18 @@ namespace ZonoOpt {
         /**
          * @brief default constructor
          */
-        Interval() : lb(0), ub(0) {}
+        Interval() : lb(0), ub(0)
+        {
+        }
 
         /**
          * @brief Interval constructor
          * @param y_min lower bound
          * @param y_max upper bound
          */
-        Interval(zono_float y_min, zono_float y_max) : lb(y_min), ub(y_max) {}
+        Interval(zono_float y_min, zono_float y_max) : lb(y_min), ub(y_max)
+        {
+        }
 
         /**
          * @brief Clone Interval object
@@ -517,6 +534,18 @@ namespace ZonoOpt {
         zono_float center() const
         {
             return (ub + lb) / two;
+        }
+
+        /**
+         * @brief get radius of interval
+         * @return radius of interval
+         *
+         * Returns interval centered at zero with width equal to the width of the original interval
+         */
+        Interval radius() const
+        {
+            zono_float r = this->width() / two;
+            return Interval(-r, r);
         }
 
         // as interval view
@@ -648,7 +677,9 @@ namespace ZonoOpt {
          * @param y_min lower bound pointer
          * @param y_max upper bound pointer
          */
-        IntervalView(zono_float* y_min, zono_float* y_max) : lb_ptr(y_min), ub_ptr(y_max) {}
+        IntervalView(zono_float* y_min, zono_float* y_max) : lb_ptr(y_min), ub_ptr(y_max)
+        {
+        }
 
         // assignment
 
@@ -717,7 +748,6 @@ namespace ZonoOpt {
     class Box
     {
     public:
-
         // constructors
 
         /**
@@ -780,6 +810,7 @@ namespace ZonoOpt {
          * @return Interval for element i in Box
          */
         Interval operator[](size_t i) const;
+
         /**
          * @brief get size of Box object
          * @return size of box
@@ -818,9 +849,17 @@ namespace ZonoOpt {
          * @brief Get width of box
          * @return width of box
          *
-         * Specifically, this returns the sum of the widths of each interval in the box
+         * Specifically, this returns the max width for any interval in the box
          */
         zono_float width() const;
+
+        /**
+         * @brief get radius of box
+         * @return radius of box
+         *
+         * Returns box with intervals centered at zero with width equal to the width of the original box
+         */
+        Box radius() const;
 
         /**
          * @brief get center of box
@@ -878,7 +917,8 @@ namespace ZonoOpt {
          * For points x in the box, this shrinks the box without removing any points x that satisfy A*x=b.
          * If the contractor detects that the box does not intersect A*x=b, then this function will return false.
          */
-        bool contract(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A, const Eigen::Vector<zono_float, -1>& b, int iter);
+        bool contract(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A, const Eigen::Vector<zono_float, -1>& b,
+                      int iter);
 
         /**
          * @brief Interval contractor over a subset of the dimensions of the box
@@ -893,8 +933,10 @@ namespace ZonoOpt {
          * This is a forward-backward contractor over a subset of the dimensions of the box.
          * This detects what other dimensions are affected up to a specified search depth prior to executing the contractor.
          */
-        bool contract_subset(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A_rm, const Eigen::Vector<zono_float, -1>& b, int iter,
-                             const Eigen::SparseMatrix<zono_float>& A, const std::set<int>& inds, int tree_search_depth);
+        bool contract_subset(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A_rm,
+                             const Eigen::Vector<zono_float, -1>& b, int iter,
+                             const Eigen::SparseMatrix<zono_float>& A, const std::set<int>& inds,
+                             int tree_search_depth);
 
         /**
          * @brief Linear map of box based on interval arithmetic
@@ -938,7 +980,6 @@ namespace ZonoOpt {
         friend std::ostream& operator<<(std::ostream& os, const Box& box);
 
     protected:
-
         // members
         /// vector of lower bounds
         Eigen::Vector<zono_float, -1> x_lb;
@@ -947,7 +988,6 @@ namespace ZonoOpt {
         Eigen::Vector<zono_float, -1> x_ub;
 
     private:
-
         // back end for contraction operator
 
         /**
@@ -958,8 +998,28 @@ namespace ZonoOpt {
          * @param constraints constraints to consider
          * @return flag indicating that the contractor did not detect that A*x=b and the box do not intersect
          */
-        bool contract_helper(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A, const Eigen::Vector<zono_float, -1>& b, const int iter,
-                             const std::set<int>& constraints);
+        virtual bool contract_helper(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A,
+                                     const Eigen::Vector<zono_float, -1>& b, const int iter,
+                                     const std::set<int>& constraints);
+
+        /**
+         * @brief Forward propagation step of contractor
+         * @param A constraint matrix (row-major)
+         * @param b constraint vector
+         * @param constraints constraints to consider
+         * @return success flag indicating that the contractor did not detect that A*x=b and the box do not intersect
+         */
+        bool contract_forward(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A,
+                              const Eigen::Vector<zono_float, -1>& b, const std::set<int>& constraints);
+
+        /**
+         * @brief Backward propagation step of contractor
+         * @param A constraint matrix (row-major)
+         * @param b constraint vector
+         * @param constraints constraints to consider
+         */
+        void contract_backward(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A,
+                               const Eigen::Vector<zono_float, -1>& b, const std::set<int>& constraints);
 
         /**
          * @brief Search constraint tree for affected dimensions of box (recursive)
@@ -971,11 +1031,209 @@ namespace ZonoOpt {
          * @param depth current depth in constraint tree
          * @param max_depth max depth to search constraint tree
          */
-        void get_vars_cons(const Eigen::SparseMatrix<zono_float>& A, const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A_rm,
-                           std::set<int>& constraints, std::set<int>& vars, const std::set<int>& new_vars, int depth, int max_depth);
+        static void get_vars_cons(const Eigen::SparseMatrix<zono_float>& A,
+                                  const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A_rm,
+                                  std::set<int>& constraints, std::set<int>& vars, const std::set<int>& new_vars,
+                                  int depth, int max_depth);
+
+    private:
+        friend class MI_Box;
     };
 
-} // namespace ZonoOpt
+    // mixed-integer box (some bounds are fixed)
+    /**
+     * @brief Mixed-integer box
+     *
+     * Extends Box class to include variables for which may only take their upper or lower bound
+     * (they may not take any value on the interior).
+     */
+    class MI_Box final : public Box
+    {
+    public:
+        // constructors
 
+        /**
+         * @brief default constructor
+         */
+        MI_Box() = default;
+
+        /**
+         * @brief Constructor for MI_Box
+         * @param x_lb vector of lower bounds
+         * @param x_ub vector of upper bounds
+         * @param idx_b indices of binary variables {start index, number of binaries}
+         * @param zero_one_form flag indicating whether binary variables are in {0,1} form (true) or {-1,1} form (false)
+         */
+        MI_Box(const Eigen::Vector<zono_float, -1>& x_lb, const Eigen::Vector<zono_float, -1>& x_ub,
+               const std::pair<int, int>& idx_b, bool zero_one_form);
+
+        // clone operation
+        Box* clone() const override;
+
+        // project
+        void project(Eigen::Ref<Eigen::Vector<zono_float, -1>> x) const override;
+
+        // get binary indices
+        /**
+         * @brief Get binary indices
+         * @return reference to binary indices {start index, number of binaries}
+         */
+        const std::pair<int, int>& binary_indices() const { return idx_b; }
+
+    protected:
+        bool contract_helper(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A,
+                             const Eigen::Vector<zono_float, -1>& b, const int iter,
+                             const std::set<int>& constraints) override;
+
+    private:
+        /// binary variable indices
+        std::pair<int, int> idx_b;
+        zono_float bin_low = zero, bin_high = one;
+    };
+
+
+    /**
+     * @brief Class for interval matrices (i.e., every element of the matrix is an interval)
+     *
+     */
+    class IntervalMatrix
+    {
+    public:
+        /**
+         * @brief IntervalMatrix default constructor
+         */
+        IntervalMatrix() : rows_(0), cols_(0)
+        {
+        }
+
+        /**
+         * @brief IntervalMatrix constructor using triplets
+         * @param rows number of rows
+         * @param cols number of columns
+         * @param triplets triplets for interval matrix (row, col, interval)
+         */
+        IntervalMatrix(size_t rows, size_t cols, const std::vector<Eigen::Triplet<Interval>>& triplets);
+
+        /**
+         * @brief IntervalMatrix constructor using sparse lower and upper bound matrices
+         * @param mat_lb lower bound matrix
+         * @param mat_ub upper bound matrix
+         */
+        IntervalMatrix(const Eigen::SparseMatrix<zono_float>& mat_lb,
+                       const Eigen::SparseMatrix<zono_float>& mat_ub);
+
+        /**
+         * @brief IntervalMatrix constructor using dense lower and upper bound matrices
+         * @param mat_lb lower bound matrix
+         * @param mat_ub upper bound matrix
+         */
+        IntervalMatrix(const Eigen::Matrix<zono_float, -1, -1>& mat_lb,
+                       const Eigen::Matrix<zono_float, -1, -1>& mat_ub);
+
+        /**
+         * @brief Get center matrix
+         * @return center matrix
+         *
+         * Each element of center matrix is the center of the corresponding interval in the interval matrix
+         */
+        Eigen::SparseMatrix<zono_float> center() const;
+
+        /**
+         * @brief Get diameter matrix
+         * @return diameter matrix
+         *
+         * Each element of the diameter matrix is the width of the corresponding interval in the interval matrix
+         */
+        Eigen::SparseMatrix<zono_float> diam() const;
+
+        /**
+         * @brief Get radius matrix
+         * @return radius matrix
+         *
+         * Returns the IntervalMatrix with each interval shifted to be centered at zero
+         */
+        IntervalMatrix radius() const;
+
+        /**
+         * @brief Get width of interval matrix
+         * @return width of interval matrix
+         *
+         * Specifically, this returns the max width for any interval in the interval matrix
+         */
+        zono_float width() const;
+
+        /**
+         * @brief IntervalMatrix multiplication with vector
+         * @param v rhs vector
+         * @return resulting box
+         */
+        Box operator*(const Eigen::Vector<zono_float, -1>& v) const;
+
+        /**
+         * @brief IntervalMatrix multiplication with Box
+         * @param box rhs box
+         * @return resulting box
+         */
+        Box operator*(const Box& box) const;
+
+        /**
+         * @brief IntervalMatrix multiplication with matrix
+         * @param A rhs matrix
+         * @return resulting interval matrix
+         */
+        IntervalMatrix operator*(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A) const;
+
+        /**
+         * @brief IntervalMatrix multiplication with another IntervalMatrix
+         * @param other rhs interval matrix
+         * @return resulting interval matrix
+         */
+        IntervalMatrix operator*(const IntervalMatrix& other) const;
+
+        /**
+         * @brief IntervalMatrix addition
+         * @param other rhs interval matrix
+         * @return resulting interval matrix
+         */
+        IntervalMatrix operator+(const IntervalMatrix& other) const;
+
+        /**
+         * @brief IntervalMatrix subtraction
+         * @param other rhs interval matrix
+         * @return resulting interval matrix
+         */
+        IntervalMatrix operator-(const IntervalMatrix& other) const;
+
+        /**
+         * @brief Get number of rows
+         * @return number of rows
+         */
+        size_t rows() const { return rows_; }
+
+        /**
+         * @brief Get number of columns
+         * @return number of cols
+         */
+        size_t cols() const { return cols_; }
+
+        /**
+         * @brief Print method
+         * @return string display of IntervalMatrix
+         */
+        std::string print() const;
+
+        /**
+         * @brief print to ostream
+         * @param os ostream
+         * @param interval_matrix reference to interval matrix
+         * @return ostream
+         */
+        friend std::ostream& operator<<(std::ostream& os, const IntervalMatrix& interval_matrix);
+
+    private:
+        size_t rows_, cols_;
+        std::vector<std::vector<std::pair<size_t, Interval>>> mat_; // rows->cols->vals
+    };
+} // namespace ZonoOpt
 
 #endif
