@@ -110,6 +110,18 @@ class Box:
                             x (numpy.array): vector to be projected
             
         '''
+    def radius(self) -> Box:
+        """radius(self: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Get radius of box
+
+                        Returns box with intervals centered at zero with width equal to the width of the original box
+
+                        Returns:
+                            Box: radius of box
+            
+        """
     def size(self) -> int:
         """size(self: zonoopt._core.Box) -> int
 
@@ -136,7 +148,7 @@ class Box:
 
                         Get width of box.
 
-                        Specifically, this returns the sum of the widths of each interval in the box
+                        Specifically, this returns the max width for any interval in the box
 
                         Returns:
                             float: width of box
@@ -367,8 +379,8 @@ class HybZono:
                             sharp (bool, optional): true if set is known to be sharp, i.e., convex relaxation = convex hull
             
         '''
-    def bounding_box(self, settings: OptSettings = ..., solution: OptSolution = ...) -> Box:
-        """bounding_box(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 max_nodes: 100000 contractor_tree_search_depth: 10, solution: zonoopt._core.OptSolution = None) -> zonoopt._core.Box
+    def bounding_box(self, settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> Box:
+        """bounding_box(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7bab79098670>) -> zonoopt._core.Box
 
 
                         Computes a bounding box of the set object as a Box object.
@@ -376,6 +388,7 @@ class HybZono:
                         Args:
                             settings (OptSettings, optional): optimization settings structure
                             solution (OptSolution, optional): optimization solution structure pointer, populated with result
+                            warm_start_params (WarmStartParams, optional): warm start parameters structure
 
                         Returns:
                             Box: bounding box of the set
@@ -384,7 +397,7 @@ class HybZono:
             
         """
     def complement(self, delta_m: typing.SupportsFloat = ..., remove_redundancy: bool = ..., settings: OptSettings = ..., solution: OptSolution = ..., n_leaves: typing.SupportsInt = ..., contractor_iter: typing.SupportsInt = ...) -> HybZono:
-        '''complement(self: zonoopt._core.HybZono, delta_m: typing.SupportsFloat = 100, remove_redundancy: bool = True, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 max_nodes: 100000 contractor_tree_search_depth: 10, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt = 2147483647, contractor_iter: typing.SupportsInt = 100) -> zonoopt._core.HybZono
+        '''complement(self: zonoopt._core.HybZono, delta_m: typing.SupportsFloat = 100, remove_redundancy: bool = True, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt = 2147483647, contractor_iter: typing.SupportsInt = 100) -> zonoopt._core.HybZono
 
 
                     Computes the complement of the set Z.
@@ -407,8 +420,8 @@ class HybZono:
                     X = {G \\xi + c | A \\xi = b, \\xi \\in [-1-delta_m, 1+delta+m]^{nG}}.
             
         '''
-    def contains_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ...) -> bool:
-        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 max_nodes: 100000 contractor_tree_search_depth: 10, solution: zonoopt._core.OptSolution = None) -> bool
+    def contains_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
+        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7bab787d03b0>) -> bool
 
 
                         Checks whether the point x is contained in the set object.
@@ -417,6 +430,7 @@ class HybZono:
                             x (numpy.array): point to be checked for set containment
                             settings (OptSettings, optional): optimization settings structure
                             solution (OptSolution, optional): optimization solution structure pointer, populated with result
+                            warm_start_params (WarmStartParams, optional): warm start parameters structure
 
                         Returns:
                             bool: true if set contains point, false otherwise
@@ -540,7 +554,7 @@ class HybZono:
             
         '''
     def get_leaves(self, *args, **kwargs):
-        """get_leaves(self: zonoopt._core.HybZono, remove_redundancy: bool = True, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 max_nodes: 100000 contractor_tree_search_depth: 10, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt = 2147483647, contractor_iter: typing.SupportsInt = 100) -> list[ZonoOpt::ConZono]
+        """get_leaves(self: zonoopt._core.HybZono, remove_redundancy: bool = True, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt = 2147483647, contractor_iter: typing.SupportsInt = 100) -> list[ZonoOpt::ConZono]
 
 
                         Computes individual constrained zonotopes whose union is the hybrid zonotope object.
@@ -559,6 +573,8 @@ class HybZono:
                         If the branch and bound converges (i.e., did not hit max time, max number of branch and bound iterations, or max nodes in queue)
                         and the n_leaves argument does not stop the optimization before exhausting all possibilities, then the resulting vector of constrained zonotopes
                         can be unioned to recover the original set. It is possible for a leaf to be the empty set if the optimization converges before detecting an infeasibility certificate.
+                        Branch and bound search is used to find all leaves of the hybrid zonotope tree. If any threads are allocated
+                        for ADMM-FP, these will instead be used for branch and bound search.
             
         """
     def get_n(self) -> int:
@@ -631,8 +647,8 @@ class HybZono:
                             bool: true if set is a constrained zonotope
             
         """
-    def is_empty(self, settings: OptSettings = ..., solution: OptSolution = ...) -> bool:
-        """is_empty(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 max_nodes: 100000 contractor_tree_search_depth: 10, solution: zonoopt._core.OptSolution = None) -> bool
+    def is_empty(self, settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
+        """is_empty(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7bab7881cb70>) -> bool
 
 
                         Returns true if the set is provably empty, false otherwise.
@@ -640,6 +656,7 @@ class HybZono:
                         Args:
                             settings (OptSettings, optional): optimization settings structure
                             solution (OptSolution, optional): optimization solution structure pointer, populated with result
+                            warm_start_params (WarmStartParams, optional): warm start parameters structure
 
                         Returns:
                             bool: flag indicating whether set is provably empty
@@ -695,8 +712,8 @@ class HybZono:
                             bool: true if set is a zonotope
             
         """
-    def optimize_over(self, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], c: typing.SupportsFloat = ..., settings: OptSettings = ..., solution: OptSolution = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat = 0, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 max_nodes: 100000 contractor_tree_search_depth: 10, solution: zonoopt._core.OptSolution = None) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+    def optimize_over(self, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], c: typing.SupportsFloat = ..., settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
+        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat = 0, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7bab78284bf0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Solves optimization problem with quadratic objective over the current set
@@ -707,6 +724,7 @@ class HybZono:
                             c (float, optional): constant term in objective function
                             settings (OptSettings, optional): optimization settings structure
                             solution (OptSolution, optional): optimization solution structure pointer, populated with result
+                            warm_start_params (WarmStartParams, optional): warm start parameters structure
 
                         Returns:
                             numpy.array: point z in the current set
@@ -714,8 +732,8 @@ class HybZono:
                         Solves optimization problem of the form min 0.5*z^T*P*z + q^T*z + c where z is a vector in the current set
             
         '''
-    def project_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 max_nodes: 100000 contractor_tree_search_depth: 10, solution: zonoopt._core.OptSolution = None) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+    def project_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
+        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7bab78884b70>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Returns the projection of the point x onto the set object.
@@ -724,13 +742,14 @@ class HybZono:
                             x (numpy.array): point to be projected
                             settings (OptSettings, optional): optimization settings structure
                             solution (OptSolution, optional): optimization solution structure pointer, populated with result
+                            warm_start_params (WarmStartParams, optional): warm start parameters structure
 
                         Returns:
                             numpy.array: point z in the current set
             
         '''
-    def remove_redundancy(self, contractor_iter: typing.SupportsInt = ...) -> None:
-        """remove_redundancy(self: zonoopt._core.HybZono, contractor_iter: typing.SupportsInt = 100) -> None
+    def remove_redundancy(self, contractor_iter: typing.SupportsInt = ...) -> bool:
+        """remove_redundancy(self: zonoopt._core.HybZono, contractor_iter: typing.SupportsInt = 10) -> bool
 
 
                         Removes redundant constraints and any unused generators
@@ -743,6 +762,9 @@ class HybZono:
                 
                         Args:
                             contractor_iter (int): number of interval contractor iterations to run
+
+                        Returns:
+                            bool: true if successful, false if unable to reduce the complexity of the set representation
             
         """
     def set(self, Gc: scipy.sparse.csc_matrix[numpy.float64], Gb: scipy.sparse.csc_matrix[numpy.float64], c: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], Ac: scipy.sparse.csc_matrix[numpy.float64], Ab: scipy.sparse.csc_matrix[numpy.float64], b: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], zero_one_form: bool = ..., sharp: bool = ...) -> None:
@@ -762,8 +784,8 @@ class HybZono:
                             sharp (bool): true if set is known to be sharp, i.e., convex relaxation = convex hull
             
         '''
-    def support(self, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ...) -> float:
-        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 max_nodes: 100000 contractor_tree_search_depth: 10, solution: zonoopt._core.OptSolution = None) -> float
+    def support(self, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> float:
+        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7bab7ae07b30>) -> float
 
 
                         Computes support function of the set in the direction d.
@@ -772,6 +794,7 @@ class HybZono:
                             d (numpy.array): vector defining direction for support function
                             settings (OptSettings, optional): optimization settings structure
                             solution (OptSolution, optional): optimization solution structure pointer, populated with result
+                            warm_start_params (WarmStartParams, optional): warm start parameters structure
 
                         Returns:
                             float: support value
@@ -788,6 +811,11 @@ class IneqTerm:
         """__init__(self: zonoopt._core.IneqTerm, idx: typing.SupportsInt, coeff: typing.SupportsFloat) -> None
 
         IneqTerm constructor
+        """
+    def copy(self) -> IneqTerm:
+        """copy(self: zonoopt._core.IneqTerm) -> zonoopt._core.IneqTerm
+
+        Creates a copy of the IneqTerm object.
         """
 
 class IneqType:
@@ -854,6 +882,16 @@ class Inequality:
                         Args:
                             idx (int): index of variable in the inequality
                             coeff (float): coefficient of the variable
+            
+        """
+    def copy(self) -> Inequality:
+        """copy(self: zonoopt._core.Inequality) -> zonoopt._core.Inequality
+
+
+                        Creates a copy of the Inequality object.
+
+                        Returns:
+                            Inequality: A copy of the Inequality object.
             
         """
     def get_ineq_type(self) -> IneqType:
@@ -1058,6 +1096,16 @@ class Interval:
                             bool: flag indicating if interval contains y
             
         """
+    def copy(self) -> Interval:
+        """copy(self: zonoopt._core.Interval) -> zonoopt._core.Interval
+
+
+                        Copy interval object
+
+                        Returns:
+                            Interval: copy of interval
+            
+        """
     @overload
     def cos(self) -> Interval:
         """cos(self: zonoopt._core.Interval) -> zonoopt._core.Interval
@@ -1167,6 +1215,18 @@ class Interval:
                             bool: flag indicating if interval is single-value
             
         """
+    def radius(self) -> Interval:
+        """radius(self: zonoopt._core.Interval) -> zonoopt._core.Interval
+
+
+                        Gets radius of interval
+
+                        Returns interval centered at zero with width equal to the width of the original interval
+
+                        Returns:
+                            Interval: radius of interval
+            
+        """
     @overload
     def sin(self) -> Interval:
         """sin(self: zonoopt._core.Interval) -> zonoopt._core.Interval
@@ -1256,16 +1316,6 @@ class Interval:
                             Interval: self + other
             
         """
-    def __copy__(self) -> Interval:
-        """__copy__(self: zonoopt._core.Interval) -> zonoopt._core.Interval
-
-
-                        Copy interval object
-
-                        Returns:
-                            Interval: copy of interval
-            
-        """
     @overload
     def __mul__(self, other: Interval) -> Interval:
         """__mul__(*args, **kwargs)
@@ -1351,31 +1401,372 @@ class Interval:
             
         """
 
+class IntervalMatrix:
+    """Interval matrix class"""
+    def __init__(self, mat_lb: scipy.sparse.csc_matrix[numpy.float64], mat_ub: scipy.sparse.csc_matrix[numpy.float64]) -> None:
+        """__init__(self: zonoopt._core.IntervalMatrix, mat_lb: scipy.sparse.csc_matrix[numpy.float64], mat_ub: scipy.sparse.csc_matrix[numpy.float64]) -> None
+
+
+                        IntervalMatrix constructor
+
+                        Args:
+                            mat_lb (scipy.sparse.csc_matrix): matrix of lower bounds
+                            mat_ub (scipy.sparse.csc_matrix): matrix of upper bounds
+            
+        """
+    def center(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """center(self: zonoopt._core.IntervalMatrix) -> scipy.sparse.csc_matrix[numpy.float64]
+
+
+                        Get center matrix
+
+                        Each element of center matrix is the center of the corresponding interval in the interval matrix
+
+                        Returns:
+                            scipy.sparse.csc_matrix: center matrix
+            
+        """
+    def cols(self) -> int:
+        """cols(self: zonoopt._core.IntervalMatrix) -> int
+
+
+                        Get number of columns
+
+                        Returns:
+                            int: number of cols
+            
+        """
+    def diam(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """diam(self: zonoopt._core.IntervalMatrix) -> scipy.sparse.csc_matrix[numpy.float64]
+
+
+                        Get diameter matrix
+
+                        Each element of the diameter matrix is the width of the corresponding interval in the interval matrix
+
+                        Returns:
+                            scipy.sparse.csc_matrix: diameter matrix
+            
+        """
+    def radius(self) -> IntervalMatrix:
+        """radius(self: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        Get radius of interval matrix
+
+                        Returns interval matrix with intervals centered at zero with width equal to the width of the original interval matrix
+
+                        Returns:
+                            IntervalMatrix: radius of interval matrix
+            
+        """
+    def rows(self) -> int:
+        """rows(self: zonoopt._core.IntervalMatrix) -> int
+
+
+                        Get number of rows
+
+                        Returns:
+                            int: number of rows
+            
+        """
+    def width(self) -> float:
+        """width(self: zonoopt._core.IntervalMatrix) -> float
+
+
+                        Get width of interval matrix
+
+                        Specifically, this returns the max width for any interval in the interval matrix
+
+                        Returns:
+                            float: width of interval matrix
+            
+        """
+    def __add__(self, other: IntervalMatrix) -> IntervalMatrix:
+        """__add__(self: zonoopt._core.IntervalMatrix, other: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix addition
+
+                        Args:
+                            other (IntervalMatrix): rhs interval matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+        """
+    @overload
+    def __mul__(self, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> Box:
+        '''__mul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __mul__(self: zonoopt._core.IntervalMatrix, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        IntervalMatrix multiplication with vector
+
+                        Args:
+                            v (numpy.array): rhs vector
+
+                        Returns:
+                            Box: resulting box
+            
+
+        2. __mul__(self: zonoopt._core.IntervalMatrix, box: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        IntervalMatrix multiplication with Box
+
+                        Args:
+                            box (Box): rhs box
+
+                        Returns:
+                            Box: resulting box
+            
+
+        3. __mul__(self: zonoopt._core.IntervalMatrix, A: scipy.sparse.csr_matrix[numpy.float64]) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with matrix
+
+                        Args:
+                            A (scipy.sparse.csr_matrix): rhs matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        4. __mul__(self: zonoopt._core.IntervalMatrix, other: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with another IntervalMatrix
+
+                        Args:
+                            other (IntervalMatrix): rhs interval matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+        '''
+    @overload
+    def __mul__(self, box: Box) -> Box:
+        '''__mul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __mul__(self: zonoopt._core.IntervalMatrix, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        IntervalMatrix multiplication with vector
+
+                        Args:
+                            v (numpy.array): rhs vector
+
+                        Returns:
+                            Box: resulting box
+            
+
+        2. __mul__(self: zonoopt._core.IntervalMatrix, box: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        IntervalMatrix multiplication with Box
+
+                        Args:
+                            box (Box): rhs box
+
+                        Returns:
+                            Box: resulting box
+            
+
+        3. __mul__(self: zonoopt._core.IntervalMatrix, A: scipy.sparse.csr_matrix[numpy.float64]) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with matrix
+
+                        Args:
+                            A (scipy.sparse.csr_matrix): rhs matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        4. __mul__(self: zonoopt._core.IntervalMatrix, other: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with another IntervalMatrix
+
+                        Args:
+                            other (IntervalMatrix): rhs interval matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+        '''
+    @overload
+    def __mul__(self, A: scipy.sparse.csr_matrix[numpy.float64]) -> IntervalMatrix:
+        '''__mul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __mul__(self: zonoopt._core.IntervalMatrix, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        IntervalMatrix multiplication with vector
+
+                        Args:
+                            v (numpy.array): rhs vector
+
+                        Returns:
+                            Box: resulting box
+            
+
+        2. __mul__(self: zonoopt._core.IntervalMatrix, box: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        IntervalMatrix multiplication with Box
+
+                        Args:
+                            box (Box): rhs box
+
+                        Returns:
+                            Box: resulting box
+            
+
+        3. __mul__(self: zonoopt._core.IntervalMatrix, A: scipy.sparse.csr_matrix[numpy.float64]) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with matrix
+
+                        Args:
+                            A (scipy.sparse.csr_matrix): rhs matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        4. __mul__(self: zonoopt._core.IntervalMatrix, other: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with another IntervalMatrix
+
+                        Args:
+                            other (IntervalMatrix): rhs interval matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+        '''
+    @overload
+    def __mul__(self, other: IntervalMatrix) -> IntervalMatrix:
+        '''__mul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __mul__(self: zonoopt._core.IntervalMatrix, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        IntervalMatrix multiplication with vector
+
+                        Args:
+                            v (numpy.array): rhs vector
+
+                        Returns:
+                            Box: resulting box
+            
+
+        2. __mul__(self: zonoopt._core.IntervalMatrix, box: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        IntervalMatrix multiplication with Box
+
+                        Args:
+                            box (Box): rhs box
+
+                        Returns:
+                            Box: resulting box
+            
+
+        3. __mul__(self: zonoopt._core.IntervalMatrix, A: scipy.sparse.csr_matrix[numpy.float64]) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with matrix
+
+                        Args:
+                            A (scipy.sparse.csr_matrix): rhs matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        4. __mul__(self: zonoopt._core.IntervalMatrix, other: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with another IntervalMatrix
+
+                        Args:
+                            other (IntervalMatrix): rhs interval matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+        '''
+    def __sub__(self, other: IntervalMatrix) -> IntervalMatrix:
+        """__sub__(self: zonoopt._core.IntervalMatrix, other: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix subtraction
+
+                        Args:
+                            other (IntervalMatrix): rhs interval matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+        """
+
 class OptSettings:
     """Settings for optimization routines in ZonoOpt library."""
     contractor_iter: int
     contractor_tree_search_depth: int
+    cycle_detection_buffer_size: int
+    enable_perturb_admm_fp: bool
+    enable_restart_admm_fp: bool
+    enable_rng_seed: bool
     eps_a: float
     eps_dual: float
     eps_dual_search: float
+    eps_perturb: float
     eps_prim: float
     eps_prim_search: float
     eps_r: float
     inf_norm_conv: bool
     k_inf_check: int
     k_max_admm: int
+    k_max_admm_fp_ph1: int
+    k_max_admm_fp_ph2: int
     k_max_bnb: int
+    k_restart: int
     max_nodes: int
+    n_threads_admm_fp: int
     n_threads_bnb: int
     polish: bool
     rho: float
+    rng_seed: int
     search_mode: int
+    single_threaded_admm_fp: bool
     t_max: float
     use_interval_contractor: bool
     verbose: bool
     verbosity_interval: int
     def __init__(self) -> None:
         """__init__(self: zonoopt._core.OptSettings) -> None"""
+    def copy(self) -> OptSettings:
+        """copy(self: zonoopt._core.OptSettings) -> zonoopt._core.OptSettings
+
+
+                        Copy settings object
+
+                        Returns:
+                            OptSettings: copy of settings
+            
+        """
     def settings_valid(self) -> bool:
         """settings_valid(self: zonoopt._core.OptSettings) -> bool
 
@@ -1397,6 +1788,16 @@ class OptSolution:
     z: typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']
     def __init__(self) -> None:
         """__init__(self: zonoopt._core.OptSolution) -> None"""
+    def copy(self) -> OptSolution:
+        """copy(self: zonoopt._core.OptSolution) -> zonoopt._core.OptSolution
+
+
+                        Copy solution object
+
+                        Returns:
+                            OptSolution: copy of solution
+            
+        """
 
 class Point(Zono):
     """
@@ -1425,6 +1826,25 @@ class Point(Zono):
             
         '''
 
+class WarmStartParams:
+    """
+            Warm start parameters for optimization routines in ZonoOpt library.
+        """
+    u: typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']
+    z: typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']
+    def __init__(self) -> None:
+        """__init__(self: zonoopt._core.WarmStartParams) -> None"""
+    def copy(self) -> WarmStartParams:
+        """copy(self: zonoopt._core.WarmStartParams) -> zonoopt._core.WarmStartParams
+
+
+                        Copy warm start parameters object
+
+                        Returns:
+                            WarmStartParams: copy of warm start parameters
+            
+        """
+
 class Zono(ConZono):
     """
                 Zonotope class
@@ -1447,6 +1867,16 @@ class Zono(ConZono):
                             zero_one_form (bool, optional): true if set is in 0-1 form
             
         '''
+    def get_center(self) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
+        '''get_center(self: zonoopt._core.Zono) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+
+
+                        Get center of zonotope.
+
+                        Returns:
+                            numpy.array: center vector
+            
+        '''
     def get_volume(self) -> float:
         '''get_volume(self: zonoopt._core.Zono) -> float
 
@@ -1464,14 +1894,14 @@ class Zono(ConZono):
         """reduce_order(self: zonoopt._core.Zono, n_o: typing.SupportsInt) -> zonoopt._core.Zono
 
 
-                            Perform zonotope order reduction.
+                        Perform zonotope order reduction.
 
-                            Args:
-                                n_o (int): desired order, must be greater than or equal to the dimension of the set
+                        Args:
+                            n_o (int): desired order, must be greater than or equal to the dimension of the set
 
-                            Returns:
-                                Zono: zonotope with order n_o
-                
+                        Returns:
+                            zonotope with order n_o
+            
         """
     def set(self, G: scipy.sparse.csc_matrix[numpy.float64], c: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], zero_one_form: bool = ...) -> None:
         '''set(self: zonoopt._core.Zono, G: scipy.sparse.csc_matrix[numpy.float64], c: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], zero_one_form: bool = False) -> None
@@ -1486,6 +1916,26 @@ class Zono(ConZono):
             
         '''
 
+def affine_inclusion(Z: HybZono, R: IntervalMatrix, s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'] = ...) -> HybZono:
+    '''affine_inclusion(Z: zonoopt._core.HybZono, R: zonoopt._core.IntervalMatrix, s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"] = array([], dtype=float64)) -> zonoopt._core.HybZono
+
+
+                Returns inclusion of zonotopic set for uncertain affine map R*Z + s
+
+                This computes an over-approximation of the affine map using the method of
+                Rego et. al. (2020) "Guaranteed methods based on constrained zonotopes for set-valued state estimation of nonlinear discrete-time systems"
+                The SVD-based zonotope over-approximation method is used in this function when Z is a constrained zonotope.
+                When Z is a hybrid zonotope, the convex relaxation is used to produce a constrained zonotope, and then the SVD-based method is applied.
+
+                Args:
+                    Z (HybZono): zonotopic set
+                    R (IntervalMatrix): affine map interval matrix
+                    s (numpy.array, optional): vector offset
+
+                Returns:
+                    HybZono: zonotopic set
+        
+    '''
 def affine_map(Z: HybZono, R: scipy.sparse.csc_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'] = ...) -> HybZono:
     '''affine_map(Z: zonoopt._core.HybZono, R: scipy.sparse.csc_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"] = array([], dtype=float64)) -> zonoopt._core.HybZono
 
@@ -1533,6 +1983,22 @@ def constrain(Z: HybZono, ineqs: collections.abc.Sequence[Inequality], R: scipy.
                 For example, given a set Z with states z0, z1, z2, the constraint z0 + z1 - z2 <= 2 could be added via an inequality object.
                 R is used for generalized intersection-like operations. For instance, when all the inequalities are <= inequalities,
                 this function returns Z int_R (Hx<=f) where H is the halfspace represented by the inequalities.
+        
+    """
+def convex_hull(Zs: collections.abc.Sequence[HybZono]) -> ConZono:
+    """convex_hull(Zs: collections.abc.Sequence[zonoopt._core.HybZono]) -> zonoopt._core.ConZono
+
+
+                Computes the convex hull of several sets
+
+                Computes convex hull of sets {Z0, Z1, ..., Zn}.
+                If Zi is a hybrid zonotope, it must be sharp or this function will throw an error.
+
+                Args:
+                    Zs (list[HybZono]): sets for which convex hull is to be computed.
+
+                Returns:
+                    ConZono: constrained zonotop convex hull
         
     """
 def halfspace_intersection(Z: HybZono, H: scipy.sparse.csc_matrix[numpy.float64], f: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], R: scipy.sparse.csc_matrix[numpy.float64] = ...) -> HybZono:
@@ -1663,11 +2129,11 @@ def project_onto_dims(Z: HybZono, dims: collections.abc.Sequence[typing.Supports
         
     """
 def set_diff(Z1: HybZono, Z2: HybZono, delta_m: typing.SupportsFloat = ..., remove_redundancy: bool = ..., settings: OptSettings = ..., solution: OptSolution = ..., n_leaves: typing.SupportsInt = ..., contractor_iter: typing.SupportsInt = ...) -> HybZono:
-    """set_diff(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono, delta_m: typing.SupportsFloat = 100, remove_redundancy: bool = True, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 max_nodes: 100000 contractor_tree_search_depth: 10, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt = 2147483647, contractor_iter: typing.SupportsInt = 100) -> zonoopt._core.HybZono
+    """set_diff(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono, delta_m: typing.SupportsFloat = 100, remove_redundancy: bool = True, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt = 2147483647, contractor_iter: typing.SupportsInt = 10) -> zonoopt._core.HybZono
 
 
                 Set difference Z1 \\\\ Z2
-            
+
                 Args:
                     Z1 (HybZono): zonotopic set
                     Z2 (HybZono): zonotopic set
@@ -1677,7 +2143,7 @@ def set_diff(Z1: HybZono, Z2: HybZono, delta_m: typing.SupportsFloat = ..., remo
                     solution (OptSolution, optional): optimization solution for get_leaves function call
                     n_leaves (int, optional): maximum number of leaves to return in get_leaves function call
                     contractor_iter (int, optional): number of interval contractor iterations if using remove_redundancy
-            
+
                 Returns:
                     HybZono: zonotopic set
         
