@@ -20,7 +20,7 @@ nx = 4
 nu = 2
 
 # state feasible set
-S_pos = zono.interval_2_zono(zono.Box(np.array([0., 0.]), np.array([10., 10.])))
+S_pos = zono.interval_2_zono(zono.Box([0., 0.], [10., 10.]))
 S_vel = zono.minkowski_sum(
     zono.affine_map(zono.make_regular_zono_2D(0.2, 8), sparse.csc_matrix([[1., 0.], [0., 3.]])),
     zono.Point(np.array([1., 0.]))
