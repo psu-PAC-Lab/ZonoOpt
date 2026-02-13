@@ -1845,7 +1845,7 @@ namespace ZonoOpt
         Eigen::Vector<zono_float, -1> q = -this->G.transpose() * d;
 
         // solve MIQP
-        const OptSolution sol = this->mi_opt(P, q, 0, this->A, this->b, settings, solution);
+        const OptSolution sol = this->mi_opt(P, q, 0, this->A, this->b, settings, solution, warm_start_params);
 
         // check feasibility and return solution
         if (sol.infeasible) // Z is empty
