@@ -7,6 +7,14 @@ def f_unicycle(x, u, dt):
     Discrete time unicycle dynamics
     x = [x, y, theta]
     u = [v, omega]
+
+    Args:
+        x (numpy.array): state vector at time k
+        u (numpy.array): control input at time k
+        dt (float): time step
+
+    Returns:
+        numpy.array: state vector at time k+1
     """
     xp_k = x[0]
     yp_k = x[1]
@@ -20,20 +28,18 @@ def f_unicycle(x, u, dt):
     th_kp1 = th_k + om_k * dt
     return np.array([xp_kp1, yp_kp1, th_kp1])
 
-def df_dxu_unicycle(x, u, dt):
-    xp_k = x[0]
-    yp_k = x[1]
-    th_k = x[2]
+def df_dxu_unicycle(x_int, u_int, dt):
+    """
+    Bound partial derivatives for unicycle dynamics.
 
-    v_k = u[0]
-    om_k = u[1]
+    Args:
+        x_int (zono.Box): interval enclosure of state vector at time k
+        u_int (zono.Box): interval enclosure of control input at time k
+        dt (float): time step
 
-    df_dxu = np.array([[1., 0., -v_k * np.sin(th_k) * dt, np.cos(th_k) * dt, 0.],
-                      [0., 1.,  v_k * np.cos(th_k) * dt, np.sin(th_k) * dt, 0.],
-                      [0., 0., 1., 0., dt]])
-    return df_dxu
-
-def df_dxu_unicycle_interval(x_int, u_int, dt):
+    Returns:
+        zono.IntervalMatrix: interval enclosure of partials of f(x,u) with respect to x and u at time k
+    """
     xp_k_int = x_int[0]
     yp_k_int = x_int[1]
     th_k_int = x_int[2]
@@ -97,7 +103,7 @@ X_arr = [X0]
 for k in range(N):
     Xk = X_arr[-1]
     f_xk = f_unicycle(Xk.get_center(), U.get_center(), dt)
-    df_dxu_k = df_dxu_unicycle_interval(Xk.bounding_box(), U.bounding_box(), dt)
+    df_dxu_k = df_dxu_unicycle(Xk.bounding_box(), U.bounding_box(), dt)
     
     XU = zono.cartesian_product(Xk, U)
     dXU = zono.minkowski_sum(XU, zono.Point(-XU.get_center()))
