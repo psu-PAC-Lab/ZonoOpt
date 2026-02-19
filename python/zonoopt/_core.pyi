@@ -35,8 +35,8 @@ class Box:
                             numpy.array: center of interval
             
         '''
-    def contract(self, A: scipy.sparse.csr_matrix[numpy.float64], b: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], iter: typing.SupportsInt) -> bool:
-        '''contract(self: zonoopt._core.Box, A: scipy.sparse.csr_matrix[numpy.float64], b: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], iter: typing.SupportsInt) -> bool
+    def contract(self, A: scipy.sparse.csr_matrix[numpy.float64], b: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], iter: typing.SupportsInt | typing.SupportsIndex) -> bool:
+        '''contract(self: zonoopt._core.Box, A: scipy.sparse.csr_matrix[numpy.float64], b: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], iter: typing.SupportsInt | typing.SupportsIndex) -> bool
 
 
                         Interval contractor.
@@ -167,8 +167,8 @@ class Box:
                             Box: self + other (elementwise)
             
         """
-    def __getitem__(self, i: typing.SupportsInt) -> Interval:
-        """__getitem__(self: zonoopt._core.Box, i: typing.SupportsInt) -> zonoopt._core.Interval
+    def __getitem__(self, i: typing.SupportsInt | typing.SupportsIndex) -> Interval:
+        """__getitem__(self: zonoopt._core.Box, i: typing.SupportsInt | typing.SupportsIndex) -> zonoopt._core.Interval
 
 
                         Get interval at index i
@@ -197,7 +197,7 @@ class Box:
                             Box: self * other (elementwise)
             
 
-        2. __mul__(self: zonoopt._core.Box, alpha: typing.SupportsFloat) -> zonoopt._core.Box
+        2. __mul__(self: zonoopt._core.Box, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
 
 
                         Elementwise multiplication with scalar
@@ -210,7 +210,7 @@ class Box:
             
         """
     @overload
-    def __mul__(self, alpha: typing.SupportsFloat) -> Box:
+    def __mul__(self, alpha: typing.SupportsFloat | typing.SupportsIndex) -> Box:
         """__mul__(*args, **kwargs)
         Overloaded function.
 
@@ -226,7 +226,7 @@ class Box:
                             Box: self * other (elementwise)
             
 
-        2. __mul__(self: zonoopt._core.Box, alpha: typing.SupportsFloat) -> zonoopt._core.Box
+        2. __mul__(self: zonoopt._core.Box, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
 
 
                         Elementwise multiplication with scalar
@@ -238,8 +238,8 @@ class Box:
                             Box: alpha * self (elementwise)
             
         """
-    def __setitem__(self, i: typing.SupportsInt, val: Interval) -> None:
-        """__setitem__(self: zonoopt._core.Box, i: typing.SupportsInt, val: zonoopt._core.Interval) -> None
+    def __setitem__(self, i: typing.SupportsInt | typing.SupportsIndex, val: Interval) -> None:
+        """__setitem__(self: zonoopt._core.Box, i: typing.SupportsInt | typing.SupportsIndex, val: zonoopt._core.Interval) -> None
 
 
                         Set indexed interval in box to specified value
@@ -341,8 +341,8 @@ class EmptySet(ConZono):
 
                 Used to facilitate set operations with trivial solutions when one of the sets is an empty set.
             """
-    def __init__(self, n: typing.SupportsInt) -> None:
-        """__init__(self: zonoopt._core.EmptySet, n: typing.SupportsInt) -> None
+    def __init__(self, n: typing.SupportsInt | typing.SupportsIndex) -> None:
+        """__init__(self: zonoopt._core.EmptySet, n: typing.SupportsInt | typing.SupportsIndex) -> None
 
 
                         EmptySet constructor
@@ -380,7 +380,7 @@ class HybZono:
             
         '''
     def bounding_box(self, settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> Box:
-        """bounding_box(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7e9129a5c3b0>) -> zonoopt._core.Box
+        """bounding_box(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x71d0b0b7ff70>) -> zonoopt._core.Box
 
 
                         Computes a bounding box of the set object as a Box object.
@@ -396,8 +396,8 @@ class HybZono:
                         In general, solves 2*n support optimizations where n is the set dimension to compute a bounding box.
             
         """
-    def complement(self, delta_m: typing.SupportsFloat = ..., remove_redundancy: bool = ..., settings: OptSettings = ..., solution: OptSolution = ..., n_leaves: typing.SupportsInt = ..., contractor_iter: typing.SupportsInt = ...) -> HybZono:
-        '''complement(self: zonoopt._core.HybZono, delta_m: typing.SupportsFloat = 100, remove_redundancy: bool = True, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt = 2147483647, contractor_iter: typing.SupportsInt = 100) -> zonoopt._core.HybZono
+    def complement(self, delta_m: typing.SupportsFloat | typing.SupportsIndex = ..., remove_redundancy: bool = ..., settings: OptSettings = ..., solution: OptSolution = ..., n_leaves: typing.SupportsInt | typing.SupportsIndex = ..., contractor_iter: typing.SupportsInt | typing.SupportsIndex = ...) -> HybZono:
+        '''complement(self: zonoopt._core.HybZono, delta_m: typing.SupportsFloat | typing.SupportsIndex = 100, remove_redundancy: bool = True, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt | typing.SupportsIndex = 2147483647, contractor_iter: typing.SupportsInt | typing.SupportsIndex = 100) -> zonoopt._core.HybZono
 
 
                     Computes the complement of the set Z.
@@ -421,7 +421,7 @@ class HybZono:
             
         '''
     def contains_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7e9129a5c030>) -> bool
+        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x71d0b0b5fdf0>) -> bool
 
 
                         Checks whether the point x is contained in the set object.
@@ -554,7 +554,7 @@ class HybZono:
             
         '''
     def get_leaves(self, *args, **kwargs):
-        """get_leaves(self: zonoopt._core.HybZono, remove_redundancy: bool = True, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt = 2147483647, contractor_iter: typing.SupportsInt = 100) -> list[ZonoOpt::ConZono]
+        """get_leaves(self: zonoopt._core.HybZono, remove_redundancy: bool = True, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt | typing.SupportsIndex = 2147483647, contractor_iter: typing.SupportsInt | typing.SupportsIndex = 100) -> list[ZonoOpt::ConZono]
 
 
                         Computes individual constrained zonotopes whose union is the hybrid zonotope object.
@@ -648,7 +648,7 @@ class HybZono:
             
         """
     def is_empty(self, settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        """is_empty(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7e9129a5bcb0>) -> bool
+        """is_empty(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x71d0b0b7f9b0>) -> bool
 
 
                         Returns true if the set is provably empty, false otherwise.
@@ -712,8 +712,8 @@ class HybZono:
                             bool: true if set is a zonotope
             
         """
-    def optimize_over(self, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], c: typing.SupportsFloat = ..., settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat = 0, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7e9129a5b6b0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+    def optimize_over(self, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], c: typing.SupportsFloat | typing.SupportsIndex = ..., settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
+        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x71d0b0f1f5f0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Solves optimization problem with quadratic objective over the current set
@@ -733,7 +733,7 @@ class HybZono:
             
         '''
     def project_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7e9129a5b9b0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x71d0b0b7f770>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Returns the projection of the point x onto the set object.
@@ -748,8 +748,8 @@ class HybZono:
                             numpy.array: point z in the current set
             
         '''
-    def remove_redundancy(self, contractor_iter: typing.SupportsInt = ...) -> bool:
-        """remove_redundancy(self: zonoopt._core.HybZono, contractor_iter: typing.SupportsInt = 10) -> bool
+    def remove_redundancy(self, contractor_iter: typing.SupportsInt | typing.SupportsIndex = ...) -> bool:
+        """remove_redundancy(self: zonoopt._core.HybZono, contractor_iter: typing.SupportsInt | typing.SupportsIndex = 10) -> bool
 
 
                         Removes redundant constraints and any unused generators
@@ -785,7 +785,7 @@ class HybZono:
             
         '''
     def support(self, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> float:
-        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7e9129a53f70>) -> float
+        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x71d0b0b77d30>) -> float
 
 
                         Computes support function of the set in the direction d.
@@ -807,8 +807,8 @@ class IneqTerm:
     """Structure containing term in 0-1 inequality."""
     coeff: float
     idx: int
-    def __init__(self, idx: typing.SupportsInt, coeff: typing.SupportsFloat) -> None:
-        """__init__(self: zonoopt._core.IneqTerm, idx: typing.SupportsInt, coeff: typing.SupportsFloat) -> None
+    def __init__(self, idx: typing.SupportsInt | typing.SupportsIndex, coeff: typing.SupportsFloat | typing.SupportsIndex) -> None:
+        """__init__(self: zonoopt._core.IneqTerm, idx: typing.SupportsInt | typing.SupportsIndex, coeff: typing.SupportsFloat | typing.SupportsIndex) -> None
 
         IneqTerm constructor
         """
@@ -839,8 +839,8 @@ class IneqType:
     LESS: ClassVar[IneqType] = ...
     LESS_OR_EQUAL: ClassVar[IneqType] = ...
     __entries: ClassVar[dict] = ...
-    def __init__(self, value: typing.SupportsInt) -> None:
-        """__init__(self: zonoopt._core.IneqType, value: typing.SupportsInt) -> None"""
+    def __init__(self, value: typing.SupportsInt | typing.SupportsIndex) -> None:
+        """__init__(self: zonoopt._core.IneqType, value: typing.SupportsInt | typing.SupportsIndex) -> None"""
     def __eq__(self, other: object) -> bool:
         """__eq__(self: object, other: object, /) -> bool"""
     def __hash__(self) -> int:
@@ -863,8 +863,8 @@ class IneqType:
 
 class Inequality:
     """Inequality class"""
-    def __init__(self, n_dims: typing.SupportsInt) -> None:
-        """__init__(self: zonoopt._core.Inequality, n_dims: typing.SupportsInt) -> None
+    def __init__(self, n_dims: typing.SupportsInt | typing.SupportsIndex) -> None:
+        """__init__(self: zonoopt._core.Inequality, n_dims: typing.SupportsInt | typing.SupportsIndex) -> None
 
 
                         Constructs inequality, must specify number of dimensions.
@@ -873,8 +873,8 @@ class Inequality:
                             n_dims (int): number of dimensions in the inequality
             
         """
-    def add_term(self, idx: typing.SupportsInt, coeff: typing.SupportsFloat) -> None:
-        """add_term(self: zonoopt._core.Inequality, idx: typing.SupportsInt, coeff: typing.SupportsFloat) -> None
+    def add_term(self, idx: typing.SupportsInt | typing.SupportsIndex, coeff: typing.SupportsFloat | typing.SupportsIndex) -> None:
+        """add_term(self: zonoopt._core.Inequality, idx: typing.SupportsInt | typing.SupportsIndex, coeff: typing.SupportsFloat | typing.SupportsIndex) -> None
 
 
                         Adds a term to the inequality.
@@ -944,8 +944,8 @@ class Inequality:
                             type (IneqType): inequality type (e.g., less than or equal, greater than or equal, or equal)
             
         """
-    def set_rhs(self, rhs: typing.SupportsFloat) -> None:
-        """set_rhs(self: zonoopt._core.Inequality, rhs: typing.SupportsFloat) -> None
+    def set_rhs(self, rhs: typing.SupportsFloat | typing.SupportsIndex) -> None:
+        """set_rhs(self: zonoopt._core.Inequality, rhs: typing.SupportsFloat | typing.SupportsIndex) -> None
 
 
                         Sets right-hand side of the inequality.
@@ -963,8 +963,8 @@ class Interval:
             """
     lb: float
     ub: float
-    def __init__(self, y_min: typing.SupportsFloat, y_max: typing.SupportsFloat) -> None:
-        """__init__(self: zonoopt._core.Interval, y_min: typing.SupportsFloat, y_max: typing.SupportsFloat) -> None
+    def __init__(self, y_min: typing.SupportsFloat | typing.SupportsIndex, y_max: typing.SupportsFloat | typing.SupportsIndex) -> None:
+        """__init__(self: zonoopt._core.Interval, y_min: typing.SupportsFloat | typing.SupportsIndex, y_max: typing.SupportsFloat | typing.SupportsIndex) -> None
 
 
                         Interval constructor.
@@ -1083,8 +1083,8 @@ class Interval:
                             float: center of interval
             
         """
-    def contains(self, y: typing.SupportsFloat) -> bool:
-        """contains(self: zonoopt._core.Interval, y: typing.SupportsFloat) -> bool
+    def contains(self, y: typing.SupportsFloat | typing.SupportsIndex) -> bool:
+        """contains(self: zonoopt._core.Interval, y: typing.SupportsFloat | typing.SupportsIndex) -> bool
 
 
                         Checks whether interval contains a value
@@ -1333,7 +1333,7 @@ class Interval:
                             Interval: self * other
             
 
-        2. __mul__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat) -> zonoopt._core.Interval
+        2. __mul__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
 
 
                         Interval multiplication with scalar
@@ -1346,7 +1346,7 @@ class Interval:
             
         """
     @overload
-    def __mul__(self, alpha: typing.SupportsFloat) -> Interval:
+    def __mul__(self, alpha: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
         """__mul__(*args, **kwargs)
         Overloaded function.
 
@@ -1362,7 +1362,7 @@ class Interval:
                             Interval: self * other
             
 
-        2. __mul__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat) -> zonoopt._core.Interval
+        2. __mul__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
 
 
                         Interval multiplication with scalar
@@ -1890,8 +1890,8 @@ class Zono(ConZono):
                                 float: volume of zonotope
             
         '''
-    def reduce_order(self, n_o: typing.SupportsInt) -> Zono:
-        """reduce_order(self: zonoopt._core.Zono, n_o: typing.SupportsInt) -> zonoopt._core.Zono
+    def reduce_order(self, n_o: typing.SupportsInt | typing.SupportsIndex) -> Zono:
+        """reduce_order(self: zonoopt._core.Zono, n_o: typing.SupportsInt | typing.SupportsIndex) -> zonoopt._core.Zono
 
 
                         Perform zonotope order reduction.
@@ -2032,8 +2032,8 @@ def intersection(Z1: HybZono, Z2: HybZono, R: scipy.sparse.csc_matrix[numpy.floa
                     HybZono: zonotopic set
         
     """
-def intersection_over_dims(Z1: HybZono, Z2: HybZono, dims: collections.abc.Sequence[typing.SupportsInt]) -> HybZono:
-    """intersection_over_dims(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono, dims: collections.abc.Sequence[typing.SupportsInt]) -> zonoopt._core.HybZono
+def intersection_over_dims(Z1: HybZono, Z2: HybZono, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> HybZono:
+    """intersection_over_dims(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> zonoopt._core.HybZono
 
 
                 Computes the intersection of sets Z1 and Z2 over the specified dimensions.
@@ -2060,8 +2060,8 @@ def interval_2_zono(box: Box) -> Zono:
                     Zono: zonotope
         
     """
-def make_regular_zono_2D(radius: typing.SupportsFloat, n_sides: typing.SupportsInt, outer_approx: bool = ..., c: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[2, 1]'] = ...) -> Zono:
-    '''make_regular_zono_2D(radius: typing.SupportsFloat, n_sides: typing.SupportsInt, outer_approx: bool = False, c: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[2, 1]"] = array([0., 0.])) -> zonoopt._core.Zono
+def make_regular_zono_2D(radius: typing.SupportsFloat | typing.SupportsIndex, n_sides: typing.SupportsInt | typing.SupportsIndex, outer_approx: bool = ..., c: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[2, 1]'] = ...) -> Zono:
+    '''make_regular_zono_2D(radius: typing.SupportsFloat | typing.SupportsIndex, n_sides: typing.SupportsInt | typing.SupportsIndex, outer_approx: bool = False, c: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[2, 1]"] = array([0., 0.])) -> zonoopt._core.Zono
 
 
                 Builds a 2D regular zonotope with a given radius and number of sides.
@@ -2114,8 +2114,8 @@ def pontry_diff(Z1: HybZono, Z2: HybZono, exact: bool = ...) -> HybZono:
                     HybZono: zonotopic set
         
     """
-def project_onto_dims(Z: HybZono, dims: collections.abc.Sequence[typing.SupportsInt]) -> HybZono:
-    """project_onto_dims(Z: zonoopt._core.HybZono, dims: collections.abc.Sequence[typing.SupportsInt]) -> zonoopt._core.HybZono
+def project_onto_dims(Z: HybZono, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> HybZono:
+    """project_onto_dims(Z: zonoopt._core.HybZono, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> zonoopt._core.HybZono
 
 
                 Projects set Z onto the dimensions specified in dims.
@@ -2128,8 +2128,8 @@ def project_onto_dims(Z: HybZono, dims: collections.abc.Sequence[typing.Supports
                     HybZono: zonotopic set
         
     """
-def set_diff(Z1: HybZono, Z2: HybZono, delta_m: typing.SupportsFloat = ..., remove_redundancy: bool = ..., settings: OptSettings = ..., solution: OptSolution = ..., n_leaves: typing.SupportsInt = ..., contractor_iter: typing.SupportsInt = ...) -> HybZono:
-    """set_diff(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono, delta_m: typing.SupportsFloat = 100, remove_redundancy: bool = True, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt = 2147483647, contractor_iter: typing.SupportsInt = 10) -> zonoopt._core.HybZono
+def set_diff(Z1: HybZono, Z2: HybZono, delta_m: typing.SupportsFloat | typing.SupportsIndex = ..., remove_redundancy: bool = ..., settings: OptSettings = ..., solution: OptSolution = ..., n_leaves: typing.SupportsInt | typing.SupportsIndex = ..., contractor_iter: typing.SupportsInt | typing.SupportsIndex = ...) -> HybZono:
+    """set_diff(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono, delta_m: typing.SupportsFloat | typing.SupportsIndex = 100, remove_redundancy: bool = True, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt | typing.SupportsIndex = 2147483647, contractor_iter: typing.SupportsInt | typing.SupportsIndex = 10) -> zonoopt._core.HybZono
 
 
                 Set difference Z1 \\\\ Z2
