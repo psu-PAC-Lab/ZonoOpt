@@ -106,7 +106,7 @@ namespace ZonoOpt::detail
         Eigen::Vector<zono_float, -1> xi_ws, u_ws;
 
         // allocate nodes
-        std::unique_ptr<Node, NodeDeleter> make_node(const std::shared_ptr<ADMM_data>& data);
+        std::unique_ptr<Node, NodeDeleter> make_node(const std::shared_ptr<ADMM_data>& admm_data);
 
         std::unique_ptr<Node, NodeDeleter> clone_node(const std::unique_ptr<Node, NodeDeleter>& other);
 
@@ -134,7 +134,7 @@ namespace ZonoOpt::detail
         void push_node(std::unique_ptr<Node, NodeDeleter>&& node);
 
         // prune
-        void prune(zono_float J_max);
+        void prune(zono_float J_prune);
 
         // check if 2 solutions correspond to the same binaries
         bool check_bin_equal(const OptSolution& sol1, const OptSolution& sol2) const;

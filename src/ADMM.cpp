@@ -66,12 +66,12 @@ namespace ZonoOpt
         this->eps_prim = other.eps_prim;
     }
 
-    void ADMM_solver::warmstart(const Eigen::Vector<zono_float, -1>& x0,
-                                const Eigen::Vector<zono_float, -1>& u0)
+    void ADMM_solver::warmstart(const Eigen::Vector<zono_float, -1>& x,
+                                const Eigen::Vector<zono_float, -1>& u)
     {
         // copy in warm start variables
-        this->x0 = x0;
-        this->u0 = u0;
+        this->x0 = x;
+        this->u0 = u;
 
         // set flag
         this->is_warmstarted = true;

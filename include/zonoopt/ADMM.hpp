@@ -143,11 +143,11 @@ namespace ZonoOpt
             /**
              * @brief Warm-starts ADMM solver with primal and dual variables.
              *
-             * @param x0
-             * @param u0
+             * @param x
+             * @param u
              */
-            virtual void warmstart(const Eigen::Vector<zono_float, -1>& x0,
-                                   const Eigen::Vector<zono_float, -1>& u0);
+            virtual void warmstart(const Eigen::Vector<zono_float, -1>& x,
+                                   const Eigen::Vector<zono_float, -1>& u);
 
             /**
              * @brief Optional pre-factorization of problem matrices.

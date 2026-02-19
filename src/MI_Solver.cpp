@@ -10,18 +10,31 @@ namespace ZonoOpt::detail
             throw std::invalid_argument("MI_solver setup: invalid settings.");
         }
 
-        // check number of threads is valid
-        if (this->data.admm_data->settings.n_threads_bnb + this->data.admm_data->settings.n_threads_admm_fp >
-            static_cast<
-                int>(std::thread::hardware_concurrency()) - 1)
+        // modify multithreading settings if necessary
+        if (!this->data.admm_data->settings.single_threaded_admm_fp)
         {
-            std::stringstream ss;
-            ss << "MI_solver setup: number of threads for branch and bound (" << this->data.admm_data->settings.
-                n_threads_bnb
-                << ") + ADMM-FP (" << this->data.admm_data->settings.n_threads_admm_fp
-                << ") + convergence monitoring (1) exceeds available threads (" << std::thread::hardware_concurrency()
-                << ").";
-            throw std::invalid_argument(ss.str());
+            if (std::thread::hardware_concurrency() < 2)
+            {
+                std::stringstream ss;
+                ss << "Branch and bound requires at least 2 threads (1 for branch and bound, 1 for convergence monitoring), but only "
+                    << std::thread::hardware_concurrency()
+                    << " are available.";
+
+                throw std::runtime_error(ss.str());
+            }
+
+            while (this->data.admm_data->settings.n_threads_bnb + this->data.admm_data->settings.n_threads_admm_fp >
+                   static_cast<int>(std::thread::hardware_concurrency()) - 1)
+            {
+                if (this->data.admm_data->settings.n_threads_admm_fp > 0)
+                {
+                    this->data.admm_data->settings.n_threads_admm_fp--;
+                }
+                else
+                {
+                    this->data.admm_data->settings.n_threads_bnb--;
+                }
+            }
         }
     }
 
@@ -39,10 +52,10 @@ namespace ZonoOpt::detail
         return std::get<std::pair<std::vector<OptSolution>, OptSolution>>(sol);
     }
 
-    std::unique_ptr<Node, MI_Solver::NodeDeleter> MI_Solver::make_node(const std::shared_ptr<ADMM_data>& data)
+    std::unique_ptr<Node, MI_Solver::NodeDeleter> MI_Solver::make_node(const std::shared_ptr<ADMM_data>& admm_data)
     {
         void* mem = pool.allocate(sizeof(Node), alignof(Node));
-        Node* node = new(mem) Node(data);
+        auto node = new(mem) Node(admm_data);
         return {node, NodeDeleter(&pool)};
     }
 
@@ -614,12 +627,12 @@ namespace ZonoOpt::detail
         // round and find most fractional variable
         const Eigen::Array<zono_float, -1, 1> xb = node->solution.z.segment(
             this->data.idx_b.first, this->data.idx_b.second).array();
-        Eigen::Array<zono_float, -1, 1> l(xb.size());
-        Eigen::Array<zono_float, -1, 1> u(xb.size());
-        l.setConstant(low);
-        u.setConstant(high);
-        const Eigen::Array<zono_float, -1, 1> d_l = (xb - l).abs();
-        const Eigen::Array<zono_float, -1, 1> d_u = (xb - u).abs();
+        Eigen::Array<zono_float, -1, 1> lower(xb.size());
+        Eigen::Array<zono_float, -1, 1> upper(xb.size());
+        lower.setConstant(low);
+        upper.setConstant(high);
+        const Eigen::Array<zono_float, -1, 1> d_l = (xb - lower).abs();
+        const Eigen::Array<zono_float, -1, 1> d_u = (xb - upper).abs();
         const Eigen::Array<zono_float, -1, 1> d = d_l.min(d_u); // distance to rounded value
         int idx_most_frac;
         d.maxCoeff(&idx_most_frac); // index of most fractional variable
@@ -725,11 +738,11 @@ namespace ZonoOpt::detail
         pq_cv_admm_fp.notify_one();
     }
 
-    void MI_Solver::prune(const zono_float J_max)
+    void MI_Solver::prune(const zono_float J_prune)
     {
-        // create node with J = J_max
+        // create node with J = J_prune
         const std::unique_ptr<Node, NodeDeleter> n = this->make_node(this->bnb_data);
-        n->solution.J = J_max;
+        n->solution.J = J_prune;
         {
             std::lock_guard<std::mutex> lock(pq_mtx);
             this->node_queue.prune(n);
