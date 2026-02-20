@@ -213,8 +213,11 @@ Auto-generated API documentation is available below.
 [Python API](https://psu-PAC-Lab.github.io/ZonoOpt/python/build/html/index.html)
 
 ## References
-More information about ZonoOpt can be found in the following publication. Please cite this if you publish work based on ZonoOpt:
+More information about ZonoOpt can be found in the following publications. Please cite one or both of these as appropriate if you use ZonoOpt in your published work:
+
 **Robbins, J.A., Siefert, J.A., and Pangborn, H.C., "Sparsity-Promoting Reachability Analysis and Optimization of Constrained Zonotopes," 2025. [https://arxiv.org/abs/2504.03885](https://doi.org/10.48550/arXiv.2504.03885).**
+
+**Robbins, J.A., Thompson, A.F., Glunt, J.J., and Pangborn, H.C., "Hybrid System Planning using a Mixed-Integer ADMM Heuristic and Hybrid Zonotopes", 2026. [https://arxiv.org/abs/2602.17574](https://doi.org/10.48550/arXiv.2602.17574)**
 
 ## See Also
 For MATLAB users, [zonoLAB](https://github.com/ESCL-at-UTD/zonoLAB) provides classes and set operations for zonotopes, constrained zonotopes, and hybrid zonotopes.
