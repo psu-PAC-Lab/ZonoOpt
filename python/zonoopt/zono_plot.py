@@ -3,6 +3,7 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 import numpy as np
 from scipy.spatial import ConvexHull
 from scipy.optimize import linprog
+from scipy.linalg import null_space
 import time
 import warnings
 
@@ -42,37 +43,44 @@ def get_conzono_vertices(Z, t_max=60.0):
         warnings.warn('Z is empty, returning empty list of vertices.')
         return []
 
-    # randomly search directions until a simplex is found
+    # search for vertices along perpendicular directions to get initial simplex
     verts = []
-    simplex_found = False
-    while not simplex_found and ((time.time()-t0) < t_max):
+    D = [np.array([1 if i==j else 0 for j in range(Z.get_n())]) for i in range(Z.get_n())] # init directions as standard basis
+    B = [] # init basis
+    for _ in range(Z.get_n()):
+
+        # support in positive direction
+        d = D.pop()
+        vd_pos = find_vertex(Z, d)    
         
-        # random direction
-        d = np.random.uniform(low=-1, high=1, size=Z.get_n())
-        d = d/np.linalg.norm(d)
+        # support in negative direction
+        vd_neg = find_vertex(Z, -d)
 
-        # get vertex
-        vd = find_vertex(Z, d)
-        if vd is None: # infeasible, not detected during get_leaves
+        # make sure feasible
+        if vd_pos is None or vd_neg is None: # infeasible, not detected during get_leaves
             return []
+        
+        # check if vertices are new and whether direction is thin
+        is_vd_pos_new = not any(np.allclose(vd_pos, v) for v in verts)
+        is_vd_neg_new = not any(np.allclose(vd_neg, v) for v in verts)
+        is_thin = np.allclose(vd_pos, vd_neg)
 
-        # check if vertex is new
-        if not any(np.allclose(vd, v) for v in verts):
-            verts.append(vd)
+        # add new vertices
+        if is_vd_pos_new:
+            verts.append(vd_pos)
+        if is_vd_neg_new and not is_thin:
+            verts.append(vd_neg)
 
-        # check if simplex is found
-        if len(verts) >= Z.get_n()+1:
-            try:
-                hull = ConvexHull(verts)
-                simplex_found = True
-            except:
-                pass
+        # update direction
+        if not is_thin:
+            B.append(vd_pos - vd_neg)
+            N = null_space(np.array(B)).transpose()
+            D = [N[j,:].flatten() for j in range(N.shape[0])]
 
-    # exit if time limit was reached
-    if (time.time()-t0) > t_max:
-        warnings.warn('get_vertices time limit reached, terminating early. Set is likely not full-dimensional')
+    # return if set is not full-dimensional
+    if len(verts) < Z.get_n()+1:
         return np.array(verts)
-
+    
     # search for additional vertices along the directions of the facet normals
     converged = False
     while not converged and ((time.time()-t0) < t_max):
@@ -119,7 +127,7 @@ def get_conzono_vertices(Z, t_max=60.0):
 
     # throw warning if time limit was reached
     if (time.time()-t0) > t_max:
-        warnings.warn('get_vertices time limit reached, terminating early. Set is full-dimensional.')
+        warnings.warn('get_vertices time limit reached, terminating early.')
 
     V = np.array(verts)
     hull = ConvexHull(V)
