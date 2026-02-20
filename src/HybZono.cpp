@@ -541,4 +541,366 @@ namespace ZonoOpt
 
         return bin_leaves;
     }
+
+    std::vector<ConZono> HybZono::get_leaves(const bool remove_redundancy, const OptSettings& settings,
+                                             std::shared_ptr<OptSolution>* solution, const int n_leaves,
+                                             const int contractor_iter) const
+    {
+        // allocate all threads to branch and bound
+        OptSettings settings_get_leaves = settings;
+        settings_get_leaves.n_threads_bnb += settings.n_threads_admm_fp;
+        settings_get_leaves.n_threads_admm_fp = 0;
+
+        // get leaves as conzonos
+        const std::vector<Eigen::Vector<zono_float, -1>> bin_leaves = this->get_bin_leaves(
+            settings_get_leaves, solution, n_leaves);
+        std::vector<ConZono> leaves;
+        for (auto& xi_b : bin_leaves)
+        {
+            Eigen::Vector<zono_float, -1> cp = this->c + this->Gb * xi_b;
+            Eigen::Vector<zono_float, -1> bp = this->b - this->Ab * xi_b;
+            leaves.emplace_back(this->Gc, cp, this->Ac, bp, this->zero_one_form);
+        }
+        if (remove_redundancy)
+        {
+            for (auto& leaf : leaves)
+            {
+                leaf.remove_redundancy(contractor_iter);
+            }
+        }
+
+        return leaves;
+    }
+
+    std::unique_ptr<ConZono> HybZono::convex_relaxation() const
+    {
+        if (this->is_empty_set())
+        {
+            return std::make_unique<EmptySet>(this->n);
+        }
+        else if (this->nG == 0)
+        {
+            return std::make_unique<Point>(this->c);
+        }
+        else if (this->nC == 0 && this->nGb == 0)
+        {
+            return std::make_unique<Zono>(this->G, this->c, this->zero_one_form);
+        }
+        else
+        {
+            return std::make_unique<ConZono>(this->G, this->c, this->A, this->b, this->zero_one_form);
+        }
+    }
+
+    std::unique_ptr<HybZono> vrep_2_hybzono(const std::vector<Eigen::Matrix<zono_float, -1, -1>>& Vpolys,
+                                            const bool expose_indicators)
+    {
+        // error handling
+        if (Vpolys.empty())
+        {
+            throw std::invalid_argument("set_from_vrep: Vpolys must have at least one polytope.");
+        }
+
+        // dimensions
+        const int n_polys = static_cast<int>(Vpolys.size());
+        const int n_dims = static_cast<int>(Vpolys[0].cols());
+        int n_verts; // declare
+
+        // check if all polytopes have the same number of dimensions
+        for (const auto& Vpoly : Vpolys)
+        {
+            if (Vpoly.cols() != n_dims)
+            {
+                throw std::invalid_argument("set_from_vrep: all polytopes must have the same number of dimensions.");
+            }
+        }
+
+        // initialize V and M matrices as std::vectors
+        // each entry is a row
+        std::vector<Eigen::Matrix<zono_float, 1, -1>> V_vec, M_vec;
+        Eigen::Matrix<zono_float, 1, -1> M_row(n_polys);
+
+        // loop through each polytope
+        for (int i = 0; i < n_polys; i++)
+        {
+            n_verts = static_cast<int>(Vpolys[i].rows());
+            for (int j = 0; j < n_verts; j++)
+            {
+                // check if the vertex is already in V_vec
+                auto vertex_equal = [&](const Eigen::Matrix<zono_float, 1, -1>& v) -> bool
+                {
+                    return (v - Vpolys[i].row(j)).norm() < zono_eps;
+                };
+
+                if (auto it_V = std::find_if(V_vec.begin(), V_vec.end(), vertex_equal); it_V == V_vec.end())
+                {
+                    V_vec.emplace_back(Vpolys[i].row(j));
+                    M_row.setZero();
+                    M_row(i) = 1;
+                    M_vec.push_back(M_row);
+                }
+                else
+                {
+                    const int idx = static_cast<int>(std::distance(V_vec.begin(), it_V));
+                    M_vec[idx](i) = 1;
+                }
+            }
+        }
+
+        const int nV = static_cast<int>(V_vec.size()); // number of unique vertices
+
+        // convert to Eigen matrices
+        Eigen::Matrix<zono_float, -1, -1> V(n_dims, nV);
+        Eigen::Matrix<zono_float, -1, -1> M(nV, n_polys);
+        for (int i = 0; i < nV; i++)
+        {
+            V.col(i) = V_vec[i];
+            M.row(i) = M_vec[i];
+        }
+
+        // directly build hybzono in [0,1] form
+
+        // declare
+        std::vector<Eigen::Triplet<zono_float>> tripvec;
+
+        // output dimension
+        int n_out = n_dims;
+        if (expose_indicators)
+            n_out += static_cast<int>(n_polys);
+
+        // Gc = [V, 0]
+        Eigen::SparseMatrix<zono_float> Gc = V.sparseView();
+        Gc.conservativeResize(n_out, 2 * nV);
+
+        // Gb = [0]
+        tripvec.clear();
+        for (int i = n_dims; i < n_out; ++i)
+        {
+            tripvec.emplace_back(i, i - n_dims, one);
+        }
+        Eigen::SparseMatrix<zono_float> Gb(n_out, n_polys);
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
+        Gb.setFromSortedTriplets(tripvec.begin(), tripvec.end());
+#else
+        Gb.setFromTriplets(tripvec.begin(), tripvec.end());
+#endif
+
+        // c = 0
+        Eigen::Vector<zono_float, -1> c(n_out);
+        c.setZero();
+
+        // Ac = [1^T, 0^T;
+        //       0^T, 0^T;
+        //       I, diag[sum(M, 2)]]
+        tripvec.clear();
+        Eigen::SparseMatrix<zono_float> Ac(2 + nV, 2 * nV);
+        Eigen::SparseMatrix<zono_float> I_nv(nV, nV);
+        I_nv.setIdentity();
+        for (int i = 0; i < nV; i++)
+        {
+            tripvec.emplace_back(0, i, one);
+        }
+        get_triplets_offset<zono_float>(I_nv, tripvec, 2, 0);
+        Eigen::Vector<zono_float, -1> sum_M = M.rowwise().sum();
+        for (int i = 0; i < nV; i++)
+        {
+            tripvec.emplace_back(2 + i, nV + i, sum_M(i));
+        }
+        Ac.setFromTriplets(tripvec.begin(), tripvec.end());
+
+        // Ab = [0^T;
+        //       1^T;
+        //       -M]
+        Eigen::SparseMatrix<zono_float> Ab(2 + nV, n_polys);
+        tripvec.clear();
+        for (int i = 0; i < n_polys; i++)
+        {
+            tripvec.emplace_back(1, i, one);
+        }
+        Eigen::SparseMatrix<zono_float> mM_sp = -M.sparseView();
+        get_triplets_offset<zono_float>(mM_sp, tripvec, 2, 0);
+        Ab.setFromTriplets(tripvec.begin(), tripvec.end());
+
+        // b = [1;
+        //      1;
+        //      0]
+        Eigen::Vector<zono_float, -1> b(2 + nV);
+        b.setZero();
+        b(0) = 1;
+        b(1) = 1;
+
+        // return hybrid zonotope
+        return std::make_unique<HybZono>(Gc, Gb, c, Ac, Ab, b, true, true);
+    }
+
+    zono_float HybZono::do_support(const Eigen::Vector<zono_float, -1>& d, const OptSettings& settings,
+                                   std::shared_ptr<OptSolution>* solution, const WarmStartParams& warm_start_params)
+    {
+        // check dimensions
+        if (this->n != d.size())
+        {
+            throw std::invalid_argument("Support: inconsistent dimensions.");
+        }
+
+        // if sharp, can solve as convex optimization problem
+        if (this->sharp)
+        {
+            const auto Zc = this->convex_relaxation();
+            return Zc->support(d, settings, solution);
+        }
+
+        // cost
+        Eigen::SparseMatrix<zono_float> P(this->nG, this->nG);
+        Eigen::Vector<zono_float, -1> q = -this->G.transpose() * d;
+
+        // solve MIQP
+        const OptSolution sol = this->mi_opt(P, q, 0, this->A, this->b, settings, solution, warm_start_params);
+
+        // check feasibility and return solution
+        if (sol.infeasible) // Z is empty
+            throw std::invalid_argument("Support: infeasible");
+        else
+            return d.dot(this->G * sol.z + this->c);
+    }
+
+    Box HybZono::do_bounding_box(const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+                                 const WarmStartParams& warm_start_params)
+    {
+        // if sharp, compute from convex relaxation
+        if (this->sharp)
+        {
+            const auto Z_CR = this->convex_relaxation();
+            return Z_CR->bounding_box(settings, solution);
+        }
+
+        // make sure dimension is at least 1
+        if (this->n == 0)
+        {
+            throw std::invalid_argument("Bounding box: empty set");
+        }
+
+        // init search direction for bounding box
+        Eigen::Vector<zono_float, -1> d(this->n);
+        d.setZero();
+
+        // declarations
+        Box box(this->n); // init
+        zono_float s_neg, s_pos;
+
+        // build QP for ADMM
+        const Eigen::SparseMatrix<zono_float> P(this->nG, this->nG);
+        Eigen::Vector<zono_float, -1> q = -this->G.transpose() * d;
+
+        // mixed-integer solution
+
+        // get support in all box directions
+        auto sol_in = std::make_shared<OptSolution>();
+        for (int i = 0; i < this->n; i++)
+        {
+            // negative direction
+
+            // update QP
+            d.setZero();
+            d(i) = -1;
+            q = -this->G.transpose() * d;
+
+            // solve
+            OptSolution sol = this->mi_opt(P, q, 0, this->A, this->b, settings, &sol_in, warm_start_params);
+            if (sol.infeasible)
+                throw std::invalid_argument("Bounding box: Z is empty");
+            else
+                s_neg = -d.dot(this->G * sol.z + this->c);
+
+            // positive direction
+
+            // update QP
+            d.setZero();
+            d(i) = 1;
+            q = -this->G.transpose() * d;
+
+            // solve
+            sol = this->mi_opt(P, q, 0, this->A, this->b, settings, &sol_in, warm_start_params);
+            if (sol.infeasible)
+                throw std::invalid_argument("Bounding box: Z is empty");
+            else
+                s_pos = d.dot(this->G * sol.z + this->c);
+
+            // store bounds
+            box[i] = Interval(s_neg, s_pos);
+        }
+
+        return box;
+    }
+
+    std::unique_ptr<HybZono> HybZono::do_complement(const zono_float delta_m, const bool remove_redundancy,
+                                                    const OptSettings& settings,
+                                                    std::shared_ptr<OptSolution>* solution, const int n_leaves,
+                                                    const int contractor_iter)
+    {
+        // make sure set in [-1,1] form
+        if (this->is_0_1_form()) this->convert_form();
+
+        // need to get leaves and do complement for each leaf if Z is a hybzono
+        auto leaves = this->get_leaves(remove_redundancy, settings, solution, n_leaves, contractor_iter);
+        if (leaves.empty())
+        {
+            throw std::runtime_error("HybZono complement: set is empty.");
+        }
+        std::vector<std::unique_ptr<HybZono>> complements; // init
+        for (auto& leaf : leaves)
+        {
+            complements.emplace_back(leaf.complement(delta_m));
+        }
+        std::unique_ptr<HybZono> Z_out;
+        for (auto& comp : complements)
+        {
+            if (!Z_out)
+            {
+                Z_out.reset(comp->clone());
+            }
+            else
+            {
+                Z_out = intersection(*Z_out, *comp);
+            }
+        }
+        return Z_out;
+    }
+
+    // type checking
+    bool HybZono::is_point() const
+    {
+        const auto PointCast = dynamic_cast<const Point*>(this);
+        return PointCast != nullptr;
+    }
+
+    bool HybZono::is_zono() const
+    {
+        const auto ZonoCast = dynamic_cast<const Zono*>(this);
+        const auto PointCast = dynamic_cast<const Point*>(this);
+        return (ZonoCast != nullptr) && (PointCast == nullptr);
+    }
+
+    bool HybZono::is_conzono() const
+    {
+        const auto ConZonoCast = dynamic_cast<const ConZono*>(this);
+        const auto ZonoCast = dynamic_cast<const Zono*>(this);
+        const auto EmptySetCast = dynamic_cast<const EmptySet*>(this);
+
+        return (ConZonoCast != nullptr) && (ZonoCast == nullptr) && (EmptySetCast == nullptr);
+    }
+
+    bool HybZono::is_hybzono() const
+    {
+        const auto HybZonoCast = dynamic_cast<const HybZono*>(this);
+        const auto ConZonoCast = dynamic_cast<const ConZono*>(this);
+
+        return (HybZonoCast != nullptr) && (ConZonoCast == nullptr);
+    }
+
+    bool HybZono::is_empty_set() const
+    {
+        const auto EmptySetCast = dynamic_cast<const EmptySet*>(this);
+        return EmptySetCast != nullptr;
+    }
+
 }

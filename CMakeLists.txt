@@ -78,7 +78,7 @@ endif()
 
 # source files
 set(SOURCE_FILES
-    src/PolymorphicFunctions.cpp
+    src/SetOperations.cpp
     src/ADMM.cpp
     src/CholeskyUtilities.cpp
     src/HybZono.cpp
