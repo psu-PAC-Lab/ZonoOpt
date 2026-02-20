@@ -190,7 +190,7 @@ def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
             return []
         objs = []
         pbar = tqdm(leaves)
-        for i, leaf in enumerate(pbar):
+        for leaf in pbar:
             objs.append(plot(leaf, ax=ax, t_max=time_per_leaf, **kwargs)[0])
             pbar.set_description('Plotting HybZono leaves')
         return objs
