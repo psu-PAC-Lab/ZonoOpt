@@ -26,7 +26,8 @@ classifiers = [
 dependencies = [
   'matplotlib>=3.6',
   'numpy',
-  'scipy'
+  'scipy',
+  'tqdm'
 ]
 
 [dependency-groups]

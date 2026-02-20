@@ -6,6 +6,7 @@ from scipy.optimize import linprog
 from scipy.linalg import null_space
 import time
 import warnings
+from tqdm import tqdm
 
 from ._core import *
 
@@ -83,6 +84,7 @@ def get_conzono_vertices(Z, t_max=60.0):
     
     # search for additional vertices along the directions of the facet normals
     converged = False
+    normals = []
     while not converged and ((time.time()-t0) < t_max):
 
         # compute convex hull and centroid
@@ -91,7 +93,7 @@ def get_conzono_vertices(Z, t_max=60.0):
         centroid = np.mean(verts_np_arr, axis=0)
 
         # get facet normals
-        normals = []
+        new_normals = []
         for simplex in hull.simplices:
             
             # get vertices of facet. each row is a vertex
@@ -100,18 +102,19 @@ def get_conzono_vertices(Z, t_max=60.0):
             # get normal
             Vn = V[-1,:] # last element
             A = V[:-1,:] - Vn # subtract last element from each row
-            _, _, Vt = np.linalg.svd(A) # singular value decomp to get null space
-            n = Vt[-1,:] # last row of Vt is the null space
+            N = null_space(A).transpose()
+            n = N[0,:]
 
             # ensure outward normal
             if np.dot(n, Vn - centroid) < 0:
                 n = -n
 
-            normals.append(n)
+            if not any(np.allclose(n, existing_n) for existing_n in normals):
+                new_normals.append(n)
 
         # search facet normals for additional vertices
         n_new_verts = 0 # init
-        for n in normals:
+        for n in new_normals:
 
             # get vertex
             vd = find_vertex(Z, n)
@@ -121,9 +124,12 @@ def get_conzono_vertices(Z, t_max=60.0):
                 verts.append(vd)
                 n_new_verts += 1
 
+        # already-checked normal directions
+        normals.extend(new_normals)
+
         # check for convergence
-        if n_new_verts == 0:
-            converged = True
+        converged = n_new_verts == 0
+
 
     # throw warning if time limit was reached
     if (time.time()-t0) > t_max:
@@ -183,8 +189,10 @@ def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
             warnings.warn('No leaves found in HybZono, returning empty plot')
             return []
         objs = []
-        for leaf in leaves:
+        pbar = tqdm(leaves)
+        for i, leaf in enumerate(pbar):
             objs.append(plot(leaf, ax=ax, t_max=time_per_leaf, **kwargs)[0])
+            pbar.set_description('Plotting HybZono leaves')
         return objs
 
     V = get_vertices(Z, t_max=t_max)
@@ -198,7 +206,6 @@ def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
 
         # plot
         if V is None or len(V) == 0:
-            warnings.warn("No vertices found, returning empty plot")
             return ax.plot([], [])
         elif Z.is_point() or len(V) < Z.get_n()+1:
             try:
