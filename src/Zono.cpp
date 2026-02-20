@@ -249,4 +249,62 @@ namespace ZonoOpt
         }
         return this->c;
     }
+
+    std::unique_ptr<Zono> make_regular_zono_2D(const zono_float radius, const int n_sides, const bool outer_approx,
+                                               const Eigen::Vector<zono_float, 2>& c)
+    {
+        // check number of sides
+        if (n_sides % 2 != 0 || n_sides < 4)
+        {
+            throw std::invalid_argument("make_regular_zono_2D: number of sides must be even and >= 4.");
+        }
+
+        // check radius
+        if (radius <= 0)
+        {
+            throw std::invalid_argument("make_regular_zono_2D: radius must be positive.");
+        }
+
+        // problem parameters
+        const int n_gens = n_sides / 2;
+        const zono_float dphi = pi / static_cast<zono_float>(n_gens);
+        const zono_float R = outer_approx ? radius / std::cos(dphi / 2) : radius;
+
+        // generator matrix
+        const int n_gens_2 = n_gens / 2;
+        zono_float phi = (static_cast<zono_float>(n_gens_2)) * dphi;
+        const zono_float l_side = 2 * R * std::sin(dphi / 2);
+        Eigen::Matrix<zono_float, -1, -1> G(2, n_gens);
+        for (int i = 0; i < n_gens; i++)
+        {
+            G(0, i) = l_side * std::cos(phi);
+            G(1, i) = l_side * std::sin(phi);
+            phi -= dphi;
+        }
+
+        // return zonotope
+        return std::make_unique<Zono>(p5 * G.sparseView(), c, false);
+    }
+
+    std::unique_ptr<Zono> interval_2_zono(const Box& box)
+    {
+        // generator matrix
+        std::vector<Eigen::Triplet<zono_float>> triplets;
+        Eigen::SparseMatrix<zono_float> G(static_cast<Eigen::Index>(box.size()), static_cast<Eigen::Index>(box.size()));
+        for (int i = 0; i < static_cast<int>(box.size()); i++)
+        {
+            triplets.emplace_back(i, i, box[i].width() / two);
+        }
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
+        G.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
+        G.setFromTriplets(triplets.begin(), triplets.end());
+#endif
+
+        // center
+        Eigen::Vector<zono_float, -1> c = box.center();
+
+        // return zonotope
+        return std::make_unique<Zono>(G, c, false);
+    }
 }
