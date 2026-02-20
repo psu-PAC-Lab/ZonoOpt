@@ -16,18 +16,16 @@
 
 namespace ZonoOpt
 {
+    using namespace detail;
 
-using namespace detail;
-
-/**
- * @brief Point class.
- *
- * A point is defined entirely by the center vector c.
- */
-class Point final : public Zono
-{
+    /**
+     * @brief Point class.
+     *
+     * A point is defined entirely by the center vector c.
+     */
+    class Point final : public Zono
+    {
     public:
-
         // constructor
         /**
          * @brief Default constructor for Point class
@@ -56,27 +54,31 @@ class Point final : public Zono
         std::string print() const override;
 
         // do nothing methods
-        void remove_redundancy(int) override { /* do nothing */ }
-        void convert_form() override { /* do nothing */ }
+        bool remove_redundancy(int) override { return false; }
+
+        void convert_form() override
+        {
+            /* do nothing */
+        }
 
     protected:
-
         Eigen::Vector<zono_float, -1> do_optimize_over(
             const Eigen::SparseMatrix<zono_float>&, const Eigen::Vector<zono_float, -1>&, zono_float,
-            const OptSettings&, OptSolution*) const override;
+            const OptSettings&, std::shared_ptr<OptSolution>*,
+            const WarmStartParams&) const override;
 
         Eigen::Vector<zono_float, -1> do_project_point(const Eigen::Vector<zono_float, -1>& x,
-            const OptSettings&, OptSolution*) const override;
+                                                       const OptSettings&, std::shared_ptr<OptSolution>*,
+                                                       const WarmStartParams&) const override;
 
         zono_float do_support(const Eigen::Vector<zono_float, -1>& d, const OptSettings&,
-            OptSolution*) override;
+                              std::shared_ptr<OptSolution>*, const WarmStartParams&) override;
 
         bool do_contains_point(const Eigen::Vector<zono_float, -1>& x, const OptSettings&,
-            OptSolution*) const override;
+                               std::shared_ptr<OptSolution>*, const WarmStartParams&) const override;
 
-        Box do_bounding_box(const OptSettings&, OptSolution*) override;
-};
-
+        Box do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>*, const WarmStartParams&) override;
+    };
 } // namespace ZonoOpt
 
 #endif

@@ -66,7 +66,7 @@ class HybZono
          */
         HybZono(const Eigen::SparseMatrix<zono_float>& Gc, const Eigen::SparseMatrix<zono_float>& Gb, const Eigen::Vector<zono_float, -1>& c,
             const Eigen::SparseMatrix<zono_float>& Ac, const Eigen::SparseMatrix<zono_float>& Ab, const Eigen::Vector<zono_float, -1>& b,
-            bool zero_one_form=false, bool sharp=false);
+            const bool zero_one_form=false, const bool sharp=false);
 
         // virtual destructor
         virtual ~HybZono() = default;
@@ -213,14 +213,15 @@ class HybZono
         /**
          * @brief Removes redundant constraints and any unused generators
          * @param contractor_iter number of interval contractor iterations to run
-         * 
+         * @returns true if successful, false if unable to reduce the complexity of the set representation
+         *
          * This method uses an interval contractor to detect generators that can be removed. 
          * Additionally, any linearly dependent rows of the constraint matrix A are removed.
          * If the linearly dependent constraints are not consistent (e.g., if A = [1, 0.1; 1, 0.1] and b = [1; 0.8]), 
          * the returned set is not equivalent to the original set.
          * Unused factors are also removed.
          */
-        virtual void remove_redundancy(int contractor_iter=100);
+        virtual bool remove_redundancy(int contractor_iter=10);
 
         /**
          * @brief Returns convex relaxation of the hybrid zonotope.
@@ -250,7 +251,7 @@ class HybZono
          * X = {G \xi + c | A \xi = b, \xi \in [-1-delta_m, 1+delta+m]^{nG}}.
          */
         virtual std::unique_ptr<HybZono> complement(const zono_float delta_m = 100, const bool remove_redundancy=true, const OptSettings &settings=OptSettings(),
-            OptSolution* solution=nullptr, const int n_leaves = std::numeric_limits<int>::max(), const int contractor_iter=100)
+            std::shared_ptr<OptSolution>* solution=nullptr, const int n_leaves = std::numeric_limits<int>::max(), const int contractor_iter=10)
         {
             return do_complement(delta_m, remove_redundancy, settings, solution, n_leaves, contractor_iter);
         }
@@ -309,15 +310,17 @@ class HybZono
          * @param c constant term in objective function
          * @param settings optimization settings structure
          * @param solution optimization solution structure pointer, populated with result
+         * @param warm_start_params warm start parameters
          * @return point z in the current set
          * 
          * Solves optimization problem of the form min 0.5*z^T*P*z + q^T*z + c where z is a vector in the current set
          */
         Eigen::Vector<zono_float, -1> optimize_over(
             const Eigen::SparseMatrix<zono_float> &P, const Eigen::Vector<zono_float, -1> &q, zono_float c=0,
-            const OptSettings &settings=OptSettings(), OptSolution* solution=nullptr) const
+            const OptSettings &settings=OptSettings(), std::shared_ptr<OptSolution>* solution=nullptr,
+            const WarmStartParams& warm_start_params=WarmStartParams()) const
         {
-            return do_optimize_over(P, q, c, settings, solution);
+            return do_optimize_over(P, q, c, settings, solution, warm_start_params);
         }
 
         /**
@@ -326,12 +329,14 @@ class HybZono
          * @param x point to be projected
          * @param settings optimization settings structure
          * @param solution optimization solution structure pointer, populated with result
+         * @params warm_start_params warm start parameters
          * @return point z in the current set
          */
         Eigen::Vector<zono_float, -1> project_point(const Eigen::Vector<zono_float, -1>& x,
-            const OptSettings &settings=OptSettings(), OptSolution* solution=nullptr) const
+            const OptSettings &settings=OptSettings(), std::shared_ptr<OptSolution>* solution=nullptr,
+            const WarmStartParams& warm_start_params=WarmStartParams()) const
         {
-            return do_project_point(x, settings, solution);
+            return do_project_point(x, settings, solution, warm_start_params);
         }
 
         /**
@@ -339,13 +344,14 @@ class HybZono
          * 
          * @param settings optimization settings structure
          * @param solution optimization solution structure pointer, populated with result
+         * @params warm_start_params warm start parameters
          * @return flag indicating whether set is provably empty
          *
          */
         bool is_empty(const OptSettings &settings=OptSettings(),
-            OptSolution* solution=nullptr) const
+            std::shared_ptr<OptSolution>* solution=nullptr, const WarmStartParams& warm_start_params=WarmStartParams()) const
         {
-            return do_is_empty(settings, solution);
+            return do_is_empty(settings, solution, warm_start_params);
         }
 
         /**
@@ -354,14 +360,15 @@ class HybZono
          * @param d vector defining direction for support function
          * @param settings optimization settings structure
          * @param solution optimization solution structure pointer, populated with result
+         * @param warm_start_params warm start parameters
          * @return support
          * 
          * Solves max_{z in Z} <z, d> where <., .> is the inner product 
          */
         zono_float support(const Eigen::Vector<zono_float, -1>& d, const OptSettings &settings=OptSettings(),
-            OptSolution* solution=nullptr)
+            std::shared_ptr<OptSolution>* solution=nullptr, const WarmStartParams& warm_start_params=WarmStartParams())
         {
-            return do_support(d, settings, solution);
+            return do_support(d, settings, solution, warm_start_params);
         }
 
         /**
@@ -370,14 +377,15 @@ class HybZono
          * @param x point to be checked for set containment
          * @param settings optimization settings structure
          * @param solution optimization solution structure pointer, populated with result
-         * 
+         * @param warm_start_params warm start parameters
+         *
          * False positives are possible; will return true if the optimization converges within the specified tolerances.
          * Will return false only if an infeasibility certificate is found, i.e., false negatives are not possible.
          */
         bool contains_point(const Eigen::Vector<zono_float, -1>& x, const OptSettings &settings=OptSettings(),
-            OptSolution* solution=nullptr) const
+            std::shared_ptr<OptSolution>* solution=nullptr, const WarmStartParams& warm_start_params=WarmStartParams()) const
         {
-            return do_contains_point(x, settings, solution);
+            return do_contains_point(x, settings, solution, warm_start_params);
         }
 
         /**
@@ -385,13 +393,15 @@ class HybZono
          * 
          * @param settings optimization settings structure
          * @param solution optimization solution structure pointer, populated with result
+         * @param warm_start_params warm start parameters
          * @return Box Z_bb
          * 
          * In general, solves 2*n support optimizations where n is the set dimension to compute a bounding box.
          */
-        Box bounding_box(const OptSettings &settings=OptSettings(), OptSolution* solution=nullptr)
+        Box bounding_box(const OptSettings &settings=OptSettings(), std::shared_ptr<OptSolution>* solution=nullptr,
+            const WarmStartParams& warm_start_params=WarmStartParams())
         {
-            return do_bounding_box(settings, solution);
+            return do_bounding_box(settings, solution, warm_start_params);
         }
 
         /**
@@ -408,13 +418,16 @@ class HybZono
          * If the branch and bound converges (i.e., did not hit max time, max number of branch and bound iterations, or max nodes in queue)
          * and the n_leaves argument does not stop the optimization before exhausting all possibilities, then the resulting vector of constrained zonotopes
          * can be unioned to recover the original set. It is possible for a leaf to be the empty set if the optimization converges before detecting an infeasibility certificate.
+         * Branch and bound search is used to find all leaves of the hybrid zonotope tree. If any threads are allocated
+         * for ADMM-FP, these will instead be used for branch and bound search.
          */
         std::vector<ConZono> get_leaves(bool remove_redundancy=true, const OptSettings &settings=OptSettings(),
-            OptSolution* solution=nullptr, int n_leaves = std::numeric_limits<int>::max(), int contractor_iter=10) const;
+            std::shared_ptr<OptSolution>* solution=nullptr, int n_leaves = std::numeric_limits<int>::max(), int contractor_iter=10) const;
 
         // friend function declarations
         friend std::unique_ptr<HybZono> affine_map(const HybZono& Z,
             const Eigen::SparseMatrix<zono_float>& R, const Eigen::Vector<zono_float, -1>& s);
+        friend std::unique_ptr<HybZono> affine_inclusion(const HybZono& Z, const IntervalMatrix& R, const Eigen::Vector<zono_float, -1>& s);
         friend std::unique_ptr<HybZono> project_onto_dims(const HybZono& Z, const std::vector<int>& dims);
         friend std::unique_ptr<HybZono> minkowski_sum(const HybZono& Z1, HybZono& Z2);
         friend std::unique_ptr<HybZono> pontry_diff(HybZono& Z1, HybZono& Z2, bool exact);
@@ -425,12 +438,13 @@ class HybZono
         friend std::unique_ptr<HybZono> halfspace_intersection(HybZono& Z, const Eigen::SparseMatrix<zono_float>& H, 
             const Eigen::Vector<zono_float, -1>& f, const Eigen::SparseMatrix<zono_float>& R);
         friend std::unique_ptr<HybZono> union_of_many(const std::vector<std::shared_ptr<HybZono>>& Zs, bool preserve_sharpness, bool expose_indicators);
+        friend std::unique_ptr<ConZono> convex_hull(const std::vector<std::shared_ptr<HybZono>>& Zs);
         friend std::unique_ptr<HybZono> cartesian_product(const HybZono& Z1, HybZono& Z2);
         friend std::unique_ptr<HybZono> constrain(HybZono& Z, const std::vector<Inequality> &ineqs, const Eigen::SparseMatrix<zono_float>& R);
         friend std::unique_ptr<HybZono> set_diff(const HybZono& Z1, HybZono& Z2, zono_float delta_m, bool remove_redundancy,
-            const OptSettings &settings, OptSolution* solution, int n_leaves, int contractor_iter);
+            const OptSettings &settings, std::shared_ptr<OptSolution>* solution, const WarmStartParams& warm_start_params, int n_leaves, int contractor_iter);
         friend std::unique_ptr<HybZono> vrep_2_hybzono(const std::vector<Eigen::Matrix<zono_float, -1, -1>> &Vpolys, bool expose_indicators);
-        friend std::unique_ptr<HybZono> zono_union_2_hybzono(std::vector<Zono> &Zs, bool expose_indicators);
+        friend std::unique_ptr<HybZono> zono_union_2_hybzono(std::vector<std::shared_ptr<Zono>> &Zs, bool expose_indicators);
 
     protected:
 
@@ -484,39 +498,43 @@ class HybZono
         // methods
         virtual Eigen::Vector<zono_float, -1> do_optimize_over(
             const Eigen::SparseMatrix<zono_float> &P, const Eigen::Vector<zono_float, -1> &q, zono_float c,
-            const OptSettings &settings, OptSolution* solution) const;
+            const OptSettings &settings, std::shared_ptr<OptSolution>* solution,
+            const WarmStartParams& warm_start_params) const;
 
         virtual Eigen::Vector<zono_float, -1> do_project_point(const Eigen::Vector<zono_float, -1>& x,
-            const OptSettings &settings, OptSolution* solution) const;
+            const OptSettings &settings, std::shared_ptr<OptSolution>* solution, const WarmStartParams& warm_start_params) const;
 
-        virtual bool do_is_empty(const OptSettings &settings, OptSolution* solution) const;
+        virtual bool do_is_empty(const OptSettings &settings, std::shared_ptr<OptSolution>* solution,
+            const WarmStartParams& warm_start_params) const;
 
         virtual zono_float do_support(const Eigen::Vector<zono_float, -1>& d, const OptSettings &settings,
-            OptSolution* solution);
+            std::shared_ptr<OptSolution>* solution, const WarmStartParams& warm_start_params);
 
         virtual bool do_contains_point(const Eigen::Vector<zono_float, -1>& x, const OptSettings &settings,
-            OptSolution* solution) const;
+            std::shared_ptr<OptSolution>* solution, const WarmStartParams& warm_start_params) const;
 
-        virtual Box do_bounding_box(const OptSettings &settings, OptSolution* solution);
+        virtual Box do_bounding_box(const OptSettings &settings, std::shared_ptr<OptSolution>* solution,
+            const WarmStartParams& warm_start_params);
 
         virtual std::unique_ptr<HybZono> do_complement(zono_float, bool remove_redundancy, const OptSettings &settings,
-            OptSolution* solution, int n_leaves, int contractor_iter);
+            std::shared_ptr<OptSolution>* solution, int n_leaves, int contractor_iter);
 
 
         static void remove_generators(Eigen::SparseMatrix<zono_float>& G, Eigen::SparseMatrix<zono_float>& A, const std::set<int>& idx_to_remove);
         static std::set<int> find_unused_generators(const Eigen::SparseMatrix<zono_float>& G, const Eigen::SparseMatrix<zono_float>& A);
         OptSolution mi_opt(const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q,
             zono_float c, const Eigen::SparseMatrix<zono_float>& A, const Eigen::Vector<zono_float, -1>& b,
-            const OptSettings &settings=OptSettings(), OptSolution* solution=nullptr) const;
+            const OptSettings &settings=OptSettings(), std::shared_ptr<OptSolution>* solution=nullptr,
+            const WarmStartParams& warm_start_params=WarmStartParams()) const;
         std::vector<OptSolution> mi_opt_multisol(const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q,
             zono_float c, const Eigen::SparseMatrix<zono_float>& A, const Eigen::Vector<zono_float, -1>& b, int n_sols,
-            const OptSettings &settings=OptSettings(), OptSolution* solution=nullptr) const;
+            const OptSettings &settings=OptSettings(), std::shared_ptr<OptSolution>* solution=nullptr) const;
 
     private:
 
         void make_G_A();
         void set_Ac_Ab_from_A();
-        std::vector<Eigen::Vector<zono_float, -1>> get_bin_leaves(const OptSettings &settings=OptSettings(), OptSolution* solution=nullptr,
+        std::vector<Eigen::Vector<zono_float, -1>> get_bin_leaves(const OptSettings &settings=OptSettings(), std::shared_ptr<OptSolution>* solution=nullptr,
             int n_leaves = std::numeric_limits<int>::max()) const;
 };
 
@@ -532,6 +550,23 @@ class HybZono
  */
 std::unique_ptr<HybZono> affine_map(const HybZono& Z,
     const Eigen::SparseMatrix<zono_float>& R, const Eigen::Vector<zono_float, -1>& s = Eigen::Vector<zono_float, -1>());
+
+/**
+ * @brief Returns inclusion of zonotopic set for uncertain affine map R*Z + s
+ *
+ * @param Z zonotopic set
+ * @param R interval matrix
+ * @param s vector offset
+ * @return zonotopic set
+ * @ingroup ZonoOpt_SetOperations
+ *
+ * This computes an over-approximation of the affine map using the method of
+ * Rego et. al. (2020) "Guaranteed methods based on constrained zonotopes for set-valued state estimation of nonlinear discrete-time systems"
+ * The SVD-based zonotope over-approximation method is used in this function when Z is a constrained zonotope.
+ * When Z is a hybrid zonotope, the convex relaxation is used to produce a constrained zonotope, and then the SVD-based method is applied.
+ */
+std::unique_ptr<HybZono> affine_inclusion(const HybZono& Z, const IntervalMatrix& R,
+    const Eigen::Vector<zono_float, -1>& s=Eigen::Vector<zono_float, -1>());
 
 /**
  * @brief Projects set Z onto the dimensions specified in dims.
@@ -626,6 +661,18 @@ std::unique_ptr<HybZono> halfspace_intersection(HybZono& Z, const Eigen::SparseM
 std::unique_ptr<HybZono> union_of_many(const std::vector<std::shared_ptr<HybZono>>& Zs, bool preserve_sharpness=false, bool expose_indicators=false);
 
 /**
+ * @brief Computes convex hull of several sets
+ *
+ * @param Zs Sets for which convex hull is to be computed.
+ * @return constrained zonotope convex hull
+ * @ingroup ZonoOpt_SetOperations
+ *
+ * Computes convex hull of sets {Z0, Z1, ..., Zn}.
+ * If Zi is a hybrid zonotope, it must be sharp or this function will throw an error.
+ */
+std::unique_ptr<ConZono> convex_hull(const std::vector<std::shared_ptr<HybZono>>& Zs);
+
+/**
  * @brief Computes the Cartesian product of two sets Z1 and Z2.
  *
  * @param Z1 zonotopic set
@@ -666,7 +713,8 @@ std::unique_ptr<HybZono> constrain(HybZono& Z, const std::vector<Inequality> &in
  * @ingroup ZonoOpt_SetOperations
  */
 std::unique_ptr<HybZono> set_diff(const HybZono& Z1, HybZono& Z2, zono_float delta_m = 100, bool remove_redundancy=true,
-    const OptSettings &settings=OptSettings(), OptSolution* solution=nullptr, int n_leaves = std::numeric_limits<int>::max(), int contractor_iter = 100);
+    const OptSettings &settings=OptSettings(), std::shared_ptr<OptSolution>* solution=nullptr,
+    int n_leaves = std::numeric_limits<int>::max(), int contractor_iter = 10);
 
 
 /**
@@ -700,8 +748,7 @@ std::unique_ptr<HybZono> vrep_2_hybzono(const std::vector<Eigen::Matrix<zono_flo
 * Specifically, each dimension of I corresponds to one of the Zi in the union. So for zono_union_2_hybzono({Z0, Z1, Z2}, true) with Z0, Z1, VZ2 not intersecting,
 * if a vector [z, i] is in union({Z0, Z1, Z2}) x I, then i = [1, 0, 0] if z is in Z0, etc.
 */
-std::unique_ptr<HybZono> zono_union_2_hybzono(std::vector<Zono> &Zs, bool expose_indicators=false);
-
+std::unique_ptr<HybZono> zono_union_2_hybzono(std::vector<std::shared_ptr<Zono>> &Zs, bool expose_indicators=false);
 
 } // end namespace ZonoOpt
 

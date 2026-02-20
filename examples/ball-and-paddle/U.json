@@ -1,0 +1,1 @@
+{"class": "Zono", "n": 2, "Gc": {"row": [0, 1], "col": [0, 1], "data": [30.0, 30.0], "shape": [2, 2]}, "Gb": {"row": [], "col": [], "data": [], "shape": [2, 0]}, "c": [0.0, 0.0], "Ac": {"row": [], "col": [], "data": [], "shape": [0, 2]}, "Ab": {"row": [], "col": [], "data": [], "shape": [0, 0]}, "b": [], "zero_one_form": false}

@@ -201,6 +201,13 @@ N = 15
 # rng seed
 np.random.seed(1)
 
+# solver settings
+settings = zono.OptSettings()
+settings.rho = 1.
+settings.inf_norm_conv = False
+settings.eps_prim = 1e-2
+settings.eps_dual = 1e-2
+
 # load in u data
 u_data = np.loadtxt('u_data.txt')
 
@@ -244,7 +251,7 @@ for k in range(1, N):
     y_vec = y_sim
 
     try:
-        xhat, sol, X0 = mhe(X_Nm1, W, V, A, B, u_vec, y_vec, Qinv, Rinv, S)
+        xhat, sol, X0 = mhe(X_Nm1, W, V, A, B, u_vec, y_vec, Qinv, Rinv, S, settings=settings)
     except ValueError as e:
         print(e)
         break
@@ -287,7 +294,7 @@ for k in range(N, n_sim):
     y_vec = y_sim[-N:]
 
     try:
-        xhat, sol, X0 = mhe(X_Nm1, W, V, A, B, u_vec, y_vec, Qinv, Rinv, S)
+        xhat, sol, X0 = mhe(X_Nm1, W, V, A, B, u_vec, y_vec, Qinv, Rinv, S, settings=settings)
     except ValueError as e:
         print(e)
         break
@@ -337,12 +344,15 @@ print(f'Velocity RMS error from measurements: {rms_vel_y}')
 print(f'Velocity RMS error from MHE: {rms_vel_mhe}')
 
 # print solution and startup times
-print(f'Avg. solution time: {np.mean(sol_times)}')
-print(f'Avg. startup time: {np.mean(startup_times)}')
+print(f'Avg. solution time [ms]: {1000.*np.mean(sol_times)}')
+print(f'Avg. startup time [ms]: {1000.*np.mean(startup_times)}')
 print(f'Avg. iterations: {np.mean(iters)}')
-print(f'Max. solution time: {np.max(sol_times)}')
-print(f'Max. startup time: {np.max(startup_times)}')
+print(f'Max. solution time [ms]: {1000.*np.max(sol_times)}')
+print(f'Max. startup time [ms]: {1000.*np.max(startup_times)}')
 print(f'Max. iterations: {np.max(iters)}')
+print(f'Min. solution time [ms]: {1000.*np.min(sol_times)}')
+print(f'Min. startup time [ms]: {1000.*np.min(startup_times)}')
+print(f'Min. iterations: {np.min(iters)}')
 
 # plot settings
 textwidth_pt = 10

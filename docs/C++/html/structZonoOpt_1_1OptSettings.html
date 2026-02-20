@@ -34,7 +34,7 @@ MathJax.Hub.Config({
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">ZonoOpt<span id="projectnumber">&#160;v2.0.1</span>
+   <div id="projectname">ZonoOpt<span id="projectnumber">&#160;v2.1.0</span>
    </div>
   </td>
  </tr>
@@ -120,7 +120,7 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:a2f5cf1d13aa71a56f32a0b050e983d6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">max time for optimization  <br /></td></tr>
 <tr class="separator:a2f5cf1d13aa71a56f32a0b050e983d6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abda111b08820aa2719d9cf012cac824a" id="r_abda111b08820aa2719d9cf012cac824a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSettings.html#abda111b08820aa2719d9cf012cac824a">k_max_admm</a> = 5000</td></tr>
-<tr class="memdesc:abda111b08820aa2719d9cf012cac824a"><td class="mdescLeft">&#160;</td><td class="mdescRight">max admm iterations  <br /></td></tr>
+<tr class="memdesc:abda111b08820aa2719d9cf012cac824a"><td class="mdescLeft">&#160;</td><td class="mdescRight">max convex admm iterations  <br /></td></tr>
 <tr class="separator:abda111b08820aa2719d9cf012cac824a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa9daad3982cfea491e0aa34451dc53dd" id="r_aa9daad3982cfea491e0aa34451dc53dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSettings.html#aa9daad3982cfea491e0aa34451dc53dd">rho</a> = static_cast&lt;<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&gt;(10.0)</td></tr>
 <tr class="memdesc:aa9daad3982cfea491e0aa34451dc53dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">admm penalty parameter, higher prioritizes feasibility during iterations, lower prioritizes optimality  <br /></td></tr>
@@ -167,12 +167,45 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a69a26720c7cbd50dbafcdfa52b6bf0da" id="r_a69a26720c7cbd50dbafcdfa52b6bf0da"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSettings.html#a69a26720c7cbd50dbafcdfa52b6bf0da">n_threads_bnb</a> = 4</td></tr>
 <tr class="memdesc:a69a26720c7cbd50dbafcdfa52b6bf0da"><td class="mdescLeft">&#160;</td><td class="mdescRight">max threads for branch and bound  <br /></td></tr>
 <tr class="separator:a69a26720c7cbd50dbafcdfa52b6bf0da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9c055e2a4c3ec1d1a8e0dd154d56094" id="r_af9c055e2a4c3ec1d1a8e0dd154d56094"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSettings.html#af9c055e2a4c3ec1d1a8e0dd154d56094">n_threads_admm_fp</a> = 3</td></tr>
+<tr class="memdesc:af9c055e2a4c3ec1d1a8e0dd154d56094"><td class="mdescLeft">&#160;</td><td class="mdescRight">max threads for ADMM-FP  <br /></td></tr>
+<tr class="separator:af9c055e2a4c3ec1d1a8e0dd154d56094"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8b8f7f0e3df1dc16665cf9a9a7efc3f" id="r_af8b8f7f0e3df1dc16665cf9a9a7efc3f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSettings.html#af8b8f7f0e3df1dc16665cf9a9a7efc3f">single_threaded_admm_fp</a> = false</td></tr>
+<tr class="memdesc:af8b8f7f0e3df1dc16665cf9a9a7efc3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">enables single-threaded ADMM-FP solution, overrides n_threads_bnb, n_threads_admm_fp  <br /></td></tr>
+<tr class="separator:af8b8f7f0e3df1dc16665cf9a9a7efc3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0316ea3c2a38f4b4197eefb2e09881b" id="r_ae0316ea3c2a38f4b4197eefb2e09881b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSettings.html#ae0316ea3c2a38f4b4197eefb2e09881b">max_nodes</a> = static_cast&lt;int&gt;(1e5)</td></tr>
 <tr class="memdesc:ae0316ea3c2a38f4b4197eefb2e09881b"><td class="mdescLeft">&#160;</td><td class="mdescRight">terminate if more than this many nodes are in branch and bound queue  <br /></td></tr>
 <tr class="separator:ae0316ea3c2a38f4b4197eefb2e09881b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8601f8ec28dd65d652fff2fd07fabd57" id="r_a8601f8ec28dd65d652fff2fd07fabd57"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSettings.html#a8601f8ec28dd65d652fff2fd07fabd57">contractor_tree_search_depth</a> = 10</td></tr>
 <tr class="memdesc:a8601f8ec28dd65d652fff2fd07fabd57"><td class="mdescLeft">&#160;</td><td class="mdescRight">when applying interval contractor in branch and bound, this is how deep to search the constraint tree for affected variables  <br /></td></tr>
 <tr class="separator:a8601f8ec28dd65d652fff2fd07fabd57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb992cc5855ff2aeeab8d80526ce5257" id="r_adb992cc5855ff2aeeab8d80526ce5257"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSettings.html#adb992cc5855ff2aeeab8d80526ce5257">enable_perturb_admm_fp</a> = true</td></tr>
+<tr class="memdesc:adb992cc5855ff2aeeab8d80526ce5257"><td class="mdescLeft">&#160;</td><td class="mdescRight">enable perturbations in ADMM-FP  <br /></td></tr>
+<tr class="separator:adb992cc5855ff2aeeab8d80526ce5257"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b526c8746690e186eeedc7252157b40" id="r_a5b526c8746690e186eeedc7252157b40"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSettings.html#a5b526c8746690e186eeedc7252157b40">enable_restart_admm_fp</a> = true</td></tr>
+<tr class="memdesc:a5b526c8746690e186eeedc7252157b40"><td class="mdescLeft">&#160;</td><td class="mdescRight">enable restarts (significant perturbations) in ADMM-FP  <br /></td></tr>
+<tr class="separator:a5b526c8746690e186eeedc7252157b40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba9fbdd3c43656fed719c9c06fc0bab4" id="r_aba9fbdd3c43656fed719c9c06fc0bab4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSettings.html#aba9fbdd3c43656fed719c9c06fc0bab4">k_max_admm_fp_ph1</a> = 10000</td></tr>
+<tr class="memdesc:aba9fbdd3c43656fed719c9c06fc0bab4"><td class="mdescLeft">&#160;</td><td class="mdescRight">max ADMM iterations for ADMM-FP phase 1 (objective included)  <br /></td></tr>
+<tr class="separator:aba9fbdd3c43656fed719c9c06fc0bab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9264edec34a08e9cbce955a232b3ce39" id="r_a9264edec34a08e9cbce955a232b3ce39"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSettings.html#a9264edec34a08e9cbce955a232b3ce39">k_max_admm_fp_ph2</a> = 90000</td></tr>
+<tr class="memdesc:a9264edec34a08e9cbce955a232b3ce39"><td class="mdescLeft">&#160;</td><td class="mdescRight">max ADMM iterations for ADMM-FP phase 2 (no objective)  <br /></td></tr>
+<tr class="separator:a9264edec34a08e9cbce955a232b3ce39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a552d7c94c23449de6782f500ff2b4252" id="r_a552d7c94c23449de6782f500ff2b4252"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSettings.html#a552d7c94c23449de6782f500ff2b4252">cycle_detection_buffer_size</a> = 20</td></tr>
+<tr class="memdesc:a552d7c94c23449de6782f500ff2b4252"><td class="mdescLeft">&#160;</td><td class="mdescRight">in ADMM-FP, this is the max size of the buffer that checks for cycles  <br /></td></tr>
+<tr class="separator:a552d7c94c23449de6782f500ff2b4252"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4c25776d1d3483edabacccedf7feab1" id="r_ae4c25776d1d3483edabacccedf7feab1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSettings.html#ae4c25776d1d3483edabacccedf7feab1">eps_perturb</a> = static_cast&lt;<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&gt;(1e-3)</td></tr>
+<tr class="memdesc:ae4c25776d1d3483edabacccedf7feab1"><td class="mdescLeft">&#160;</td><td class="mdescRight">relative tolerance for cycle detection, triggers perturbation  <br /></td></tr>
+<tr class="separator:ae4c25776d1d3483edabacccedf7feab1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a0e4eca51a968b29ef268a52e78f4e1" id="r_a2a0e4eca51a968b29ef268a52e78f4e1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSettings.html#a2a0e4eca51a968b29ef268a52e78f4e1">k_restart</a> = 5000</td></tr>
+<tr class="memdesc:a2a0e4eca51a968b29ef268a52e78f4e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">perform restart operation if primal residual does not improve over this many iterations in ADMM-FP  <br /></td></tr>
+<tr class="separator:a2a0e4eca51a968b29ef268a52e78f4e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4774e276181e2798c63d87c573443c47" id="r_a4774e276181e2798c63d87c573443c47"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSettings.html#a4774e276181e2798c63d87c573443c47">enable_rng_seed</a> = false</td></tr>
+<tr class="memdesc:a4774e276181e2798c63d87c573443c47"><td class="mdescLeft">&#160;</td><td class="mdescRight">enable rng seed for ADMM-FP  <br /></td></tr>
+<tr class="separator:a4774e276181e2798c63d87c573443c47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a461a2b8cf4bcfa6010ab06b4a00209e3" id="r_a461a2b8cf4bcfa6010ab06b4a00209e3"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSettings.html#a461a2b8cf4bcfa6010ab06b4a00209e3">rng_seed</a> = 0</td></tr>
+<tr class="memdesc:a461a2b8cf4bcfa6010ab06b4a00209e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">rng seed for ADMM-FP  <br /></td></tr>
+<tr class="separator:a461a2b8cf4bcfa6010ab06b4a00209e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Settings for optimization routines in <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> library. </p>
@@ -266,6 +299,70 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a552d7c94c23449de6782f500ff2b4252" name="a552d7c94c23449de6782f500ff2b4252"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a552d7c94c23449de6782f500ff2b4252">&#9670;&#160;</a></span>cycle_detection_buffer_size</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ZonoOpt::OptSettings::cycle_detection_buffer_size = 20</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>in ADMM-FP, this is the max size of the buffer that checks for cycles </p>
+
+</div>
+</div>
+<a id="adb992cc5855ff2aeeab8d80526ce5257" name="adb992cc5855ff2aeeab8d80526ce5257"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb992cc5855ff2aeeab8d80526ce5257">&#9670;&#160;</a></span>enable_perturb_admm_fp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ZonoOpt::OptSettings::enable_perturb_admm_fp = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>enable perturbations in ADMM-FP </p>
+
+</div>
+</div>
+<a id="a5b526c8746690e186eeedc7252157b40" name="a5b526c8746690e186eeedc7252157b40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b526c8746690e186eeedc7252157b40">&#9670;&#160;</a></span>enable_restart_admm_fp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ZonoOpt::OptSettings::enable_restart_admm_fp = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>enable restarts (significant perturbations) in ADMM-FP </p>
+
+</div>
+</div>
+<a id="a4774e276181e2798c63d87c573443c47" name="a4774e276181e2798c63d87c573443c47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4774e276181e2798c63d87c573443c47">&#9670;&#160;</a></span>enable_rng_seed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ZonoOpt::OptSettings::enable_rng_seed = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>enable rng seed for ADMM-FP </p>
+
+</div>
+</div>
 <a id="a60d74c9e34b6e0979fd1a78b14547458" name="a60d74c9e34b6e0979fd1a78b14547458"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a60d74c9e34b6e0979fd1a78b14547458">&#9670;&#160;</a></span>eps_a</h2>
 
@@ -311,6 +408,22 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>dual residual convergence tolerance during branch and bound and search </p>
+
+</div>
+</div>
+<a id="ae4c25776d1d3483edabacccedf7feab1" name="ae4c25776d1d3483edabacccedf7feab1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4c25776d1d3483edabacccedf7feab1">&#9670;&#160;</a></span>eps_perturb</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> ZonoOpt::OptSettings::eps_perturb = static_cast&lt;<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&gt;(1e-3)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>relative tolerance for cycle detection, triggers perturbation </p>
 
 </div>
 </div>
@@ -406,7 +519,39 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>max admm iterations </p>
+<p>max convex admm iterations </p>
+
+</div>
+</div>
+<a id="aba9fbdd3c43656fed719c9c06fc0bab4" name="aba9fbdd3c43656fed719c9c06fc0bab4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba9fbdd3c43656fed719c9c06fc0bab4">&#9670;&#160;</a></span>k_max_admm_fp_ph1</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ZonoOpt::OptSettings::k_max_admm_fp_ph1 = 10000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>max ADMM iterations for ADMM-FP phase 1 (objective included) </p>
+
+</div>
+</div>
+<a id="a9264edec34a08e9cbce955a232b3ce39" name="a9264edec34a08e9cbce955a232b3ce39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9264edec34a08e9cbce955a232b3ce39">&#9670;&#160;</a></span>k_max_admm_fp_ph2</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ZonoOpt::OptSettings::k_max_admm_fp_ph2 = 90000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>max ADMM iterations for ADMM-FP phase 2 (no objective) </p>
 
 </div>
 </div>
@@ -426,6 +571,22 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a2a0e4eca51a968b29ef268a52e78f4e1" name="a2a0e4eca51a968b29ef268a52e78f4e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a0e4eca51a968b29ef268a52e78f4e1">&#9670;&#160;</a></span>k_restart</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ZonoOpt::OptSettings::k_restart = 5000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>perform restart operation if primal residual does not improve over this many iterations in ADMM-FP </p>
+
+</div>
+</div>
 <a id="ae0316ea3c2a38f4b4197eefb2e09881b" name="ae0316ea3c2a38f4b4197eefb2e09881b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae0316ea3c2a38f4b4197eefb2e09881b">&#9670;&#160;</a></span>max_nodes</h2>
 
@@ -439,6 +600,22 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>terminate if more than this many nodes are in branch and bound queue </p>
+
+</div>
+</div>
+<a id="af9c055e2a4c3ec1d1a8e0dd154d56094" name="af9c055e2a4c3ec1d1a8e0dd154d56094"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9c055e2a4c3ec1d1a8e0dd154d56094">&#9670;&#160;</a></span>n_threads_admm_fp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ZonoOpt::OptSettings::n_threads_admm_fp = 3</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>max threads for ADMM-FP </p>
 
 </div>
 </div>
@@ -490,6 +667,22 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a461a2b8cf4bcfa6010ab06b4a00209e3" name="a461a2b8cf4bcfa6010ab06b4a00209e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a461a2b8cf4bcfa6010ab06b4a00209e3">&#9670;&#160;</a></span>rng_seed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int ZonoOpt::OptSettings::rng_seed = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>rng seed for ADMM-FP </p>
+
+</div>
+</div>
 <a id="ae9f8f56825ea6c4207a68290c718bdb8" name="ae9f8f56825ea6c4207a68290c718bdb8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae9f8f56825ea6c4207a68290c718bdb8">&#9670;&#160;</a></span>search_mode</h2>
 
@@ -503,6 +696,22 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>0: best first, 1: best dive </p>
+
+</div>
+</div>
+<a id="af8b8f7f0e3df1dc16665cf9a9a7efc3f" name="af8b8f7f0e3df1dc16665cf9a9a7efc3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8b8f7f0e3df1dc16665cf9a9a7efc3f">&#9670;&#160;</a></span>single_threaded_admm_fp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ZonoOpt::OptSettings::single_threaded_admm_fp = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>enables single-threaded ADMM-FP solution, overrides n_threads_bnb, n_threads_admm_fp </p>
 
 </div>
 </div>

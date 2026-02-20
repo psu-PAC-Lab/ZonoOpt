@@ -88,7 +88,8 @@ namespace ZonoOpt
 
     Eigen::Vector<zono_float, -1> ConZono::do_optimize_over(
         const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q, const zono_float c,
-        const OptSettings& settings, OptSolution* solution) const
+        const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+        const WarmStartParams& warm_start_params) const
     {
         // check dimensions
         if (P.rows() != this->n || P.cols() != this->n || q.size() != this->n)
@@ -102,7 +103,8 @@ namespace ZonoOpt
         zono_float delta_c = (0.5 * this->c.transpose() * P * this->c + q.transpose() * this->c)(0);
 
         // solve QP
-        OptSolution sol = this->qp_opt(P_fact, q_fact, c + delta_c, this->A, this->b, settings, solution);
+        OptSolution sol = this->qp_opt(P_fact, q_fact, c + delta_c, this->A, this->b, settings, solution,
+                                       warm_start_params);
 
         // check feasibility and return solution
         if (sol.infeasible)
@@ -112,7 +114,9 @@ namespace ZonoOpt
     }
 
     Eigen::Vector<zono_float, -1> ConZono::do_project_point(const Eigen::Vector<zono_float, -1>& x,
-                                                            const OptSettings& settings, OptSolution* solution) const
+                                                            const OptSettings& settings,
+                                                            std::shared_ptr<OptSolution>* solution,
+                                                            const WarmStartParams& warm_start_params) const
     {
         // check dimensions
         if (this->n != x.size())
@@ -125,7 +129,7 @@ namespace ZonoOpt
         Eigen::Vector<zono_float, -1> q = this->G.transpose() * (this->c - x);
 
         // solve QP
-        const OptSolution sol = this->qp_opt(P, q, 0, this->A, this->b, settings, solution);
+        const OptSolution sol = this->qp_opt(P, q, 0, this->A, this->b, settings, solution, warm_start_params);
 
         // check feasibility and return solution
         if (sol.infeasible)
@@ -134,7 +138,8 @@ namespace ZonoOpt
             return this->G * sol.z + this->c;
     }
 
-    bool ConZono::do_is_empty(const OptSettings& settings, OptSolution* solution) const
+    bool ConZono::do_is_empty(const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+                              const WarmStartParams& warm_start_params) const
     {
         // trivial case
         if (this->n == 0)
@@ -146,14 +151,15 @@ namespace ZonoOpt
         Eigen::Vector<zono_float, -1> q = Eigen::Vector<zono_float, -1>::Zero(this->nG);
 
         // solve QP
-        OptSolution sol = this->qp_opt(P, q, 0, this->A, this->b, settings, solution);
+        OptSolution sol = this->qp_opt(P, q, 0, this->A, this->b, settings, solution, warm_start_params);
 
         // check infeasibility flag
         return sol.infeasible;
     }
 
     zono_float ConZono::do_support(const Eigen::Vector<zono_float, -1>& d,
-                                   const OptSettings& settings, OptSolution* solution)
+                                   const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+                                   const WarmStartParams& warm_start_params)
     {
         // check dimensions
         if (this->n != d.size())
@@ -166,7 +172,7 @@ namespace ZonoOpt
         Eigen::Vector<zono_float, -1> q = -this->G.transpose() * d;
 
         // solve QP
-        const OptSolution sol = this->qp_opt(P, q, 0, this->A, this->b, settings, solution);
+        const OptSolution sol = this->qp_opt(P, q, 0, this->A, this->b, settings, solution, warm_start_params);
 
         // check feasibility and return solution
         if (sol.infeasible) // Z is empty
@@ -176,7 +182,8 @@ namespace ZonoOpt
     }
 
     bool ConZono::do_contains_point(const Eigen::Vector<zono_float, -1>& x,
-                                    const OptSettings& settings, OptSolution* solution) const
+                                    const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+                                    const WarmStartParams& warm_start_params) const
     {
         // check dimensions
         if (this->n != x.size())
@@ -194,7 +201,7 @@ namespace ZonoOpt
         b.segment(0, this->nC) = this->b;
         b.segment(this->nC, this->n) = x - this->c;
 
-        const OptSolution sol = this->qp_opt(P, q, 0, A, b, settings, solution);
+        const OptSolution sol = this->qp_opt(P, q, 0, A, b, settings, solution, warm_start_params);
 
         // check feasibility and return solution
         return !(sol.infeasible);
@@ -203,7 +210,8 @@ namespace ZonoOpt
     OptSolution ConZono::qp_opt(const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q,
                                 const zono_float c, const Eigen::SparseMatrix<zono_float>& A,
                                 const Eigen::Vector<zono_float, -1>& b,
-                                const OptSettings& settings, OptSolution* solution) const
+                                const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+                                const WarmStartParams& warm_start_params) const
     {
         // setup QP
         Eigen::Vector<zono_float, -1> xi_lb(this->nG);
@@ -216,15 +224,25 @@ namespace ZonoOpt
         const auto data = std::make_shared<ADMM_data>(P, q, A, b, xi_lb, xi_ub, c, settings);
         ADMM_solver solver(data);
 
+        // warm start if applicable
+        if (warm_start_params.z.size() == this->nG)
+        {
+            const Eigen::Vector<zono_float, -1> u0 = warm_start_params.u.size() == this->nG
+                                                         ? warm_start_params.u
+                                                         : Eigen::Vector<zono_float, -1>::Zero(this->nG);
+            solver.warmstart(warm_start_params.z, u0);
+        }
+
         // solve
         OptSolution sol = solver.solve();
         if (solution != nullptr)
-            *solution = sol;
+            *solution = std::make_shared<OptSolution>(sol);
         return sol;
     }
 
     // bounding box
-    Box ConZono::do_bounding_box(const OptSettings& settings, OptSolution*)
+    Box ConZono::do_bounding_box(const OptSettings& settings, std::shared_ptr<OptSolution>*,
+                                 const WarmStartParams& warm_start_params)
     {
         // make sure dimension is at least 1
         if (this->n == 0)
@@ -258,6 +276,9 @@ namespace ZonoOpt
         const auto data = std::make_shared<ADMM_data>(P, q, this->A, this->b, xi_lb, xi_ub, zero, settings);
         ADMM_solver solver(data);
 
+        // check if warm start is valid
+        const bool warm_start_valid = warm_start_params.z.size() == this->nG && warm_start_params.u.size() == this->nG;
+
         // get support in all box directions
         for (int i = 0; i < this->n; i++)
         {
@@ -269,6 +290,10 @@ namespace ZonoOpt
             data->q = -this->G.transpose() * d;
 
             // solve
+            if (warm_start_valid)
+            {
+                solver.warmstart(warm_start_params.z, warm_start_params.u);
+            }
             OptSolution sol = solver.solve();
             if (sol.infeasible)
                 throw std::invalid_argument("Bounding box: Z is empty");
@@ -283,6 +308,10 @@ namespace ZonoOpt
             data->q = -this->G.transpose() * d;
 
             // solve
+            if (warm_start_valid)
+            {
+                solver.warmstart(warm_start_params.z, warm_start_params.u);
+            }
             sol = solver.solve();
             if (sol.infeasible)
                 throw std::invalid_argument("Bounding box: Z is empty");

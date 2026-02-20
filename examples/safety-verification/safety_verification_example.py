@@ -116,6 +116,8 @@ for k in range(n_time):
 sol = zono.OptSolution()
 settings = zono.OptSettings()
 settings.k_inf_check = 1
+settings.rho = 1.
+
 iter_arr = []
 soltime_arr = []
 for X in X_arr:
@@ -128,8 +130,9 @@ for X in X_arr:
 iter_arr = np.array(iter_arr)
 soltime_arr = np.array(soltime_arr)
 
-print(f'Max solution time: {np.max(soltime_arr)}')
-print(f'Average solution time: {np.mean(soltime_arr)}')
+print(f'Max solution time [ms]: {1000.*np.max(soltime_arr)}')
+print(f'Min solution time [ms]: {1000.*np.min(soltime_arr)}')
+print(f'Average solution time [ms]: {1000.*np.mean(soltime_arr)}')
 
 ### plot ###
 textwidth_pt = 10.

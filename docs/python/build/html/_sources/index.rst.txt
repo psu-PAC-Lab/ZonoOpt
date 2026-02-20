@@ -18,5 +18,3 @@ zonoopt documentation
 ..   This invisible block wakes up MathJax so the included MD math renders
 .. math::
    :nowrap:
-
-   \phantom{x}

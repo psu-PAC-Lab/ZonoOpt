@@ -6,5 +6,6 @@ var searchData=
   ['intervalbase_3',['IntervalBase',['../structZonoOpt_1_1IntervalBase.html',1,'ZonoOpt']]],
   ['intervalbase_3c_20interval_20_3e_4',['IntervalBase&lt; Interval &gt;',['../structZonoOpt_1_1IntervalBase.html',1,'ZonoOpt']]],
   ['intervalbase_3c_20intervalview_20_3e_5',['IntervalBase&lt; IntervalView &gt;',['../structZonoOpt_1_1IntervalBase.html',1,'ZonoOpt']]],
-  ['intervalview_6',['IntervalView',['../structZonoOpt_1_1IntervalView.html',1,'ZonoOpt']]]
+  ['intervalmatrix_6',['IntervalMatrix',['../classZonoOpt_1_1IntervalMatrix.html',1,'ZonoOpt']]],
+  ['intervalview_7',['IntervalView',['../structZonoOpt_1_1IntervalView.html',1,'ZonoOpt']]]
 ];

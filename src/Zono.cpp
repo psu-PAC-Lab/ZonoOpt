@@ -77,7 +77,7 @@ namespace ZonoOpt
         return ss.str();
     }
 
-    bool Zono::do_is_empty(const OptSettings&, OptSolution*) const
+    bool Zono::do_is_empty(const OptSettings&, std::shared_ptr<OptSolution>*, const WarmStartParams&) const
     {
         if (this->n == 0)
             return true;
@@ -85,7 +85,7 @@ namespace ZonoOpt
             return false;
     }
 
-    Box Zono::do_bounding_box(const OptSettings&, OptSolution*)
+    Box Zono::do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>*, const WarmStartParams&)
     {
         // convert to [-1,1] form
         if (this->zero_one_form) this->convert_form();
@@ -146,7 +146,7 @@ namespace ZonoOpt
                 triplets.emplace_back(static_cast<int>(it.row()), i, it.value());
             }
         }
-#if EIGEN_VERSION_AT_LEAST(5,0,0)
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
         G_K.setFromSortedTriplets(triplets.begin(), triplets.end());
 #else
         G_K.setFromTriplets(triplets.begin(), triplets.end());
@@ -164,7 +164,7 @@ namespace ZonoOpt
                 triplets.emplace_back(static_cast<int>(it.row()), i - n_K, it.value());
             }
         }
-#if EIGEN_VERSION_AT_LEAST(5,0,0)
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
         G_L.setFromSortedTriplets(triplets.begin(), triplets.end());
 #else
         G_L.setFromTriplets(triplets.begin(), triplets.end());
@@ -185,7 +185,9 @@ namespace ZonoOpt
         return std::unique_ptr<Zono>(dynamic_cast<Zono*>(Z.release()));
     }
 
-    zono_float Zono::do_support(const Eigen::Vector<zono_float, -1>& d, const OptSettings&, OptSolution*)
+    zono_float Zono::do_support(const Eigen::Vector<zono_float, -1>& d, const OptSettings&,
+                                std::shared_ptr<OptSolution>*,
+                                const WarmStartParams&)
     {
         if (this->zero_one_form) this->convert_form();
 
@@ -224,7 +226,7 @@ namespace ZonoOpt
 
         for (const auto& comb : combs)
         {
-#if EIGEN_VERSION_AT_LEAST(5,0,0)
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
             const Eigen::Matrix<zono_float, -1, -1> G_comb = Gd(Eigen::placeholders::all, comb);
 #else
             const Eigen::Matrix<zono_float, -1, -1> G_comb = Gd(Eigen::all, comb);
@@ -237,5 +239,14 @@ namespace ZonoOpt
 
         // volume is det_sum
         return det_sum;
+    }
+
+    Eigen::Vector<zono_float, -1> Zono::get_center()
+    {
+        if (this->zero_one_form)
+        {
+            this->convert_form();
+        }
+        return this->c;
     }
 }

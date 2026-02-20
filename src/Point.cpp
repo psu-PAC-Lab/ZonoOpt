@@ -47,13 +47,14 @@ namespace ZonoOpt
 
     Eigen::Vector<zono_float, -1> Point::do_optimize_over(
         const Eigen::SparseMatrix<zono_float>&, const Eigen::Vector<zono_float, -1>&, zono_float,
-        const OptSettings&, OptSolution*) const
+        const OptSettings&, std::shared_ptr<OptSolution>*, const WarmStartParams&) const
     {
         return this->c;
     }
 
     Eigen::Vector<zono_float, -1> Point::do_project_point(const Eigen::Vector<zono_float, -1>& x,
-                                                          const OptSettings&, OptSolution*) const
+                                                          const OptSettings&, std::shared_ptr<OptSolution>*,
+                                                          const WarmStartParams&) const
     {
         // check dimensions
         if (this->n != x.size())
@@ -65,7 +66,7 @@ namespace ZonoOpt
     }
 
     zono_float Point::do_support(const Eigen::Vector<zono_float, -1>& d,
-                                 const OptSettings&, OptSolution*)
+                                 const OptSettings&, std::shared_ptr<OptSolution>*, const WarmStartParams&)
     {
         // check dimensions
         if (this->n != d.size())
@@ -77,7 +78,8 @@ namespace ZonoOpt
     }
 
     bool Point::do_contains_point(const Eigen::Vector<zono_float, -1>& x,
-                                  const OptSettings&, OptSolution*) const
+                                  const OptSettings&, std::shared_ptr<OptSolution>*,
+                                  const WarmStartParams&) const
     {
         if (this->n != x.size())
             throw std::invalid_argument("Contains point: inconsistent dimensions");
@@ -86,7 +88,7 @@ namespace ZonoOpt
         return dist < zono_eps;
     }
 
-    Box Point::do_bounding_box(const OptSettings&, OptSolution*)
+    Box Point::do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>*, const WarmStartParams&)
     {
         return {this->c, this->c};
     }

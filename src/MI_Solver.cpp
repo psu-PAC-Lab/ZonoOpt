@@ -10,15 +10,31 @@ namespace ZonoOpt::detail
             throw std::invalid_argument("MI_solver setup: invalid settings.");
         }
 
-        // check number of threads is valid
-        if (this->data.admm_data->settings.n_threads_bnb > static_cast<int>(std::thread::hardware_concurrency()) - 1)
+        // modify multithreading settings if necessary
+        if (!this->data.admm_data->settings.single_threaded_admm_fp)
         {
-            std::stringstream ss;
-            ss << "MI_solver setup: number of threads for branch and bound (" << this->data.admm_data->settings.
-                n_threads_bnb
-                << ") + convergence monitoring (1) exceeds available threads (" << std::thread::hardware_concurrency()
-                << ").";
-            throw std::invalid_argument(ss.str());
+            if (std::thread::hardware_concurrency() < 2)
+            {
+                std::stringstream ss;
+                ss << "Branch and bound requires at least 2 threads (1 for branch and bound, 1 for convergence monitoring), but only "
+                    << std::thread::hardware_concurrency()
+                    << " are available.";
+
+                throw std::runtime_error(ss.str());
+            }
+
+            while (this->data.admm_data->settings.n_threads_bnb + this->data.admm_data->settings.n_threads_admm_fp >
+                   static_cast<int>(std::thread::hardware_concurrency()) - 1)
+            {
+                if (this->data.admm_data->settings.n_threads_admm_fp > 0)
+                {
+                    this->data.admm_data->settings.n_threads_admm_fp--;
+                }
+                else
+                {
+                    this->data.admm_data->settings.n_threads_bnb--;
+                }
+            }
         }
     }
 
@@ -36,10 +52,10 @@ namespace ZonoOpt::detail
         return std::get<std::pair<std::vector<OptSolution>, OptSolution>>(sol);
     }
 
-    std::unique_ptr<Node, MI_Solver::NodeDeleter> MI_Solver::make_node(const std::shared_ptr<ADMM_data>& data)
+    std::unique_ptr<Node, MI_Solver::NodeDeleter> MI_Solver::make_node(const std::shared_ptr<ADMM_data>& admm_data)
     {
         void* mem = pool.allocate(sizeof(Node), alignof(Node));
-        Node* node = new(mem) Node(data);
+        auto node = new(mem) Node(admm_data);
         return {node, NodeDeleter(&pool)};
     }
 
@@ -69,13 +85,20 @@ namespace ZonoOpt::detail
                 ss << "Finding up to " << max_sols << " solutions to MIQP with " << this->data.admm_data->n_x <<
                     " variables and "
                     << this->data.admm_data->n_cons << " constraints using " << this->data.admm_data->settings.
-                    n_threads_bnb << " branch-and-bound threads.";
+                    n_threads_bnb << " branch-and-bound threads and "
+                    << this->data.admm_data->settings.n_threads_admm_fp << " ADMM-FP threads.";
+            }
+            else if (this->data.admm_data->settings.single_threaded_admm_fp)
+            {
+                ss << "Searching for feasible solution to MIQP with " << this->data.admm_data->n_x << " variables and "
+                    << this->data.admm_data->n_cons << " constraints using ADMM-FP (single-threaded).";
             }
             else
             {
                 ss << "Solving MIQP problem with " << this->data.admm_data->n_x << " variables and "
                     << this->data.admm_data->n_cons << " constraints using " << this->data.admm_data->settings.
-                    n_threads_bnb << " branch-and-bound threads.";
+                    n_threads_bnb << " branch-and-bound threads and "
+                    << this->data.admm_data->settings.n_threads_admm_fp << " ADMM-FP threads.";
             }
             print_str(ss);
         }
@@ -110,7 +133,8 @@ namespace ZonoOpt::detail
 
         // add root node
         this->bnb_data.reset(this->data.admm_data->clone()); // init
-        this->bnb_data->settings.verbose = false;
+        this->bnb_data->settings.verbose = this->data.admm_data->settings.verbose &&
+            this->data.admm_data->settings.single_threaded_admm_fp;
         this->bnb_data->settings.eps_dual = this->data.admm_data->settings.eps_dual_search;
         this->bnb_data->settings.eps_prim = this->data.admm_data->settings.eps_prim_search;
         std::unique_ptr<Node, NodeDeleter> root = this->make_node(this->bnb_data);
@@ -128,18 +152,121 @@ namespace ZonoOpt::detail
             print_str(ss);
         }
 
+        // check if doing ADMM-FP warmstart
+        const bool admm_fp_ws = this->data.admm_data->settings.single_threaded_admm_fp &&
+            this->xi_ws.size() == this->data.admm_data->n_x;
+
         // solve root relaxation
-        root->solve();
-        if (root->solution.infeasible)
+        if (!admm_fp_ws)
         {
-            return return_infeasible_solution();
+            root->solve();
+            if (root->solution.infeasible)
+            {
+                return return_infeasible_solution();
+            }
         }
 
+        // make ADMM-FP thread
+
+        // if contractor has collapsed any integer values, use that information
+        this->admm_fp_data.reset(this->bnb_data->clone()); // copies over matrix factorization
+        this->admm_fp_data->x_box = std::make_shared<MI_Box>(root->get_box().lower(), root->get_box().upper(),
+                                                             this->data.idx_b, this->data.zero_one_form);
+        const zono_float low = this->data.zero_one_form ? zero : -one;
+        constexpr zono_float high = 1;
+        for (int i = this->data.idx_b.first; i < this->data.idx_b.first + this->data.idx_b.second; i++)
+        {
+            bool low_cutoff = std::abs(root->get_box().lower()(i) - low) > zono_eps;
+            bool high_cutoff = std::abs(root->get_box().upper()(i) - high) > zono_eps;
+            if (low_cutoff && high_cutoff)
+            {
+                return return_infeasible_solution();
+            }
+            else if (low_cutoff)
+            {
+                (*this->admm_fp_data->x_box)[i] = Interval(high, high);
+            }
+            else if (high_cutoff)
+            {
+                (*this->admm_fp_data->x_box)[i] = Interval(low, low);
+            }
+        }
+
+        // update ADMM-FP settings
+        this->admm_fp_data->settings.use_interval_contractor = false;
+        this->admm_fp_data->settings.eps_prim = this->data.admm_data->settings.eps_prim;
+        this->admm_fp_data->settings.eps_dual = this->data.admm_data->settings.eps_dual;
+
+        // make object
+        std::unique_ptr<ADMM_FP_solver> pump = std::make_unique<ADMM_FP_solver>(this->admm_fp_data);
+
+        // warm start with root relaxation solution
+        if (admm_fp_ws)
+        {
+            const Eigen::Vector<zono_float, -1> u0 = this->u_ws.size() == this->data.admm_data->n_x
+                                                         ? this->u_ws
+                                                         : Eigen::Vector<zono_float, -1>::Zero(
+                                                             this->data.admm_data->n_x);
+            pump->warmstart(this->xi_ws, u0);
+        }
+        else
+        {
+            pump->warmstart(root->solution.z, root->solution.u);
+        }
+
+        // single-threaded case
+        if (this->data.admm_data->settings.single_threaded_admm_fp)
+        {
+            run_time = 1e-6 * static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(
+                std::chrono::high_resolution_clock::now() - start).count());
+            this->admm_fp_data->settings.t_max = this->data.admm_data->settings.t_max - run_time; // reset max time
+
+            // run ADMM-FP
+            OptSolution sol = pump->solve(nullptr);
+            const int admm_fp_iter = sol.iter;
+
+            // optionally polish
+            if (sol.converged && this->data.admm_data->settings.polish)
+            {
+                const std::shared_ptr<ADMM_data> convex_node_data(this->bnb_data->clone());
+                // copies over matrix factorization
+                for (int i = this->data.idx_b.first; i < this->data.idx_b.first + this->data.idx_b.second; i++)
+                {
+                    (*convex_node_data->x_box)[i] = Interval(sol.z(i), sol.z(i));
+                }
+                convex_node_data->settings.eps_prim = this->data.admm_data->settings.eps_prim; // strengthen tolerances
+                convex_node_data->settings.eps_dual = this->data.admm_data->settings.eps_dual; // strengthen tolerances
+                convex_node_data->settings.use_interval_contractor = true; // use interval contractor
+
+                run_time = 1e-6 * static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(
+                    std::chrono::high_resolution_clock::now() - start).count());
+                convex_node_data->settings.t_max = this->data.admm_data->settings.t_max - run_time;
+
+                ADMM_solver convex_node(convex_node_data);
+                convex_node.warmstart(sol.z, sol.u);
+                sol = convex_node.solve(nullptr);
+            }
+
+            // solution time
+            sol.infeasible = false; // cannot prove infeasibility here
+            sol.iter = admm_fp_iter; // log the admm-fp iterations
+            sol.run_time = 1e-6 * static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(
+                std::chrono::high_resolution_clock::now() - start).count());
+
+            return sol;
+        }
         // start threads
         std::vector<std::thread> bnb_threads;
         for (int i = 0; i < this->data.admm_data->settings.n_threads_bnb; i++)
         {
             bnb_threads.emplace_back([this]() { worker_loop(); });
+        }
+
+        std::vector<std::thread> fp_threads;
+        for (int i = 0; i < this->data.admm_data->settings.n_threads_admm_fp; i++)
+        {
+            auto admm_fp_node = std::make_unique<ADMM_FP_solver>(*pump);
+            fp_threads.emplace_back([this, node=std::move(admm_fp_node)]() mutable { admm_fp_loop(std::move(node)); });
         }
 
         // push root to node queue
@@ -149,9 +276,11 @@ namespace ZonoOpt::detail
         int print_iter = 0;
         if (this->data.admm_data->settings.verbose)
         {
-            ss << std::endl << std::setw(10) << "Iter" << std::setw(10) << "Queue" << std::setw(10) <<
-                "Threads" << std::setw(10) << "Time [s]" << std::setw(10) << "J_min" << std::setw(10) <<
-                "J_max" << std::setw(10) << "Gap [%]" << std::setw(10) << "Feasible" << std::setw(10);
+            ss << std::endl << std::setw(13) << "Iter" << std::setw(13) << "Queue" << std::setw(13) <<
+                "ADMM-FP Iter" << std::setw(13) <<
+                "Threads" << std::setw(13) << "Time [s]" << std::setw(13) << "J_min" << std::setw(13) <<
+                "J_max" << std::setw(13) << "Gap [%]" << std::setw(13) << "Feasible" << std::setw(13) <<
+                "ADMM-FP sol" << std::endl;
             print_str(ss);
         }
 
@@ -235,11 +364,13 @@ namespace ZonoOpt::detail
             if (this->data.admm_data->settings.verbose && (this->iter >= print_iter))
             {
                 size_t n_threads = this->J_threads.size();
-                ss << std::setw(10) << this->iter << std::setw(10) << queue_size << std::setw(10)
-                    << n_threads << std::setw(10) << run_time << std::setw(10)
-                    << J_min << std::setw(10) << this->J_max << std::setw(10)
-                    << gap_percent * 100.0f << std::setw(10)
-                    << (this->feasible ? "true" : "false") << std::endl;
+                ss << std::setw(13) << this->iter << std::setw(13) << queue_size << std::setw(13)
+                    << this->iter_admm_fp << std::setw(13)
+                    << n_threads << std::setw(13) << run_time << std::setw(13)
+                    << J_min << std::setw(13) << this->J_max << std::setw(13)
+                    << gap_percent * 100.0f << std::setw(13)
+                    << (this->feasible ? "true" : "false") << std::setw(13)
+                    << (this->feasible ? (this->admm_fp_incumbent ? "true" : "false") : "") << std::endl;
                 print_str(ss);
                 print_iter += this->data.admm_data->settings.verbosity_interval;
             }
@@ -247,6 +378,7 @@ namespace ZonoOpt::detail
 
         // clean up
         pq_cv_bnb.notify_all(); // notify all threads to stop waiting
+        pq_cv_admm_fp.notify_all();
         {
             std::lock_guard<std::mutex> lock(pq_mtx);
             this->node_queue.clear();
@@ -254,6 +386,10 @@ namespace ZonoOpt::detail
         this->J_threads.clear();
 
         for (auto& thread : bnb_threads)
+        {
+            if (thread.joinable()) thread.join();
+        }
+        for (auto& thread : fp_threads)
         {
             if (thread.joinable()) thread.join();
         }
@@ -297,7 +433,9 @@ namespace ZonoOpt::detail
                     static_cast<double>(this->qp_iter) / static_cast<double>(this->iter)
                     << ", Average solve time = " << this->total_run_time.get() / static_cast<double>(this->iter) <<
                     " sec, Average startup time = "
-                    << this->total_startup_time.get() / static_cast<double>(this->iter) << " sec" << std::endl;
+                    << this->total_startup_time.get() / static_cast<double>(this->iter) <<
+                    " sec, Solution from ADMM-FP? "
+                    << (this->admm_fp_incumbent ? "true" : "false") << std::endl;
                 print_str(ss);
             }
 
@@ -378,6 +516,7 @@ namespace ZonoOpt::detail
                     this->primal_residual = node->solution.primal_residual;
                     this->dual_residual = node->solution.dual_residual;
                     this->feasible = true;
+                    this->admm_fp_incumbent = false;
 
                     // prune
                     if (!this->multi_sol) this->prune(node->solution.J);
@@ -390,6 +529,77 @@ namespace ZonoOpt::detail
         }
 
         cleanup(); // cleanup function
+    }
+
+    void MI_Solver::admm_fp_solve(const std::unique_ptr<ADMM_FP_solver>& node)
+    {
+        // solve
+        OptSolution sol = node->solve(&this->done);
+        if (this->done)
+        {
+            ++this->iter_admm_fp;
+            return;
+        }
+
+        // refine if converged and likely to be incumbent
+        if (sol.converged && sol.J < this->J_max - zono_eps)
+        {
+            // polishing
+            if (this->data.admm_data->settings.polish)
+            {
+                const std::shared_ptr<ADMM_data> convex_node_data(this->bnb_data->clone());
+                // copies over matrix factorization
+                for (int i = this->data.idx_b.first; i < this->data.idx_b.first + this->data.idx_b.second; i++)
+                {
+                    (*convex_node_data->x_box)[i] = Interval(sol.z(i), sol.z(i));
+                }
+                convex_node_data->settings.eps_prim = this->data.admm_data->settings.eps_prim; // strengthen tolerances
+                convex_node_data->settings.eps_dual = this->data.admm_data->settings.eps_dual; // strengthen tolerances
+                convex_node_data->settings.use_interval_contractor = true; // use interval contractor
+
+                ADMM_solver convex_node(convex_node_data);
+                convex_node.warmstart(sol.z, sol.u);
+                sol = convex_node.solve(&this->done);
+            }
+
+            // make sure return conditions are not met after refining
+            if (sol.infeasible || !sol.converged || (sol.J > this->J_max && !this->multi_sol))
+            {
+                ++this->iter_admm_fp;
+                return;
+            }
+
+            // store solution if doing multisol
+            if (this->multi_sol)
+            {
+                std::function<bool(const OptSolution&, const OptSolution&)> compare_eq = [this
+                    ](const OptSolution& a, const OptSolution& b)
+                {
+                    return this->check_bin_equal(a, b);
+                };
+                if (!this->solutions.contains(sol, compare_eq)) // new solution
+                    this->solutions.push_back(sol);
+            }
+
+            // new incumbent
+            if (sol.J < this->J_max - zono_eps) // check if node is better than current best
+            {
+                // update incumbent
+                this->J_max = sol.J;
+                this->x.set(sol.x);
+                this->z.set(sol.z);
+                this->u.set(sol.u);
+                this->primal_residual = sol.primal_residual;
+                this->dual_residual = sol.dual_residual;
+                this->feasible = true;
+                this->admm_fp_incumbent = true;
+
+                // prune
+                if (!this->multi_sol) this->prune(sol.J);
+            }
+        }
+
+        ++this->iter_admm_fp; // increment ADMM-FP iterations
     }
 
     bool MI_Solver::is_integer_feasible(const Eigen::Ref<const Eigen::Vector<zono_float, -1>> xb) const
@@ -417,12 +627,12 @@ namespace ZonoOpt::detail
         // round and find most fractional variable
         const Eigen::Array<zono_float, -1, 1> xb = node->solution.z.segment(
             this->data.idx_b.first, this->data.idx_b.second).array();
-        Eigen::Array<zono_float, -1, 1> l(xb.size());
-        Eigen::Array<zono_float, -1, 1> u(xb.size());
-        l.setConstant(low);
-        u.setConstant(high);
-        const Eigen::Array<zono_float, -1, 1> d_l = (xb - l).abs();
-        const Eigen::Array<zono_float, -1, 1> d_u = (xb - u).abs();
+        Eigen::Array<zono_float, -1, 1> lower(xb.size());
+        Eigen::Array<zono_float, -1, 1> upper(xb.size());
+        lower.setConstant(low);
+        upper.setConstant(high);
+        const Eigen::Array<zono_float, -1, 1> d_l = (xb - lower).abs();
+        const Eigen::Array<zono_float, -1, 1> d_u = (xb - upper).abs();
         const Eigen::Array<zono_float, -1, 1> d = d_l.min(d_u); // distance to rounded value
         int idx_most_frac;
         d.maxCoeff(&idx_most_frac); // index of most fractional variable
@@ -505,18 +715,34 @@ namespace ZonoOpt::detail
         }
     }
 
+    void MI_Solver::admm_fp_loop(std::unique_ptr<ADMM_FP_solver>&& node)
+    {
+        admm_fp_solve(node); // warm-started with root relaxation solution
+        while (!this->done)
+        {
+            {
+                std::unique_lock<std::mutex> lock(pq_mtx);
+                pq_cv_admm_fp.wait(lock, [this]() { return this->done || !this->node_queue.empty(); });
+                if (this->done) return;
+                node->warmstart(this->node_queue.top()->solution.z, this->node_queue.top()->solution.u);
+            }
+            admm_fp_solve(node);
+        }
+    }
+
     void MI_Solver::push_node(std::unique_ptr<Node, NodeDeleter>&& node)
     {
         std::unique_lock<std::mutex> lock(pq_mtx);
         this->node_queue.push(std::move(node));
         pq_cv_bnb.notify_one();
+        pq_cv_admm_fp.notify_one();
     }
 
-    void MI_Solver::prune(const zono_float J_max)
+    void MI_Solver::prune(const zono_float J_prune)
     {
-        // create node with J = J_max
+        // create node with J = J_prune
         const std::unique_ptr<Node, NodeDeleter> n = this->make_node(this->bnb_data);
-        n->solution.J = J_max;
+        n->solution.J = J_prune;
         {
             std::lock_guard<std::mutex> lock(pq_mtx);
             this->node_queue.prune(n);

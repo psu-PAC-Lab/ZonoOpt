@@ -104,6 +104,70 @@ namespace ZonoOpt
             return std::make_unique<Point>(c);
     }
 
+    std::unique_ptr<HybZono> affine_inclusion(const HybZono& Z, const IntervalMatrix& R,
+                                              const Eigen::Vector<zono_float, -1>& s)
+    {
+        // check dimensions
+        Eigen::Vector<zono_float, -1> s_def;
+        const Eigen::Vector<zono_float, -1>* s_ptr = nullptr;
+        if (s.size() == 0) // default argument
+        {
+            s_def.resize(R.rows());
+            s_def.setZero();
+            s_ptr = &s_def;
+        }
+        else
+        {
+            s_ptr = &s;
+        }
+
+        if (R.cols() != static_cast<size_t>(Z.n) || static_cast<size_t>(s_ptr->size()) != R.rows())
+        {
+            throw std::invalid_argument("Affine inclusion: invalid input dimensions.");
+        }
+
+        // early exit
+        if (Z.is_empty_set())
+        {
+            return std::make_unique<EmptySet>(static_cast<int>(R.rows()));
+        }
+
+        // get bounding zonotope
+        const auto X_bar = Z.convex_relaxation()->to_zono_approx();
+        if (X_bar->is_0_1_form())
+        {
+            X_bar->convert_form();
+        }
+
+        // get m box
+        const Box m = R.radius() * X_bar->get_c();
+
+        // get P diagonal matrix
+        const Eigen::SparseMatrix<zono_float, Eigen::RowMajor> diam_R_abs_M = R.diam() * X_bar->get_G().cwiseAbs();
+        std::vector<Eigen::Triplet<zono_float>> triplets;
+        for (size_t i = 0; i < R.rows(); ++i)
+        {
+            triplets.emplace_back(i, i, 0.5 * (m[i].width() + diam_R_abs_M.row(i).sum()));
+        }
+        Eigen::SparseMatrix<zono_float> P(R.rows(), R.rows());
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
+        P.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
+        P.setFromTriplets(triplets.begin(), triplets.end());
+#endif
+
+        // P zonotope
+        Zono P_zono(P, *s_ptr, false);
+
+        // affine map
+        auto Z_out = affine_map(Z, R.center());
+
+        // minkowski sum P zonotope
+        Z_out = minkowski_sum(*Z_out, P_zono);
+
+        return Z_out;
+    }
+
     std::unique_ptr<HybZono> project_onto_dims(const HybZono& Z, const std::vector<int>& dims)
     {
         // make sure all dims are >= 0 and < n
@@ -503,7 +567,7 @@ namespace ZonoOpt
                 triplets.emplace_back(i, i, d);
             }
             Eigen::SparseMatrix<zono_float> D(Z1.nG, Z1.nG);
-#if EIGEN_VERSION_AT_LEAST(5,0,0)
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
             D.setFromSortedTriplets(triplets.begin(), triplets.end());
 #else
             D.setFromTriplets(triplets.begin(), triplets.end());
@@ -808,6 +872,24 @@ namespace ZonoOpt
         return std::make_unique<HybZono>(Gc, Gb, c, Ac, Ab, b, true, sharp);
     }
 
+    std::unique_ptr<ConZono> convex_hull(const std::vector<std::shared_ptr<HybZono>>& Zs_in)
+    {
+        // make sure all sets are sharp
+        for (const auto& Z : Zs_in)
+        {
+            if (!Z->sharp)
+            {
+                throw std::invalid_argument("Convex hull: all input sets must be sharp.");
+            }
+        }
+
+        // get union
+        const std::unique_ptr<HybZono> Z_union = union_of_many(Zs_in, true);
+
+        // take convex relaxation
+        return Z_union->convex_relaxation();
+    }
+
     std::unique_ptr<HybZono> cartesian_product(const HybZono& Z1, HybZono& Z2)
     {
         // trivial case
@@ -996,7 +1078,7 @@ namespace ZonoOpt
 
     std::unique_ptr<HybZono> HybZono::do_complement(const zono_float delta_m, const bool remove_redundancy,
                                                     const OptSettings& settings,
-                                                    OptSolution* solution, const int n_leaves,
+                                                    std::shared_ptr<OptSolution>* solution, const int n_leaves,
                                                     const int contractor_iter)
     {
         // make sure set in [-1,1] form
@@ -1028,8 +1110,8 @@ namespace ZonoOpt
         return Z_out;
     }
 
-    std::unique_ptr<HybZono> ConZono::do_complement(const zono_float delta_m, bool, const OptSettings&, OptSolution*,
-                                                    int, int)
+    std::unique_ptr<HybZono> ConZono::do_complement(const zono_float delta_m, bool, const OptSettings&,
+                                                    std::shared_ptr<OptSolution>*, int, int)
     {
         // make sure in [-1,1] form
         if (this->is_0_1_form()) this->convert_form();
@@ -1258,7 +1340,8 @@ namespace ZonoOpt
 
     std::unique_ptr<HybZono> set_diff(const HybZono& Z1, HybZono& Z2, const zono_float delta_m,
                                       const bool remove_redundancy,
-                                      const OptSettings& settings, OptSolution* solution, const int n_leaves,
+                                      const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+                                      const int n_leaves,
                                       const int contractor_iter)
     {
         // trivial case
@@ -1275,7 +1358,7 @@ namespace ZonoOpt
     }
 
     // setup functions
-    std::unique_ptr<HybZono> zono_union_2_hybzono(std::vector<Zono>& Zs, const bool expose_indicators)
+    std::unique_ptr<HybZono> zono_union_2_hybzono(std::vector<std::shared_ptr<Zono>>& Zs, const bool expose_indicators)
     {
         // can't be empty
         if (Zs.empty())
@@ -1284,22 +1367,22 @@ namespace ZonoOpt
         }
 
         // zonotope dimension
-        int n_dims = Zs[0].n;
+        int n_dims = Zs[0]->n;
         const int n_zonos = static_cast<int>(Zs.size());
 
         // loop through Zs
         for (auto& Z : Zs)
         {
             // make sure dimensions are consistent
-            if (Z.n != n_dims)
+            if (Z->n != n_dims)
             {
                 throw std::invalid_argument("Zono union: inconsistent dimensions.");
             }
 
             // convert to [0,1] form
-            if (!Z.zero_one_form)
+            if (!Z->zero_one_form)
             {
-                Z.convert_form();
+                Z->convert_form();
             }
         }
 
@@ -1316,8 +1399,8 @@ namespace ZonoOpt
         // loop through each polytope
         for (int i = 0; i < n_zonos; i++)
         {
-            n_gens = Zs[i].nG;
-            Gd = Zs[i].G.toDense();
+            n_gens = Zs[i]->nG;
+            Gd = Zs[i]->G.toDense();
             for (int j = 0; j < n_gens; j++)
             {
                 // check if the generator is already in S_vec
@@ -1372,7 +1455,7 @@ namespace ZonoOpt
         {
             for (int j = 0; j < n_dims; ++j)
             {
-                tripvec.emplace_back(j, i, Zs[i].c(j));
+                tripvec.emplace_back(j, i, Zs[i]->c(j));
             }
         }
         for (int i = n_dims; i < n_out; ++i)
@@ -1509,7 +1592,7 @@ namespace ZonoOpt
             tripvec.emplace_back(i, i - n_dims, one);
         }
         Eigen::SparseMatrix<zono_float> Gb(n_out, n_polys);
-#if EIGEN_VERSION_AT_LEAST(5,0,0)
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
         Gb.setFromSortedTriplets(tripvec.begin(), tripvec.end());
 #else
         Gb.setFromTriplets(tripvec.begin(), tripvec.end());
@@ -1600,7 +1683,7 @@ namespace ZonoOpt
         {
             triplets.emplace_back(i, i, box[i].width() / two);
         }
-#if EIGEN_VERSION_AT_LEAST(5,0,0)
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
         G.setFromSortedTriplets(triplets.begin(), triplets.end());
 #else
         G.setFromTriplets(triplets.begin(), triplets.end());
@@ -1653,11 +1736,27 @@ namespace ZonoOpt
     // convex relaxation
     std::unique_ptr<ConZono> HybZono::convex_relaxation() const
     {
-        return std::make_unique<ConZono>(this->G, this->c, this->A, this->b, this->zero_one_form);
+        if (this->is_empty_set())
+        {
+            return std::make_unique<EmptySet>(this->n);
+        }
+        else if (this->nG == 0)
+        {
+            return std::make_unique<Point>(this->c);
+        }
+        else if (this->nC == 0 && this->nGb == 0)
+        {
+            return std::make_unique<Zono>(this->G, this->c, this->zero_one_form);
+        }
+        else
+        {
+            return std::make_unique<ConZono>(this->G, this->c, this->A, this->b, this->zero_one_form);
+        }
     }
 
     // bounding box
-    Box HybZono::do_bounding_box(const OptSettings& settings, OptSolution* solution)
+    Box HybZono::do_bounding_box(const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+                                 const WarmStartParams& warm_start_params)
     {
         // if sharp, compute from convex relaxation
         if (this->sharp)
@@ -1687,6 +1786,7 @@ namespace ZonoOpt
         // mixed-integer solution
 
         // get support in all box directions
+        auto sol_in = std::make_shared<OptSolution>();
         for (int i = 0; i < this->n; i++)
         {
             // negative direction
@@ -1697,7 +1797,7 @@ namespace ZonoOpt
             q = -this->G.transpose() * d;
 
             // solve
-            OptSolution sol = this->mi_opt(P, q, 0, this->A, this->b, settings);
+            OptSolution sol = this->mi_opt(P, q, 0, this->A, this->b, settings, &sol_in, warm_start_params);
             if (sol.infeasible)
                 throw std::invalid_argument("Bounding box: Z is empty");
             else
@@ -1711,7 +1811,7 @@ namespace ZonoOpt
             q = -this->G.transpose() * d;
 
             // solve
-            sol = this->mi_opt(P, q, 0, this->A, this->b, settings);
+            sol = this->mi_opt(P, q, 0, this->A, this->b, settings, &sol_in, warm_start_params);
             if (sol.infeasible)
                 throw std::invalid_argument("Bounding box: Z is empty");
             else
@@ -1725,7 +1825,7 @@ namespace ZonoOpt
     }
 
     zono_float HybZono::do_support(const Eigen::Vector<zono_float, -1>& d, const OptSettings& settings,
-                                   OptSolution* solution)
+                                   std::shared_ptr<OptSolution>* solution, const WarmStartParams& warm_start_params)
     {
         // check dimensions
         if (this->n != d.size())
@@ -1745,7 +1845,7 @@ namespace ZonoOpt
         Eigen::Vector<zono_float, -1> q = -this->G.transpose() * d;
 
         // solve MIQP
-        const OptSolution sol = this->mi_opt(P, q, 0, this->A, this->b, settings, solution);
+        const OptSolution sol = this->mi_opt(P, q, 0, this->A, this->b, settings, solution, warm_start_params);
 
         // check feasibility and return solution
         if (sol.infeasible) // Z is empty
@@ -1755,10 +1855,13 @@ namespace ZonoOpt
     }
 
     std::vector<ConZono> HybZono::get_leaves(const bool remove_redundancy, const OptSettings& settings,
-                                             OptSolution* solution, const int n_leaves, const int contractor_iter) const
+                                             std::shared_ptr<OptSolution>* solution, const int n_leaves,
+                                             const int contractor_iter) const
     {
         // allocate all threads to branch and bound
         OptSettings settings_get_leaves = settings;
+        settings_get_leaves.n_threads_bnb += settings.n_threads_admm_fp;
+        settings_get_leaves.n_threads_admm_fp = 0;
 
         // get leaves as conzonos
         const std::vector<Eigen::Vector<zono_float, -1>> bin_leaves = this->get_bin_leaves(
@@ -1899,7 +2002,7 @@ namespace ZonoOpt
                 triplets.emplace_back(i, this->nG + this->nC, Qinv_e_j(i));
             }
             Eigen::SparseMatrix<zono_float> M(this->nG + this->nC + 1, this->nG + this->nC + 1);
-#if EIGEN_VERSION_AT_LEAST(5,0,0)
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
             M.setFromSortedTriplets(triplets.begin(), triplets.end());
 #else
             M.setFromTriplets(triplets.begin(), triplets.end());
@@ -1973,7 +2076,7 @@ namespace ZonoOpt
             triplets.emplace_back(j, j - 1, one);
         }
         Eigen::SparseMatrix<zono_float> dG(this->nG, this->nG - 1);
-#if EIGEN_VERSION_AT_LEAST(5,0,0)
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
         dG.setFromSortedTriplets(triplets.begin(), triplets.end());
 #else
         dG.setFromTriplets(triplets.begin(), triplets.end());
@@ -1990,7 +2093,7 @@ namespace ZonoOpt
             triplets.emplace_back(i - 1, i, one);
         }
         Eigen::SparseMatrix<zono_float> dA(this->nC - 1, this->nC);
-#if EIGEN_VERSION_AT_LEAST(5,0,0)
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
         dA.setFromSortedTriplets(triplets.begin(), triplets.end());
 #else
         dA.setFromTriplets(triplets.begin(), triplets.end());
@@ -2013,7 +2116,7 @@ namespace ZonoOpt
         }
 
         // compute SVD of A
-#if EIGEN_VERSION_AT_LEAST(5,0,0)
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
         const Eigen::BDCSVD<Eigen::Matrix<zono_float, -1, -1>, Eigen::ComputeFullV | Eigen::ComputeFullU> svd(
             this->A.toDense());
 #else

@@ -102,8 +102,7 @@ $$</p>
 <p><img alt="image" src="_static/conzono_plot.svg" /></p>
 <p>Hybrid zonotopes extend constrained zonotopes by allowing for a subset of the factors $\xi$ to be binary-valued, i.e.,
 $\xi = [\xi_c \quad \xi_b]^T$ where $\xi_c \in [-1, 1]^{nGc}$ and $\xi_b \in \lbrace -1, 1 \rbrace^{nGb}$.
-A set $\mathcal{Z}_H$ is then a hybrid zonotope if there exist generator matrices $G_c$ and $G_b$, center $c$,
-and constraint matrices $A_c$ and $A_b$, and constraint vector $b$ such that</p>
+A set $\mathcal{Z}_H$ is then a hybrid zonotope if there exist generator matrices $G_c$ and $G_b$, center $c$, constraint matrices $A_c$ and $A_b$, and constraint vector $b$ such that</p>
 <p>$$
 \mathcal{Z}_H = \left\lbrace
 \begin{bmatrix} G_c &amp; G_b \end{bmatrix} \begin{bmatrix} \xi_c \ \xi_b \end{bmatrix} + c \; : \;
@@ -113,7 +112,7 @@ and constraint matrices $A_c$ and $A_b$, and constraint vector $b$ such that</p>
 \end{matrix}
 \right\rbrace \;.
 $$</p>
-<p>Hybrid zonotopes represent unions of non-convex polytopes.</p>
+<p>Hybrid zonotopes represent unions of convex polytopes.</p>
 <p><img alt="image" src="_static/hybzono_plot.svg" /></p>
 </section>
 <section id="zonoopt-features">
@@ -279,8 +278,9 @@ We may do this in Python as follows:</p>
 </section>
 <section id="references">
 <h3>References<a class="headerlink" href="#references" title="Link to this heading"></a></h3>
-<p>More information about ZonoOpt can be found in the following publication. Please cite this if you publish work based on ZonoOpt:
-<strong>Robbins, J.A., Siefert, J.A., and Pangborn, H.C., “Sparsity-Promoting Reachability Analysis and Optimization of Constrained Zonotopes,” 2025. <a class="reference external" href="https://doi.org/10.48550/arXiv.2504.03885">https://arxiv.org/abs/2504.03885</a>.</strong></p>
+<p>More information about ZonoOpt can be found in the following publications. Please cite one or both of these as appropriate if you use ZonoOpt in your published work:</p>
+<p><strong>Robbins, J.A., Siefert, J.A., and Pangborn, H.C., “Sparsity-Promoting Reachability Analysis and Optimization of Constrained Zonotopes,” 2025. <a class="reference external" href="https://doi.org/10.48550/arXiv.2504.03885">https://arxiv.org/abs/2504.03885</a>.</strong></p>
+<p><strong>Robbins, J.A., Thompson, A.F., Glunt, J.J., and Pangborn, H.C., “Hybrid System Planning using a Mixed-Integer ADMM Heuristic and Hybrid Zonotopes”, 2026. <a class="reference external" href="https://doi.org/10.48550/arXiv.2602.17574">https://arxiv.org/abs/2602.17574</a></strong></p>
 </section>
 <section id="see-also">
 <h3>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h3>
@@ -299,13 +299,18 @@ We may do this in Python as follows:</p>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.IneqType"><code class="docutils literal notranslate"><span class="pre">IneqType</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.Inequality"><code class="docutils literal notranslate"><span class="pre">Inequality</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.Interval"><code class="docutils literal notranslate"><span class="pre">Interval</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.IntervalMatrix"><code class="docutils literal notranslate"><span class="pre">IntervalMatrix</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.OptSettings"><code class="docutils literal notranslate"><span class="pre">OptSettings</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.OptSolution"><code class="docutils literal notranslate"><span class="pre">OptSolution</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.Point"><code class="docutils literal notranslate"><span class="pre">Point</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.WarmStartParams"><code class="docutils literal notranslate"><span class="pre">WarmStartParams</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.Zono"><code class="docutils literal notranslate"><span class="pre">Zono</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.affine_inclusion"><code class="docutils literal notranslate"><span class="pre">affine_inclusion()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.affine_map"><code class="docutils literal notranslate"><span class="pre">affine_map()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.cartesian_product"><code class="docutils literal notranslate"><span class="pre">cartesian_product()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.constrain"><code class="docutils literal notranslate"><span class="pre">constrain()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.convex_hull"><code class="docutils literal notranslate"><span class="pre">convex_hull()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.from_json"><code class="docutils literal notranslate"><span class="pre">from_json()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.get_vertices"><code class="docutils literal notranslate"><span class="pre">get_vertices()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.halfspace_intersection"><code class="docutils literal notranslate"><span class="pre">halfspace_intersection()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.intersection"><code class="docutils literal notranslate"><span class="pre">intersection()</span></code></a></li>
@@ -317,6 +322,7 @@ We may do this in Python as follows:</p>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.pontry_diff"><code class="docutils literal notranslate"><span class="pre">pontry_diff()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.project_onto_dims"><code class="docutils literal notranslate"><span class="pre">project_onto_dims()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.set_diff"><code class="docutils literal notranslate"><span class="pre">set_diff()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.to_json"><code class="docutils literal notranslate"><span class="pre">to_json()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.union_of_many"><code class="docutils literal notranslate"><span class="pre">union_of_many()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.vrep_2_conzono"><code class="docutils literal notranslate"><span class="pre">vrep_2_conzono()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.vrep_2_hybzono"><code class="docutils literal notranslate"><span class="pre">vrep_2_hybzono()</span></code></a></li>
@@ -326,7 +332,7 @@ We may do this in Python as follows:</p>
 </ul>
 </div>
 <div class="math notranslate nohighlight">
-\phantom{x}</div></section>
+</div></section>
 
 
            </div>

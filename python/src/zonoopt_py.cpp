@@ -29,7 +29,7 @@ PYBIND11_MODULE(_core, m)
         .def_readwrite("t_max", &OptSettings::t_max, "max time for optimization")
         .def_readwrite("use_interval_contractor", &OptSettings::use_interval_contractor, "flag to use interval contractor for constraint tightening / implication")
         .def_readwrite("contractor_iter", &OptSettings::contractor_iter, "number of interval contractor iterations")
-        .def_readwrite("k_max_admm", &OptSettings::k_max_admm, "max admm iterations")
+        .def_readwrite("k_max_admm", &OptSettings::k_max_admm, "max convex admm iterations")
         .def_readwrite("rho", &OptSettings::rho, "admm penalty parameter, higher prioritizes feasibility during iterations, lower prioritizes optimality")
         .def_readwrite("eps_dual", &OptSettings::eps_dual, "dual convergence tolerance")
         .def_readwrite("eps_prim", &OptSettings::eps_prim, "primal convergence tolerance")
@@ -47,9 +47,30 @@ PYBIND11_MODULE(_core, m)
         .def_readwrite("eps_a", &OptSettings::eps_a, "absolute convergence tolerance")
         .def_readwrite("k_max_bnb", &OptSettings::k_max_bnb, "max number of branch-and-bound iterations")
         .def_readwrite("n_threads_bnb", &OptSettings::n_threads_bnb, "max threads for branch and bound")
+        .def_readwrite("n_threads_admm_fp", &OptSettings::n_threads_admm_fp, "max threads for ADMM-FP")
+        .def_readwrite("single_threaded_admm_fp", &OptSettings::single_threaded_admm_fp,
+            "enables single-threaded ADMM-FP solution, overrides n_threads_bnb, n_threads_admm_fp")
         .def_readwrite("max_nodes", &OptSettings::max_nodes, "terminate if more than this many nodes are in branch and bound queue")
         .def_readwrite("contractor_tree_search_depth", &OptSettings::contractor_tree_search_depth, 
             "when applying interval contractor in branch and bound, this is how deep to search the constraint tree for affected variables")
+        .def_readwrite("k_max_admm_fp_ph1", &OptSettings::k_max_admm_fp_ph1,
+            "max ADMM iterations for ADMM-FP phase 1 (objective included)")
+        .def_readwrite("k_max_admm_fp_ph2", &OptSettings::k_max_admm_fp_ph2,
+            "max ADMM iterations for ADMM-FP phase 2 (no objective)")
+        .def_readwrite("cycle_detection_buffer_size", &OptSettings::cycle_detection_buffer_size,
+            "in ADMM-FP, this is the max size of the buffer that checks for cycles")
+        .def_readwrite("enable_perturb_admm_fp", &OptSettings::enable_perturb_admm_fp,
+            "enable perturbations in ADMM-FP")
+        .def_readwrite("enable_restart_admm_fp", &OptSettings::enable_restart_admm_fp,
+            "enable restarts (significant perturbations) in ADMM-FP")
+        .def_readwrite("eps_perturb", &OptSettings::eps_perturb,
+            "relative tolerance for cycling detection in ADMM-FP, triggers perturbation")
+        .def_readwrite("k_restart", &OptSettings::k_restart,
+            "perform restart operation if primal residual does not improve over this many iterations in ADMM-FP")
+        .def_readwrite("enable_rng_seed", &OptSettings::enable_rng_seed,
+            "enable rng seed for ADMM-FP")
+        .def_readwrite("rng_seed", &OptSettings::rng_seed,
+            "rng seed for ADMM-FP")
         .def("settings_valid", &OptSettings::settings_valid, "check whether settings struct is valid")
         .def("__repr__", &OptSettings::print,
             R"pbdoc(
@@ -57,6 +78,14 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     str: string
+            )pbdoc")
+        .def("copy", [](const  OptSettings& self) -> OptSettings
+            { return self; },
+            R"pbdoc(
+                Copy settings object
+
+                Returns:
+                    OptSettings: copy of settings
             )pbdoc")
     ;
 
@@ -79,6 +108,31 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     str: string
+            )pbdoc")
+        .def("copy", [](const OptSolution& self) -> OptSolution
+            { return self; },
+            R"pbdoc(
+                Copy solution object
+
+                Returns:
+                    OptSolution: copy of solution
+            )pbdoc")
+    ;
+
+    py::class_<WarmStartParams>(m, "WarmStartParams",
+        R"pbdoc(
+            Warm start parameters for optimization routines in ZonoOpt library.
+        )pbdoc")
+        .def(py::init())
+        .def_readwrite("z", &WarmStartParams::z, "warm start primal variable")
+        .def_readwrite("u", &WarmStartParams::u, "warm start dual variable")
+        .def("copy", [](const WarmStartParams& self) -> WarmStartParams
+            { return self; },
+            R"pbdoc(
+                Copy warm start parameters object
+
+                Returns:
+                    WarmStartParams: copy of warm start parameters
             )pbdoc")
     ;
 
@@ -105,7 +159,7 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     str: string representation of interval
             )pbdoc")
-        .def("__copy__", &Interval::clone,
+        .def("copy", &Interval::clone,
             R"pbdoc(
                 Copy interval object
 
@@ -218,6 +272,15 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     float: center of interval
+            )pbdoc")
+        .def("radius", &Interval::radius,
+            R"pbdoc(
+                Gets radius of interval
+
+                Returns interval centered at zero with width equal to the width of the original interval
+
+                Returns:
+                    Interval: radius of interval
             )pbdoc")
         .def("sin", &Interval::sin,
             R"pbdoc(
@@ -345,10 +408,19 @@ PYBIND11_MODULE(_core, m)
             R"pbdoc(
                 Get width of box.
 
-                Specifically, this returns the sum of the widths of each interval in the box
+                Specifically, this returns the max width for any interval in the box
 
                 Returns:
                     float: width of box
+            )pbdoc")
+        .def("radius", &Box::radius,
+            R"pbdoc(
+                Get radius of box
+
+                Returns box with intervals centered at zero with width equal to the width of the original box
+
+                Returns:
+                    Box: radius of box
             )pbdoc")
         .def("center", &Box::center,
             R"pbdoc(
@@ -447,6 +519,141 @@ PYBIND11_MODULE(_core, m)
                     Box: self / other (elementwise)
             )pbdoc")
     ;
+
+    // interval matrix
+    py::class_<IntervalMatrix>(m, "IntervalMatrix", "Interval matrix class")
+        .def(py::init<const Eigen::SparseMatrix<zono_float>&, const Eigen::SparseMatrix<zono_float>&>(),
+            py::arg("mat_lb"), py::arg("mat_ub"),
+            R"pbdoc(
+                IntervalMatrix constructor
+
+                Args:
+                    mat_lb (scipy.sparse.csc_matrix): matrix of lower bounds
+                    mat_ub (scipy.sparse.csc_matrix): matrix of upper bounds
+            )pbdoc")
+        .def("center", &IntervalMatrix::center,
+            R"pbdoc(
+                Get center matrix
+
+                Each element of center matrix is the center of the corresponding interval in the interval matrix
+
+                Returns:
+                    scipy.sparse.csc_matrix: center matrix
+            )pbdoc")
+        .def("diam", &IntervalMatrix::diam,
+            R"pbdoc(
+                Get diameter matrix
+
+                Each element of the diameter matrix is the width of the corresponding interval in the interval matrix
+
+                Returns:
+                    scipy.sparse.csc_matrix: diameter matrix
+            )pbdoc")
+        .def("width", &IntervalMatrix::width,
+            R"pbdoc(
+                Get width of interval matrix
+
+                Specifically, this returns the max width for any interval in the interval matrix
+
+                Returns:
+                    float: width of interval matrix
+            )pbdoc")
+        .def("radius", &IntervalMatrix::radius,
+            R"pbdoc(
+                Get radius of interval matrix
+
+                Returns interval matrix with intervals centered at zero with width equal to the width of the original interval matrix
+
+                Returns:
+                    IntervalMatrix: radius of interval matrix
+            )pbdoc")
+        .def("__mul__", [](const IntervalMatrix& self, const Eigen::Vector<zono_float, -1>& v) -> Box
+            { return self*v; }, py::arg("v"),
+            R"pbdoc(
+                IntervalMatrix multiplication with vector
+
+                Args:
+                    v (numpy.array): rhs vector
+
+                Returns:
+                    Box: resulting box
+            )pbdoc")
+        .def("__mul__", [](const IntervalMatrix& self, const Box& box) -> Box
+            { return self*box; }, py::arg("box"),
+            R"pbdoc(
+                IntervalMatrix multiplication with Box
+
+                Args:
+                    box (Box): rhs box
+
+                Returns:
+                    Box: resulting box
+            )pbdoc")
+        .def("__mul__", [](const IntervalMatrix& self, const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A) -> IntervalMatrix
+            { return self*A; }, py::arg("A"),
+            R"pbdoc(
+                IntervalMatrix multiplication with matrix
+
+                Args:
+                    A (scipy.sparse.csr_matrix): rhs matrix
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix
+            )pbdoc")
+        .def("__mul__", [](const IntervalMatrix& self, const IntervalMatrix& other) -> IntervalMatrix
+            { return self*other; }, py::arg("other"),
+            R"pbdoc(
+                IntervalMatrix multiplication with another IntervalMatrix
+
+                Args:
+                    other (IntervalMatrix): rhs interval matrix
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix
+            )pbdoc")
+        .def("__add__", &IntervalMatrix::operator+, py::arg("other"),
+            R"pbdoc(
+                IntervalMatrix addition
+
+                Args:
+                    other (IntervalMatrix): rhs interval matrix
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix
+            )pbdoc")
+        .def("__sub__", &IntervalMatrix::operator-, py::arg("other"),
+            R"pbdoc(
+                IntervalMatrix subtraction
+
+                Args:
+                    other (IntervalMatrix): rhs interval matrix
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix
+            )pbdoc")
+        .def("rows", &IntervalMatrix::rows,
+            R"pbdoc(
+                Get number of rows
+
+                Returns:
+                    int: number of rows
+            )pbdoc")
+        .def("cols", &IntervalMatrix::cols,
+            R"pbdoc(
+                Get number of columns
+
+                Returns:
+                    int: number of cols
+            )pbdoc")
+        .def("__repr__", &IntervalMatrix::print,
+            R"pbdoc(
+                Print method
+
+                Returns:
+                    str: string display of IntervalMatrix
+            )pbdoc")
+    ;
+
 
     // hybzono class
     py::class_<HybZono, py::smart_holder>(m, "HybZono", R"pbdoc(
@@ -603,7 +810,7 @@ PYBIND11_MODULE(_core, m)
                 If the set is in -1-1 form, then xi_c in [-1,1] and xi_b in {-1,1}.
                 If the set is in 0-1 form, then xi_c in [0,1] and xi_b in {0,1}.
             )pbdoc")
-        .def("remove_redundancy", &HybZono::remove_redundancy, py::arg("contractor_iter")=100,
+        .def("remove_redundancy", &HybZono::remove_redundancy, py::arg("contractor_iter")=10,
             R"pbdoc(
                 Removes redundant constraints and any unused generators
                 
@@ -615,6 +822,9 @@ PYBIND11_MODULE(_core, m)
                 
                 Args:
                     contractor_iter (int): number of interval contractor iterations to run
+
+                Returns:
+                    bool: true if successful, false if unable to reduce the complexity of the set representation
             )pbdoc")
         .def("is_point", &HybZono::is_point,
             R"pbdoc(
@@ -658,8 +868,20 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     str: set information
             )pbdoc")
-        .def("optimize_over", &HybZono::optimize_over, "optimize over", py::arg("P"), py::arg("q"), py::arg("c")=0,
-            py::arg("settings")=OptSettings(), py::arg("solution")=nullptr, 
+        .def("optimize_over", [](const HybZono& self, const Eigen::SparseMatrix<zono_float> &P,
+            const Eigen::Vector<zono_float, -1> &q, zono_float c,
+            const OptSettings &settings, OptSolution* solution,
+            const WarmStartParams& warm_start_params)-> Eigen::Vector<zono_float, -1>
+            {
+                auto sol_shared = std::make_shared<OptSolution>();
+                auto z = self.optimize_over(P, q, c, settings, &sol_shared, warm_start_params);
+                if (solution)
+                    *solution = *sol_shared;
+                return z;
+            },
+            "optimize over", py::arg("P"), py::arg("q"), py::arg("c")=0,
+            py::arg("settings")=OptSettings(), py::arg("solution")=nullptr,
+            py::arg("warm_start_params")=WarmStartParams(),
             R"pbdoc(
                 Solves optimization problem with quadratic objective over the current set
                 
@@ -669,14 +891,25 @@ PYBIND11_MODULE(_core, m)
                     c (float, optional): constant term in objective function
                     settings (OptSettings, optional): optimization settings structure
                     solution (OptSolution, optional): optimization solution structure pointer, populated with result
+                    warm_start_params (WarmStartParams, optional): warm start parameters structure
 
                 Returns:
                     numpy.array: point z in the current set
 
                 Solves optimization problem of the form min 0.5*z^T*P*z + q^T*z + c where z is a vector in the current set
             )pbdoc")
-        .def("project_point", &HybZono::project_point, py::arg("x"), py::arg("settings")=OptSettings(),
-            py::arg("solution")=nullptr, 
+        .def("project_point", [](const HybZono& self, const Eigen::Vector<zono_float, -1> &x,
+            const OptSettings &settings, OptSolution* solution,
+            const WarmStartParams& warm_start_params) -> Eigen::Vector<zono_float, -1>
+            {
+                auto sol_shared = std::make_shared<OptSolution>();
+                auto z = self.project_point(x, settings, &sol_shared, warm_start_params);
+                if (solution)
+                    *solution = *sol_shared;
+                return z;
+            },
+            py::arg("x"), py::arg("settings")=OptSettings(),
+            py::arg("solution")=nullptr, py::arg("warm_start_params")=WarmStartParams(),
             R"pbdoc(
                 Returns the projection of the point x onto the set object.
                 
@@ -684,24 +917,45 @@ PYBIND11_MODULE(_core, m)
                     x (numpy.array): point to be projected
                     settings (OptSettings, optional): optimization settings structure
                     solution (OptSolution, optional): optimization solution structure pointer, populated with result
+                    warm_start_params (WarmStartParams, optional): warm start parameters structure
 
                 Returns:
                     numpy.array: point z in the current set
             )pbdoc")
-        .def("is_empty", &HybZono::is_empty, py::arg("settings")=OptSettings(),
-            py::arg("solution")=nullptr, 
+        .def("is_empty", [](const HybZono& self, const OptSettings &settings,
+            OptSolution* solution, const WarmStartParams& warm_start_params) -> bool
+            {
+                auto sol_shared = std::make_shared<OptSolution>();
+                const bool empty = self.is_empty(settings, &sol_shared, warm_start_params);
+                if (solution)
+                    *solution = *sol_shared;
+                return empty;
+            },
+            py::arg("settings")=OptSettings(),
+            py::arg("solution")=nullptr, py::arg("warm_start_params")=WarmStartParams(),
             R"pbdoc(
                 Returns true if the set is provably empty, false otherwise.
                 
                 Args:
                     settings (OptSettings, optional): optimization settings structure
                     solution (OptSolution, optional): optimization solution structure pointer, populated with result
+                    warm_start_params (WarmStartParams, optional): warm start parameters structure
 
                 Returns:
                     bool: flag indicating whether set is provably empty
             )pbdoc")
-        .def("support", &HybZono::support, py::arg("d"), py::arg("settings")=OptSettings(),
-            py::arg("solution")=nullptr, 
+        .def("support", [](HybZono& self, const Eigen::Vector<zono_float, -1> &d,
+            const OptSettings &settings, OptSolution* solution,
+            const WarmStartParams& warm_start_params) -> zono_float
+            {
+                auto sol_shared = std::make_shared<OptSolution>();
+                const zono_float s = self.support(d, settings, &sol_shared, warm_start_params);
+                if (solution)
+                    *solution = *sol_shared;
+                return s;
+            },
+            py::arg("d"), py::arg("settings")=OptSettings(),
+            py::arg("solution")=nullptr, py::arg("warm_start_params")=WarmStartParams(),
             R"pbdoc(
                 Computes support function of the set in the direction d.
                 
@@ -709,14 +963,25 @@ PYBIND11_MODULE(_core, m)
                     d (numpy.array): vector defining direction for support function
                     settings (OptSettings, optional): optimization settings structure
                     solution (OptSolution, optional): optimization solution structure pointer, populated with result
+                    warm_start_params (WarmStartParams, optional): warm start parameters structure
 
                 Returns:
                     float: support value
 
                 Solves max_{z in Z} <z, d> where <., .> is the inner product
             )pbdoc")
-        .def("contains_point", &HybZono::contains_point, py::arg("x"), py::arg("settings")=OptSettings(),
-            py::arg("solution")=nullptr, 
+        .def("contains_point", [](const HybZono& self, const Eigen::Vector<zono_float, -1> &x,
+            const OptSettings &settings, OptSolution* solution,
+            const WarmStartParams& warm_start_params) -> bool
+            {
+                auto sol_shared = std::make_shared<OptSolution>();
+                const bool contains = self.contains_point(x, settings, &sol_shared, warm_start_params);
+                if (solution)
+                    *solution = *sol_shared;
+                return contains;
+            },
+            py::arg("x"), py::arg("settings")=OptSettings(),
+            py::arg("solution")=nullptr, py::arg("warm_start_params")=WarmStartParams(),
             R"pbdoc(
                 Checks whether the point x is contained in the set object.
                 
@@ -724,6 +989,7 @@ PYBIND11_MODULE(_core, m)
                     x (numpy.array): point to be checked for set containment
                     settings (OptSettings, optional): optimization settings structure
                     solution (OptSolution, optional): optimization solution structure pointer, populated with result
+                    warm_start_params (WarmStartParams, optional): warm start parameters structure
 
                 Returns:
                     bool: true if set contains point, false otherwise
@@ -731,14 +997,25 @@ PYBIND11_MODULE(_core, m)
                 False positives are possible; will return true if the optimization converges within the specified tolerances.
                 Will return false only if an infeasibility certificate is found, i.e., false negatives are not possible.
             )pbdoc")
-        .def("bounding_box", &HybZono::bounding_box, py::arg("settings")=OptSettings(),
-            py::arg("solution")=nullptr, 
+        .def("bounding_box", [](HybZono& self,
+            const OptSettings &settings, OptSolution* solution,
+            const WarmStartParams& warm_start_params) -> Box
+            {
+                auto sol_shared = std::make_shared<OptSolution>();
+                const Box bb = self.bounding_box(settings, &sol_shared, warm_start_params);
+                if (solution)
+                    *solution = *sol_shared;
+                return bb;
+            },
+            py::arg("settings")=OptSettings(),
+            py::arg("solution")=nullptr, py::arg("warm_start_params")=WarmStartParams(),
             R"pbdoc(
                 Computes a bounding box of the set object as a Box object.
                 
                 Args:
                     settings (OptSettings, optional): optimization settings structure
                     solution (OptSolution, optional): optimization solution structure pointer, populated with result
+                    warm_start_params (WarmStartParams, optional): warm start parameters structure
 
                 Returns:
                     Box: bounding box of the set
@@ -755,7 +1032,16 @@ PYBIND11_MODULE(_core, m)
                 This method returns the convex relaxation of the hybrid zonotope.
                 If the set is sharp, the convex relaxation is the convex hull.
             )pbdoc")
-        .def("get_leaves", &HybZono::get_leaves, 
+        .def("get_leaves", [](const HybZono& self, bool remove_redundancy,
+            const OptSettings &settings, OptSolution* solution,
+            int n_leaves, int contractor_iter) -> std::vector<ConZono>
+            {
+                auto sol_shared = std::make_shared<OptSolution>();
+                const auto leaves = self.get_leaves(remove_redundancy, settings, &sol_shared, n_leaves, contractor_iter);
+                if (solution)
+                    *solution = *sol_shared;
+                return leaves;
+            },
             py::arg("remove_redundancy")=true, py::arg("settings")=OptSettings(), py::arg("solution")=nullptr,
             py::arg("n_leaves")=std::numeric_limits<int>::max(), py::arg("contractor_iter")=100, 
             R"pbdoc(
@@ -775,8 +1061,19 @@ PYBIND11_MODULE(_core, m)
                 If the branch and bound converges (i.e., did not hit max time, max number of branch and bound iterations, or max nodes in queue)
                 and the n_leaves argument does not stop the optimization before exhausting all possibilities, then the resulting vector of constrained zonotopes
                 can be unioned to recover the original set. It is possible for a leaf to be the empty set if the optimization converges before detecting an infeasibility certificate.
+                Branch and bound search is used to find all leaves of the hybrid zonotope tree. If any threads are allocated
+                for ADMM-FP, these will instead be used for branch and bound search.
             )pbdoc")
-        .def("complement", &HybZono::complement,
+        .def("complement", [](HybZono& self, zono_float delta_m,
+            bool remove_redundancy, const OptSettings &settings, OptSolution* solution,
+            int n_leaves, int contractor_iter) -> std::unique_ptr<HybZono>
+            {
+                auto sol_shared = std::make_shared<OptSolution>();
+                auto Z = self.complement(delta_m, remove_redundancy, settings, &sol_shared, n_leaves, contractor_iter);
+                if (solution)
+                    *solution = *sol_shared;
+                return Z;
+            },
             py::arg("delta_m")=100, py::arg("remove_redundancy")=true, py::arg("settings")=OptSettings(),
             py::arg("solution")=nullptr, py::arg("n_leaves")=std::numeric_limits<int>::max(), py::arg("contractor_iter")=100,
             R"pbdoc(
@@ -799,7 +1096,7 @@ PYBIND11_MODULE(_core, m)
             For a constrained zonotope, the complement is restricted to the set
             X = {G \xi + c | A \xi = b, \xi \in [-1-delta_m, 1+delta+m]^{nG}}.
             )pbdoc")
-        .def("copy", &HybZono::clone, 
+        .def("copy", &HybZono::clone,
             R"pbdoc(
             Creates a copy of the hybrid zonotope object.
 
@@ -892,14 +1189,14 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
         .def("reduce_order", &Zono::reduce_order, py::arg("n_o"),
             R"pbdoc(
-                    Perform zonotope order reduction.
+                Perform zonotope order reduction.
 
-                    Args:
-                        n_o (int): desired order, must be greater than or equal to the dimension of the set
+                Args:
+                    n_o (int): desired order, must be greater than or equal to the dimension of the set
 
-                    Returns:
-                        Zono: zonotope with order n_o
-                )pbdoc")
+                Returns:
+                    zonotope with order n_o
+            )pbdoc")
         .def("get_volume", &Zono::get_volume,
             R"pbdoc(
                     Get volume of zonotope.
@@ -909,6 +1206,13 @@ PYBIND11_MODULE(_core, m)
 
                     Returns:
                         float: volume of zonotope
+            )pbdoc")
+        .def("get_center", &Zono::get_center,
+            R"pbdoc(
+                Get center of zonotope.
+
+                Returns:
+                    numpy.array: center vector
             )pbdoc")
     ;
 
@@ -956,6 +1260,8 @@ PYBIND11_MODULE(_core, m)
         .def(py::init<int, zono_float>(), "IneqTerm constructor", py::arg("idx"), py::arg("coeff"))
         .def_readwrite("idx", &IneqTerm::idx, "index of variable")
         .def_readwrite("coeff", &IneqTerm::coeff, "coefficient of variable")
+        .def("copy", [](const IneqTerm &self) -> IneqTerm { return self; },
+            "Creates a copy of the IneqTerm object.")
     ;
 
     py::enum_<IneqType>(m, "IneqType", "Enumeration to select inequality direction / use equality.")
@@ -1025,6 +1331,13 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     int: number of dimensions (n_dims member)
             )pbdoc")
+        .def("copy", [](const Inequality &self) -> Inequality { return self; },
+            R"pbdoc(
+                Creates a copy of the Inequality object.
+
+                Returns:
+                    Inequality: A copy of the Inequality object.
+            )pbdoc")
     ;
 
     // set operations
@@ -1037,6 +1350,23 @@ PYBIND11_MODULE(_core, m)
                 R (scipy.sparse.csc_matrix): affine map matrix
                 s (numpy.array, optional): vector offset
             
+            Returns:
+                HybZono: zonotopic set
+        )pbdoc");
+    m.def("affine_inclusion", &affine_inclusion, py::arg("Z"), py::arg("R"), py::arg("s")=Eigen::Vector<zono_float, -1>(),
+        R"pbdoc(
+            Returns inclusion of zonotopic set for uncertain affine map R*Z + s
+
+            This computes an over-approximation of the affine map using the method of
+            Rego et. al. (2020) "Guaranteed methods based on constrained zonotopes for set-valued state estimation of nonlinear discrete-time systems"
+            The SVD-based zonotope over-approximation method is used in this function when Z is a constrained zonotope.
+            When Z is a hybrid zonotope, the convex relaxation is used to produce a constrained zonotope, and then the SVD-based method is applied.
+
+            Args:
+                Z (HybZono): zonotopic set
+                R (IntervalMatrix): affine map interval matrix
+                s (numpy.array, optional): vector offset
+
             Returns:
                 HybZono: zonotopic set
         )pbdoc");
@@ -1136,6 +1466,19 @@ PYBIND11_MODULE(_core, m)
             Specifically, each dimension of I corresponds to one of the Zi in the union. So for union_of_many({Z0, Z1, Z2}, true) with Z0, Z1, Z2 not intersecting,
             if a vector [z, i] is in union({Z0, Z1, Z2}) x I, then i = [1, 0, 0] if z is in Z0, etc.
         )pbdoc");
+    m.def("convex_hull", &convex_hull, py::arg("Zs"),
+        R"pbdoc(
+            Computes the convex hull of several sets
+
+            Computes convex hull of sets {Z0, Z1, ..., Zn}.
+            If Zi is a hybrid zonotope, it must be sharp or this function will throw an error.
+
+            Args:
+                Zs (list[HybZono]): sets for which convex hull is to be computed.
+
+            Returns:
+                ConZono: constrained zonotop convex hull
+        )pbdoc");
     m.def("cartesian_product", &cartesian_product, py::arg("Z1"), py::arg("Z2"),
         R"pbdoc(
             Computes the Cartesian product of two sets Z1 and Z2.
@@ -1164,11 +1507,21 @@ PYBIND11_MODULE(_core, m)
             R is used for generalized intersection-like operations. For instance, when all the inequalities are <= inequalities,
             this function returns Z int_R (Hx<=f) where H is the halfspace represented by the inequalities.
         )pbdoc");
-    m.def("set_diff", &set_diff, py::arg("Z1"), py::arg("Z2"), py::arg("delta_m")=100, py::arg("remove_redundancy")=true,
-        py::arg("settings")=OptSettings(), py::arg("solution")=nullptr, py::arg("n_leaves")=std::numeric_limits<int>::max(), py::arg("contractor_iter")=100,
-        R"pbdoc(
+    m.def("set_diff", [](const HybZono& Z1, HybZono& Z2, zono_float delta_m,
+            bool remove_redundancy, const OptSettings &settings, OptSolution* solution,
+            int n_leaves, int contractor_iter) -> std::unique_ptr<HybZono>
+            {
+                auto sol_shared = std::make_shared<OptSolution>();
+                auto Z = set_diff(Z1, Z2, delta_m, remove_redundancy, settings, &sol_shared, n_leaves, contractor_iter);
+                if (solution)
+                    *solution = *sol_shared;
+                return Z;
+            },
+            py::arg("Z1"), py::arg("Z2"), py::arg("delta_m")=100, py::arg("remove_redundancy")=true,
+            py::arg("settings")=OptSettings(), py::arg("solution")=nullptr, py::arg("n_leaves")=std::numeric_limits<int>::max(), py::arg("contractor_iter")=10,
+            R"pbdoc(
             Set difference Z1 \\ Z2
-            
+
             Args:
                 Z1 (HybZono): zonotopic set
                 Z2 (HybZono): zonotopic set
@@ -1178,7 +1531,7 @@ PYBIND11_MODULE(_core, m)
                 solution (OptSolution, optional): optimization solution for get_leaves function call
                 n_leaves (int, optional): maximum number of leaves to return in get_leaves function call
                 contractor_iter (int, optional): number of interval contractor iterations if using remove_redundancy
-            
+
             Returns:
                 HybZono: zonotopic set
         )pbdoc");

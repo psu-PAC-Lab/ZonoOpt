@@ -15,56 +15,67 @@
 #include "ConZono.hpp"
 #include "Zono.hpp"
 
-namespace ZonoOpt {
-
-/**
- * @brief Empty Set class.
- *
- * Used to facilitate set operations with trivial solutions when one of the sets is an empty set.
- */
-class EmptySet final : public ConZono
+namespace ZonoOpt
 {
-public:
-
     /**
-     * @brief Default constructor for EmptySet class
+     * @brief Empty Set class.
      *
+     * Used to facilitate set operations with trivial solutions when one of the sets is an empty set.
      */
-    EmptySet() = default;
+    class EmptySet final : public ConZono
+    {
+    public:
+        /**
+         * @brief Default constructor for EmptySet class
+         *
+         */
+        EmptySet() = default;
 
-    /**
-     * @brief EmptySet constructor
-     *
-     * @param n dimension
-     */
-    explicit EmptySet(int n);
+        /**
+         * @brief EmptySet constructor
+         *
+         * @param n dimension
+         */
+        explicit EmptySet(int n);
 
-    HybZono* clone() const override;
+        HybZono* clone() const override;
 
-    std::string print() const override;
+        std::string print() const override;
 
-    void constraint_reduction() override { /* do nothing */ }
+        void constraint_reduction() override
+        {
+            /* do nothing */
+        }
 
-    std::unique_ptr<Zono> to_zono_approx() const override { throw std::runtime_error("to_zono_approx: EmptySet"); }
+        std::unique_ptr<Zono> to_zono_approx() const override { throw std::runtime_error("to_zono_approx: EmptySet"); }
 
-protected:
-    Eigen::Vector<zono_float, -1> do_optimize_over(
+    protected:
+        Eigen::Vector<zono_float, -1> do_optimize_over(
             const Eigen::SparseMatrix<zono_float>&, const Eigen::Vector<zono_float, -1>&, zono_float,
-            const OptSettings&, OptSolution* solution) const override;
+            const OptSettings&, std::shared_ptr<OptSolution>* solution,
+            const WarmStartParams&) const override;
 
-    Eigen::Vector<zono_float, -1> do_project_point(const Eigen::Vector<zono_float, -1>&, const OptSettings&, OptSolution* solution) const override;
+        Eigen::Vector<zono_float, -1> do_project_point(const Eigen::Vector<zono_float, -1>&, const OptSettings&,
+                                                       std::shared_ptr<OptSolution>* solution,
+                                                       const WarmStartParams&) const override;
 
-    zono_float do_support(const Eigen::Vector<zono_float, -1>&, const OptSettings&, OptSolution* solution) override;
+        zono_float do_support(const Eigen::Vector<zono_float, -1>&, const OptSettings&,
+                              std::shared_ptr<OptSolution>* solution,
+                              const WarmStartParams&) override;
 
-    bool do_contains_point(const Eigen::Vector<zono_float, -1>&, const OptSettings&, OptSolution*) const override;
+        bool do_contains_point(const Eigen::Vector<zono_float, -1>&, const OptSettings&, std::shared_ptr<OptSolution>*,
+                               const WarmStartParams&) const override;
 
-    Box do_bounding_box(const OptSettings&, OptSolution*) override;
+        Box do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>*,
+                            const WarmStartParams&) override;
 
-    bool do_is_empty(const OptSettings&, OptSolution*) const override;
+        bool do_is_empty(const OptSettings&, std::shared_ptr<OptSolution>*,
+                         const WarmStartParams&) const override;
 
-    std::unique_ptr<HybZono> do_complement(zono_float delta_m, bool, const OptSettings&, OptSolution*, int, int) override;
-};
-
+        std::unique_ptr<HybZono> do_complement(zono_float delta_m, bool, const OptSettings&,
+                                               std::shared_ptr<OptSolution>*,
+                                               int, int) override;
+    };
 }
 
 #endif

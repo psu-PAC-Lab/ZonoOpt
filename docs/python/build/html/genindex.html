@@ -77,6 +77,7 @@
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
@@ -105,6 +106,8 @@
       <ul>
         <li><a href="zonoopt.html#zonoopt.Interval.__add__">(zonoopt.Interval method)</a>
 </li>
+        <li><a href="zonoopt.html#zonoopt.IntervalMatrix.__add__">(zonoopt.IntervalMatrix method)</a>
+</li>
       </ul></li>
       <li><a href="zonoopt.html#zonoopt.Box.__getitem__">__getitem__() (zonoopt.Box method)</a>
 </li>
@@ -112,6 +115,8 @@
 
       <ul>
         <li><a href="zonoopt.html#zonoopt.Interval.__mul__">(zonoopt.Interval method)</a>
+</li>
+        <li><a href="zonoopt.html#zonoopt.IntervalMatrix.__mul__">(zonoopt.IntervalMatrix method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -122,6 +127,8 @@
 
       <ul>
         <li><a href="zonoopt.html#zonoopt.Interval.__sub__">(zonoopt.Interval method)</a>
+</li>
+        <li><a href="zonoopt.html#zonoopt.IntervalMatrix.__sub__">(zonoopt.IntervalMatrix method)</a>
 </li>
       </ul></li>
       <li><a href="zonoopt.html#zonoopt.Box.__truediv__">__truediv__() (zonoopt.Box method)</a>
@@ -137,6 +144,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="zonoopt.html#zonoopt.Inequality.add_term">add_term() (zonoopt.Inequality method)</a>
+</li>
+      <li><a href="zonoopt.html#zonoopt.affine_inclusion">affine_inclusion() (in module zonoopt)</a>
 </li>
       <li><a href="zonoopt.html#zonoopt.affine_map">affine_map() (in module zonoopt)</a>
 </li>
@@ -173,8 +182,12 @@
       <ul>
         <li><a href="zonoopt.html#zonoopt.Interval.center">(zonoopt.Interval method)</a>
 </li>
+        <li><a href="zonoopt.html#zonoopt.IntervalMatrix.center">(zonoopt.IntervalMatrix method)</a>
+</li>
       </ul></li>
       <li><a href="zonoopt.html#zonoopt.IneqTerm.coeff">coeff (zonoopt.IneqTerm property)</a>
+</li>
+      <li><a href="zonoopt.html#zonoopt.IntervalMatrix.cols">cols() (zonoopt.IntervalMatrix method)</a>
 </li>
       <li><a href="zonoopt.html#zonoopt.HybZono.complement">complement() (zonoopt.HybZono method)</a>
 </li>
@@ -186,17 +199,19 @@
 </li>
       <li><a href="zonoopt.html#zonoopt.HybZono.contains_point">contains_point() (zonoopt.HybZono method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="zonoopt.html#zonoopt.Box.contract">contract() (zonoopt.Box method)</a>
 </li>
       <li><a href="zonoopt.html#zonoopt.OptSettings.contractor_iter">contractor_iter (zonoopt.OptSettings property)</a>
 </li>
       <li><a href="zonoopt.html#zonoopt.OptSettings.contractor_tree_search_depth">contractor_tree_search_depth (zonoopt.OptSettings property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="zonoopt.html#zonoopt.OptSolution.converged">converged (zonoopt.OptSolution property)</a>
 </li>
       <li><a href="zonoopt.html#zonoopt.HybZono.convert_form">convert_form() (zonoopt.HybZono method)</a>
+</li>
+      <li><a href="zonoopt.html#zonoopt.convex_hull">convex_hull() (in module zonoopt)</a>
 </li>
       <li><a href="zonoopt.html#zonoopt.HybZono.convex_relaxation">convex_relaxation() (zonoopt.HybZono method)</a>
 </li>
@@ -207,8 +222,22 @@
       <ul>
         <li><a href="zonoopt.html#zonoopt.HybZono.copy">(zonoopt.HybZono method)</a>
 </li>
+        <li><a href="zonoopt.html#zonoopt.IneqTerm.copy">(zonoopt.IneqTerm method)</a>
+</li>
+        <li><a href="zonoopt.html#zonoopt.Inequality.copy">(zonoopt.Inequality method)</a>
+</li>
+        <li><a href="zonoopt.html#zonoopt.Interval.copy">(zonoopt.Interval method)</a>
+</li>
+        <li><a href="zonoopt.html#zonoopt.OptSettings.copy">(zonoopt.OptSettings method)</a>
+</li>
+        <li><a href="zonoopt.html#zonoopt.OptSolution.copy">(zonoopt.OptSolution method)</a>
+</li>
+        <li><a href="zonoopt.html#zonoopt.WarmStartParams.copy">(zonoopt.WarmStartParams method)</a>
+</li>
       </ul></li>
       <li><a href="zonoopt.html#zonoopt.Interval.cos">cos() (zonoopt.Interval method)</a>
+</li>
+      <li><a href="zonoopt.html#zonoopt.OptSettings.cycle_detection_buffer_size">cycle_detection_buffer_size (zonoopt.OptSettings property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -216,10 +245,12 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="zonoopt.html#zonoopt.Box.dot">dot() (zonoopt.Box method)</a>
+      <li><a href="zonoopt.html#zonoopt.IntervalMatrix.diam">diam() (zonoopt.IntervalMatrix method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="zonoopt.html#zonoopt.Box.dot">dot() (zonoopt.Box method)</a>
+</li>
       <li><a href="zonoopt.html#zonoopt.OptSolution.dual_residual">dual_residual (zonoopt.OptSolution property)</a>
 </li>
   </ul></td>
@@ -230,14 +261,22 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="zonoopt.html#zonoopt.EmptySet">EmptySet (class in zonoopt)</a>
 </li>
+      <li><a href="zonoopt.html#zonoopt.OptSettings.enable_perturb_admm_fp">enable_perturb_admm_fp (zonoopt.OptSettings property)</a>
+</li>
+      <li><a href="zonoopt.html#zonoopt.OptSettings.enable_restart_admm_fp">enable_restart_admm_fp (zonoopt.OptSettings property)</a>
+</li>
+      <li><a href="zonoopt.html#zonoopt.OptSettings.enable_rng_seed">enable_rng_seed (zonoopt.OptSettings property)</a>
+</li>
       <li><a href="zonoopt.html#zonoopt.OptSettings.eps_a">eps_a (zonoopt.OptSettings property)</a>
 </li>
       <li><a href="zonoopt.html#zonoopt.OptSettings.eps_dual">eps_dual (zonoopt.OptSettings property)</a>
 </li>
-      <li><a href="zonoopt.html#zonoopt.OptSettings.eps_dual_search">eps_dual_search (zonoopt.OptSettings property)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="zonoopt.html#zonoopt.OptSettings.eps_dual_search">eps_dual_search (zonoopt.OptSettings property)</a>
+</li>
+      <li><a href="zonoopt.html#zonoopt.OptSettings.eps_perturb">eps_perturb (zonoopt.OptSettings property)</a>
+</li>
       <li><a href="zonoopt.html#zonoopt.OptSettings.eps_prim">eps_prim (zonoopt.OptSettings property)</a>
 </li>
       <li><a href="zonoopt.html#zonoopt.OptSettings.eps_prim_search">eps_prim_search (zonoopt.OptSettings property)</a>
@@ -247,6 +286,14 @@
       <li><a href="zonoopt.html#zonoopt.IneqType.EQUAL">EQUAL (zonoopt.IneqType attribute)</a>
 </li>
       <li><a href="zonoopt.html#zonoopt.Interval.exp">exp() (zonoopt.Interval method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="zonoopt.html#zonoopt.from_json">from_json() (in module zonoopt)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -264,6 +311,8 @@
 </li>
       <li><a href="zonoopt.html#zonoopt.HybZono.get_c">get_c() (zonoopt.HybZono method)</a>
 </li>
+      <li><a href="zonoopt.html#zonoopt.Zono.get_center">get_center() (zonoopt.Zono method)</a>
+</li>
       <li><a href="zonoopt.html#zonoopt.HybZono.get_G">get_G() (zonoopt.HybZono method)</a>
 </li>
       <li><a href="zonoopt.html#zonoopt.HybZono.get_Gb">get_Gb() (zonoopt.HybZono method)</a>
@@ -274,10 +323,10 @@
 </li>
       <li><a href="zonoopt.html#zonoopt.HybZono.get_leaves">get_leaves() (zonoopt.HybZono method)</a>
 </li>
-      <li><a href="zonoopt.html#zonoopt.HybZono.get_n">get_n() (zonoopt.HybZono method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="zonoopt.html#zonoopt.HybZono.get_n">get_n() (zonoopt.HybZono method)</a>
+</li>
       <li><a href="zonoopt.html#zonoopt.Inequality.get_n_dims">get_n_dims() (zonoopt.Inequality method)</a>
 </li>
       <li><a href="zonoopt.html#zonoopt.HybZono.get_nC">get_nC() (zonoopt.HybZono method)</a>
@@ -340,6 +389,8 @@
 </li>
       <li><a href="zonoopt.html#zonoopt.interval_2_zono">interval_2_zono() (in module zonoopt)</a>
 </li>
+      <li><a href="zonoopt.html#zonoopt.IntervalMatrix">IntervalMatrix (class in zonoopt)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="zonoopt.html#zonoopt.Interval.inv">inv() (zonoopt.Interval method)</a>
@@ -384,11 +435,17 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="zonoopt.html#zonoopt.OptSettings.k_inf_check">k_inf_check (zonoopt.OptSettings property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="zonoopt.html#zonoopt.OptSettings.k_max_admm">k_max_admm (zonoopt.OptSettings property)</a>
 </li>
+      <li><a href="zonoopt.html#zonoopt.OptSettings.k_max_admm_fp_ph1">k_max_admm_fp_ph1 (zonoopt.OptSettings property)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="zonoopt.html#zonoopt.OptSettings.k_max_admm_fp_ph2">k_max_admm_fp_ph2 (zonoopt.OptSettings property)</a>
+</li>
       <li><a href="zonoopt.html#zonoopt.OptSettings.k_max_bnb">k_max_bnb (zonoopt.OptSettings property)</a>
+</li>
+      <li><a href="zonoopt.html#zonoopt.OptSettings.k_restart">k_restart (zonoopt.OptSettings property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -435,10 +492,12 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="zonoopt.html#zonoopt.OptSettings.n_threads_bnb">n_threads_bnb (zonoopt.OptSettings property)</a>
+      <li><a href="zonoopt.html#zonoopt.OptSettings.n_threads_admm_fp">n_threads_admm_fp (zonoopt.OptSettings property)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="zonoopt.html#zonoopt.OptSettings.n_threads_bnb">n_threads_bnb (zonoopt.OptSettings property)</a>
+</li>
       <li><a href="zonoopt.html#zonoopt.IneqType.name">name (zonoopt.IneqType property)</a>
 </li>
   </ul></td>
@@ -485,13 +544,25 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="zonoopt.html#zonoopt.Zono.reduce_order">reduce_order() (zonoopt.Zono method)</a>
+      <li><a href="zonoopt.html#zonoopt.Box.radius">radius() (zonoopt.Box method)</a>
+
+      <ul>
+        <li><a href="zonoopt.html#zonoopt.Interval.radius">(zonoopt.Interval method)</a>
 </li>
-      <li><a href="zonoopt.html#zonoopt.HybZono.remove_redundancy">remove_redundancy() (zonoopt.HybZono method)</a>
+        <li><a href="zonoopt.html#zonoopt.IntervalMatrix.radius">(zonoopt.IntervalMatrix method)</a>
+</li>
+      </ul></li>
+      <li><a href="zonoopt.html#zonoopt.Zono.reduce_order">reduce_order() (zonoopt.Zono method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="zonoopt.html#zonoopt.HybZono.remove_redundancy">remove_redundancy() (zonoopt.HybZono method)</a>
+</li>
       <li><a href="zonoopt.html#zonoopt.OptSettings.rho">rho (zonoopt.OptSettings property)</a>
+</li>
+      <li><a href="zonoopt.html#zonoopt.OptSettings.rng_seed">rng_seed (zonoopt.OptSettings property)</a>
+</li>
+      <li><a href="zonoopt.html#zonoopt.IntervalMatrix.rows">rows() (zonoopt.IntervalMatrix method)</a>
 </li>
       <li><a href="zonoopt.html#zonoopt.OptSolution.run_time">run_time (zonoopt.OptSolution property)</a>
 </li>
@@ -515,15 +586,17 @@
       </ul></li>
       <li><a href="zonoopt.html#zonoopt.set_diff">set_diff() (in module zonoopt)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="zonoopt.html#zonoopt.Inequality.set_ineq_type">set_ineq_type() (zonoopt.Inequality method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="zonoopt.html#zonoopt.Inequality.set_rhs">set_rhs() (zonoopt.Inequality method)</a>
 </li>
       <li><a href="zonoopt.html#zonoopt.OptSettings.settings_valid">settings_valid() (zonoopt.OptSettings method)</a>
 </li>
       <li><a href="zonoopt.html#zonoopt.Interval.sin">sin() (zonoopt.Interval method)</a>
+</li>
+      <li><a href="zonoopt.html#zonoopt.OptSettings.single_threaded_admm_fp">single_threaded_admm_fp (zonoopt.OptSettings property)</a>
 </li>
       <li><a href="zonoopt.html#zonoopt.Box.size">size() (zonoopt.Box method)</a>
 </li>
@@ -539,9 +612,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="zonoopt.html#zonoopt.OptSettings.t_max">t_max (zonoopt.OptSettings property)</a>
 </li>
+      <li><a href="zonoopt.html#zonoopt.Interval.tan">tan() (zonoopt.Interval method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="zonoopt.html#zonoopt.Interval.tan">tan() (zonoopt.Interval method)</a>
+      <li><a href="zonoopt.html#zonoopt.to_json">to_json() (in module zonoopt)</a>
 </li>
       <li><a href="zonoopt.html#zonoopt.ConZono.to_zono_approx">to_zono_approx() (zonoopt.ConZono method)</a>
 </li>
@@ -552,7 +627,11 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="zonoopt.html#zonoopt.OptSolution.u">u (zonoopt.OptSolution property)</a>
+
+      <ul>
+        <li><a href="zonoopt.html#zonoopt.WarmStartParams.u">(zonoopt.WarmStartParams property)</a>
 </li>
+      </ul></li>
       <li><a href="zonoopt.html#zonoopt.Interval.ub">ub (zonoopt.Interval property)</a>
 </li>
   </ul></td>
@@ -587,10 +666,14 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="zonoopt.html#zonoopt.WarmStartParams">WarmStartParams (class in zonoopt)</a>
+</li>
       <li><a href="zonoopt.html#zonoopt.Box.width">width() (zonoopt.Box method)</a>
 
       <ul>
         <li><a href="zonoopt.html#zonoopt.Interval.width">(zonoopt.Interval method)</a>
+</li>
+        <li><a href="zonoopt.html#zonoopt.IntervalMatrix.width">(zonoopt.IntervalMatrix method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -608,7 +691,11 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="zonoopt.html#zonoopt.OptSolution.z">z (zonoopt.OptSolution property)</a>
+
+      <ul>
+        <li><a href="zonoopt.html#zonoopt.WarmStartParams.z">(zonoopt.WarmStartParams property)</a>
 </li>
+      </ul></li>
       <li><a href="zonoopt.html#zonoopt.Zono">Zono (class in zonoopt)</a>
 </li>
   </ul></td>
