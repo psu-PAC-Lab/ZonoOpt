@@ -285,13 +285,48 @@ def test_get_leaves():
     Z = zono.minkowski_sum(U, U)
 
     # get number of leaves
-    settings = zono.OptSettings()
-    settings.n_threads_bnb = 1
-    leaves = Z.get_leaves(settings=settings)
+    leaves = Z.get_leaves()
 
     # check number of leaves is correct
     assert len(leaves) == n_CZs**2
     print('Passed: Get Leaves')
+
+def test_safety_verification():
+
+    # System dynamics
+    dt = 0.1
+    A = np.array([[1., dt],
+                  [0., 1.]])
+    B = np.array([[0.5*dt**2],
+                  [dt]])
+
+    # Initial set: box [-1.0, 1.0] x [-0.1, 0.1]
+    X0 = zono.interval_2_zono(zono.Box([-1., -0.1], [1., 0.1]))
+
+    # Input set: box [-0.2, 0.2]
+    U = zono.interval_2_zono(zono.Box([-0.2], [0.2]))
+
+    # Disturbance set: affine map of octagon
+    W = zono.make_regular_zono_2D(radius=1., n_sides=8)
+    W = zono.affine_map(W, np.diag([0.01, 0.05]))
+
+    # Compute reachable set over 10 time steps
+    X = X0
+    for k in range(10):
+        X = zono.affine_map(X, A)
+        X = zono.minkowski_sum(X, zono.affine_map(U, B))
+        X = zono.minkowski_sum(X, W)
+
+    # Unsafe set
+    O = zono.vrep_2_conzono(np.array([[1.3, 0.],
+                                      [1.6, 0.8],
+                                      [2.0, -0.4],
+                                      [2.3, 0.6]]))
+
+    # expect intersection of X and O is empty
+    assert zono.intersection(X, O).is_empty()
+    print('Passed: Safety Verification')
+
 
 # run the unit tests
 test_vrep_2_hz()
@@ -301,3 +336,4 @@ test_is_empty()
 test_support()
 test_point_contain()
 test_get_leaves()
+test_safety_verification()

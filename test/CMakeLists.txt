@@ -8,5 +8,5 @@ function(create_test TEST_NAME SOURCES)
 endfunction()
 
 # tests
-create_test(test_operations "cpp-tests/example_operations.cpp")
+create_test(test_get_leaves "cpp-tests/test_get_leaves.cpp")
 create_test(test_safety_verification "cpp-tests/test_safety_verification.cpp")
