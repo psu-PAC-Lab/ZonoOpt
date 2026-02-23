@@ -6,15 +6,15 @@ from pathlib import Path
 """zonoLAB used to generate these unit tests"""
 
 # globals: unit test folder
-unit_test_folder = Path(__file__).parent
+test_data_folder = Path(__file__).parent.parent / 'test-data'
 
 # unit tests
 def test_vrep_2_hz():
 
     # folder where unit test data resides
-    test_folder = unit_test_folder / 'vrep_2_hybzono'
+    test_folder = test_data_folder / 'vrep_2_hybzono'
 
-    # build hybzono from vrep in zonocpp
+    # build hybzono from vrep
     V_polys = []
     V_polys.append(np.array([[5.566, 5.896],
                              [4.044, 5.498],
@@ -63,9 +63,9 @@ def test_vrep_2_hz():
 def test_minkowski_sum():
 
     # folder where unit test data resides
-    test_folder = unit_test_folder / 'minkowski_sum'
+    test_folder = test_data_folder / 'minkowski_sum'
 
-    # build hybzono from vrep in zonocpp
+    # build hybzono from vrep
     V_polys = []
     V_polys.append(np.array([[5.566, 5.896],
                              [4.044, 5.498],
@@ -122,9 +122,9 @@ def test_minkowski_sum():
 def test_intersection():
 
     # folder where unit test data resides
-    test_folder = unit_test_folder / 'intersection'
+    test_folder = test_data_folder / 'intersection'
 
-    # build hybzono from vrep in zonocpp
+    # build hybzono from vrep
     V_polys = []
     V_polys.append(np.array([[5.566, 5.896],
                              [4.044, 5.498],
@@ -192,7 +192,7 @@ def test_intersection():
 def test_is_empty():
 
     # folder where unit test data resides
-    test_folder = unit_test_folder / 'conzono_feasibility'
+    test_folder = test_data_folder / 'conzono_feasibility'
 
     # load in feasible conzono
     G = np.loadtxt(test_folder / 'f_G.txt', delimiter=' ')
@@ -218,7 +218,7 @@ def test_is_empty():
 def test_support():
 
     # folder where unit test data resides
-    test_folder = unit_test_folder / 'support'
+    test_folder = test_data_folder / 'support'
 
     # load in conzono
     G = np.loadtxt(test_folder / 'G.txt', delimiter=' ')
@@ -243,7 +243,7 @@ def test_support():
 def test_point_contain():
 
     # folder where the data resides
-    test_folder = unit_test_folder / 'point_containment'
+    test_folder = test_data_folder / 'point_containment'
 
     # load in conzono
     G = np.loadtxt(test_folder / 'G.txt', delimiter=' ')
