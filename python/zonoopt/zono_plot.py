@@ -197,12 +197,12 @@ def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
         objs = []
         pbar = tqdm(leaves)
         for leaf in pbar:
-            if Z.get_n() <= 2:
-                objs.append(plot(leaf, ax=ax, t_max=time_per_leaf, **kwargs)[0])
-            else:
-                objs.append(plot(leaf, ax=ax, t_max=time_per_leaf, **kwargs))
-
             pbar.set_description('Plotting HybZono leaves')
+            obj = plot(leaf, ax=ax, t_max=time_per_leaf, **kwargs)
+            if Z.get_n() <= 2:
+                objs.append(obj[0])
+            else:
+                objs.append(obj)
         return objs
 
     V = get_vertices(Z, t_max=t_max)
@@ -242,12 +242,7 @@ def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
         else:
             hull = ConvexHull(V)
             obj = ax.add_collection3d(Poly3DCollection([[V[vertex] for vertex in face] for face in hull.simplices], **kwargs))
-            xmin, xmax = ax.get_xlim()
-            ymin, ymax = ax.get_ylim()
-            zmin, zmax = ax.get_zlim()
-            ax.auto_scale_xyz(np.hstack([V[:,0].flatten(), [xmin, xmax]]),
-                            np.hstack([V[:,1].flatten(), [ymin, ymax]]),
-                            np.hstack([V[:,2].flatten(), [zmin, zmax]]))
+            ax.autoscale_view()
 
         # adjust scaling
         return obj
