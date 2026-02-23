@@ -192,7 +192,7 @@ def test_intersection():
 def test_is_empty():
 
     # folder where unit test data resides
-    test_folder = test_data_folder / 'conzono_feasibility'
+    test_folder = test_data_folder / 'is_empty'
 
     # load in feasible conzono
     G = np.loadtxt(test_folder / 'f_G.txt', delimiter=' ')
@@ -228,11 +228,11 @@ def test_support():
 
     Z = zono.ConZono(sp.csc_matrix(G), c, sp.csc_matrix(A), b)
 
-    # load direction and expected support function
+    # load direction and expected support value
     d = np.loadtxt(test_folder / 'd.txt', delimiter=' ')
     s_expected = np.loadtxt(test_folder / 'sup.txt', delimiter=' ')
 
-    # compute support function
+    # compute support
     s = Z.support(d)
     
     # compare results
@@ -243,7 +243,7 @@ def test_support():
 def test_point_contain():
 
     # folder where the data resides
-    test_folder = test_data_folder / 'point_containment'
+    test_folder = test_data_folder / 'point_contain'
 
     # load in conzono
     G = np.loadtxt(test_folder / 'G.txt', delimiter=' ')

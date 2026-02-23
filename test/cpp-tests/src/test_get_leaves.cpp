@@ -1,5 +1,7 @@
 #include "ZonoOpt.hpp"
+#include "unit_test_utilities.hpp"
 #include <cstdlib>
+
 using namespace ZonoOpt;
 
 int main()
@@ -27,8 +29,7 @@ int main()
     const auto leaves = Z->get_leaves();
 
     // check number of leaves is correct
-    if (leaves.size() == n_CZs * n_CZs)
-        return 0;
+    test_assert(leaves.size() == n_CZs * n_CZs, "Expected " + std::to_string(n_CZs * n_CZs) + " leaves, got " + std::to_string(leaves.size()));
 
-    return 1;
+    return 0;
 }

@@ -1,6 +1,5 @@
 #include "ZonoOpt.hpp"
-#include "Eigen/Dense"
-#include "Eigen/Sparse"
+#include "unit_test_utilities.hpp"
 
 int main()
 {
@@ -50,8 +49,7 @@ int main()
     const ZonoOpt::ZonoPtr O = ZonoOpt::vrep_2_conzono(verts);
 
     // expect that intersection of X and O is empty
-    if (ZonoOpt::intersection(*X, *O)->is_empty())
-        return 0;
+    test_assert(ZonoOpt::intersection(*X, *O)->is_empty(), "Expected intersection of X and O to be empty");
 
-    return 1;
+    return 0;
 }

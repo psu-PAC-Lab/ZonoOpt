@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
         return 1;
     }
     std::string test_folder = argv[1];
-    test_folder += "/vrep_2_hybzono/";
+    test_folder += "/intersection/";
 
     // build hybzono from vrep
     std::vector<Eigen::Matrix<zono_float, -1, -1>> V_polys;
@@ -39,8 +39,30 @@ int main(int argc, char* argv[])
         3.656, 2.397;
     V_polys.push_back(V4);
 
-    auto Z = vrep_2_hybzono(V_polys);
+    auto Z1 = vrep_2_hybzono(V_polys);
 
+    // zonotope
+    Eigen::Matrix<zono_float, 2, 3> G2;
+    G2 << 0.5*std::sqrt(3), 0.5, 0.5*std::sqrt(3),
+         0.25, 0, -0.25;
+    Eigen::Vector2d c2(-2.0, 1.0);
+    Zono Z2 (G2.sparseView(), c2);
+
+    // minkowski sum
+    const auto Z3 = minkowski_sum(*Z1, Z2);
+
+    // conzono
+    Eigen::Matrix<zono_float, 2, 3> G3;
+    G3 << 3.0, 0.0, 0.0,
+          0.0, 3.0, 0.0;
+    Eigen::Vector2d c3(-0.5, 4.5);
+    Eigen::Matrix<zono_float, 1, 3> A3;
+    A3 << 1.0, 1.0, 1.0;
+    Eigen::Vector<zono_float, 1> b3(1.0);
+    ConZono Z4(G3.sparseView(), c3, A3.sparseView(), b3);
+
+    // intersection
+    const auto Z = intersection(*Z3, Z4);
     if (Z->is_0_1_form())
         Z->convert_form();
 
@@ -74,7 +96,7 @@ int main(int argc, char* argv[])
     passed &= Z->get_Ab().isApprox(Z_expected.get_Ab());
     passed &= Z->get_b().isApprox(Z_expected.get_b());
 
-    test_assert(passed, "Expected hybzono from vrep_2_hybzono to match expected result");
+    test_assert(passed, "Intersection test failed: computed intersection does not match expected result.");
 
     return 0;
 }

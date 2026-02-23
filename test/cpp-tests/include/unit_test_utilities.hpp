@@ -1,8 +1,9 @@
 #ifndef UNIT_TEST_UTILITIES_HPP_
 #define UNIT_TEST_UTILITIES_HPP_
 
-#include <fstream>
 #include "ZonoOpt.hpp"
+#include <fstream>
+#include <iostream>
 
 inline Eigen::SparseMatrix<zono_float> load_sparse_matrix(const std::string& filename)
 {
@@ -50,6 +51,15 @@ inline Eigen::Vector<zono_float, -1> load_vector(const std::string& filename)
         vec(i) = values[i];
     }
     return vec;
+}
+
+inline void test_assert(const bool assert_cond, const std::string& message = "")
+{
+    if (!assert_cond)
+    {
+        std::cerr << "Assertion failed: " <<  message << std::endl;
+        std::exit(1);
+    }
 }
 
 

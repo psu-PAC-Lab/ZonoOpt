@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
         return 1;
     }
     std::string test_folder = argv[1];
-    test_folder += "/vrep_2_hybzono/";
+    test_folder += "/minkowski_sum/";
 
     // build hybzono from vrep
     std::vector<Eigen::Matrix<zono_float, -1, -1>> V_polys;
@@ -39,8 +39,17 @@ int main(int argc, char* argv[])
         3.656, 2.397;
     V_polys.push_back(V4);
 
-    auto Z = vrep_2_hybzono(V_polys);
+    const auto Z1 = vrep_2_hybzono(V_polys);
 
+    // zonotope
+    Eigen::Matrix<zono_float, 2, 3> G;
+    G << 0.5*std::sqrt(3), 0.5, 0.5*std::sqrt(3),
+         0.25, 0, -0.25;
+    Eigen::Vector2d c(-2.0, 1.0);
+    Zono Z2 (G.sparseView(), c);
+
+    // minkowski sum
+    const auto Z = minkowski_sum(*Z1, Z2);
     if (Z->is_0_1_form())
         Z->convert_form();
 
@@ -74,7 +83,7 @@ int main(int argc, char* argv[])
     passed &= Z->get_Ab().isApprox(Z_expected.get_Ab());
     passed &= Z->get_b().isApprox(Z_expected.get_b());
 
-    test_assert(passed, "Expected hybzono from vrep_2_hybzono to match expected result");
+    test_assert(passed, "Minkowski sum test failed: computed result does not match expected result");
 
     return 0;
 }
