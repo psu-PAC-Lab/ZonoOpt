@@ -52,7 +52,6 @@ def get_vertices(Z, t_max=60.0):
 
         # make sure Z is not empty
         if Z.is_empty():
-            warnings.warn('Z is empty, returning empty list of vertices.')
             return []
 
         # search for vertices along perpendicular directions to get initial simplex
@@ -188,22 +187,27 @@ def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
     
     # hybzono -> get leaves
     if Z.is_hybzono():
+        t0 = time.time()
+        
         sol = OptSolution()
         leaves = Z.get_leaves(settings=settings, solution=sol)
 
         if not sol.converged:
             warnings.warn('get_leaves returned before convergence, plot may be incomplete.')
 
-        if len(leaves) > 0:
-            time_per_leaf = t_max / len(leaves)
-        else:
+        if len(leaves) == 0:
             warnings.warn('No leaves found in HybZono, returning empty plot')
             return []
+        
         objs = []
         pbar = tqdm(leaves)
         for leaf in pbar:
             pbar.set_description('Plotting HybZono leaves')
-            obj = plot(leaf, ax=ax, t_max=time_per_leaf, **kwargs)
+            t = time.time() - t0
+            if t > t_max:
+                warnings.warn('Plotting time limit reached, terminating early.')
+                break
+            obj = plot(leaf, ax=ax, t_max=t_max-t, settings=settings, **kwargs)
             if Z.get_n() <= 2:
                 objs.append(obj[0])
             else:
@@ -240,7 +244,6 @@ def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
         
         # plot
         if V is None or len(V) == 0:
-            warnings.warn("No vertices found, returning empty plot")
             obj = ax.scatter([], [], [])
         elif Z.is_point():
             obj = ax.scatter(V[0,0], V[0,1], V[0,2], **kwargs)
