@@ -1,145 +1,9 @@
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 import numpy as np
-from scipy.spatial import ConvexHull
-from scipy.optimize import linprog
-from scipy.linalg import null_space
 import time
 import warnings
 from tqdm import tqdm
 
 from ._core import *
-
-
-def find_vertex(Z, d):
-    """Get vertex of Z nearest to direction d"""
-    
-    # maximize dot product
-    c = -Z.get_G().transpose().dot(d)
-    if Z.is_0_1_form():
-        bounds = [(0, 1) for i in range(Z.get_nG())]
-    else:
-        bounds = [(-1, 1) for i in range(Z.get_nG())]
-
-    if Z.is_zono():
-        res = linprog(c, bounds=bounds)
-    elif Z.is_conzono():
-        res = linprog(c, A_eq=Z.get_A(), b_eq=Z.get_b(), bounds=bounds)
-    else:
-        raise ValueError('find_vertex unsupported data type')
-
-    if res.success:
-        return Z.get_G()*res.x + Z.get_c()
-    else:
-        return None
-
-def get_conzono_vertices(Z, t_max=60.0):
-    """Get vertices of Z"""
-
-    # init time
-    t0 = time.time()
-
-    # make sure Z is not empty
-    if Z.is_empty():
-        warnings.warn('Z is empty, returning empty list of vertices.')
-        return []
-
-    # search for vertices along perpendicular directions to get initial simplex
-    verts = []
-    D = [np.array([1 if i==j else 0 for j in range(Z.get_n())]) for i in range(Z.get_n())] # init directions as standard basis
-    B = [] # init basis
-    for _ in range(Z.get_n()):
-
-        # support in positive direction
-        d = D.pop()
-        vd_pos = find_vertex(Z, d)    
-        
-        # support in negative direction
-        vd_neg = find_vertex(Z, -d)
-
-        # make sure feasible
-        if vd_pos is None or vd_neg is None: # infeasible, not detected during get_leaves
-            return []
-        
-        # check if vertices are new and whether direction is thin
-        is_vd_pos_new = not any(np.allclose(vd_pos, v) for v in verts)
-        is_vd_neg_new = not any(np.allclose(vd_neg, v) for v in verts)
-        is_thin = np.allclose(vd_pos, vd_neg)
-
-        # add new vertices
-        if is_vd_pos_new:
-            verts.append(vd_pos)
-        if is_vd_neg_new and not is_thin:
-            verts.append(vd_neg)
-
-        # update direction
-        if not is_thin:
-            B.append(vd_pos - vd_neg)
-            N = null_space(np.array(B)).transpose()
-            D = [N[j,:].flatten() for j in range(N.shape[0])]
-
-    # return if set is not full-dimensional
-    if len(verts) < Z.get_n()+1:
-        return np.array(verts)
-    
-    # search for additional vertices along the directions of the facet normals
-    converged = False
-    normals = []
-    while not converged and ((time.time()-t0) < t_max):
-
-        # compute convex hull and centroid
-        verts_np_arr = np.array(verts)
-        hull = ConvexHull(verts_np_arr)
-        centroid = np.mean(verts_np_arr, axis=0)
-
-        # get facet normals
-        new_normals = []
-        for simplex in hull.simplices:
-            
-            # get vertices of facet. each row is a vertex
-            V = verts_np_arr[simplex]
-            
-            # get normal
-            Vn = V[-1,:] # last element
-            A = V[:-1,:] - Vn # subtract last element from each row
-            N = null_space(A).transpose()
-            n = N[0,:]
-
-            # ensure outward normal
-            if np.dot(n, Vn - centroid) < 0:
-                n = -n
-
-            if not any(np.allclose(n, existing_n) for existing_n in normals):
-                new_normals.append(n)
-
-        # search facet normals for additional vertices
-        n_new_verts = 0 # init
-        for n in new_normals:
-
-            # get vertex
-            vd = find_vertex(Z, n)
-
-            # check if vertex is new
-            if not any(np.allclose(vd, v) for v in verts):
-                verts.append(vd)
-                n_new_verts += 1
-
-        # already-checked normal directions
-        normals.extend(new_normals)
-
-        # check for convergence
-        converged = n_new_verts == 0
-
-
-    # throw warning if time limit was reached
-    if (time.time()-t0) > t_max:
-        warnings.warn('get_vertices time limit reached, terminating early.')
-
-    V = np.array(verts)
-    hull = ConvexHull(V)
-    V = V[hull.vertices,:]
-
-    return V
 
 def get_vertices(Z, t_max=60.0):
     """
@@ -152,15 +16,152 @@ def get_vertices(Z, t_max=60.0):
     Returns:
         numpy.ndarray: Vertices of the zonotopic set. If Z is a point, returns its coordinates.
     """
+
+    # local import to reduce zonoopt import time if plotting is not used
+    from scipy.spatial import ConvexHull
+    from scipy.optimize import linprog
+    from scipy.linalg import null_space
+
+    def _find_vertex(Z, d):
+        """Get vertex of Z nearest to direction d"""
+        
+        # maximize dot product
+        c = -Z.get_G().transpose().dot(d)
+        if Z.is_0_1_form():
+            bounds = [(0, 1) for i in range(Z.get_nG())]
+        else:
+            bounds = [(-1, 1) for i in range(Z.get_nG())]
+
+        if Z.is_zono():
+            res = linprog(c, bounds=bounds)
+        elif Z.is_conzono():
+            res = linprog(c, A_eq=Z.get_A(), b_eq=Z.get_b(), bounds=bounds)
+        else:
+            raise ValueError('find_vertex unsupported data type')
+
+        if res.success:
+            return Z.get_G()*res.x + Z.get_c()
+        else:
+            return None
+
+    def _get_conzono_vertices(Z, t_max=60.0):
+        """Get vertices of Z"""
+
+        # init time
+        t0 = time.time()
+
+        # make sure Z is not empty
+        if Z.is_empty():
+            warnings.warn('Z is empty, returning empty list of vertices.')
+            return []
+
+        # search for vertices along perpendicular directions to get initial simplex
+        verts = []
+        D = [np.array([1 if i==j else 0 for j in range(Z.get_n())]) for i in range(Z.get_n())] # init directions as standard basis
+        B = [] # init basis
+        for _ in range(Z.get_n()):
+
+            # support in positive direction
+            d = D.pop()
+            vd_pos = _find_vertex(Z, d)    
+            
+            # support in negative direction
+            vd_neg = _find_vertex(Z, -d)
+
+            # make sure feasible
+            if vd_pos is None or vd_neg is None: # infeasible, not detected during get_leaves
+                return []
+            
+            # check if vertices are new and whether direction is thin
+            is_vd_pos_new = not any(np.allclose(vd_pos, v) for v in verts)
+            is_vd_neg_new = not any(np.allclose(vd_neg, v) for v in verts)
+            is_thin = np.allclose(vd_pos, vd_neg)
+
+            # add new vertices
+            if is_vd_pos_new:
+                verts.append(vd_pos)
+            if is_vd_neg_new and not is_thin:
+                verts.append(vd_neg)
+
+            # update direction
+            if not is_thin:
+                B.append(vd_pos - vd_neg)
+                N = null_space(np.array(B)).transpose()
+                D = [N[j,:].flatten() for j in range(N.shape[0])]
+
+        # return if set is not full-dimensional
+        if len(verts) < Z.get_n()+1:
+            return np.array(verts)
+        
+        # search for additional vertices along the directions of the facet normals
+        converged = False
+        normals = []
+        while not converged and ((time.time()-t0) < t_max):
+
+            # compute convex hull and centroid
+            verts_np_arr = np.array(verts)
+            hull = ConvexHull(verts_np_arr)
+            centroid = np.mean(verts_np_arr, axis=0)
+
+            # get facet normals
+            new_normals = []
+            for simplex in hull.simplices:
+                
+                # get vertices of facet. each row is a vertex
+                V = verts_np_arr[simplex]
+                
+                # get normal
+                Vn = V[-1,:] # last element
+                A = V[:-1,:] - Vn # subtract last element from each row
+                N = null_space(A).transpose()
+                n = N[0,:]
+
+                # ensure outward normal
+                if np.dot(n, Vn - centroid) < 0:
+                    n = -n
+
+                if not any(np.allclose(n, existing_n) for existing_n in normals):
+                    new_normals.append(n)
+
+            # search facet normals for additional vertices
+            n_new_verts = 0 # init
+            for n in new_normals:
+
+                # get vertex
+                vd = _find_vertex(Z, n)
+
+                # check if vertex is new
+                if not any(np.allclose(vd, v) for v in verts):
+                    verts.append(vd)
+                    n_new_verts += 1
+
+            # already-checked normal directions
+            normals.extend(new_normals)
+
+            # check for convergence
+            converged = n_new_verts == 0
+
+
+        # throw warning if time limit was reached
+        if (time.time()-t0) > t_max:
+            warnings.warn('get_vertices time limit reached, terminating early.')
+
+        V = np.array(verts)
+        hull = ConvexHull(V)
+        V = V[hull.vertices,:]
+
+        return V
     
+    # get vertices based on type
     if Z.is_empty_set():
         return None
     elif Z.is_point():
         return Z.get_c().reshape(1,-1)
     elif Z.is_zono() or Z.is_conzono():
-        return get_conzono_vertices(Z, t_max=t_max)
+        return _get_conzono_vertices(Z, t_max=t_max)
     elif Z.is_hybzono():
         raise ValueError('get_vertices not implemented for HybZono')
+
 
 def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
     """
@@ -176,6 +177,11 @@ def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
     Returns:
         list: List of matplotlib objects representing the plotted zonotope.
     """
+
+    # local import to reduce zonoopt import time if plotting is not used
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+    from scipy.spatial import ConvexHull
 
     if Z.get_n() < 2 or Z.get_n() > 3:
         raise ValueError("Plot only implemented in 2D or 3D")
