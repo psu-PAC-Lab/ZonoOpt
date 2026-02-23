@@ -6,15 +6,15 @@ from pathlib import Path
 """zonoLAB used to generate these unit tests"""
 
 # globals: unit test folder
-unit_test_folder = Path(__file__).parent
+test_data_folder = Path(__file__).parent.parent / 'test-data'
 
 # unit tests
 def test_vrep_2_hz():
 
     # folder where unit test data resides
-    test_folder = unit_test_folder / 'vrep_2_hybzono'
+    test_folder = test_data_folder / 'vrep_2_hybzono'
 
-    # build hybzono from vrep in zonocpp
+    # build hybzono from vrep
     V_polys = []
     V_polys.append(np.array([[5.566, 5.896],
                              [4.044, 5.498],
@@ -63,9 +63,9 @@ def test_vrep_2_hz():
 def test_minkowski_sum():
 
     # folder where unit test data resides
-    test_folder = unit_test_folder / 'minkowski_sum'
+    test_folder = test_data_folder / 'minkowski_sum'
 
-    # build hybzono from vrep in zonocpp
+    # build hybzono from vrep
     V_polys = []
     V_polys.append(np.array([[5.566, 5.896],
                              [4.044, 5.498],
@@ -122,9 +122,9 @@ def test_minkowski_sum():
 def test_intersection():
 
     # folder where unit test data resides
-    test_folder = unit_test_folder / 'intersection'
+    test_folder = test_data_folder / 'intersection'
 
-    # build hybzono from vrep in zonocpp
+    # build hybzono from vrep
     V_polys = []
     V_polys.append(np.array([[5.566, 5.896],
                              [4.044, 5.498],
@@ -192,7 +192,7 @@ def test_intersection():
 def test_is_empty():
 
     # folder where unit test data resides
-    test_folder = unit_test_folder / 'conzono_feasibility'
+    test_folder = test_data_folder / 'is_empty'
 
     # load in feasible conzono
     G = np.loadtxt(test_folder / 'f_G.txt', delimiter=' ')
@@ -218,7 +218,7 @@ def test_is_empty():
 def test_support():
 
     # folder where unit test data resides
-    test_folder = unit_test_folder / 'support'
+    test_folder = test_data_folder / 'support'
 
     # load in conzono
     G = np.loadtxt(test_folder / 'G.txt', delimiter=' ')
@@ -228,11 +228,11 @@ def test_support():
 
     Z = zono.ConZono(sp.csc_matrix(G), c, sp.csc_matrix(A), b)
 
-    # load direction and expected support function
+    # load direction and expected support value
     d = np.loadtxt(test_folder / 'd.txt', delimiter=' ')
     s_expected = np.loadtxt(test_folder / 'sup.txt', delimiter=' ')
 
-    # compute support function
+    # compute support
     s = Z.support(d)
     
     # compare results
@@ -243,7 +243,7 @@ def test_support():
 def test_point_contain():
 
     # folder where the data resides
-    test_folder = unit_test_folder / 'point_containment'
+    test_folder = test_data_folder / 'point_contain'
 
     # load in conzono
     G = np.loadtxt(test_folder / 'G.txt', delimiter=' ')
@@ -285,13 +285,48 @@ def test_get_leaves():
     Z = zono.minkowski_sum(U, U)
 
     # get number of leaves
-    settings = zono.OptSettings()
-    settings.n_threads_bnb = 1
-    leaves = Z.get_leaves(settings=settings)
+    leaves = Z.get_leaves()
 
     # check number of leaves is correct
     assert len(leaves) == n_CZs**2
     print('Passed: Get Leaves')
+
+def test_safety_verification():
+
+    # System dynamics
+    dt = 0.1
+    A = np.array([[1., dt],
+                  [0., 1.]])
+    B = np.array([[0.5*dt**2],
+                  [dt]])
+
+    # Initial set: box [-1.0, 1.0] x [-0.1, 0.1]
+    X0 = zono.interval_2_zono(zono.Box([-1., -0.1], [1., 0.1]))
+
+    # Input set: box [-0.2, 0.2]
+    U = zono.interval_2_zono(zono.Box([-0.2], [0.2]))
+
+    # Disturbance set: affine map of octagon
+    W = zono.make_regular_zono_2D(radius=1., n_sides=8)
+    W = zono.affine_map(W, np.diag([0.01, 0.05]))
+
+    # Compute reachable set over 10 time steps
+    X = X0
+    for k in range(10):
+        X = zono.affine_map(X, A)
+        X = zono.minkowski_sum(X, zono.affine_map(U, B))
+        X = zono.minkowski_sum(X, W)
+
+    # Unsafe set
+    O = zono.vrep_2_conzono(np.array([[1.3, 0.],
+                                      [1.6, 0.8],
+                                      [2.0, -0.4],
+                                      [2.3, 0.6]]))
+
+    # expect intersection of X and O is empty
+    assert zono.intersection(X, O).is_empty()
+    print('Passed: Safety Verification')
+
 
 # run the unit tests
 test_vrep_2_hz()
@@ -301,3 +336,4 @@ test_is_empty()
 test_support()
 test_point_contain()
 test_get_leaves()
+test_safety_verification()

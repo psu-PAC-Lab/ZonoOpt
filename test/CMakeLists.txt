@@ -1,7 +1,19 @@
 cmake_minimum_required(VERSION 3.15)
-project(example_operations)
+project(zonoopt_unit_tests)
 
-add_executable(example_operations
-    src/example_operations.cpp
-)
-target_link_libraries(example_operations PRIVATE ZonoOpt)
+function(create_test TEST_NAME SOURCE)
+    add_executable(${TEST_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/cpp-tests/src/${SOURCE})
+    target_link_libraries(${TEST_NAME} PRIVATE ZonoOpt)
+    target_include_directories(${TEST_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cpp-tests/include)
+    add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/test-data)
+endfunction()
+
+# tests
+create_test(test_get_leaves "test_get_leaves.cpp")
+create_test(test_safety_verification "test_safety_verification.cpp")
+create_test(test_vrep_2_hybzono "test_vrep_2_hybzono.cpp")
+create_test(test_minkowski_sum "test_minkowski_sum.cpp")
+create_test(test_intersection "test_intersection.cpp")
+create_test(test_is_empty "test_is_empty.cpp")
+create_test(test_support "test_support.cpp")
+create_test(test_point_contain "test_point_contain.cpp")

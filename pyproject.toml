@@ -36,7 +36,7 @@ test = [
 
 [tool.pytest.ini_options]
 testpaths = [
-    "test/unit-tests",
+    "test/python-tests",
 ]
 python_files = "unit_tests.py"
 python_functions = "test_*"
