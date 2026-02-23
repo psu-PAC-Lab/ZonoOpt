@@ -527,7 +527,10 @@ if MODE == 'representative':
     # make figure and animation
     plot_obj = BallPlot(x_traj, x_traj_sim)
     plot_obj.make_ball_paddle_fig(k_list=[0, 4, 8, 12, 16, 20], ncols=3)
-    plot_obj.make_ball_paddle_animation( playback_speed=2.0)
+    try:
+        plot_obj.make_ball_paddle_animation( playback_speed=2.0)
+    except Exception as e:
+        print(f"Error creating animation: {e}, likely FFMpeg not installed")
 
 elif MODE == 'multi-run':
     settings.verbose = False
