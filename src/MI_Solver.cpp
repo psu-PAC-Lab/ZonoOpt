@@ -363,7 +363,6 @@ namespace ZonoOpt::detail
             // verbosity
             if (this->data.admm_data->settings.verbose && (this->iter >= print_iter))
             {
-                size_t n_threads = this->J_threads.size();
                 ss << std::setw(13) << this->iter << std::setw(13) << queue_size << std::setw(13)
                     << this->iter_admm_fp << std::setw(13) << run_time << std::setw(13)
                     << J_min << std::setw(13) << this->J_max << std::setw(13)
