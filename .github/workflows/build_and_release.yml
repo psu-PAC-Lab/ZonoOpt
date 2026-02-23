@@ -31,7 +31,7 @@ jobs:
         run: cmake --build build --config Release
 
       - name: Run tests
-        working_directory: build
+        working-directory: build
         run: ctest --output-on-failure --no-tests=error
 
   build_wheels:
