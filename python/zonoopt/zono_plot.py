@@ -188,7 +188,12 @@ def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
     
     # hybzono -> get leaves
     if Z.is_hybzono():
-        leaves = Z.get_leaves(settings=settings)
+        sol = OptSolution()
+        leaves = Z.get_leaves(settings=settings, solution=sol)
+
+        if not sol.converged:
+            warnings.warn('get_leaves returned before convergence, plot may be incomplete.')
+
         if len(leaves) > 0:
             time_per_leaf = t_max / len(leaves)
         else:
