@@ -32,7 +32,7 @@ jobs:
 
       - name: Run tests
         working-directory: build
-        run: ctest --output-on-failure --no-tests=error
+        run: ctest -C Release --output-on-failure --no-tests=error
 
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
