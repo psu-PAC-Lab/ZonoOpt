@@ -197,7 +197,11 @@ def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
         objs = []
         pbar = tqdm(leaves)
         for leaf in pbar:
-            objs.append(plot(leaf, ax=ax, t_max=time_per_leaf, **kwargs)[0])
+            if Z.get_n() <= 2:
+                objs.append(plot(leaf, ax=ax, t_max=time_per_leaf, **kwargs)[0])
+            else:
+                objs.append(plot(leaf, ax=ax, t_max=time_per_leaf, **kwargs))
+
             pbar.set_description('Plotting HybZono leaves')
         return objs
 
