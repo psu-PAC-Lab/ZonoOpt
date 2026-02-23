@@ -1,6 +1,10 @@
 # ZonoOpt
 This C++ library provides classes and tailored optimization routines for zonotopes, constrained zonotopes, and hybrid zonotopes. 
 
+[![C++ build](https://github.com/psu-PAC-Lab/ZonoOpt/actions/workflows/cpp_build.yml/badge.svg)](https://github.com/psu-PAC-Lab/ZonoOpt/actions/workflows/cpp_build.yml)
+
+[![Python build](https://github.com/psu-PAC-Lab/ZonoOpt/actions/workflows/python_build.yml/badge.svg)](https://github.com/psu-PAC-Lab/ZonoOpt/actions/workflows/python_build.yml)
+
 ![image](images/mhe-traj.svg)
 ![image](images/reachability-traj.svg)
 
