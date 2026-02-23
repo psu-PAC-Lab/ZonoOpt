@@ -11,6 +11,29 @@ on:
       - published
 
 jobs:
+  test_cpp:
+    name: Test C++ code on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, macos-15-intel, macos-14]
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          submodules: false
+
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -ZONOOPT_BUILD_TESTING=ON
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Run tests
+        working_directory: build
+        run: ctest --output-on-failure --no-tests=error
+
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
