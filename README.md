@@ -203,7 +203,7 @@ int main()
 }
 ```
 
-Further Python examples are located in examples, and a C++ example is located in test.
+Further Python examples are located in /examples.
 
 ## Documentation
 Auto-generated API documentation is available below.

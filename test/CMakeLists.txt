@@ -1,7 +1,12 @@
 cmake_minimum_required(VERSION 3.15)
-project(example_operations)
+project(zonoopt_unit_tests)
 
-add_executable(example_operations
-    src/example_operations.cpp
-)
-target_link_libraries(example_operations PRIVATE ZonoOpt)
+function(create_test TEST_NAME SOURCES)
+    add_executable(${TEST_NAME} ${SOURCES})
+    target_link_libraries(${TEST_NAME} PRIVATE ZonoOpt)
+    add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+endfunction()
+
+# tests
+create_test(test_operations "cpp-tests/example_operations.cpp")
+create_test(test_safety_verification "cpp-tests/test_safety_verification.cpp")

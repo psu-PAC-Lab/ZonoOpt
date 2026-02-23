@@ -15,12 +15,6 @@ if(ZONOOPT_INSTALL OR "$ENV{CIBUILDWHEEL}" STREQUAL "1")
 endif()
 message(STATUS "ZONOOPT_USE_NATIVE set to: ${ZONOOPT_USE_NATIVE}")
 
-option(ZONOOPT_BUILD_EXAMPLE "Build example executable" OFF)
-if(ZONOOPT_BUILD_PYTHON_BINDINGS)
-    set(ZONOOPT_BUILD_EXAMPLE OFF CACHE BOOL "Disable example build when building Python bindings" FORCE)
-endif()
-message(STATUS "ZONOOPT_BUILD_EXAMPLE set to: ${ZONOOPT_BUILD_EXAMPLE}")
-
 set(ZONO_FLOAT "double" CACHE STRING "The underlying floating-point type for ZonoOpt library.")
 message(STATUS "ZONO_FLOAT set to: ${ZONO_FLOAT}")
 
@@ -150,12 +144,11 @@ if (ZONOOPT_USE_NATIVE)
     endif()
 endif()
 
-# C++ example
-if (ZONOOPT_BUILD_EXAMPLE)
-    # build test executable
-    add_subdirectory(test)
-endif()
+# testing
+enable_testing()
+add_subdirectory(test)
 
+# install
 if (ZONOOPT_INSTALL)
     include(CMakePackageConfigHelpers)
 
