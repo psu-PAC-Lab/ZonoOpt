@@ -1,7 +1,6 @@
 import numpy as np
 import time
 import warnings
-from tqdm import tqdm
 
 from ._core import *
 
@@ -128,6 +127,9 @@ def get_vertices(Z, t_max=60.0):
 
                 # get vertex
                 vd = _find_vertex(Z, n)
+                if vd is None:
+                    warnings.warn('find_vertex failed, skipping direction')
+                    continue
 
                 # check if vertex is new
                 if not any(np.allclose(vd, v) for v in verts):
@@ -181,6 +183,7 @@ def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d.art3d import Poly3DCollection
     from scipy.spatial import ConvexHull
+    from tqdm import tqdm
 
     if Z.get_n() < 2 or Z.get_n() > 3:
         raise ValueError("Plot only implemented in 2D or 3D")
