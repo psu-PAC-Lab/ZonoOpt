@@ -376,6 +376,7 @@ namespace ZonoOpt
         MI_Solver mi_solver(mi_data);
 
         // solve optimization problem
+        n_sols = std::min(n_sols, static_cast<int>(std::pow(2, this->nGb)));
         auto [fst, snd] = mi_solver.multi_solve(n_sols);
         if (solution != nullptr)
             *solution = std::make_shared<OptSolution>(snd);
