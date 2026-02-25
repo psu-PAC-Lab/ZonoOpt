@@ -278,7 +278,7 @@ namespace ZonoOpt::detail
         {
             ss << std::endl << std::setw(13) << "Iter" << std::setw(13) << "Queue" << std::setw(13) <<
                 "ADMM-FP Iter" << std::setw(13) <<
-                "Threads" << std::setw(13) << "Time [s]" << std::setw(13) << "J_min" << std::setw(13) <<
+                "Time [s]" << std::setw(13) << "J_min" << std::setw(13) <<
                 "J_max" << std::setw(13) << "Gap [%]" << std::setw(13) << "Feasible" << std::setw(13) <<
                 "ADMM-FP sol" << std::endl;
             print_str(ss);
@@ -363,10 +363,8 @@ namespace ZonoOpt::detail
             // verbosity
             if (this->data.admm_data->settings.verbose && (this->iter >= print_iter))
             {
-                size_t n_threads = this->J_threads.size();
                 ss << std::setw(13) << this->iter << std::setw(13) << queue_size << std::setw(13)
-                    << this->iter_admm_fp << std::setw(13)
-                    << n_threads << std::setw(13) << run_time << std::setw(13)
+                    << this->iter_admm_fp << std::setw(13) << run_time << std::setw(13)
                     << J_min << std::setw(13) << this->J_max << std::setw(13)
                     << gap_percent * 100.0f << std::setw(13)
                     << (this->feasible ? "true" : "false") << std::setw(13)

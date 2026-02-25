@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ZonoOpt: /home/joshr/Documents/Projects/ZonoOpt/src/PolymorphicFunctions.cpp File Reference</title>
+<title>ZonoOpt: /home/joshr/Documents/Projects/ZonoOpt/src/SetOperations.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -89,14 +89,13 @@ $(function() {
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
-  <div class="headertitle"><div class="title">PolymorphicFunctions.cpp File Reference</div></div>
+  <div class="headertitle"><div class="title">SetOperations.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;stdexcept&gt;</code><br />
 <code>#include &lt;algorithm&gt;</code><br />
 <code>#include &lt;utility&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
-<code>#include &lt;cmath&gt;</code><br />
 <code>#include &quot;<a class="el" href="ZonoOpt_8hpp_source.html">ZonoOpt.hpp</a>&quot;</code><br />
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -148,18 +147,6 @@ Functions</h2></td></tr>
 <tr class="memitem:ga45a1a10e0c353d2ecf52580e176dc9dc" id="r_ga45a1a10e0c353d2ecf52580e176dc9dc"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetupFunctions.html#ga45a1a10e0c353d2ecf52580e176dc9dc">ZonoOpt::zono_union_2_hybzono</a> (std::vector&lt; std::shared_ptr&lt; <a class="el" href="classZonoOpt_1_1Zono.html">Zono</a> &gt; &gt; &amp;Zs, bool expose_indicators=false)</td></tr>
 <tr class="memdesc:ga45a1a10e0c353d2ecf52580e176dc9dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a hybrid zonotope from a union of zonotopes.  <br /></td></tr>
 <tr class="separator:ga45a1a10e0c353d2ecf52580e176dc9dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga114416de3febe96790877b3a064f2290" id="r_ga114416de3febe96790877b3a064f2290"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetupFunctions.html#ga114416de3febe96790877b3a064f2290">ZonoOpt::vrep_2_hybzono</a> (const std::vector&lt; Eigen::Matrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1, -1 &gt; &gt; &amp;Vpolys, bool expose_indicators=false)</td></tr>
-<tr class="memdesc:ga114416de3febe96790877b3a064f2290"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a hybrid zonotope from a union of vertex representation polytopes.  <br /></td></tr>
-<tr class="separator:ga114416de3febe96790877b3a064f2290"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac52f05464954432151ae50802a4da669" id="r_gac52f05464954432151ae50802a4da669"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1ConZono.html">ConZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetupFunctions.html#gac52f05464954432151ae50802a4da669">ZonoOpt::vrep_2_conzono</a> (const Eigen::Matrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1, -1 &gt; &amp;Vpoly)</td></tr>
-<tr class="memdesc:gac52f05464954432151ae50802a4da669"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds a constrained zonotope from a vertex representation polytope.  <br /></td></tr>
-<tr class="separator:gac52f05464954432151ae50802a4da669"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga22e35050f518e280aae3e824b539ef76" id="r_ga22e35050f518e280aae3e824b539ef76"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1Zono.html">Zono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetupFunctions.html#ga22e35050f518e280aae3e824b539ef76">ZonoOpt::interval_2_zono</a> (const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;box)</td></tr>
-<tr class="memdesc:ga22e35050f518e280aae3e824b539ef76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds a zonotope from a <a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a> object.  <br /></td></tr>
-<tr class="separator:ga22e35050f518e280aae3e824b539ef76"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5e33e41bf5f1cf8e1f32e1de45dba939" id="r_ga5e33e41bf5f1cf8e1f32e1de45dba939"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1Zono.html">Zono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetupFunctions.html#ga5e33e41bf5f1cf8e1f32e1de45dba939">ZonoOpt::make_regular_zono_2D</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> radius, int n_sides, bool outer_approx=false, const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, 2 &gt; &amp;c=Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, 2 &gt;::Zero())</td></tr>
-<tr class="memdesc:ga5e33e41bf5f1cf8e1f32e1de45dba939"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds a 2D regular zonotope with a given radius and number of sides.  <br /></td></tr>
-<tr class="separator:ga5e33e41bf5f1cf8e1f32e1de45dba939"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

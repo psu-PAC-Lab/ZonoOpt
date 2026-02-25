@@ -9,7 +9,7 @@ if(ZONOOPT_BUILD_PYTHON_BINDINGS)
 endif()
 message(STATUS "ZONOOPT_INSTALL set to: ${ZONOOPT_INSTALL}")
 
-option(ZONOOPT_USE_NATIVE "Enable native vectorization (march=native)" ON)
+option(ZONOOPT_USE_NATIVE "Enable native vectorization (march=native)" OFF)
 if(ZONOOPT_INSTALL OR "$ENV{CIBUILDWHEEL}" STREQUAL "1")
     set(ZONOOPT_USE_NATIVE OFF CACHE BOOL "Disable march=native for install and PyPI builds" FORCE)
 endif()

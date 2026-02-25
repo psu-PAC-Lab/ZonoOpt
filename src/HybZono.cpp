@@ -376,6 +376,7 @@ namespace ZonoOpt
         MI_Solver mi_solver(mi_data);
 
         // solve optimization problem
+        n_sols = std::min(n_sols, static_cast<int>(std::pow(2, this->nGb)));
         auto [fst, snd] = mi_solver.multi_solve(n_sols);
         if (solution != nullptr)
             *solution = std::make_shared<OptSolution>(snd);
@@ -546,10 +547,11 @@ namespace ZonoOpt
                                              std::shared_ptr<OptSolution>* solution, const int n_leaves,
                                              const int contractor_iter) const
     {
-        // allocate all threads to branch and bound
+        // allocate all threads to branch and bound and use best dive search strategy
         OptSettings settings_get_leaves = settings;
         settings_get_leaves.n_threads_bnb += settings.n_threads_admm_fp;
         settings_get_leaves.n_threads_admm_fp = 0;
+        settings_get_leaves.search_mode = 1;
 
         // get leaves as conzonos
         const std::vector<Eigen::Vector<zono_float, -1>> bin_leaves = this->get_bin_leaves(

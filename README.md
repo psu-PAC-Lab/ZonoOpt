@@ -1,6 +1,10 @@
 # ZonoOpt
 This C++ library provides classes and tailored optimization routines for zonotopes, constrained zonotopes, and hybrid zonotopes. 
 
+[![C++ build](https://github.com/psu-PAC-Lab/ZonoOpt/actions/workflows/cpp_build.yml/badge.svg)](https://github.com/psu-PAC-Lab/ZonoOpt/actions/workflows/cpp_build.yml)
+
+[![Python build](https://github.com/psu-PAC-Lab/ZonoOpt/actions/workflows/python_build.yml/badge.svg)](https://github.com/psu-PAC-Lab/ZonoOpt/actions/workflows/python_build.yml)
+
 ![image](images/mhe-traj.svg)
 ![image](images/reachability-traj.svg)
 
@@ -62,13 +66,12 @@ Some key features of the ZonoOpt library are as follows:
 - Polymorphism is used to provide a common interface for zonotopes, constrained zonotopes, and hybrid zonotopes while allowing for specialized implementations.
   - E.g., `support` is more efficient for zonotopes than for constrained zonotopes. 
 - Factors are flexibly defined as either $[\xi_c \quad \xi_b]^T \in [0,1]^{nGc} \times \lbrace 0,1 \rbrace^{nGb}$ or the more standard form $[\xi_c \quad \xi_b]^T \in [-1,1]^{nGc} \times \lbrace -1,1 \rbrace^{nGb}$ to facilitate certain set operations.
-- Basic interval arithmetic is provided via the `Interval` and `Box` classes.
+- Basic interval arithmetic is provided via the `Interval`, `Box`, and `IntervalMatrix` classes.
 
 ## Building and Installing
 Python bindings can be installed from PyPI with `pip install zonoopt`. To build the bindings from source, use `pip install .`. Note that a C++ compiler is required to build from source.
 
 This library can be used in CMake projects either via `add_subdirectory` or by installing the library. 
-Including the library via `add_subdirectory` is recommended when possible as it permits more aggressive CPU optimizations (i.e., `-march=native`).
 When building the library for installation, you must set the option ZONOOPT_INSTALL to ON, i.e., `cmake -DZONOOPT_INSTALL=ON -S . -B build`.
 
 Example CMake usage is as follows:
