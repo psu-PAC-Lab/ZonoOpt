@@ -394,18 +394,14 @@ namespace ZonoOpt
         /**
          * @brief default constructor
          */
-        Interval() : lb(0), ub(0)
-        {
-        }
+        Interval() : lb(0), ub(0) {}
 
         /**
          * @brief Interval constructor
          * @param y_min lower bound
          * @param y_max upper bound
          */
-        Interval(zono_float y_min, zono_float y_max) : lb(y_min), ub(y_max)
-        {
-        }
+        Interval(zono_float y_min, zono_float y_max) : lb(y_min), ub(y_max) {}
 
         /**
          * @brief Clone Interval object
@@ -766,6 +762,12 @@ namespace ZonoOpt
          * @param vals vector of intervals
          */
         explicit Box(const std::vector<Interval>& vals);
+
+        /**
+         * @brief Constructor using Eigen vector of intervals
+         * @param vals Eigen vector of intervals
+         */
+        explicit Box(const Eigen::Vector<Interval, -1>& vals);
 
         /**
          * @brief Constructor from intervals of lower and upper bounds
@@ -1129,6 +1131,13 @@ namespace ZonoOpt
          */
         IntervalMatrix(const Eigen::Matrix<zono_float, -1, -1>& mat_lb,
                        const Eigen::Matrix<zono_float, -1, -1>& mat_ub);
+
+        /**
+         * @brief IntervalMatrix constructor from Eigen matrix of intervals
+         * 
+         * @param mat matrix of intervals
+         */
+        IntervalMatrix(const Eigen::Matrix<Interval, -1, -1>& mat);
 
         /**
          * @brief Get center matrix

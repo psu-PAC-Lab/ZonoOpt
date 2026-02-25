@@ -22,6 +22,18 @@ namespace ZonoOpt
         }
     }
 
+    Box::Box(const Eigen::Vector<Interval, -1>& vals)
+    {
+        x_lb.resize(vals.size());
+        x_ub.resize(vals.size());
+
+        for (Eigen::Index i = 0; i < vals.size(); i++)
+        {
+            this->x_lb(i) = vals(i).y_min();
+            this->x_ub(i) = vals(i).y_max();
+        }
+    }
+
     Box::Box(const Eigen::Vector<zono_float, -1>& x_lb, const Eigen::Vector<zono_float, -1>& x_ub)
     {
         if (x_lb.size() != x_ub.size())
@@ -569,6 +581,21 @@ namespace ZonoOpt
 
         // let logic in triplet constructor take care of combining
         *this = IntervalMatrix(static_cast<size_t>(mat_lb.rows()), static_cast<size_t>(mat_lb.cols()), triplets);
+    }
+
+    IntervalMatrix::IntervalMatrix(const Eigen::Matrix<Interval, -1, -1>& mat)
+    {
+        // get triplets
+        std::vector<Eigen::Triplet<Interval>> triplets;
+        for (int i = 0; i < mat.rows(); ++i)
+        {
+            for (int j = 0; j < mat.cols(); j++)
+            {
+                if (std::abs(mat(i, j).y_min()) > zono_eps || std::abs(mat(i, j).y_max()) > zono_eps)
+                    triplets.emplace_back(i, j, mat(i, j));
+            }
+        }
+        *this = IntervalMatrix(static_cast<size_t>(mat.rows()), static_cast<size_t>(mat.cols()), triplets);
     }
 
     Box IntervalMatrix::operator*(const Eigen::Vector<zono_float, -1>& v) const

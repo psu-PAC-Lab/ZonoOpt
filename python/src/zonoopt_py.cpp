@@ -342,6 +342,14 @@ PYBIND11_MODULE(_core, m)
                     x_lb (numpy.array): vector of lower bounds
                     x_ub (numpy.array): vector of upper bounds
             )pbdoc")
+        .def_static("from_array", [](const std::vector<Interval>& vals) -> Box
+            { return Box(vals); }, py::arg("vals"),
+            R"pbdoc(
+                Constructor from array of intervals
+
+                Args:
+                    vals (list of Interval): list of intervals to construct box from
+            )pbdoc")
         .def("__repr__", &Box::print,
             R"pbdoc(
                 print method for Box
@@ -530,6 +538,53 @@ PYBIND11_MODULE(_core, m)
                 Args:
                     mat_lb (scipy.sparse.csc_matrix): matrix of lower bounds
                     mat_ub (scipy.sparse.csc_matrix): matrix of upper bounds
+            )pbdoc")
+        .def_static("from_array", [](const std::vector<std::vector<Interval>>& vals) -> IntervalMatrix
+            { 
+                if (vals.empty()) return IntervalMatrix();
+
+                // convert to Eigen matrix of intervals
+                size_t rows = vals.size();
+                size_t cols = vals[0].size();
+                Eigen::Matrix<Interval, -1, -1> mat(rows, cols);
+                for (size_t i = 0; i < rows; ++i)
+                {
+                    if (vals[i].size() != cols)
+                    {
+                        throw std::invalid_argument("IntervalMatrix from_array: inconsistent dimensions");
+                    }
+
+                    for (size_t j = 0; j < cols; ++j)
+                    {
+                        mat(i, j) = vals[i][j];
+                    }
+                }
+                return IntervalMatrix(mat);
+            }, py::arg("vals"),
+            R"pbdoc(
+                IntervalMatrix constructor from matrix of intervals
+
+                Args:
+                    vals (list of list of Interval): matrix of intervals
+            )pbdoc")
+        .def_static("from_triplets", [](int rows, int cols, const std::vector<std::tuple<int, int, Interval>>& triplets) -> IntervalMatrix
+            {
+                // convert to Eigen triplets
+                std::vector<Eigen::Triplet<Interval>> eig_triplets;
+                eig_triplets.reserve(triplets.size());
+                for (size_t i = 0; i < triplets.size(); ++i)
+                {
+                    eig_triplets.emplace_back(std::get<0>(triplets[i]), std::get<1>(triplets[i]), std::get<2>(triplets[i]));
+                }
+                return IntervalMatrix(static_cast<size_t>(rows), static_cast<size_t>(cols), eig_triplets);
+            }, py::arg("rows"), py::arg("cols"), py::arg("triplets"),
+            R"pbdoc(
+                IntervalMatrix constructor from triplets
+
+                Args:
+                    rows (int): number of rows
+                    cols (int): number of columns
+                    triplets (list of tuple of (int, int, Interval)): list of triplets, where each triplet is (row, col, value)
             )pbdoc")
         .def("center", &IntervalMatrix::center,
             R"pbdoc(
