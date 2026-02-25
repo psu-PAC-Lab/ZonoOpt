@@ -45,7 +45,6 @@ def plot_reach_sets(X_arr, title=None):
 
         # plot sets
         for k, X in enumerate(X_arr):
-            print(f'Plotting reachability step {k}')
             color = cmap(norm(k))
             zono.plot(X, ax=ax, color=color)
 

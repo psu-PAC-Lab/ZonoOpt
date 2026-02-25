@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <utility>
 #include <memory>
-#include <cmath>
 
 #include "ZonoOpt.hpp"
 
@@ -61,9 +60,12 @@ namespace ZonoOpt
         // check dimensions
         Eigen::Vector<zono_float, -1> s_def;
         const Eigen::Vector<zono_float, -1>* s_ptr = nullptr;
+        const int R_rows = static_cast<int>(R.rows());
+        const int R_cols = static_cast<int>(R.cols());
+
         if (s.size() == 0) // default argument
         {
-            s_def.resize(R.rows());
+            s_def.resize(R_rows);
             s_def.setZero();
             s_ptr = &s_def;
         }
@@ -72,15 +74,16 @@ namespace ZonoOpt
             s_ptr = &s;
         }
 
-        if (R.cols() != static_cast<size_t>(Z.n) || static_cast<size_t>(s_ptr->size()) != R.rows())
+        if (R_cols != Z.n || s_ptr->size() != R_rows)
         {
             throw std::invalid_argument("Affine inclusion: invalid input dimensions.");
         }
 
+
         // early exit
         if (Z.is_empty_set())
         {
-            return std::make_unique<EmptySet>(static_cast<int>(R.rows()));
+            return std::make_unique<EmptySet>(R_rows);
         }
 
         // get bounding zonotope
@@ -96,11 +99,11 @@ namespace ZonoOpt
         // get P diagonal matrix
         const Eigen::SparseMatrix<zono_float, Eigen::RowMajor> diam_R_abs_M = R.diam() * X_bar->get_G().cwiseAbs();
         std::vector<Eigen::Triplet<zono_float>> triplets;
-        for (size_t i = 0; i < R.rows(); ++i)
+        for (int i = 0; i < R_rows; ++i)
         {
             triplets.emplace_back(i, i, 0.5 * (m[i].width() + diam_R_abs_M.row(i).sum()));
         }
-        Eigen::SparseMatrix<zono_float> P(R.rows(), R.rows());
+        Eigen::SparseMatrix<zono_float> P(R_rows, R_rows);
 #if EIGEN_VERSION_AT_LEAST(5, 0, 0)
         P.setFromSortedTriplets(triplets.begin(), triplets.end());
 #else

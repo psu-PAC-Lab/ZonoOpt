@@ -50,14 +50,14 @@ namespace ZonoOpt
     {
         if (i >= static_cast<size_t>(x_lb.size()))
             throw std::out_of_range("Index out of range");
-        return IntervalView(&x_lb(static_cast<Eigen::Index>(i)), &x_ub(static_cast<Eigen::Index>(i)));
+        return {&x_lb(static_cast<Eigen::Index>(i)), &x_ub(static_cast<Eigen::Index>(i))};
     }
 
     Interval Box::operator[](const size_t i) const
     {
         if (i >= static_cast<size_t>(x_lb.size()))
             throw std::out_of_range("Index out of range");
-        return Interval(x_lb(static_cast<Eigen::Index>(i)), x_ub(static_cast<Eigen::Index>(i)));
+        return {x_lb(static_cast<Eigen::Index>(i)), x_ub(static_cast<Eigen::Index>(i))};
     }
 
     size_t Box::size() const
@@ -489,7 +489,7 @@ namespace ZonoOpt
 
     // interval matrices
 
-    IntervalMatrix::IntervalMatrix(size_t rows, size_t cols, const std::vector<Eigen::Triplet<Interval>>& triplets)
+    IntervalMatrix::IntervalMatrix(const size_t rows, const size_t cols, const std::vector<Eigen::Triplet<Interval>>& triplets)
     {
         // store dimensions
         this->rows_ = rows;
@@ -531,6 +531,10 @@ namespace ZonoOpt
         if (mat_lb.rows() != mat_ub.rows() || mat_lb.cols() != mat_ub.cols())
             throw std::invalid_argument("IntervalMatrix: mat_lb and mat_ub must have the same dimensions");
 
+        // initialize rows / cols
+        this->rows_ = mat_lb.rows();
+        this->cols_ = mat_lb.cols();
+
         // get triplets
         std::vector<Eigen::Triplet<Interval>> triplets;
         for (int i = 0; i < mat_lb.rows(); ++i)
@@ -550,20 +554,24 @@ namespace ZonoOpt
         if (mat_lb.rows() != mat_ub.rows() || mat_lb.cols() != mat_ub.cols())
             throw std::invalid_argument("IntervalMatrix: mat_lb and mat_ub must have the same dimensions");
 
+        // initialize rows / cols
+        this->rows_ = mat_lb.rows();
+        this->cols_ = mat_lb.cols();
+
         // get triplets
         std::vector<Eigen::Triplet<Interval>> triplets;
-        for (int k = 0; k < mat_lb.outerSize(); k++)
+        for (int k = 0; k < mat_lb.outerSize(); ++k)
         {
             for (Eigen::SparseMatrix<zono_float>::InnerIterator it_lb(mat_lb, k); it_lb; ++it_lb)
             {
-                triplets.emplace_back(it_lb.row(), it_lb.col(), Interval(it_lb.value(), zero));
+                triplets.emplace_back(static_cast<int>(it_lb.row()), static_cast<int>(it_lb.col()), Interval(it_lb.value(), zero));
             }
         }
-        for (int k = 0; k < mat_ub.outerSize(); k++)
+        for (int k = 0; k < mat_ub.outerSize(); ++k)
         {
             for (Eigen::SparseMatrix<zono_float>::InnerIterator it_ub(mat_ub, k); it_ub; ++it_ub)
             {
-                triplets.emplace_back(it_ub.row(), it_ub.col(), Interval(zero, it_ub.value()));
+                triplets.emplace_back(static_cast<int>(it_ub.row()), static_cast<int>(it_ub.col()), Interval(zero, it_ub.value()));
             }
         }
 
@@ -625,14 +633,14 @@ namespace ZonoOpt
 
         // loop through to generate triplets
         std::vector<Eigen::Triplet<Interval>> triplets;
-        for (size_t i = 0; i < rows; ++i)
+        for (int i = 0; i < static_cast<int>(rows); ++i)
         {
             for (const auto& [k, val] : this->mat_[i])
             {
                 for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it_A(
                          A, static_cast<Eigen::Index>(k)); it_A; ++it_A)
                 {
-                    triplets.emplace_back(i, it_A.col(), val * it_A.value());
+                    triplets.emplace_back(i, static_cast<int>(it_A.col()), val * it_A.value());
                 }
             }
         }
@@ -657,7 +665,7 @@ namespace ZonoOpt
             {
                 for (const auto& [j, val_b] : other.mat_[k])
                 {
-                    triplets.emplace_back(i, j, val_a * val_b);
+                    triplets.emplace_back(static_cast<int>(i), static_cast<int>(j), val_a * val_b);
                 }
             }
         }
@@ -672,15 +680,15 @@ namespace ZonoOpt
 
         // generate triplets and let constructor take care of adding them
         std::vector<Eigen::Triplet<Interval>> triplets;
-        for (size_t i = 0; i < this->rows_; ++i)
+        for (int i = 0; i < static_cast<int>(this->rows_); ++i)
         {
             for (const auto& [j, val] : this->mat_[i])
             {
-                triplets.emplace_back(i, j, val);
+                triplets.emplace_back(i, static_cast<int>(j), val);
             }
             for (const auto& [j, val] : other.mat_[i])
             {
-                triplets.emplace_back(i, j, val);
+                triplets.emplace_back(i, static_cast<int>(j), val);
             }
         }
         return {this->rows_, this->cols_, triplets};
@@ -694,15 +702,15 @@ namespace ZonoOpt
 
         // generate triplets and let constructor take care of adding them
         std::vector<Eigen::Triplet<Interval>> triplets;
-        for (size_t i = 0; i < this->rows_; ++i)
+        for (int i = 0; i < static_cast<int>(this->rows_); ++i)
         {
             for (const auto& [j, val] : this->mat_[i])
             {
-                triplets.emplace_back(i, j, val);
+                triplets.emplace_back(i, static_cast<int>(j), val);
             }
             for (const auto& [j, val] : other.mat_[i])
             {
-                triplets.emplace_back(i, j, val * (-one));
+                triplets.emplace_back(i, static_cast<int>(j), val * (-one));
             }
         }
         return {this->rows_, this->cols_, triplets};
@@ -711,11 +719,11 @@ namespace ZonoOpt
     Eigen::SparseMatrix<zono_float> IntervalMatrix::center() const
     {
         std::vector<Eigen::Triplet<zono_float>> triplets;
-        for (size_t k = 0; k < this->rows_; ++k)
+        for (int k = 0; k < static_cast<int>(this->rows_); ++k)
         {
             for (const auto& [col, val] : this->mat_[k])
             {
-                triplets.emplace_back(k, col, val.center());
+                triplets.emplace_back(k, static_cast<int>(col), val.center());
             }
         }
         Eigen::SparseMatrix<zono_float> center_mat(static_cast<Eigen::Index>(this->rows_),
@@ -727,11 +735,11 @@ namespace ZonoOpt
     Eigen::SparseMatrix<zono_float> IntervalMatrix::diam() const
     {
         std::vector<Eigen::Triplet<zono_float>> triplets;
-        for (size_t k = 0; k < this->rows_; ++k)
+        for (int k = 0; k < static_cast<int>(this->rows_); ++k)
         {
             for (const auto& [col, val] : this->mat_[k])
             {
-                triplets.emplace_back(k, col, val.width());
+                triplets.emplace_back(k, static_cast<int>(col), val.width());
             }
         }
         Eigen::SparseMatrix<zono_float> diam_mat(static_cast<Eigen::Index>(this->rows_),
@@ -743,11 +751,11 @@ namespace ZonoOpt
     IntervalMatrix IntervalMatrix::radius() const
     {
         std::vector<Eigen::Triplet<Interval>> triplets;
-        for (size_t i = 0; i < this->rows_; ++i)
+        for (int i = 0; i < static_cast<int>(this->rows_); ++i)
         {
             for (const auto& [j, val] : this->mat_[i])
             {
-                triplets.emplace_back(i, j, val.radius());
+                triplets.emplace_back(i, static_cast<int>(j), val.radius());
             }
         }
         return {this->rows_, this->cols_, triplets};
