@@ -138,37 +138,64 @@ namespace ZonoOpt
         }
 
         /**
+         * @brief set interval to x^n (i.e., x multiplied by itself n times)
+         * 
+         * @param x interval
+         * @param n power
+         */
+        void pow_assign(const Derived& x, int n)
+        {
+            if (n >= 0)
+            {
+                Derived result;
+                result.set(one, one);
+                for (int i = 0; i < n; ++i)
+                {
+                    result.multiply_assign(result, x);
+                }
+                y_min() = result.y_min();
+                y_max() = result.y_max();
+            }
+            else
+            {
+                Derived inv = x;
+                inv.inverse();
+                pow_assign(inv, -n);
+            }
+        }
+
+        /**
          * @brief sets interval to its inverse
          */
         void inverse()
         {
-            auto& min = y_min();
-            auto& max = y_max();
+            const zono_float min = y_min();
+            const zono_float max = y_max();
 
             if (std::abs(min) < zono_eps && std::abs(max) < zono_eps)
             {
-                min = std::numeric_limits<zono_float>::infinity();
-                max = -std::numeric_limits<zono_float>::infinity();
+                y_min() = std::numeric_limits<zono_float>::infinity();
+                y_max() = -std::numeric_limits<zono_float>::infinity();
             }
-            else if (min > 0 || max < 0)
+            else if (min > zono_eps || max < -zono_eps)
             {
-                min = one / max;
-                max = one / min;
+                y_min() = one / max;
+                y_max() = one / min;
             }
-            else if (std::abs(min) < zono_eps && max > 0)
+            else if (std::abs(min) < zono_eps && max > zono_eps)
             {
-                min = one / max;
-                max = std::numeric_limits<zono_float>::infinity();
+                y_min() = one / max;
+                y_max() = std::numeric_limits<zono_float>::infinity();
             }
-            else if (min < 0 && std::abs(max) < zono_eps)
+            else if (min < -zono_eps && std::abs(max) < zono_eps)
             {
-                max = one / min;
-                min = -std::numeric_limits<zono_float>::infinity();
+                y_min() = -std::numeric_limits<zono_float>::infinity();
+                y_max() = one / min;
             }
             else
             {
-                min = -std::numeric_limits<zono_float>::infinity();
-                max = std::numeric_limits<zono_float>::infinity();
+                y_min() = -std::numeric_limits<zono_float>::infinity();
+                y_max() = std::numeric_limits<zono_float>::infinity();
             }
         }
 
@@ -479,12 +506,36 @@ namespace ZonoOpt
         /**
          * @brief interval multiplication with scalar
          * @param alpha scalar
-         * @return alpha * this
+         * @return this * alpha
          */
         Interval operator*(zono_float alpha) const
         {
             Interval result;
             result.multiply_assign(*this, alpha);
+            return result;
+        }
+
+        /**
+         * @brief interval division with scalar
+         * 
+         * @param alpha scalar
+         * @return this / alpha
+         */
+        Interval operator/(zono_float alpha) const
+        {
+            return *this * (one / alpha);
+        }
+        
+        /**
+         * @brief interval power
+         * 
+         * @param n power
+         * @return this^n 
+         */
+        Interval pow(int n) const
+        {
+            Interval result = *this;
+            result.pow_assign(*this, n); 
             return result;
         }
 

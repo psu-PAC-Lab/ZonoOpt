@@ -186,6 +186,16 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: self - other
             )pbdoc")
+        .def("__pow__", [](const Interval& self, const int n) -> Interval { return self.pow(n); }, py::arg("n"),
+            R"pbdoc(
+                Interval power
+
+                Args:
+                    n (int): exponent
+
+                Returns:
+                    Interval: self^n
+            )pbdoc")
         .def("__mul__", [](const Interval& self, const Interval& other) -> Interval { return self*other; } ,
             py::arg("other"),
             R"pbdoc(
@@ -208,7 +218,19 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: alpha * self
             )pbdoc")
-        .def("__truediv__", &Interval::operator/, py::arg("other"),
+        .def("__truediv__", [](const Interval& self, const zono_float alpha) -> Interval { return self/alpha; },
+            py::arg("alpha"),
+            R"pbdoc(
+                Interval division with scalar
+
+                Args:
+                    alpha (float): scalar divisor
+
+                Returns:
+                    Interval: self / alpha
+            )pbdoc"
+        )
+        .def("__truediv__", [](const Interval& self, const Interval& other) -> Interval { return self/other; }, py::arg("other"),
             R"pbdoc(
                 Interval division
 
