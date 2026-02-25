@@ -353,6 +353,75 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: interval containing exp(x)
             )pbdoc")
+        .def("exp_a", &Interval::exp_a, py::arg("a"),
+            R"pbdoc(
+                Compute interval containing a^x for all x in interval, where a is a positive scalar
+
+                Args:
+                    a (float): positive scalar base
+
+                Returns:
+                    Interval: interval containing a^x
+            )pbdoc")
+        .def("log", &Interval::log,
+            R"pbdoc(
+                Compute interval containing log(x) (base e) for all x in interval
+
+                Returns:
+                    Interval: interval containing log(x)
+            )pbdoc")
+        .def("log_a", &Interval::log_a, py::arg("a"),
+            R"pbdoc(
+                Compute interval containing log_a(x) (log base a) for all x in interval, where a is a positive scalar
+
+                Args:
+                    a (float): positive scalar base
+
+                Returns:
+                    Interval: interval containing log_a(x)
+            )pbdoc")
+        .def("sinh", &Interval::sinh,
+            R"pbdoc(
+                Compute interval containing sinh(x) for all x in interval
+
+                Returns:
+                    Interval: interval containing sinh(x)
+            )pbdoc")
+        .def("cosh", &Interval::cosh,
+            R"pbdoc(
+                Compute interval containing cosh(x) for all x in interval
+
+                Returns:
+                    Interval: interval containing cosh(x)
+            )pbdoc")
+        .def("tanh", &Interval::tanh,
+            R"pbdoc(
+                Compute interval containing tanh(x) for all x in interval
+
+                Returns:
+                    Interval: interval containing tanh(x)
+            )pbdoc")
+        .def("arcsinh", &Interval::arcsinh,
+            R"pbdoc(
+                Compute interval containing arcsinh(x) for all x in interval
+
+                Returns:
+                    Interval: interval containing arcsinh(x)
+            )pbdoc")
+        .def("arccosh", &Interval::arccosh,
+            R"pbdoc(
+                Compute interval containing arccosh(x) for all x in interval
+
+                Returns:
+                    Interval: interval containing arccosh(x)
+            )pbdoc")
+        .def("arctanh", &Interval::arctanh,
+            R"pbdoc(
+                Compute interval containing arctanh(x) for all x in interval
+
+                Returns:
+                    Interval: interval containing arctanh(x)
+            )pbdoc")
     ;
 
     py::class_<Box>(m, "Box", "Box (i.e., interval vector) class")

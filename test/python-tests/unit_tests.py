@@ -332,14 +332,14 @@ def test_interval_arithmetic():
     # input intervals
     x_min = 0.1
     x_max = 0.2
-    n_dims = 7
+    n_dims = 8
     x = zono.Box(x_min*np.ones(n_dims), x_max*np.ones(n_dims))
 
     # expression
-    f = lambda x: 2*np.tan(x[0])**3 + np.cos(x[1])/3. + np.sin(x[0] + np.arctan(x[2])) + np.exp(x[4]/x[3]) - np.arccos(x[5])*np.arcsin(x[6])
+    f = lambda x: 2*np.tan(x[0])**(-1.2) + np.cos(x[1])/3. + np.sin(x[0] + np.arctan(x[2]))*np.sinh(x[7]) + np.exp(x[4]/x[3]) - np.arccos(x[5])*np.arcsin(x[6])/np.log(x[0])
 
     # interval expression
-    f_int = (x[0].tan()**3)*2. + x[1].cos()/3. + (x[0] + x[2].arctan()).sin() + (x[4]/x[3]).exp() - (x[5].arccos()*x[6].arcsin())
+    f_int = (x[0].tan()**(-1.2))*2. + x[1].cos()/3. + (x[0] + x[2].arctan()).sin()*x[7].sinh() + (x[4]/x[3]).exp() - (x[5].arccos()*x[6].arcsin())/x[0].log()
 
     # generate random points in interval
     np.random.seed(0)

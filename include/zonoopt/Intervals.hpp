@@ -146,13 +146,6 @@ namespace ZonoOpt
         {
             if (n < -zono_eps) // negative case
             {
-                if (x.y_min() < -zono_eps && x.y_max() > zono_eps)
-                {
-                    // set empty
-                    y_min() = std::numeric_limits<zono_float>::quiet_NaN();
-                    y_max() = std::numeric_limits<zono_float>::quiet_NaN();
-                    return;
-                }
                 Derived x_inv = x;
                 x_inv.inverse();
                 pow_assign(x_inv, -n);
@@ -180,10 +173,10 @@ namespace ZonoOpt
             const zono_float min = y_min();
             const zono_float max = y_max();
 
-            if (std::abs(min) < zono_eps && std::abs(max) < zono_eps)
+            if (std::abs(min) < zono_eps && std::abs(max) < zono_eps) // empty set
             {
-                y_min() = std::numeric_limits<zono_float>::infinity();
-                y_max() = -std::numeric_limits<zono_float>::infinity();
+                y_min() = std::numeric_limits<zono_float>::quiet_NaN();
+                y_max() = std::numeric_limits<zono_float>::quiet_NaN();
             }
             else if (min > zono_eps || max < -zono_eps)
             {
@@ -200,7 +193,7 @@ namespace ZonoOpt
                 y_min() = -std::numeric_limits<zono_float>::infinity();
                 y_max() = one / min;
             }
-            else
+            else // y_min < 0, y_max > 0
             {
                 y_min() = -std::numeric_limits<zono_float>::infinity();
                 y_max() = std::numeric_limits<zono_float>::infinity();
@@ -236,7 +229,7 @@ namespace ZonoOpt
          */
         bool is_empty() const
         {
-            return y_min() - y_max() > zono_eps;
+            return std::isnan(y_min()) || std::isnan(y_max()) || (y_min() - y_max() > zono_eps);
         }
 
         /**
@@ -410,6 +403,127 @@ namespace ZonoOpt
         {
             y_min() = std::exp(x.y_min());
             y_max() = std::exp(x.y_max());
+        }
+
+        /**
+         * @brief compute interval containing a^x over x, where a is a positive scalar
+         * 
+         * @param x input interval
+         * @param a positive scalar
+         */
+        void exp_a_assign(const Derived& x, zono_float a)
+        {
+            if (a < zono_eps)
+                throw std::invalid_argument("exp_a_assign: base a must be greater than 0");
+            y_min() = std::pow(a, x.y_min());
+            y_max() = std::pow(a, x.y_max());
+        }
+
+        /**
+         * @brief compute interval containing log(x) (base e) over x
+         * 
+         * @param x input interval
+         */
+        void log_assign(const Derived& x)
+        {
+            if (x.y_min() < zono_eps)
+                throw std::invalid_argument("log_assign: input interval must be greater than 0");
+            y_min() = std::log(x.y_min());
+            y_max() = std::log(x.y_max());
+        }
+
+        /**
+         * @brief compute interval containing log_a(x) (log base a) over x, where a is a positive scalar
+         * 
+         * @param x input interval
+         * @param a positive scalar
+         */
+        void log_a_assign(const Derived& x, zono_float a)
+        {
+            if (a < zono_eps)
+                throw std::invalid_argument("log_a_assign: base a must be greater than 0");
+            if (x.y_min() < zono_eps)
+                throw std::invalid_argument("log_a_assign: input interval must be greater than 0");
+            y_min() = std::log(x.y_min()) / std::log(a);
+            y_max() = std::log(x.y_max()) / std::log(a);
+        }
+
+        /**
+         * @brief compute interval containing sinh(x) over x
+         * 
+         * @param x input interval
+         */
+        void sinh_assign(const Derived& x)
+        {
+            y_min() = std::sinh(x.y_min());
+            y_max() = std::sinh(x.y_max());
+        }
+
+        /**
+         * @brief compute interval containing cosh(x) over x
+         * 
+         * @param x input interval
+         */
+        void cosh_assign(const Derived& x)
+        {
+            if (x.y_max() < -zono_eps || x.y_min() > zono_eps) // monotonic range
+            {
+                y_min() = std::cosh(x.y_min());
+                y_max() = std::cosh(x.y_max());
+            }
+            else // non-monotonic, contains 0
+            {
+                y_min() = one;
+                y_max() = std::max(std::cosh(x.y_min()), std::cosh(x.y_max()));
+            }
+        }
+
+        /**
+         * @brief compute interval containing tanh(x) over x
+         * 
+         * @param x input interval
+         */
+        void tanh_assign(const Derived& x)
+        {
+            y_min() = std::tanh(x.y_min());
+            y_max() = std::tanh(x.y_max());
+        }
+
+        /**
+         * @brief compute interval containing arcsinh(x) over x
+         * 
+         * @param x input interval
+         */
+        void arcsinh_assign(const Derived& x)
+        {
+            y_min() = std::asinh(x.y_min());
+            y_max() = std::asinh(x.y_max());
+        }
+
+        /**
+         * @brief compute interval containing arccosh(x) over x
+         * 
+         * @param x input interval
+         */
+        void arccosh_assign(const Derived& x)
+        {
+            if (x.y_min() < one)
+                throw std::invalid_argument("arccosh_assign: input interval must be greater than or equal to 1");
+            y_min() = std::acosh(x.y_min());
+            y_max() = std::acosh(x.y_max());
+        }
+
+        /**
+         * @brief compute interval containing arctanh(x) over x
+         * 
+         * @param x input interval
+         */
+        void arctanh_assign(const Derived& x)
+        {
+            if (x.y_min() < -one + zono_eps || x.y_max() > one - zono_eps)
+                throw std::invalid_argument("arctanh_assign: input interval must be within (-1, 1)");
+            y_min() = std::atanh(x.y_min());
+            y_max() = std::atanh(x.y_max());
         }
     };
 
@@ -708,6 +822,114 @@ namespace ZonoOpt
         {
             Interval result;
             result.exp_assign(*this);
+            return result;
+        }
+
+         /**
+         * @brief compute interval containing a^x over x, where a is a positive scalar
+         * @param a positive scalar
+         * @return interval containing a^x
+         */
+        Interval exp_a(zono_float a) const
+        {
+            Interval result;
+            result.exp_a_assign(*this, a);
+            return result;
+        }
+
+        /**
+         * @brief compute interval containing log(x) (base e) for all x in interval 
+         * 
+         * @return interval containing log(x)
+         */
+        Interval log() const
+        {
+            Interval result;
+            result.log_assign(*this);
+            return result;
+        }
+
+        /**
+         * @brief compute interval containing log_a(x) (log base a) over x, where a is a positive scalar
+         * @param a positive scalar
+         * @return interval containing log_a(x)
+         */
+        Interval log_a(zono_float a) const
+        {
+            Interval result;
+            result.log_a_assign(*this, a);
+            return result;
+        }
+
+        /**
+         * @brief compute interval containing sinh(x) for all x in interval
+         * 
+         * @return interval containing sinh(x)
+         */
+        Interval sinh() const
+        {
+            Interval result;
+            result.sinh_assign(*this);
+            return result;
+        }
+
+        /**
+         * @brief compute interval containing cosh(x) for all x in interval
+         * 
+         * @return interval containing cosh(x)
+         */
+        Interval cosh() const
+        {
+            Interval result;
+            result.cosh_assign(*this);
+            return result;
+        }
+
+        /**
+         * @brief compute interval containing tanh(x) for all x in interval
+         * 
+         * @return interval containing tanh(x)
+         */
+        Interval tanh() const
+        {
+            Interval result;
+            result.tanh_assign(*this);
+            return result;
+        }
+
+        /**
+         * @brief compute interval containing arcsinh(x) for all x in interval
+         * 
+         * @return interval containing arcsinh(x)
+         */
+        Interval arcsinh() const
+        {
+            Interval result;
+            result.arcsinh_assign(*this);
+            return result;
+        }
+
+        /**
+         * @brief compute interval containing arccosh(x) for all x in interval
+         * 
+         * @return interval containing arccosh(x)
+         */
+        Interval arccosh() const
+        {
+            Interval result;
+            result.arccosh_assign(*this);
+            return result;
+        }
+
+        /**
+         * @brief compute interval containing arctanh(x) for all x in interval
+         * 
+         * @return interval containing arctanh(x)
+         */
+        Interval arctanh() const
+        {
+            Interval result;
+            result.arctanh_assign(*this);
             return result;
         }
     };
