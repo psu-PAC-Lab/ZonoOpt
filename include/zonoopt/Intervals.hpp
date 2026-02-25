@@ -17,7 +17,6 @@
 #include <vector>
 #include <set>
 #include <cmath>
-#include <cassert>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
@@ -364,8 +363,9 @@ namespace ZonoOpt
          */
         void arcsin_assign(const Derived& x)
         {
-            assert(x.y_min() >= -one && x.y_min() <= one);
-            assert(x.y_max() >= -one && x.y_max() <= one);
+            if (!(x.y_min() >= -one && x.y_min() <= one && x.y_max() >= -one && x.y_max() <= one))
+                throw std::invalid_argument("arcsin_assign: input interval must be within [-1, 1]");
+
             y_min() = std::asin(x.y_min());
             y_max() = std::asin(x.y_max());
         }
@@ -376,8 +376,9 @@ namespace ZonoOpt
          */
         void arccos_assign(const Derived& x)
         {
-            assert(x.y_min() >= -one && x.y_min() <= one);
-            assert(x.y_max() >= -one && x.y_max() <= one);
+            if (!(x.y_min() >= -one && x.y_min() <= one && x.y_max() >= -one && x.y_max() <= one))
+                throw std::invalid_argument("arccos_assign: input interval must be within [-1, 1]");
+
             y_min() = std::acos(x.y_max());
             y_max() = std::acos(x.y_min());
         }

@@ -431,9 +431,11 @@ namespace ZonoOpt
                                                             const int end_index) -> Eigen::PermutationMatrix<
             Eigen::Dynamic, Eigen::Dynamic>
         {
-            assert(
-                start_index >= 0 && end_index >= 0 && start_index < size && end_index < size && start_index <
-                end_index);
+            if (!(start_index >= 0 && end_index >= 0 && start_index < size && end_index < size && start_index < end_index))
+            {
+                throw std::invalid_argument("Shift permute: invalid indices");
+            }
+
             Eigen::PermutationMatrix<Eigen::Dynamic, Eigen::Dynamic> P(size);
             for (int i = 0; i < start_index; ++i)
             {

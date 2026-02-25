@@ -327,6 +327,37 @@ def test_safety_verification():
     assert zono.intersection(X, O).is_empty()
     print('Passed: Safety Verification')
 
+def test_interval_arithmetic():
+
+    # input intervals
+    x_min = 0.1
+    x_max = 0.2
+    n_dims = 7
+    x = zono.Box(x_min*np.ones(n_dims), x_max*np.ones(n_dims))
+
+    # expression
+    f = lambda x: 2*np.tan(x[0])**3 + np.cos(x[1])/3. + np.sin(x[0] + np.arctan(x[2])) + np.exp(x[4]/x[3]) - np.arccos(x[5])*np.arcsin(x[6])
+
+    # interval expression
+    f_int = (x[0].tan()**3)*2. + x[1].cos()/3. + (x[0] + x[2].arctan()).sin() + (x[4]/x[3]).exp() - (x[5].arccos()*x[6].arcsin())
+
+    # generate random points in interval
+    np.random.seed(0)
+    n_samples = 10000
+    x_sample = np.random.uniform(x_min, x_max, (n_samples, n_dims))
+
+    # # plot
+    # f_samples = np.array([f(x_sample[i,:]) for i in range(n_samples)])
+    # import matplotlib.pyplot as plt
+    # fig = plt.hist(f_samples)
+    # print(f'Interval bounds: {f_int}')
+    # plt.show()
+
+    # check that all samples evaluate to values within the computed interval
+    for i in range(n_samples):
+        assert f_int.contains(f(x_sample[i,:]))
+    print('Passed: Interval Arithmetic')
+
 
 # run the unit tests
 test_vrep_2_hz()
@@ -337,3 +368,4 @@ test_support()
 test_point_contain()
 test_get_leaves()
 test_safety_verification()
+test_interval_arithmetic()
