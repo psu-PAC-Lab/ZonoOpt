@@ -14,9 +14,15 @@ var searchData=
   ['and_20installing_11',['Building and Installing',['../index.html#autotoc_md3',1,'']]],
   ['arccos_12',['arccos',['../structZonoOpt_1_1Interval.html#af43e090c4b35a330081b89eaddda77b3',1,'ZonoOpt::Interval']]],
   ['arccos_5fassign_13',['arccos_assign',['../structZonoOpt_1_1IntervalBase.html#a3b45b0fc1ea24e5dde31640db219da3d',1,'ZonoOpt::IntervalBase']]],
-  ['arcsin_14',['arcsin',['../structZonoOpt_1_1Interval.html#a47970f0dd86595aa5f0842202c51941e',1,'ZonoOpt::Interval']]],
-  ['arcsin_5fassign_15',['arcsin_assign',['../structZonoOpt_1_1IntervalBase.html#adf194fbe3c44364e461f692493f5b9f2',1,'ZonoOpt::IntervalBase']]],
-  ['arctan_16',['arctan',['../structZonoOpt_1_1Interval.html#a26158a6ea22bfc43211f7a26f501a65c',1,'ZonoOpt::Interval']]],
-  ['arctan_5fassign_17',['arctan_assign',['../structZonoOpt_1_1IntervalBase.html#aab59d26dc5db2ff4028eaa59ca6b9c7a',1,'ZonoOpt::IntervalBase']]],
-  ['as_5fview_18',['as_view',['../structZonoOpt_1_1Interval.html#a87a2625798ca48266b511ea627d3b969',1,'ZonoOpt::Interval']]]
+  ['arccosh_14',['arccosh',['../structZonoOpt_1_1Interval.html#a91b2543fb4ac9dd9d71bea80f271db34',1,'ZonoOpt::Interval']]],
+  ['arccosh_5fassign_15',['arccosh_assign',['../structZonoOpt_1_1IntervalBase.html#a23ed567d1f1533815120b98af16d618f',1,'ZonoOpt::IntervalBase']]],
+  ['arcsin_16',['arcsin',['../structZonoOpt_1_1Interval.html#a47970f0dd86595aa5f0842202c51941e',1,'ZonoOpt::Interval']]],
+  ['arcsin_5fassign_17',['arcsin_assign',['../structZonoOpt_1_1IntervalBase.html#adf194fbe3c44364e461f692493f5b9f2',1,'ZonoOpt::IntervalBase']]],
+  ['arcsinh_18',['arcsinh',['../structZonoOpt_1_1Interval.html#a65160732d1d98c14afe5ddbc5b03888a',1,'ZonoOpt::Interval']]],
+  ['arcsinh_5fassign_19',['arcsinh_assign',['../structZonoOpt_1_1IntervalBase.html#af763c53d01b338f2a11b2b1d20dae3b6',1,'ZonoOpt::IntervalBase']]],
+  ['arctan_20',['arctan',['../structZonoOpt_1_1Interval.html#a26158a6ea22bfc43211f7a26f501a65c',1,'ZonoOpt::Interval']]],
+  ['arctan_5fassign_21',['arctan_assign',['../structZonoOpt_1_1IntervalBase.html#aab59d26dc5db2ff4028eaa59ca6b9c7a',1,'ZonoOpt::IntervalBase']]],
+  ['arctanh_22',['arctanh',['../structZonoOpt_1_1Interval.html#a21bbef10c2aadfcc8f90180e31ff606f',1,'ZonoOpt::Interval']]],
+  ['arctanh_5fassign_23',['arctanh_assign',['../structZonoOpt_1_1IntervalBase.html#a4c5a198d8e9e4e59463b68cb987ead7c',1,'ZonoOpt::IntervalBase']]],
+  ['as_5fview_24',['as_view',['../structZonoOpt_1_1Interval.html#a87a2625798ca48266b511ea627d3b969',1,'ZonoOpt::Interval']]]
 ];

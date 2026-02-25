@@ -20,7 +20,7 @@ var searchData=
   ['contractor_5fiter_17',['contractor_iter',['../structZonoOpt_1_1OptSettings.html#af9419db5635a39c10eec3d67b0fe99f9',1,'ZonoOpt::OptSettings']]],
   ['contractor_5ftree_5fsearch_5fdepth_18',['contractor_tree_search_depth',['../structZonoOpt_1_1OptSettings.html#a8601f8ec28dd65d652fff2fd07fabd57',1,'ZonoOpt::OptSettings']]],
   ['converged_19',['converged',['../structZonoOpt_1_1OptSolution.html#ae75579600c7c0687f043d26b79228d5b',1,'ZonoOpt::OptSolution']]],
-  ['convert_5fform_20',['convert_form',['../classZonoOpt_1_1Point.html#a5baf25d14dc72d94c7d313e34c8451bf',1,'ZonoOpt::Point::convert_form()'],['../classZonoOpt_1_1Zono.html#adc0c5fcc9ead67a4968a2db144ee9a5d',1,'ZonoOpt::Zono::convert_form()'],['../classZonoOpt_1_1HybZono.html#a5566841a31499d793a1891e080ff7de9',1,'ZonoOpt::HybZono::convert_form()'],['../classZonoOpt_1_1ConZono.html#a626ff5fadc6560a8fed6aeb7e154435b',1,'ZonoOpt::ConZono::convert_form()']]],
+  ['convert_5fform_20',['convert_form',['../classZonoOpt_1_1Zono.html#adc0c5fcc9ead67a4968a2db144ee9a5d',1,'ZonoOpt::Zono::convert_form()'],['../classZonoOpt_1_1Point.html#a5baf25d14dc72d94c7d313e34c8451bf',1,'ZonoOpt::Point::convert_form()'],['../classZonoOpt_1_1HybZono.html#a5566841a31499d793a1891e080ff7de9',1,'ZonoOpt::HybZono::convert_form()'],['../classZonoOpt_1_1ConZono.html#a626ff5fadc6560a8fed6aeb7e154435b',1,'ZonoOpt::ConZono::convert_form()']]],
   ['convex_5fhull_21',['convex_hull',['../classZonoOpt_1_1HybZono.html#a1530ac2bce52cb83738d12e495287da6',1,'ZonoOpt::HybZono::convex_hull'],['../group__ZonoOpt__SetOperations.html#gadc3e32c919cba4298ed311dcba2819da',1,'ZonoOpt::convex_hull()']]],
   ['convex_5frelaxation_22',['convex_relaxation',['../classZonoOpt_1_1HybZono.html#a924cb5116e31b275a44369ab057c48dd',1,'ZonoOpt::HybZono']]],
   ['conzono_23',['conzono',['../classZonoOpt_1_1ConZono.html#a420a12db1dd044c673421f2646afd07f',1,'ZonoOpt::ConZono::ConZono()'],['../classZonoOpt_1_1ConZono.html#a54359c0d81770e027eceaaa26c179cd2',1,'ZonoOpt::ConZono::ConZono(const Eigen::SparseMatrix&lt; zono_float &gt; &amp;G, const Eigen::Vector&lt; zono_float, -1 &gt; &amp;c, const Eigen::SparseMatrix&lt; zono_float &gt; &amp;A, const Eigen::Vector&lt; zono_float, -1 &gt; &amp;b, const bool zero_one_form=false)'],['../classZonoOpt_1_1ConZono.html',1,'ZonoOpt::ConZono']]],
@@ -28,5 +28,7 @@ var searchData=
   ['conzono_2ehpp_25',['ConZono.hpp',['../ConZono_8hpp.html',1,'']]],
   ['cos_26',['cos',['../structZonoOpt_1_1Interval.html#ad7021bb884e142fd826e7067d65bfe9f',1,'ZonoOpt::Interval']]],
   ['cos_5fassign_27',['cos_assign',['../structZonoOpt_1_1IntervalBase.html#a3b615f9b28a3f36502b77c4f22eb5317',1,'ZonoOpt::IntervalBase']]],
-  ['cycle_5fdetection_5fbuffer_5fsize_28',['cycle_detection_buffer_size',['../structZonoOpt_1_1OptSettings.html#a552d7c94c23449de6782f500ff2b4252',1,'ZonoOpt::OptSettings']]]
+  ['cosh_28',['cosh',['../structZonoOpt_1_1Interval.html#adc405c0f56f975317cba8be47a646670',1,'ZonoOpt::Interval']]],
+  ['cosh_5fassign_29',['cosh_assign',['../structZonoOpt_1_1IntervalBase.html#ac5ecbcfa4174a18f381e86de63fb27e4',1,'ZonoOpt::IntervalBase']]],
+  ['cycle_5fdetection_5fbuffer_5fsize_30',['cycle_detection_buffer_size',['../structZonoOpt_1_1OptSettings.html#a552d7c94c23449de6782f500ff2b4252',1,'ZonoOpt::OptSettings']]]
 ];

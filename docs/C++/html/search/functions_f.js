@@ -7,7 +7,9 @@ var searchData=
   ['settings_5fvalid_4',['settings_valid',['../structZonoOpt_1_1OptSettings.html#af7a12727ae47a4634e94a5700a5c0e27',1,'ZonoOpt::OptSettings']]],
   ['sin_5',['sin',['../structZonoOpt_1_1Interval.html#acfaec26626f68355fea6e27cb45af1e1',1,'ZonoOpt::Interval']]],
   ['sin_5fassign_6',['sin_assign',['../structZonoOpt_1_1IntervalBase.html#ab9d8d2f3c28d77698389ade05f093565',1,'ZonoOpt::IntervalBase']]],
-  ['size_7',['size',['../classZonoOpt_1_1Box.html#aa7955b649c5252db2893d7944b30353b',1,'ZonoOpt::Box']]],
-  ['subtract_5fassign_8',['subtract_assign',['../structZonoOpt_1_1IntervalBase.html#a8c490b6922a0056f3a918796caab7397',1,'ZonoOpt::IntervalBase']]],
-  ['support_9',['support',['../classZonoOpt_1_1HybZono.html#ad680860c0ad24886ab000232e6dcc36d',1,'ZonoOpt::HybZono']]]
+  ['sinh_7',['sinh',['../structZonoOpt_1_1Interval.html#a2e88eec07ec8d91fa505ba2a5bf8e675',1,'ZonoOpt::Interval']]],
+  ['sinh_5fassign_8',['sinh_assign',['../structZonoOpt_1_1IntervalBase.html#a89782e52a0f2abc308b483bbbf281986',1,'ZonoOpt::IntervalBase']]],
+  ['size_9',['size',['../classZonoOpt_1_1Box.html#aa7955b649c5252db2893d7944b30353b',1,'ZonoOpt::Box']]],
+  ['subtract_5fassign_10',['subtract_assign',['../structZonoOpt_1_1IntervalBase.html#a8c490b6922a0056f3a918796caab7397',1,'ZonoOpt::IntervalBase']]],
+  ['support_11',['support',['../classZonoOpt_1_1HybZono.html#ad680860c0ad24886ab000232e6dcc36d',1,'ZonoOpt::HybZono']]]
 ];
