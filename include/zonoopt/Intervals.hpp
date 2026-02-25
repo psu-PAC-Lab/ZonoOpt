@@ -137,29 +137,38 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief set interval to x^n (i.e., x multiplied by itself n times)
+         * @brief set interval to x^n
          * 
          * @param x interval
          * @param n power
          */
-        void pow_assign(const Derived& x, int n)
+        void pow_assign(const Derived& x, zono_float n)
         {
-            if (n >= 0)
+            if (n < -zono_eps) // negative case
             {
-                Derived result;
-                result.set(one, one);
-                for (int i = 0; i < n; ++i)
+                if (x.y_min() < -zono_eps && x.y_max() > zono_eps)
                 {
-                    result.multiply_assign(result, x);
+                    // set empty
+                    y_min() = std::numeric_limits<zono_float>::quiet_NaN();
+                    y_max() = std::numeric_limits<zono_float>::quiet_NaN();
+                    return;
                 }
-                y_min() = result.y_min();
-                y_max() = result.y_max();
+                Derived x_inv = x;
+                x_inv.inverse();
+                pow_assign(x_inv, -n);
+            }
+            else if (n > zono_eps) // positive case
+            {
+                if (x.y_min() < -zono_eps && std::abs(n - std::round(n)) > zono_eps)
+                {
+                    throw std::invalid_argument("Interval power: fractional power with negative base is undefined");
+                }
+                y_min() = std::pow(x.y_min(), n);
+                y_max() = std::pow(x.y_max(), n);
             }
             else
             {
-                Derived inv = x;
-                inv.inverse();
-                pow_assign(inv, -n);
+                set(one, one);
             }
         }
 
@@ -533,7 +542,7 @@ namespace ZonoOpt
          * @param n power
          * @return this^n 
          */
-        Interval pow(int n) const
+        Interval pow(zono_float n) const
         {
             Interval result = *this;
             result.pow_assign(*this, n); 

@@ -186,12 +186,12 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: self - other
             )pbdoc")
-        .def("__pow__", [](const Interval& self, const int n) -> Interval { return self.pow(n); }, py::arg("n"),
+        .def("__pow__", [](const Interval& self, const zono_float n) -> Interval { return self.pow(n); }, py::arg("n"),
             R"pbdoc(
                 Interval power
 
                 Args:
-                    n (int): exponent
+                    n (float): exponent
 
                 Returns:
                     Interval: self^n
