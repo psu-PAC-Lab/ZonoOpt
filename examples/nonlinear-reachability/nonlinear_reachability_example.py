@@ -47,16 +47,10 @@ def df_dxu_unicycle(x_int, u_int, dt):
     v_k_int = u_int[0]
     om_k_int = u_int[1]
 
-    df_dxu_int = [[zono.Interval(1., 1.), zono.Interval(0., 0.), v_k_int * th_k_int.sin() * (-dt), th_k_int.cos() * dt, zono.Interval(0., 0.)],
+    df_dxu_int = np.array([[zono.Interval(1., 1.), zono.Interval(0., 0.), v_k_int * th_k_int.sin() * (-dt), th_k_int.cos() * dt, zono.Interval(0., 0.)],
                     [zono.Interval(0., 0.), zono.Interval(1., 1.), v_k_int * th_k_int.cos() * dt, th_k_int.sin() * dt, zono.Interval(0., 0.)],
-                    [zono.Interval(0., 0.), zono.Interval(0., 0.), zono.Interval(1., 1.), zono.Interval(0., 0.), zono.Interval(dt, dt)]]
-    df_dxu_lb = np.zeros((3, 5))
-    df_dxu_ub = np.zeros((3, 5))
-    for i in range(3):
-        for j in range(5):
-            df_dxu_lb[i,j] = df_dxu_int[i][j].lb
-            df_dxu_ub[i,j] = df_dxu_int[i][j].ub
-    return zono.IntervalMatrix(df_dxu_lb, df_dxu_ub)
+                    [zono.Interval(0., 0.), zono.Interval(0., 0.), zono.Interval(1., 1.), zono.Interval(0., 0.), zono.Interval(dt, dt)]])
+    return zono.IntervalMatrix.from_array(df_dxu_int)
 
 def rand_x0(r_x0, r_th0):
     phi0 = np.random.uniform(0., 2*np.pi)

@@ -328,34 +328,48 @@ def test_safety_verification():
     print('Passed: Safety Verification')
 
 def test_interval_arithmetic():
+    
+    np.random.seed(0)
 
-    # input intervals
-    x_min = 0.1
-    x_max = 0.2
-    n_dims = 8
-    x = zono.Box(x_min*np.ones(n_dims), x_max*np.ones(n_dims))
-
+    # constants
+    n_dims = 3
+    n_samples = 10000
+    
     # expression
-    f = lambda x: 2*np.tan(x[0])**(-1.2) + np.cos(x[1])/3. + np.sin(x[0] + np.arctan(x[2]))*np.sinh(x[7]) + np.exp(x[4]/x[3]) - np.arccos(x[5])*np.arcsin(x[6])/np.log(x[0])
+    f = lambda x: 2*np.tan(x[0])**(-2) + np.cos(x[1]/x[0])/3. + np.sin(x[0] + np.arctan(x[2]))*np.sinh(x[0]) + np.exp(np.arccosh(np.abs(x[1]) + 1)) - np.arccos(x[0])*np.arcsin(x[1])/np.log(x[2]**2)
 
     # interval expression
-    f_int = (x[0].tan()**(-1.2))*2. + x[1].cos()/3. + (x[0] + x[2].arctan()).sin()*x[7].sinh() + (x[4]/x[3]).exp() - (x[5].arccos()*x[6].arcsin())/x[0].log()
+    f_int = lambda x: (x[0].tan()**(-2))*2. + (x[1]/x[0]).cos()/3. + (x[0] + x[2].arctan()).sin()*x[0].sinh() + (x[1].abs() + 1).arccosh().exp() - (x[0].arccos()*x[1].arcsin())/(x[2]**2).log()
 
-    # generate random points in interval
-    np.random.seed(0)
-    n_samples = 10000
-    x_sample = np.random.uniform(x_min, x_max, (n_samples, n_dims))
+    def _run_interval_test(x_min, x_max):
+        x = zono.Box(x_min*np.ones(n_dims), x_max*np.ones(n_dims)) # box
+        x_sample = np.random.uniform(x_min, x_max, (n_samples, n_dims)) # generate random points in interval
 
-    # # plot
-    # f_samples = np.array([f(x_sample[i,:]) for i in range(n_samples)])
-    # import matplotlib.pyplot as plt
-    # fig = plt.hist(f_samples)
-    # print(f'Interval bounds: {f_int}')
-    # plt.show()
+        # get bounding interval
+        f_bounds = f_int(x)
 
-    # check that all samples evaluate to values within the computed interval
-    for i in range(n_samples):
-        assert f_int.contains(f(x_sample[i,:]))
+        # get samples
+        f_samples = np.array([f(x_sample[i,:]) for i in range(n_samples)])
+
+        # # plot
+        # import matplotlib.pyplot as plt
+        # fig = plt.hist([fs for fs in f_samples if not np.isnan(fs) and not np.isinf(fs)], bins=100, density=True)
+        # print(f'Interval bounds: {f_bounds}')
+        # plt.show()
+
+        # check that all samples evaluate to values within the computed interval
+        for f_sample in f_samples:
+            assert np.isnan(f_sample) or f_bounds.contains(f_sample)
+
+    # Case 1: positive range
+    _run_interval_test(0.1, 0.2)
+    
+    # Case 2: negative range, approaching 0
+    _run_interval_test(-0.2, -0.001)
+
+    # Case 3: spanning 0
+    _run_interval_test(-1., 1.)
+
     print('Passed: Interval Arithmetic')
 
 

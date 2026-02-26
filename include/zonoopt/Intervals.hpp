@@ -20,6 +20,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
+
 /*
 Reference: 
 "Applied Interval Analysis"
@@ -86,8 +87,16 @@ namespace ZonoOpt
          */
         void add_assign(const Derived& x1, const Derived& x2)
         {
+            if (x1.is_empty() || x2.is_empty())
+            {
+                set_empty();
+                return;
+            }
+
             y_min() = x1.y_min() + x2.y_min();
             y_max() = x1.y_max() + x2.y_max();
+
+            fix_nans();
         }
 
         /**
@@ -97,8 +106,16 @@ namespace ZonoOpt
          */
         void subtract_assign(const Derived& x1, const Derived& x2)
         {
+            if (x1.is_empty() || x2.is_empty())
+            {
+                set_empty();
+                return;
+            }
+
             y_min() = x1.y_min() - x2.y_max();
             y_max() = x1.y_max() - x2.y_min();
+
+            fix_nans();
         }
 
         /**
@@ -108,6 +125,12 @@ namespace ZonoOpt
          */
         void multiply_assign(const Derived& x1, const Derived& x2)
         {
+            if (x1.is_empty() || x2.is_empty())
+            {
+                set_empty();
+                return;
+            }
+
             zono_float a = x1.y_min() * x2.y_min();
             zono_float b = x1.y_min() * x2.y_max();
             zono_float c = x1.y_max() * x2.y_min();
@@ -115,24 +138,61 @@ namespace ZonoOpt
 
             y_min() = std::min({a, b, c, d});
             y_max() = std::max({a, b, c, d});
+
+            fix_nans();
         }
 
         /**
-         * @brief sets interval to alpha * x1
-         * @param x1 interval
+         * @brief sets interval to alpha * x
+         * @param x interval
          * @param alpha scalar
          */
-        void multiply_assign(const Derived& x1, zono_float alpha)
+        void multiply_assign(const Derived& x, zono_float alpha)
         {
+            if (x.is_empty())
+            {
+                set_empty();
+                return;
+            }
+
             if (alpha >= 0)
             {
-                y_min() = x1.y_min() * alpha;
-                y_max() = x1.y_max() * alpha;
+                y_min() = x.y_min() * alpha;
+                y_max() = x.y_max() * alpha;
             }
             else
             {
-                y_min() = x1.y_max() * alpha;
-                y_max() = x1.y_min() * alpha;
+                y_min() = x.y_max() * alpha;
+                y_max() = x.y_min() * alpha;
+            }
+
+            fix_nans();
+        }
+
+        /**
+         * @brief sets interval to abs(x)
+         * 
+         * @param x interval
+         */
+        void abs_assign(const Derived& x)
+        {
+            if (x.is_empty())
+            {
+                set_empty();
+                return;
+            }
+
+            if (x.y_min() >= 0) // positive
+            {
+                set(x.y_min(), x.y_max());
+            }
+            else if (x.y_max() <= 0) // negative
+            {
+                set(-x.y_max(), -x.y_min());
+            }
+            else // spans zero
+            {
+                set(0, std::max(-x.y_min(), x.y_max()));
             }
         }
 
@@ -144,6 +204,12 @@ namespace ZonoOpt
          */
         void pow_assign(const Derived& x, zono_float n) 
         {
+            if (x.is_empty())
+            {
+                set_empty();
+                return;
+            }
+
             const zono_float n_rnd = std::round(n);
             const bool is_int = std::abs(n - n_rnd) < zono_eps;
             const int n_int = static_cast<int>(n_rnd);
@@ -156,7 +222,7 @@ namespace ZonoOpt
             {
                 if (min < -zono_eps)
                     throw std::invalid_argument("Fractional power with negative base");
-                else if (min >= zono_eps && min < 0)
+                else if (min >= -zono_eps && min < 0)
                     min = 0; // snap to 0
             }
 
@@ -200,8 +266,10 @@ namespace ZonoOpt
                 } 
                 else 
                 {
-                    y_min() = std::pow(max, n);
-                    y_max() = std::pow(min, n);
+                    Derived inv;
+                    inv.set(min, max);
+                    inv.inverse();
+                    pow_assign(inv, -n);
                 }
             }
             else 
@@ -215,23 +283,43 @@ namespace ZonoOpt
          */
         void inverse()
         {
+            if (is_empty()) return;
+
             const zono_float min = y_min();
             const zono_float max = y_max();
 
-            if (min < -zono_eps && max > zono_eps) // contains zero
+            if (min < zono_eps && max > zono_eps) // contains zero
             {
                 y_min() = -std::numeric_limits<zono_float>::infinity();
                 y_max() = std::numeric_limits<zono_float>::infinity();
             }
-            else if (std::abs(min) < zono_eps && max > zono_eps)
+            else if (std::abs(min) < zono_eps && max > zono_eps) // zero at lower bound
             {
                 y_min() = one / max;
                 y_max() = std::numeric_limits<zono_float>::infinity();
             }
-            else if (min < -zono_eps && std::abs(max) < zono_eps)
+            else if (min < zono_eps && std::abs(max) < zono_eps) // zero at upper bound
             {
                 y_min() = -std::numeric_limits<zono_float>::infinity();
                 y_max() = one / min;
+            }
+            else if (std::abs(min) < zono_eps && std::abs(max) < zono_eps) // zero interval
+            {
+                if (min > 0)
+                {
+                    y_min() = std::numeric_limits<zono_float>::infinity();
+                    y_max() = std::numeric_limits<zono_float>::infinity();
+                }
+                else if (max < 0)
+                {
+                    y_min() = -std::numeric_limits<zono_float>::infinity();
+                    y_max() = -std::numeric_limits<zono_float>::infinity();
+                }
+                else
+                {
+                    y_min() = -std::numeric_limits<zono_float>::infinity();
+                    y_max() = std::numeric_limits<zono_float>::infinity();
+                }
             }
             else // (min > zono_eps || max < -zono_eps)
             {
@@ -247,6 +335,12 @@ namespace ZonoOpt
          */
         void divide_assign(const Derived& x1, const Derived& x2)
         {
+            if (x1.is_empty() || x2.is_empty())
+            {
+                set_empty();
+                return;
+            }
+
             Derived inv = x2;
             inv.inverse();
             multiply_assign(x1, inv);
@@ -259,10 +353,15 @@ namespace ZonoOpt
          */
         void intersect_assign(const Derived& x1, const Derived& x2)
         {
+            if (x1.is_empty() || x2.is_empty())
+            {
+                set_empty();
+                return;
+            }
+
             if (x1.y_min() > x2.y_max() + zono_eps || x2.y_min() > x1.y_max() + zono_eps) // empty set
             {
-                y_min() = std::numeric_limits<zono_float>::infinity();
-                y_max() = -std::numeric_limits<zono_float>::infinity();
+                set_empty();
             }
             else
             {
@@ -278,6 +377,14 @@ namespace ZonoOpt
         bool is_empty() const
         {
             return y_min() - y_max() > zono_eps;
+        }
+
+        /**
+         * @brief Sets interval to empty set [inf, -inf]
+         */
+        void set_empty()
+        {
+            set(std::numeric_limits<zono_float>::infinity(), -std::numeric_limits<zono_float>::infinity());
         }
 
         /**
@@ -305,7 +412,7 @@ namespace ZonoOpt
          */
         zono_float width() const
         {
-            return std::abs(y_max() - y_min());
+            return y_max() - y_min();
         }
 
         /**
@@ -313,6 +420,8 @@ namespace ZonoOpt
          */
         void radius_assign()
         {
+            if (is_empty()) return;
+
             zono_float w = width();
             y_min() = -w / 2;
             y_max() = w / 2;
@@ -324,6 +433,19 @@ namespace ZonoOpt
          */
         void sin_assign(const Derived& x)
         {
+            // input checking
+            if (x.is_empty())
+            {
+                set_empty();
+                return;
+            }
+            
+            if (std::isinf(x.y_max()) || std::isinf(x.y_min()))
+            {
+                set(-one, one);
+                return;
+            }
+
             if (x.y_max() - x.y_min() >= two * pi)
             {
                 y_max() = one;
@@ -372,10 +494,22 @@ namespace ZonoOpt
          */
         void tan_assign(const Derived& x)
         {
+            // input checking
+            if (x.is_empty())
+            {
+                set_empty();
+                return;
+            }
+            
+            if (std::isinf(x.y_max()) || std::isinf(x.y_min()))
+            {
+                set(-std::numeric_limits<zono_float>::infinity(), std::numeric_limits<zono_float>::infinity());
+                return;
+            }
+
             if (x.y_max() - x.y_min() >= pi)
             {
-                y_max() = std::numeric_limits<zono_float>::infinity();
-                y_min() = -std::numeric_limits<zono_float>::infinity();
+                set(-std::numeric_limits<zono_float>::infinity(), std::numeric_limits<zono_float>::infinity());
             }
             else
             {
@@ -396,13 +530,11 @@ namespace ZonoOpt
                 // get bounds
                 if ((l < -pi / two && -pi / two < u) || (l < pi / two && pi / two < u))
                 {
-                    y_max() = std::numeric_limits<zono_float>::infinity();
-                    y_min() = -std::numeric_limits<zono_float>::infinity();
+                    set(-std::numeric_limits<zono_float>::infinity(), std::numeric_limits<zono_float>::infinity());
                 }
                 else
                 {
-                    y_max() = std::tan(u);
-                    y_min() = std::tan(l);
+                    set(std::tan(l), std::tan(u));
                 }
             }
         }
@@ -415,6 +547,12 @@ namespace ZonoOpt
         {
             Derived y;
             y.intersect_assign(x, Derived(-one, one)); // intersect with domain
+
+            if (y.is_empty())
+            {
+                set_empty();
+                return;
+            }
 
             y_min() = std::asin(y.y_min());
             y_max() = std::asin(y.y_max());
@@ -429,6 +567,12 @@ namespace ZonoOpt
             Derived y;
             y.intersect_assign(x, Derived(-one, one)); // intersect with domain
 
+            if (y.is_empty())
+            {
+                set_empty();
+                return;
+            }
+
             y_min() = std::acos(y.y_max());
             y_max() = std::acos(y.y_min());
         }
@@ -439,6 +583,12 @@ namespace ZonoOpt
          */
         void arctan_assign(const Derived& x)
         {
+            if (x.is_empty())
+            {
+                set_empty();
+                return;
+            }
+
             y_min() = std::atan(x.y_min());
             y_max() = std::atan(x.y_max());
         }
@@ -449,6 +599,12 @@ namespace ZonoOpt
          */
         void exp_assign(const Derived& x)
         {
+            if (x.is_empty())
+            {
+                set_empty();
+                return;
+            }
+
             y_min() = std::exp(x.y_min());
             y_max() = std::exp(x.y_max());
         }
@@ -463,6 +619,12 @@ namespace ZonoOpt
         {
             if (a < zono_eps)
                 throw std::invalid_argument("exp_a_assign: base a must be greater than 0");
+
+            if (x.is_empty())
+            {
+                set_empty();
+                return;
+            }
 
             if (a < one) // decreasing
             {
@@ -484,10 +646,16 @@ namespace ZonoOpt
         void log_assign(const Derived& x)
         {
             Derived y;
-            y.intersect_assign(x, Derived(zono_eps, std::numeric_limits<zono_float>::infinity())); // intersect with domain
+            y.intersect_assign(x, Derived(0, std::numeric_limits<zono_float>::infinity())); // intersect with domain
+
+            if (y.is_empty())
+            {
+                set_empty();
+                return;
+            }
             
-            y_min() = std::log(y.y_min());
-            y_max() = std::log(y.y_max());
+            y_min() = y.y_min() < zono_eps ? -std::numeric_limits<zono_float>::infinity() : std::log(y.y_min());
+            y_max() = y.y_max() < zono_eps ? -std::numeric_limits<zono_float>::infinity() : std::log(y.y_max());
         }
 
         /**
@@ -502,17 +670,26 @@ namespace ZonoOpt
                 throw std::invalid_argument("log_a_assign: base a cannot be 1");
 
             Derived y;
-            y.intersect_assign(x, Derived(zono_eps, std::numeric_limits<zono_float>::infinity())); // intersect with domain
-            
-             if (a < one) // decreasing
+            y.intersect_assign(x, Derived(0, std::numeric_limits<zono_float>::infinity())); // intersect with domain
+
+            if (y.is_empty())
             {
-                y_min() = std::log(y.y_max()) / std::log(a);
-                y_max() = std::log(y.y_min()) / std::log(a);
+                set_empty();
+                return;
+            }
+            
+            const zono_float log_min = y.y_min() < zono_eps ? -std::numeric_limits<zono_float>::infinity() : std::log(y.y_min());
+            const zono_float log_max = y.y_max() < zono_eps ? -std::numeric_limits<zono_float>::infinity() : std::log(y.y_max());
+            
+            if (a < one) // decreasing
+            {
+                y_min() = log_max / std::log(a);
+                y_max() = log_min / std::log(a);
             }
             else // increasing
             {
-                y_min() = std::log(y.y_min()) / std::log(a);
-                y_max() = std::log(y.y_max()) / std::log(a);
+                y_min() = log_min / std::log(a);
+                y_max() = log_max / std::log(a);
             }
         }
 
@@ -523,6 +700,12 @@ namespace ZonoOpt
          */
         void sinh_assign(const Derived& x)
         {
+            if (x.is_empty())
+            {
+                set_empty();
+                return;
+            }
+
             y_min() = std::sinh(x.y_min());
             y_max() = std::sinh(x.y_max());
         }
@@ -534,6 +717,12 @@ namespace ZonoOpt
          */
         void cosh_assign(const Derived& x)
         {
+            if (x.is_empty())
+            {
+                set_empty();
+                return;
+            }
+
             if (x.y_max() < -zono_eps) // monotonic decreasing
             {
                 y_min() = std::cosh(x.y_max());
@@ -558,6 +747,12 @@ namespace ZonoOpt
          */
         void tanh_assign(const Derived& x)
         {
+            if (x.is_empty())
+            {
+                set_empty();
+                return;
+            }
+
             y_min() = std::tanh(x.y_min());
             y_max() = std::tanh(x.y_max());
         }
@@ -569,6 +764,12 @@ namespace ZonoOpt
          */
         void arcsinh_assign(const Derived& x)
         {
+            if (x.is_empty())
+            {
+                set_empty();
+                return;
+            }
+
             y_min() = std::asinh(x.y_min());
             y_max() = std::asinh(x.y_max());
         }
@@ -582,6 +783,12 @@ namespace ZonoOpt
         {
             Derived y;
             y.intersect_assign(x, Derived(one, std::numeric_limits<zono_float>::infinity())); // intersect with domain
+
+            if (y.is_empty())
+            {
+                set_empty();
+                return;
+            }
             
             y_min() = std::acosh(y.y_min());
             y_max() = std::acosh(y.y_max());
@@ -595,11 +802,55 @@ namespace ZonoOpt
         void arctanh_assign(const Derived& x)
         {
             Derived y;
-            y.intersect_assign(x, Derived(-one + zono_eps, one - zono_eps)); // intersect with domain
+            y.intersect_assign(x, Derived(-one, one)); // intersect with domain
 
-            y_min() = std::atanh(y.y_min());
-            y_max() = std::atanh(y.y_max());
+            if (y.is_empty())
+            {
+                set_empty();
+                return;
+            }
+
+            if (y.y_min() < -one + zono_eps)
+            {
+                y_min() = -std::numeric_limits<zono_float>::infinity();
+            }
+            else if (y.y_min() > one - zono_eps)
+            {
+                y_min() = std::numeric_limits<zono_float>::infinity();
+            }
+            else
+            {
+                y_min() = std::atanh(y.y_min());
+            }
+
+            if (y.y_max() > one - zono_eps)
+            {
+                y_max() = std::numeric_limits<zono_float>::infinity();
+            }
+            else if (y.y_max() < -one + zono_eps)
+            {
+                y_max() = -std::numeric_limits<zono_float>::infinity();
+            }
+            else
+            {
+                y_max() = std::atanh(y.y_max());
+            }
         }
+
+    private:
+        
+        void fix_nans()
+        {
+            if (std::isnan(y_min()))
+            {
+                y_min() = -std::numeric_limits<zono_float>::infinity();
+            }
+            if (std::isnan(y_max()))
+            {
+                y_max() = std::numeric_limits<zono_float>::infinity();
+            }
+        }
+
     };
 
     /**
@@ -679,6 +930,19 @@ namespace ZonoOpt
         }
 
         /**
+         * @brief interval addition with scalar
+         * 
+         * @param alpha scalar
+         * @return this + alpha 
+         */
+        Interval operator+(zono_float alpha) const
+        {
+            Interval result;
+            result.add_assign(*this, Interval(alpha, alpha));
+            return result;
+        }
+
+        /**
          * @brief interval subtraction
          * @param other other interval
          * @return this - other
@@ -687,6 +951,19 @@ namespace ZonoOpt
         {
             Interval result;
             result.subtract_assign(*this, other);
+            return result;
+        }
+
+        /**
+         * @brief interval subtraction with scalar
+         * 
+         * @param alpha scalar
+         * @return this - alpha
+         */
+        Interval operator-(zono_float alpha) const
+        {
+            Interval result;
+            result.subtract_assign(*this, Interval(alpha, alpha));
             return result;
         }
 
@@ -722,9 +999,37 @@ namespace ZonoOpt
          */
         Interval operator/(zono_float alpha) const
         {
+            if (std::abs(alpha) < zono_eps)
+            {
+                if (y_min() > zono_eps)
+                {
+                    return Interval(std::numeric_limits<zono_float>::infinity(), std::numeric_limits<zono_float>::infinity());
+                }
+                else if (y_max() < -zono_eps)
+                {
+                    return Interval(-std::numeric_limits<zono_float>::infinity(), -std::numeric_limits<zono_float>::infinity());
+                }
+                else
+                {
+                    return Interval(-std::numeric_limits<zono_float>::infinity(), std::numeric_limits<zono_float>::infinity());
+                }
+            }
+
             return *this * (one / alpha);
         }
         
+        /**
+         * @brief get absolute value of interval
+         * 
+         * @return |this|
+         */
+        Interval abs() const
+        {
+            Interval result;
+            result.abs_assign(*this);
+            return result;
+        }
+
         /**
          * @brief interval power
          * 
@@ -1031,9 +1336,7 @@ namespace ZonoOpt
          * @param y_min lower bound pointer
          * @param y_max upper bound pointer
          */
-        IntervalView(zono_float* y_min, zono_float* y_max) : lb_ptr(y_min), ub_ptr(y_max)
-        {
-        }
+        IntervalView(zono_float* y_min, zono_float* y_max) : lb_ptr(y_min), ub_ptr(y_max) {}        
 
         // assignment
 

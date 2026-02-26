@@ -166,7 +166,7 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: copy of interval
             )pbdoc")
-        .def("__add__", &Interval::operator+, py::arg("other"),
+        .def("__add__", [](const Interval& self, const Interval& other) -> Interval { return self + other; }, py::arg("other"),
             R"pbdoc(
                 Interval addition
 
@@ -176,7 +176,17 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: self + other
             )pbdoc")
-        .def("__sub__", &Interval::operator-, py::arg("other"),
+        .def("__add__", [](const Interval& self, const zono_float alpha) -> Interval { return self + alpha; }, py::arg("alpha"),
+            R"pbdoc(
+                Interval addition with scalar
+
+                Args:
+                    alpha (float): scalar to add
+
+                Returns:
+                    Interval: self + alpha
+            )pbdoc")
+        .def("__sub__", [](const Interval& self, const Interval& other) -> Interval { return self - other; }, py::arg("other"),
             R"pbdoc(
                 Interval subtraction
 
@@ -185,6 +195,16 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     Interval: self - other
+            )pbdoc")
+        .def("__sub__", [](const Interval& self, const zono_float alpha) -> Interval { return self - alpha; }, py::arg("alpha"),
+            R"pbdoc(
+                Interval subtraction with scalar
+
+                Args:
+                    alpha (float): scalar to subtract
+
+                Returns:
+                    Interval: self - alpha
             )pbdoc")
         .def("__pow__", [](const Interval& self, const zono_float n) -> Interval { return self.pow(n); }, py::arg("n"),
             R"pbdoc(
@@ -239,6 +259,13 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     Interval: self / other
+            )pbdoc")
+        .def("abs", &Interval::abs,
+            R"pbdoc(
+                Absolute value of interval
+
+                Returns:
+                    Interval: |self|
             )pbdoc")
         .def("inv", &Interval::inv,
             R"pbdoc(
