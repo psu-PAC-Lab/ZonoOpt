@@ -142,26 +142,71 @@ namespace ZonoOpt
          * @param x interval
          * @param n power
          */
-        void pow_assign(const Derived& x, zono_float n)
+        void pow_assign(const Derived& x, zono_float n) 
         {
-            if (n < -zono_eps) // negative case
+            const zono_float n_rnd = std::round(n);
+            const bool is_int = std::abs(n - n_rnd) < zono_eps;
+            const int n_int = static_cast<int>(n_rnd);
+
+            zono_float min = x.y_min();
+            zono_float max = x.y_max();
+
+            // fractional power handling
+            if (!is_int) 
             {
-                Derived x_inv = x;
-                x_inv.inverse();
-                pow_assign(x_inv, -n);
+                if (min < -zono_eps)
+                    throw std::invalid_argument("Fractional power with negative base");
+                else if (min >= zono_eps && min < 0)
+                    min = 0; // snap to 0
             }
-            else if (n > zono_eps) // positive case
+
+            // positive power
+            if (n > zono_eps) 
             {
-                if (x.y_min() < -zono_eps && std::abs(n - std::round(n)) > zono_eps)
+                if (is_int && n_int % 2 == 0) // even power
                 {
-                    throw std::invalid_argument("Interval power: fractional power with negative base is undefined");
+                    if (min <= 0 && max >= 0) // contains zero
+                    {
+                        y_min() = 0;
+                        y_max() = std::max(std::pow(min, n), std::pow(max, n));
+                    } 
+                    else 
+                    {
+                        y_min() = std::min(std::pow(min, n), std::pow(max, n));
+                        y_max() = std::max(std::pow(min, n), std::pow(max, n));
+                    }
+                } 
+                else // odd or fractional
+                {
+                    y_min() = std::pow(min, n);
+                    y_max() = std::pow(max, n);
                 }
-                y_min() = std::pow(x.y_min(), n);
-                y_max() = std::pow(x.y_max(), n);
             }
-            else
+            // negative power
+            else if (n < -zono_eps) 
             {
-                set(one, one);
+                if (min <= 0 && max >= 0) // includes zero
+                {
+                    if (is_int && n_int % 2 == 0) 
+                    {
+                        y_min() = std::min(std::pow(min, n), std::pow(max, n));
+                        y_max() = std::numeric_limits<zono_float>::infinity();
+                    } 
+                    else 
+                    {
+                        y_min() = -std::numeric_limits<zono_float>::infinity();
+                        y_max() = std::numeric_limits<zono_float>::infinity();
+                    }
+                } 
+                else 
+                {
+                    y_min() = std::pow(max, n);
+                    y_max() = std::pow(min, n);
+                }
+            }
+            else 
+            {
+                set(1.0, 1.0);
             }
         }
 
@@ -173,15 +218,10 @@ namespace ZonoOpt
             const zono_float min = y_min();
             const zono_float max = y_max();
 
-            if (std::abs(min) < zono_eps && std::abs(max) < zono_eps) // empty set
+            if (min < -zono_eps && max > zono_eps) // contains zero
             {
-                y_min() = std::numeric_limits<zono_float>::quiet_NaN();
-                y_max() = std::numeric_limits<zono_float>::quiet_NaN();
-            }
-            else if (min > zono_eps || max < -zono_eps)
-            {
-                y_min() = one / max;
-                y_max() = one / min;
+                y_min() = -std::numeric_limits<zono_float>::infinity();
+                y_max() = std::numeric_limits<zono_float>::infinity();
             }
             else if (std::abs(min) < zono_eps && max > zono_eps)
             {
@@ -193,10 +233,10 @@ namespace ZonoOpt
                 y_min() = -std::numeric_limits<zono_float>::infinity();
                 y_max() = one / min;
             }
-            else // y_min < 0, y_max > 0
+            else // (min > zono_eps || max < -zono_eps)
             {
-                y_min() = -std::numeric_limits<zono_float>::infinity();
-                y_max() = std::numeric_limits<zono_float>::infinity();
+                y_min() = one / max;
+                y_max() = one / min;
             }
         }
 
@@ -219,8 +259,16 @@ namespace ZonoOpt
          */
         void intersect_assign(const Derived& x1, const Derived& x2)
         {
-            y_min() = std::max(x1.y_min(), x2.y_min());
-            y_max() = std::min(x1.y_max(), x2.y_max());
+            if (x1.y_min() > x2.y_max() + zono_eps || x2.y_min() > x1.y_max() + zono_eps) // empty set
+            {
+                y_min() = std::numeric_limits<zono_float>::infinity();
+                y_max() = -std::numeric_limits<zono_float>::infinity();
+            }
+            else
+            {
+                y_min() = std::max(x1.y_min(), x2.y_min());
+                y_max() = std::min(x1.y_max(), x2.y_max());
+            }
         }
 
         /**
@@ -229,7 +277,7 @@ namespace ZonoOpt
          */
         bool is_empty() const
         {
-            return std::isnan(y_min()) || std::isnan(y_max()) || (y_min() - y_max() > zono_eps);
+            return y_min() - y_max() > zono_eps;
         }
 
         /**
@@ -365,11 +413,11 @@ namespace ZonoOpt
          */
         void arcsin_assign(const Derived& x)
         {
-            if (!(x.y_min() >= -one && x.y_min() <= one && x.y_max() >= -one && x.y_max() <= one))
-                throw std::invalid_argument("arcsin_assign: input interval must be within [-1, 1]");
+            Derived y;
+            y.intersect_assign(x, Derived(-one, one)); // intersect with domain
 
-            y_min() = std::asin(x.y_min());
-            y_max() = std::asin(x.y_max());
+            y_min() = std::asin(y.y_min());
+            y_max() = std::asin(y.y_max());
         }
 
         /**
@@ -378,11 +426,11 @@ namespace ZonoOpt
          */
         void arccos_assign(const Derived& x)
         {
-            if (!(x.y_min() >= -one && x.y_min() <= one && x.y_max() >= -one && x.y_max() <= one))
-                throw std::invalid_argument("arccos_assign: input interval must be within [-1, 1]");
+            Derived y;
+            y.intersect_assign(x, Derived(-one, one)); // intersect with domain
 
-            y_min() = std::acos(x.y_max());
-            y_max() = std::acos(x.y_min());
+            y_min() = std::acos(y.y_max());
+            y_max() = std::acos(y.y_min());
         }
 
         /**
@@ -415,8 +463,17 @@ namespace ZonoOpt
         {
             if (a < zono_eps)
                 throw std::invalid_argument("exp_a_assign: base a must be greater than 0");
-            y_min() = std::pow(a, x.y_min());
-            y_max() = std::pow(a, x.y_max());
+
+            if (a < one) // decreasing
+            {
+                y_min() = std::pow(a, x.y_max());
+                y_max() = std::pow(a, x.y_min());
+            }
+            else // increasing
+            {
+                y_min() = std::pow(a, x.y_min());
+                y_max() = std::pow(a, x.y_max());
+            }
         }
 
         /**
@@ -426,10 +483,11 @@ namespace ZonoOpt
          */
         void log_assign(const Derived& x)
         {
-            if (x.y_min() < zono_eps)
-                throw std::invalid_argument("log_assign: input interval must be greater than 0");
-            y_min() = std::log(x.y_min());
-            y_max() = std::log(x.y_max());
+            Derived y;
+            y.intersect_assign(x, Derived(zono_eps, std::numeric_limits<zono_float>::infinity())); // intersect with domain
+            
+            y_min() = std::log(y.y_min());
+            y_max() = std::log(y.y_max());
         }
 
         /**
@@ -440,12 +498,22 @@ namespace ZonoOpt
          */
         void log_a_assign(const Derived& x, zono_float a)
         {
-            if (a < zono_eps)
-                throw std::invalid_argument("log_a_assign: base a must be greater than 0");
-            if (x.y_min() < zono_eps)
-                throw std::invalid_argument("log_a_assign: input interval must be greater than 0");
-            y_min() = std::log(x.y_min()) / std::log(a);
-            y_max() = std::log(x.y_max()) / std::log(a);
+            if (std::abs(a - one) < zono_eps)
+                throw std::invalid_argument("log_a_assign: base a cannot be 1");
+
+            Derived y;
+            y.intersect_assign(x, Derived(zono_eps, std::numeric_limits<zono_float>::infinity())); // intersect with domain
+            
+             if (a < one) // decreasing
+            {
+                y_min() = std::log(y.y_max()) / std::log(a);
+                y_max() = std::log(y.y_min()) / std::log(a);
+            }
+            else // increasing
+            {
+                y_min() = std::log(y.y_min()) / std::log(a);
+                y_max() = std::log(y.y_max()) / std::log(a);
+            }
         }
 
         /**
@@ -466,7 +534,12 @@ namespace ZonoOpt
          */
         void cosh_assign(const Derived& x)
         {
-            if (x.y_max() < -zono_eps || x.y_min() > zono_eps) // monotonic range
+            if (x.y_max() < -zono_eps) // monotonic decreasing
+            {
+                y_min() = std::cosh(x.y_max());
+                y_max() = std::cosh(x.y_min());
+            }
+            else if (x.y_min() > zono_eps) // monotonic increasing
             {
                 y_min() = std::cosh(x.y_min());
                 y_max() = std::cosh(x.y_max());
@@ -507,10 +580,11 @@ namespace ZonoOpt
          */
         void arccosh_assign(const Derived& x)
         {
-            if (x.y_min() < one)
-                throw std::invalid_argument("arccosh_assign: input interval must be greater than or equal to 1");
-            y_min() = std::acosh(x.y_min());
-            y_max() = std::acosh(x.y_max());
+            Derived y;
+            y.intersect_assign(x, Derived(one, std::numeric_limits<zono_float>::infinity())); // intersect with domain
+            
+            y_min() = std::acosh(y.y_min());
+            y_max() = std::acosh(y.y_max());
         }
 
         /**
@@ -520,10 +594,11 @@ namespace ZonoOpt
          */
         void arctanh_assign(const Derived& x)
         {
-            if (x.y_min() < -one + zono_eps || x.y_max() > one - zono_eps)
-                throw std::invalid_argument("arctanh_assign: input interval must be within (-1, 1)");
-            y_min() = std::atanh(x.y_min());
-            y_max() = std::atanh(x.y_max());
+            Derived y;
+            y.intersect_assign(x, Derived(-one + zono_eps, one - zono_eps)); // intersect with domain
+
+            y_min() = std::atanh(y.y_min());
+            y_max() = std::atanh(y.y_max());
         }
     };
 
