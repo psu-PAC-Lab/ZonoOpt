@@ -15,11 +15,21 @@
 #include <string>
 #include <vector>
 #include <set>
-#include <cmath>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <cmath>
 #include <boost/numeric/interval.hpp>
 
+// need this to get inverse hyperbolics to compile with MSVC
+template<class T>
+struct rounded_transc_fixed : boost::numeric::interval_lib::rounded_transc_std<T> {
+    static T asinh_down(const T& x) { using std::asinh; return asinh(x); }
+    static T asinh_up  (const T& x) { using std::asinh; return asinh(x); }
+    static T acosh_down(const T& x) { using std::acosh; return acosh(x); }
+    static T acosh_up  (const T& x) { using std::acosh; return acosh(x); }
+    static T atanh_down(const T& x) { using std::atanh; return atanh(x); }
+    static T atanh_up  (const T& x) { using std::atanh; return atanh(x); }
+};
 
 namespace ZonoOpt
 {
@@ -427,7 +437,7 @@ namespace ZonoOpt
     private:
 
         typedef boost::numeric::interval_lib::policies<
-            boost::numeric::interval_lib::save_state< boost::numeric::interval_lib::rounded_transc_std<zono_float>>,
+            boost::numeric::interval_lib::save_state<rounded_transc_fixed<zono_float>>,
             boost::numeric::interval_lib::checking_base<zono_float>
         > interval_policy;
 

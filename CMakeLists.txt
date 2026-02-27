@@ -70,20 +70,26 @@ endif()
 
 find_package(Boost CONFIG)
 if (NOT Boost_FOUND)
-    message(FATAL_ERROR "Boost not found on system.")
-# TODO: figure out best way to Fetch the interval headers from Boost.
-#    if (ZONOOPT_INSTALL)
-#        message(FATAL_ERROR "Boost not found on system. Required for ZONOOPT_INSTALL.")
-#    else()
-#        message(STATUS "Boost not found, fetching 1.90.0 via FetchContent...")
-#        FetchContent_Declare(
-#            boost_interval
-#            GIT_REPOSITORY "https://github.com/boostorg/interval/tags/boost.git"
-#            GIT_TAG        "boost-1.90.0"
-#        )
-#        FetchContent_MakeAvailable(boost_default)
-#    endif()
+   if (ZONOOPT_INSTALL)
+        message(FATAL_ERROR "Boost not found on system. Required for ZONOOPT_INSTALL.")
+   else()
+        message(STATUS "Boost not found, fetching 1.90.0 via FetchContent...")
+
+        set(BOOST_INCLUDE_LIBRARIES numeric/interval)
+        set(BOOST_ENABLE_CMAKE ON)
+
+        FetchContent_Declare(
+            boost
+            GIT_REPOSITORY https://github.com/boostorg/boost.git
+            GIT_TAG boost-1.90.0 
+        )
+
+        FetchContent_MakeAvailable(boost)
+   endif()
 endif()
+
+message(STATUS "Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
+message(STATUS "Boost_SOURCE_DIR: ${Boost_SOURCE_DIR}")
 
 # python dependencies
 if (ZONOOPT_BUILD_PYTHON_BINDINGS)
@@ -131,9 +137,9 @@ else()
     )
 endif()
 
-# link Eigen
+# link Eigen and Boost
 target_link_libraries(${TARGET_VAR} PUBLIC Eigen3::Eigen)
-target_link_libraries(${TARGET_VAR} PRIVATE Boost::boost)
+target_link_libraries(${TARGET_VAR} PUBLIC Boost::numeric_interval)
 
 # include directories
 target_include_directories(${TARGET_VAR} PUBLIC
