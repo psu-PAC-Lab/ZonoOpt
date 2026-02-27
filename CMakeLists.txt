@@ -68,6 +68,18 @@ if (NOT TARGET Eigen3::Eigen)
     message(FATAL_ERROR "Failed to fetch Eigen dependency.")
 endif()
 
+
+function(fetch_boost_lib name repo)
+  FetchContent_Declare(
+    boost_${name}
+    GIT_REPOSITORY https://github.com/boostorg/${repo}.git
+    GIT_TAG boost-1.90.0
+  )
+  FetchContent_MakeAvailable(boost_${name})
+  list(APPEND BOOST_INCLUDE_DIRS ${boost_${name}_SOURCE_DIR}/include)
+  set(BOOST_INCLUDE_DIRS ${BOOST_INCLUDE_DIRS} PARENT_SCOPE)
+endfunction()
+
 find_package(Boost CONFIG)
 if (NOT Boost_FOUND)
    if (ZONOOPT_INSTALL)
@@ -75,21 +87,29 @@ if (NOT Boost_FOUND)
    else()
         message(STATUS "Boost not found, fetching 1.90.0 via FetchContent...")
 
-        set(BOOST_INCLUDE_LIBRARIES numeric/interval)
-        set(BOOST_ENABLE_CMAKE ON)
+        # Fetch interval and its dependencies
+        fetch_boost_lib(interval interval)
+        fetch_boost_lib(config config)
+        fetch_boost_lib(assert assert)
+        fetch_boost_lib(core core)
+        fetch_boost_lib(static_assert static_assert)
+        fetch_boost_lib(throw_exception throw_exception)
+        fetch_boost_lib(type_traits type_traits)
+        fetch_boost_lib(preprocessor preprocessor)
+        fetch_boost_lib(concept_check concept_check)
+        fetch_boost_lib(numeric_conversion numeric_conversion)
 
-        FetchContent_Declare(
-            boost
-            GIT_REPOSITORY https://github.com/boostorg/boost.git
-            GIT_TAG boost-1.90.0 
-        )
-
-        FetchContent_MakeAvailable(boost)
+        add_library(boost_interval INTERFACE)
+        target_include_directories(boost_interval INTERFACE ${BOOST_INCLUDE_DIRS})
+        set(boost_handle boost_interval)
    endif()
+else()
+    set(boost_handle Boost::numeric_interval)
 endif()
 
-message(STATUS "Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
-message(STATUS "Boost_SOURCE_DIR: ${Boost_SOURCE_DIR}")
+if (NOT TARGET boost_interval)
+    message(FATAL_ERROR "Failed to fetch Boost dependency.")
+endif()
 
 # python dependencies
 if (ZONOOPT_BUILD_PYTHON_BINDINGS)
@@ -139,7 +159,7 @@ endif()
 
 # link Eigen and Boost
 target_link_libraries(${TARGET_VAR} PUBLIC Eigen3::Eigen)
-target_link_libraries(${TARGET_VAR} PUBLIC Boost::numeric_interval)
+target_link_libraries(${TARGET_VAR} PUBLIC ${boost_handle})
 
 # include directories
 target_include_directories(${TARGET_VAR} PUBLIC
