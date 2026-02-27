@@ -102,10 +102,10 @@ if (NOT Boost_FOUND)
         set(boost_handle boost_interval)
    endif()
 else()
-    set(boost_handle Boost::numeric_interval)
+    set(boost_handle Boost::boost)
 endif()
 
-if (NOT TARGET boost_interval)
+if (NOT TARGET ${boost_handle})
     message(FATAL_ERROR "Failed to fetch Boost dependency.")
 endif()
 
