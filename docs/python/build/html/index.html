@@ -132,7 +132,11 @@ Some key features of the ZonoOpt library are as follows:</p>
 </ul>
 </li>
 <li><p>Factors are flexibly defined as either $[\xi_c \quad \xi_b]^T \in [0,1]^{nGc} \times \lbrace 0,1 \rbrace^{nGb}$ or the more standard form $[\xi_c \quad \xi_b]^T \in [-1,1]^{nGc} \times \lbrace -1,1 \rbrace^{nGb}$ to facilitate certain set operations.</p></li>
-<li><p>Basic interval arithmetic is provided via the <code class="docutils literal notranslate"><span class="pre">Interval</span></code>, <code class="docutils literal notranslate"><span class="pre">Box</span></code>, and <code class="docutils literal notranslate"><span class="pre">IntervalMatrix</span></code> classes. Boost is used for most interval computations.</p></li>
+<li><p>Interval arithmetic is provided via the <code class="docutils literal notranslate"><span class="pre">Interval</span></code>, <code class="docutils literal notranslate"><span class="pre">Box</span></code>, and <code class="docutils literal notranslate"><span class="pre">IntervalMatrix</span></code> classes.</p>
+<ul>
+<li><p>Boost’s interval library is used within <code class="docutils literal notranslate"><span class="pre">Interval</span></code> for most of the fundamental operations.</p></li>
+</ul>
+</li>
 </ul>
 </section>
 <section id="building-and-installing">

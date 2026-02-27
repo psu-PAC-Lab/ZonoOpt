@@ -123,7 +123,10 @@ ZonoOpt Features</h1>
 </ul>
 </li>
 <li>Factors are flexibly defined as either $[\xi_c \quad \xi_b]^T \in [0,1]^{nGc} \times \lbrace 0,1 \rbrace^{nGb}$ or the more standard form $[\xi_c \quad \xi_b]^T \in [-1,1]^{nGc} \times \lbrace -1,1 \rbrace^{nGb}$ to facilitate certain set operations.</li>
-<li>Basic interval arithmetic is provided via the <code>Interval</code>, <code>Box</code>, and <code>IntervalMatrix</code> classes. Boost is used for most interval computations.</li>
+<li>Interval arithmetic is provided via the <code>Interval</code>, <code>Box</code>, and <code>IntervalMatrix</code> classes.<ul>
+<li>Boost's interval library is used within <code>Interval</code> for most of the fundamental operations.</li>
+</ul>
+</li>
 </ul>
 <h1><a class="anchor" id="autotoc_md3"></a>
 Building and Installing</h1>
