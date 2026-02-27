@@ -391,7 +391,7 @@ class HybZono:
             
         '''
     def bounding_box(self, settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> Box:
-        """bounding_box(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7201896ad0b0>) -> zonoopt._core.Box
+        """bounding_box(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x74b97f9f77f0>) -> zonoopt._core.Box
 
 
                         Computes a bounding box of the set object as a Box object.
@@ -432,7 +432,7 @@ class HybZono:
             
         '''
     def contains_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x72018969d530>) -> bool
+        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x74b97f9f7570>) -> bool
 
 
                         Checks whether the point x is contained in the set object.
@@ -659,7 +659,7 @@ class HybZono:
             
         """
     def is_empty(self, settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        """is_empty(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7201896ae370>) -> bool
+        """is_empty(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x74b97f9f6ff0>) -> bool
 
 
                         Returns true if the set is provably empty, false otherwise.
@@ -724,7 +724,7 @@ class HybZono:
             
         """
     def optimize_over(self, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], c: typing.SupportsFloat | typing.SupportsIndex = ..., settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7201896a5f70>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x74b97f9f6b30>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Solves optimization problem with quadratic objective over the current set
@@ -744,7 +744,7 @@ class HybZono:
             
         '''
     def project_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7201896ad770>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x74b9808958f0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Returns the projection of the point x onto the set object.
@@ -796,7 +796,7 @@ class HybZono:
             
         '''
     def support(self, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> float:
-        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7201896a64b0>) -> float
+        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x74b97ff1f330>) -> float
 
 
                         Computes support function of the set in the direction d.
@@ -969,11 +969,9 @@ class Inequality:
 class Interval:
     """
                 Interval class
-
-                Implements interface from IntervalBase. This class owns its lower and upper bounds.
+                
+                Wraps boost::numeric::interval
             """
-    lb: float
-    ub: float
     def __init__(self, y_min: typing.SupportsFloat | typing.SupportsIndex, y_max: typing.SupportsFloat | typing.SupportsIndex) -> None:
         """__init__(self: zonoopt._core.Interval, y_min: typing.SupportsFloat | typing.SupportsIndex, y_max: typing.SupportsFloat | typing.SupportsIndex) -> None
 
@@ -983,6 +981,16 @@ class Interval:
                         Args:
                             y_min (float): lower bound
                             y_max (float): upper bound
+            
+        """
+    def abs(self) -> Interval:
+        """abs(self: zonoopt._core.Interval) -> zonoopt._core.Interval
+
+
+                        Absolute value of interval
+
+                        Returns:
+                            Interval: |self|
             
         """
     @overload
@@ -1315,19 +1323,6 @@ class Interval:
                             Interval: interval containing exp(x)
             
         """
-    def exp_a(self, a: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
-        """exp_a(self: zonoopt._core.Interval, a: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
-
-
-                        Compute interval containing a^x for all x in interval, where a is a positive scalar
-
-                        Args:
-                            a (float): positive scalar base
-
-                        Returns:
-                            Interval: interval containing a^x
-            
-        """
     def intersect(self, other: Interval) -> Interval:
         """intersect(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -> zonoopt._core.Interval
 
@@ -1371,6 +1366,16 @@ class Interval:
                             bool: flag indicating if interval is single-value
             
         """
+    def lb(self) -> float:
+        """lb(self: zonoopt._core.Interval) -> float
+
+
+                        Get lower bound
+
+                        Returns:
+                            float: lower bound
+            
+        """
     @overload
     def log(self) -> Interval:
         """log(self: zonoopt._core.Interval) -> zonoopt._core.Interval
@@ -1404,46 +1409,17 @@ class Interval:
                             Interval: interval containing log(x)
             
         """
-    @overload
-    def log_a(self, a: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
-        """log_a(self: zonoopt._core.Interval, a: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+    def nth_root(self, n: typing.SupportsInt | typing.SupportsIndex) -> Interval:
+        """nth_root(self: zonoopt._core.Interval, n: typing.SupportsInt | typing.SupportsIndex) -> zonoopt._core.Interval
 
 
-                        Compute interval containing log_a(x) (log base a) for all x in interval, where a is a positive scalar
-
-                        Args:
-                            a (float): positive scalar base
-
-                        Returns:
-                            Interval: interval containing log_a(x)
-            
-        """
-    @overload
-    def log_a(self, x) -> Any:
-        """log_a(self: zonoopt._core.Interval, a: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
-
-
-                        Compute interval containing log_a(x) (log base a) for all x in interval, where a is a positive scalar
+                        Interval nth root
 
                         Args:
-                            a (float): positive scalar base
+                            n (int): root
 
                         Returns:
-                            Interval: interval containing log_a(x)
-            
-        """
-    @overload
-    def log_a(self, x) -> Any:
-        """log_a(self: zonoopt._core.Interval, a: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
-
-
-                        Compute interval containing log_a(x) (log base a) for all x in interval, where a is a positive scalar
-
-                        Args:
-                            a (float): positive scalar base
-
-                        Returns:
-                            Interval: interval containing log_a(x)
+                            Interval: root_n(self)
             
         """
     def radius(self) -> Interval:
@@ -1525,6 +1501,28 @@ class Interval:
             
         """
     @overload
+    def sqrt(self) -> Interval:
+        """sqrt(self: zonoopt._core.Interval) -> zonoopt._core.Interval
+
+
+                        Interval square root
+
+                        Returns:
+                            Interval: sqrt(self)
+            
+        """
+    @overload
+    def sqrt(self) -> Any:
+        """sqrt(self: zonoopt._core.Interval) -> zonoopt._core.Interval
+
+
+                        Interval square root
+
+                        Returns:
+                            Interval: sqrt(self)
+            
+        """
+    @overload
     def tan(self) -> Interval:
         """tan(self: zonoopt._core.Interval) -> zonoopt._core.Interval
 
@@ -1590,6 +1588,16 @@ class Interval:
                             Interval: interval containing tanh(x)
             
         """
+    def ub(self) -> float:
+        """ub(self: zonoopt._core.Interval) -> float
+
+
+                        Get upper bound
+
+                        Returns:
+                            float: upper bound
+            
+        """
     def width(self) -> float:
         """width(self: zonoopt._core.Interval) -> float
 
@@ -1600,8 +1608,12 @@ class Interval:
                             float: width of interval
             
         """
+    @overload
     def __add__(self, other: Interval) -> Interval:
-        """__add__(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -> zonoopt._core.Interval
+        """__add__(*args, **kwargs)
+        Overloaded function.
+
+        1. __add__(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -> zonoopt._core.Interval
 
 
                         Interval addition
@@ -1611,6 +1623,47 @@ class Interval:
 
                         Returns:
                             Interval: self + other
+            
+
+        2. __add__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+
+
+                        Interval addition with scalar
+
+                        Args:
+                            alpha (float): scalar to add
+
+                        Returns:
+                            Interval: self + alpha
+            
+        """
+    @overload
+    def __add__(self, alpha: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
+        """__add__(*args, **kwargs)
+        Overloaded function.
+
+        1. __add__(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -> zonoopt._core.Interval
+
+
+                        Interval addition
+
+                        Args:
+                            other (Interval): rhs interval
+
+                        Returns:
+                            Interval: self + other
+            
+
+        2. __add__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+
+
+                        Interval addition with scalar
+
+                        Args:
+                            alpha (float): scalar to add
+
+                        Returns:
+                            Interval: self + alpha
             
         """
     @overload
@@ -1671,21 +1724,25 @@ class Interval:
                             Interval: alpha * self
             
         """
-    def __pow__(self, n: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
-        """__pow__(self: zonoopt._core.Interval, n: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+    def __pow__(self, n: typing.SupportsInt | typing.SupportsIndex) -> Interval:
+        """__pow__(self: zonoopt._core.Interval, n: typing.SupportsInt | typing.SupportsIndex) -> zonoopt._core.Interval
 
 
                         Interval power
 
                         Args:
-                            n (float): exponent
+                            n (int): exponent
 
                         Returns:
                             Interval: self^n
             
         """
+    @overload
     def __sub__(self, other: Interval) -> Interval:
-        """__sub__(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -> zonoopt._core.Interval
+        """__sub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __sub__(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -> zonoopt._core.Interval
 
 
                         Interval subtraction
@@ -1695,6 +1752,47 @@ class Interval:
 
                         Returns:
                             Interval: self - other
+            
+
+        2. __sub__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+
+
+                        Interval subtraction with scalar
+
+                        Args:
+                            alpha (float): scalar to subtract
+
+                        Returns:
+                            Interval: self - alpha
+            
+        """
+    @overload
+    def __sub__(self, alpha: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
+        """__sub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __sub__(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -> zonoopt._core.Interval
+
+
+                        Interval subtraction
+
+                        Args:
+                            other (Interval): rhs interval
+
+                        Returns:
+                            Interval: self - other
+            
+
+        2. __sub__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+
+
+                        Interval subtraction with scalar
+
+                        Args:
+                            alpha (float): scalar to subtract
+
+                        Returns:
+                            Interval: self - alpha
             
         """
     @overload

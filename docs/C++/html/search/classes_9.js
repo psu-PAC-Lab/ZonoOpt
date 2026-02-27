@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['zono_0',['Zono',['../classZonoOpt_1_1Zono.html',1,'ZonoOpt']]]
+  ['warmstartparams_0',['WarmStartParams',['../structZonoOpt_1_1WarmStartParams.html',1,'ZonoOpt']]]
 ];

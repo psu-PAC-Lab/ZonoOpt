@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['width_0',['width',['../structZonoOpt_1_1IntervalBase.html#ae5e5625c38ad196e8c0dbeb49556f9d3',1,'ZonoOpt::IntervalBase::width()'],['../classZonoOpt_1_1Box.html#ac9c11159663934e9209ba41280e331b8',1,'ZonoOpt::Box::width()'],['../classZonoOpt_1_1IntervalMatrix.html#a2edbbd3e86b4c2b046bec42e8857b999',1,'ZonoOpt::IntervalMatrix::width()']]]
+  ['vrep_5f2_5fconzono_0',['vrep_2_conzono',['../group__ZonoOpt__SetupFunctions.html#gac52f05464954432151ae50802a4da669',1,'ZonoOpt']]],
+  ['vrep_5f2_5fhybzono_1',['vrep_2_hybzono',['../group__ZonoOpt__SetupFunctions.html#ga114416de3febe96790877b3a064f2290',1,'ZonoOpt']]]
 ];

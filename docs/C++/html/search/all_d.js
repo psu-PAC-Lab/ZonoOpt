@@ -6,5 +6,6 @@ var searchData=
   ['nc_3',['nC',['../classZonoOpt_1_1HybZono.html#a0cbd8a576782eff52cd2d7ac9c080269',1,'ZonoOpt::HybZono']]],
   ['ng_4',['nG',['../classZonoOpt_1_1HybZono.html#a58438abd3fdf16964dd208a7d9eaadb4',1,'ZonoOpt::HybZono']]],
   ['ngb_5',['nGb',['../classZonoOpt_1_1HybZono.html#a997bb8834d49cb9236d47fc0e9f4fbf3',1,'ZonoOpt::HybZono']]],
-  ['ngc_6',['nGc',['../classZonoOpt_1_1HybZono.html#af146a5fbddcf74cfbe28eba160ee5838',1,'ZonoOpt::HybZono']]]
+  ['ngc_6',['nGc',['../classZonoOpt_1_1HybZono.html#af146a5fbddcf74cfbe28eba160ee5838',1,'ZonoOpt::HybZono']]],
+  ['nth_5froot_7',['nth_root',['../classZonoOpt_1_1Interval.html#ad63062b9edcb491a4e951ac66ef2760b',1,'ZonoOpt::Interval']]]
 ];

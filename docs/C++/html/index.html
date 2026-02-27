@@ -117,13 +117,13 @@ image</div></div>
 ZonoOpt Features</h1>
 <p>The <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> library provides classes and set operations for zonotopes, constrained zonotopes, and hybrid zonotopes. For cases where numerical optimization is required, e.g., checking if a set is empty or solving an MPC problem where the constraints are represented as a zonotopic set, custom optimization routines are utilized. Some key features of the <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> library are as follows:</p><ul>
 <li>All classes and methods are implemented using sparse linear algebra via the Eigen library.</li>
-<li><a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> has no external dependencies beyond Eigen, making it easy to integrate into robotics projects using C++ or Python.</li>
+<li><a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> has no external dependencies beyond Eigen and Boost, making it easy to integrate into robotics projects using C++ or Python.</li>
 <li>Polymorphism is used to provide a common interface for zonotopes, constrained zonotopes, and hybrid zonotopes while allowing for specialized implementations.<ul>
 <li>E.g., <code>support</code> is more efficient for zonotopes than for constrained zonotopes.</li>
 </ul>
 </li>
 <li>Factors are flexibly defined as either $[\xi_c \quad \xi_b]^T \in [0,1]^{nGc} \times \lbrace 0,1 \rbrace^{nGb}$ or the more standard form $[\xi_c \quad \xi_b]^T \in [-1,1]^{nGc} \times \lbrace -1,1 \rbrace^{nGb}$ to facilitate certain set operations.</li>
-<li>Basic interval arithmetic is provided via the <code>Interval</code>, <code>Box</code>, and <code>IntervalMatrix</code> classes.</li>
+<li>Basic interval arithmetic is provided via the <code>Interval</code>, <code>Box</code>, and <code>IntervalMatrix</code> classes. Boost is used for most interval computations.</li>
 </ul>
 <h1><a class="anchor" id="autotoc_md3"></a>
 Building and Installing</h1>
@@ -251,7 +251,7 @@ image</div></div>
 <div class="line">    <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
 <div class="ttc" id="aZonoOpt_8hpp_html"><div class="ttname"><a href="ZonoOpt_8hpp.html">ZonoOpt.hpp</a></div><div class="ttdoc">ZonoOpt library main header file.</div></div>
-<div class="ttc" id="aclassZonoOpt_1_1Box_html"><div class="ttname"><a href="classZonoOpt_1_1Box.html">ZonoOpt::Box</a></div><div class="ttdoc">Box (i.e., interval vector) class.</div><div class="ttdef"><b>Definition</b> Intervals.hpp:1028</div></div>
+<div class="ttc" id="aclassZonoOpt_1_1Box_html"><div class="ttname"><a href="classZonoOpt_1_1Box.html">ZonoOpt::Box</a></div><div class="ttdoc">Box (i.e., interval vector) class.</div><div class="ttdef"><b>Definition</b> Intervals.hpp:454</div></div>
 <div class="ttc" id="agroup__ZonoOpt__SetOperations_html_ga2b0dff8af8367ac206cf800412838ce7"><div class="ttname"><a href="group__ZonoOpt__SetOperations.html#ga2b0dff8af8367ac206cf800412838ce7">ZonoOpt::minkowski_sum</a></div><div class="ttdeci">std::unique_ptr&lt; HybZono &gt; minkowski_sum(const HybZono &amp;Z1, HybZono &amp;Z2)</div><div class="ttdoc">Computes Minkowski sum of two sets Z1 and Z2.</div><div class="ttdef"><b>Definition</b> SetOperations.cpp:155</div></div>
 <div class="ttc" id="agroup__ZonoOpt__SetOperations_html_ga709d61eea5c796dd77dab46db8129ad5"><div class="ttname"><a href="group__ZonoOpt__SetOperations.html#ga709d61eea5c796dd77dab46db8129ad5">ZonoOpt::affine_map</a></div><div class="ttdeci">std::unique_ptr&lt; HybZono &gt; affine_map(const HybZono &amp;Z, const Eigen::SparseMatrix&lt; zono_float &gt; &amp;R, const Eigen::Vector&lt; zono_float, -1 &gt; &amp;s=Eigen::Vector&lt; zono_float, -1 &gt;())</div><div class="ttdoc">Returns affine map R*Z + s of set Z.</div><div class="ttdef"><b>Definition</b> SetOperations.cpp:12</div></div>
 <div class="ttc" id="agroup__ZonoOpt__SetOperations_html_ga791d82941cf98f5440cb2d361376992d"><div class="ttname"><a href="group__ZonoOpt__SetOperations.html#ga791d82941cf98f5440cb2d361376992d">ZonoOpt::intersection</a></div><div class="ttdeci">std::unique_ptr&lt; HybZono &gt; intersection(const HybZono &amp;Z1, HybZono &amp;Z2, const Eigen::SparseMatrix&lt; zono_float &gt; &amp;R=Eigen::SparseMatrix&lt; zono_float &gt;())</div><div class="ttdoc">Computes the generalized intersection of sets Z1 and Z2 over the matrix R.</div><div class="ttdef"><b>Definition</b> SetOperations.cpp:213</div></div>

@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['choleskyutilities_2ecpp_0',['CholeskyUtilities.cpp',['../CholeskyUtilities_8cpp.html',1,'']]],
-  ['choleskyutilities_2ehpp_1',['CholeskyUtilities.hpp',['../CholeskyUtilities_8hpp.html',1,'']]],
-  ['conzono_2ecpp_2',['ConZono.cpp',['../ConZono_8cpp.html',1,'']]],
-  ['conzono_2ehpp_3',['ConZono.hpp',['../ConZono_8hpp.html',1,'']]]
+  ['bnbdatastructures_2ehpp_0',['BnbDataStructures.hpp',['../BnbDataStructures_8hpp.html',1,'']]],
+  ['branchandbound_2ecpp_1',['BranchAndBound.cpp',['../BranchAndBound_8cpp.html',1,'']]],
+  ['branchandbound_2ehpp_2',['BranchAndBound.hpp',['../BranchAndBound_8hpp.html',1,'']]]
 ];
