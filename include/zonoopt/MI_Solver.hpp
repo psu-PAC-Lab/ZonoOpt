@@ -22,7 +22,7 @@
 #include <memory_resource>
 #include <cmath>
 
-#include "MI_DataStructures.hpp"
+#include "BnbDataStructures.hpp"
 #include "SolverDataStructures.hpp"
 #include "ADMM.hpp"
 

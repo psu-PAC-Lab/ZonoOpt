@@ -34,7 +34,9 @@ namespace ZonoOpt
 
 
     /**
-     * @brief Interval class, wraps boost::numeric::interval
+     * @brief Interval class
+     * 
+     * Wraps boost::numeric::interval
      */
     class Interval
     {
@@ -42,7 +44,7 @@ namespace ZonoOpt
         // constructor
 
         /**
-         * @brief default constructor
+         * @brief Default constructor
          */
         Interval() : _val(zero, zero) {}
 
@@ -63,13 +65,25 @@ namespace ZonoOpt
         }
 
         // get methods
+
+        /**
+         * @brief Get lower bound
+         * 
+         * @return lower bound 
+         */
         zono_float lb() const { return _val.lower(); }
+
+        /**
+         * @brief Get upper bound
+         * 
+         * @return upper bound
+         */
         zono_float ub() const { return _val.upper(); }
 
         // operators
 
         /**
-         * @brief interval addition
+         * @brief Interval addition
          * @param other other interval
          * @return this + other
          */
@@ -79,7 +93,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief interval addition with scalar
+         * @brief Interval addition with scalar
          *
          * @param alpha scalar
          * @return this + alpha
@@ -90,7 +104,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief interval subtraction
+         * @brief Interval subtraction
          * @param other other interval
          * @return this - other
          */
@@ -100,7 +114,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief interval subtraction with scalar
+         * @brief Interval subtraction with scalar
          *
          * @param alpha scalar
          * @return this - alpha
@@ -111,7 +125,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief interval multiplication
+         * @brief Interval multiplication
          * @param other other interval
          * @return this * other
          */
@@ -121,7 +135,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief interval multiplication with scalar
+         * @brief Interval multiplication with scalar
          *
          * @param alpha scalar
          * @return this * alpha
@@ -132,7 +146,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief interval division
+         * @brief Interval division
          * @param other other interval
          * @return this / other
          */
@@ -142,7 +156,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief interval division with scalar
+         * @brief Interval division with scalar
          *
          * @param alpha scalar
          * @return this / alpha
@@ -153,7 +167,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief interval inverse
+         * @brief Interval inverse
          * @return inverse of this
          */
         Interval inv() const
@@ -162,7 +176,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief interval intersection
+         * @brief Interval intersection
          * @param other other interval
          * @return intersection of this and other
          */
@@ -172,7 +186,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief checks whether interval contains a value
+         * @brief Checks whether interval contains a value
          * @param x scalar value
          * @return flag indicating if interval contains x
          */
@@ -182,7 +196,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief checks whether interval is single-valued (i.e., width is 0 within numerical tolerance)
+         * @brief Checks whether interval is single-valued (i.e., width is 0 within numerical tolerance)
          * @return flag indicating if interval is single-value
          */
         bool is_single_valued() const
@@ -191,7 +205,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief checks whether interval is empty
+         * @brief Checks whether interval is empty
          * @return flag indicating if interval is empty
          */
         bool is_empty() const
@@ -200,7 +214,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief get center of interval
+         * @brief Get center of interval
          * @return center of interval
          */
         zono_float center() const
@@ -209,7 +223,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief get width of interval
+         * @brief Get width of interval
          * @return width of interval
          */
         zono_float width() const
@@ -218,7 +232,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief get radius of interval
+         * @brief Get radius of interval
          * @return radius of interval
          *
          * Returns interval centered at zero with width equal to the width of the original interval
@@ -231,7 +245,7 @@ namespace ZonoOpt
 
 
         /**
-         * @brief get absolute value of interval
+         * @brief Get absolute value of interval
          * @return |this|
          */
         Interval abs() const
@@ -240,7 +254,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief get square root of interval
+         * @brief Get square root of interval
          * @return sqrt(this)
          */
         Interval sqrt() const
@@ -249,7 +263,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief interval power
+         * @brief Interval power
          *
          * @param n power
          * @return this^n
@@ -260,7 +274,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief interval nth root
+         * @brief Interval nth root
          * @param n nth root
          * @return root_n(this)
          */
@@ -270,7 +284,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief compute interval containing exp(x) for all x in interval
+         * @brief Compute interval containing exp(x) for all x in interval
          * @return interval containing exp(x)
          */
         Interval exp() const
@@ -279,7 +293,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief compute interval containing log(x) (base e) for all x in interval
+         * @brief Compute interval containing log(x) (base e) for all x in interval
          * @return interval containing log(x)
          */
         Interval log() const
@@ -288,7 +302,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief compute interval containing sin(x) for all x in interval
+         * @brief Compute interval containing sin(x) for all x in interval
          * @return interval containing sin(x)
          */
         Interval sin() const
@@ -297,7 +311,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief compute interval containing cos(x) for all x in interval
+         * @brief Compute interval containing cos(x) for all x in interval
          * @return interval containing cos(x)
          */
         Interval cos() const
@@ -306,7 +320,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief compute interval containing tan(x) for all x in interval
+         * @brief Compute interval containing tan(x) for all x in interval
          * @return interval containing tan(x)
          */
         Interval tan() const
@@ -315,7 +329,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief compute interval containing arcsin(x) for all x in interval
+         * @brief Compute interval containing arcsin(x) for all x in interval
          * @return interval containing arcsin(x)
          */
         Interval arcsin() const
@@ -324,7 +338,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief compute interval containing arccos(x) for all x in interval
+         * @brief Compute interval containing arccos(x) for all x in interval
          * @return interval containing arccos(x)
          */
         Interval arccos() const
@@ -333,7 +347,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief compute interval containing arctan(x) for all x in interval
+         * @brief Compute interval containing arctan(x) for all x in interval
          * @return interval containing arctan(x)
          */
         Interval arctan() const
@@ -342,7 +356,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief compute interval containing sinh(x) for all x in interval
+         * @brief Compute interval containing sinh(x) for all x in interval
          * @return interval containing sinh(x)
          */
         Interval sinh() const
@@ -351,7 +365,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief compute interval containing cosh(x) for all x in interval
+         * @brief Compute interval containing cosh(x) for all x in interval
          * @return interval containing cosh(x)
          */
         Interval cosh() const
@@ -360,7 +374,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief compute interval containing tanh(x) for all x in interval
+         * @brief Compute interval containing tanh(x) for all x in interval
          * @return interval containing tanh(x)
          */
         Interval tanh() const
@@ -369,7 +383,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief compute interval containing arcsinh(x) for all x in interval
+         * @brief Compute interval containing arcsinh(x) for all x in interval
          * @return interval containing arcsinh(x)
          */
         Interval arcsinh() const
@@ -378,7 +392,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief compute interval containing arccosh(x) for all x in interval
+         * @brief Compute interval containing arccosh(x) for all x in interval
          * @return interval containing arccosh(x)
          */
         Interval arccosh() const
@@ -387,7 +401,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief compute interval containing arctanh(x) for all x in interval
+         * @brief Compute interval containing arctanh(x) for all x in interval
          * @return interval containing arctanh(x)
          */
         Interval arctanh() const
@@ -396,7 +410,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief print method for interval
+         * @brief Print method for interval
          * @return string representation of interval
          */
         std::string print() const
@@ -405,7 +419,7 @@ namespace ZonoOpt
         }
 
         /**
-         * @brief print to ostream
+         * @brief Print to ostream
          * @param os
          * @param interval
          * @return ostream reference
@@ -496,7 +510,7 @@ namespace ZonoOpt
          * @param i index
          * @return Interval for element i in Box
          */
-        Interval operator[](const size_t i) const;
+        Interval operator[](const int i) const;
 
 
         /**
@@ -504,7 +518,7 @@ namespace ZonoOpt
          * @param i index
          * @param val interval to assign
          */
-         void element_assign(int i, const Interval& val);
+        void element_assign(int i, const Interval& val);
 
         /**
          * @brief get size of Box object

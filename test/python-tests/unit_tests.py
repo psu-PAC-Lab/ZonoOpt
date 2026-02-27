@@ -351,11 +351,11 @@ def test_interval_arithmetic():
         # get samples
         f_samples = np.array([f(x_sample[i,:]) for i in range(n_samples)])
 
-        # # plot
-        # import matplotlib.pyplot as plt
-        # fig = plt.hist([fs for fs in f_samples if not np.isnan(fs) and not np.isinf(fs)], bins=100, density=True)
-        # print(f'Interval bounds: {f_bounds}')
-        # plt.show()
+        # plot
+        import matplotlib.pyplot as plt
+        fig = plt.hist([fs for fs in f_samples if not np.isnan(fs) and not np.isinf(fs)], bins=100, density=True)
+        print(f'Interval bounds: {f_bounds}')
+        plt.show()
 
         # check that all samples evaluate to values within the computed interval
         for f_sample in f_samples:

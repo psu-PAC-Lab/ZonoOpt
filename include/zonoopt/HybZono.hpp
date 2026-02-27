@@ -14,7 +14,7 @@
 
 #include "SparseMatrixUtilities.hpp"
 #include "MI_Solver.hpp"
-#include "MI_DataStructures.hpp"
+#include "BnbDataStructures.hpp"
 #include "Inequality.hpp"
 #include "Intervals.hpp"
 

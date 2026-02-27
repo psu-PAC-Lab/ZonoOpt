@@ -58,11 +58,11 @@ namespace ZonoOpt
         this->x_ub = other.x_ub;
     }
 
-    Interval Box::operator[](const size_t i) const
+    Interval Box::operator[](const int i) const
     {
-        if (i >= static_cast<size_t>(x_lb.size()))
+        if (i >= x_lb.size())
             throw std::out_of_range("Index out of range");
-        return {x_lb(static_cast<Eigen::Index>(i)), x_ub(static_cast<Eigen::Index>(i))};
+        return {x_lb(i), x_ub(i)};
     }
 
     void Box::element_assign(const int i, const Interval& val)
@@ -343,8 +343,7 @@ namespace ZonoOpt
                 if (std::abs(a_col) < zono_eps)
                     continue; // skip zero coefficient
 
-                for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it_inner(A, k); it_inner; ++
-                     it_inner)
+                for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it_inner(A, k); it_inner; ++it_inner)
                 {
                     if (it_inner.col() != it_outer.col())
                     {

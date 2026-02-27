@@ -139,11 +139,23 @@ PYBIND11_MODULE(_core, m)
     py::class_<Interval>(m, "Interval",
             R"pbdoc(
                 Interval class
-
-                Implements interface from IntervalBase. This class owns its lower and upper bounds.
+                
+                Wraps boost::numeric::interval
             )pbdoc")
-        .def_readwrite("lb", &Interval::lb, "lower bound")
-        .def_readwrite("ub", &Interval::ub, "upper bound")
+        .def("lb", &Interval::lb, 
+            R"pbdoc(
+                Get lower bound
+
+                Returns:
+                    float: lower bound
+            )pbdoc")
+        .def("ub", &Interval::ub, 
+            R"pbdoc(
+                Get upper bound
+
+                Returns:
+                    float: upper bound
+            )pbdoc")
         .def(py::init<zono_float, zono_float>(), py::arg("y_min"), py::arg("y_max"),
             R"pbdoc(
                 Interval constructor.
@@ -154,7 +166,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
         .def("__repr__", &Interval::print,
             R"pbdoc(
-                print method for Interval
+                Print method for Interval
 
                 Returns:
                     str: string representation of interval
@@ -206,16 +218,6 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: self - alpha
             )pbdoc")
-        .def("__pow__", [](const Interval& self, const zono_float n) -> Interval { return self.pow(n); }, py::arg("n"),
-            R"pbdoc(
-                Interval power
-
-                Args:
-                    n (float): exponent
-
-                Returns:
-                    Interval: self^n
-            )pbdoc")
         .def("__mul__", [](const Interval& self, const Interval& other) -> Interval { return self*other; } ,
             py::arg("other"),
             R"pbdoc(
@@ -259,6 +261,33 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     Interval: self / other
+            )pbdoc")
+        .def("__pow__", [](const Interval& self, const int n) -> Interval { return self.pow(n); }, py::arg("n"),
+            R"pbdoc(
+                Interval power
+
+                Args:
+                    n (int): exponent
+
+                Returns:
+                    Interval: self^n
+            )pbdoc")
+        .def("sqrt", &Interval::sqrt,
+            R"pbdoc(
+                Interval square root
+
+                Returns:
+                    Interval: sqrt(self)
+            )pbdoc")
+        .def("nth_root", &Interval::nth_root, py::arg("n"),
+            R"pbdoc(
+                Interval nth root
+
+                Args:
+                    n (int): root
+
+                Returns:
+                    Interval: root_n(self)
             )pbdoc")
         .def("abs", &Interval::abs,
             R"pbdoc(
@@ -380,32 +409,12 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: interval containing exp(x)
             )pbdoc")
-        .def("exp_a", &Interval::exp_a, py::arg("a"),
-            R"pbdoc(
-                Compute interval containing a^x for all x in interval, where a is a positive scalar
-
-                Args:
-                    a (float): positive scalar base
-
-                Returns:
-                    Interval: interval containing a^x
-            )pbdoc")
         .def("log", &Interval::log,
             R"pbdoc(
                 Compute interval containing log(x) (base e) for all x in interval
 
                 Returns:
                     Interval: interval containing log(x)
-            )pbdoc")
-        .def("log_a", &Interval::log_a, py::arg("a"),
-            R"pbdoc(
-                Compute interval containing log_a(x) (log base a) for all x in interval, where a is a positive scalar
-
-                Args:
-                    a (float): positive scalar base
-
-                Returns:
-                    Interval: interval containing log_a(x)
             )pbdoc")
         .def("sinh", &Interval::sinh,
             R"pbdoc(
