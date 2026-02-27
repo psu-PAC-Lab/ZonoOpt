@@ -211,7 +211,7 @@ def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
                 warnings.warn('Plotting time limit reached, terminating early.')
                 break
             obj = plot(leaf, ax=ax, t_max=t_max-t, settings=settings, **kwargs)
-            if Z.get_n() <= 2:
+            if Z.get_n() == 2:
                 objs.append(obj[0])
             else:
                 objs.append(obj)

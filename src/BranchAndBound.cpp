@@ -648,6 +648,16 @@ namespace ZonoOpt::detail
         left->warmstart(node->solution.z, node->solution.u);
         right->warmstart(node->solution.z, node->solution.u);
 
+        // lambda to update J_threads vector with node objective before pushing to queue
+        auto dive_solve = [this](std::unique_ptr<Node, NodeDeleter>& node)
+        {
+            // add node objective to J_threads vector
+            this->J_threads.add(node->solution.J);
+
+            // solve and branch on node
+            this->solve_and_branch(node);
+        };
+
         switch (this->data.admm_data->settings.search_mode)
         {
         case (0):
@@ -666,23 +676,23 @@ namespace ZonoOpt::detail
                 }
                 else if (left_inf)
                 {
-                    this->solve_and_branch(right);
+                    dive_solve(right);
                 }
                 else if (right_inf)
                 {
-                    this->solve_and_branch(left);
+                    dive_solve(left);
                 }
                 else // both branches feasible
                 {
-                    if (left->get_box().width() > right->get_box().width()) // left is worse
+                    if (left->get_box().width() > right->get_box().width()) // right is greater depth
                     {
                         this->push_node(std::move(left));
-                        this->solve_and_branch(right);
+                        dive_solve(right);
                     }
-                    else // right is worse
+                    else // left is greater depth
                     {
                         this->push_node(std::move(right));
-                        this->solve_and_branch(left);
+                        dive_solve(left);
                     }
                 }
                 break;
