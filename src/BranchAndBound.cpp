@@ -463,8 +463,8 @@ namespace ZonoOpt::detail
             this->total_startup_time += node->solution.startup_time;
         };
 
-        // return if infeasible, not converged, or no optimal solution exists in branch
-        if (!(node->solution.infeasible || !node->solution.converged || (node->solution.J > this->J_max && !this->
+        // return if infeasible or no optimal solution exists in branch
+        if (!(node->solution.infeasible || (node->solution.J > this->J_max && !this->
             multi_sol)))
         {
             // check if node is integer feasible
@@ -488,7 +488,7 @@ namespace ZonoOpt::detail
                 }
 
                 // make sure return conditions are not met after refining
-                if (node->solution.infeasible || !node->solution.converged || (node->solution.J > this->J_max && !this->
+                if (node->solution.infeasible || (node->solution.J > this->J_max && !this->
                     multi_sol))
                 {
                     cleanup(); // cleanup function
