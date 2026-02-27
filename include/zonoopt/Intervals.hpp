@@ -12,7 +12,6 @@
  * 
  */
 
-#include <limits>
 #include <string>
 #include <vector>
 #include <set>
@@ -21,12 +20,6 @@
 #include <Eigen/Sparse>
 #include <boost/numeric/interval.hpp>
 
-
-/*
-Reference: 
-"Applied Interval Analysis"
-Luc Jaulin, Michel Kieffer, Olivier Didrit, Eric Walter
-*/
 
 namespace ZonoOpt
 {
@@ -510,7 +503,7 @@ namespace ZonoOpt
          * @param i index
          * @return Interval for element i in Box
          */
-        Interval operator[](const int i) const;
+        Interval operator[](int i) const;
 
 
         /**

@@ -28,10 +28,10 @@
 
 namespace ZonoOpt::detail
 {
-    class MI_Solver
+    class BranchAndBound
     {
     public:
-        explicit MI_Solver(const MI_data& data);
+        explicit BranchAndBound(const MI_data& data);
 
         // solve
         OptSolution solve();

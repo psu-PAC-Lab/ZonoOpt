@@ -73,7 +73,7 @@ namespace ZonoOpt::detail
 #include "zonoopt/Inequality.hpp"
 #include "zonoopt/Intervals.hpp"
 #include "zonoopt/BnbDataStructures.hpp"
-#include "zonoopt/MI_Solver.hpp"
+#include "zonoopt/BranchAndBound.hpp"
 #include "zonoopt/Point.hpp"
 #include "zonoopt/SolverDataStructures.hpp"
 #include "zonoopt/SparseMatrixUtilities.hpp"

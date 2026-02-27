@@ -319,7 +319,7 @@ namespace ZonoOpt
             Interval y(0, 0);
             for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(A, k); it; ++it)
             {
-                y = y + (*this)[it.col()]*it.value();
+                y = y + (*this)[static_cast<int>(it.col())]*it.value();
             }
 
             // check validity
@@ -347,12 +347,12 @@ namespace ZonoOpt
                 {
                     if (it_inner.col() != it_outer.col())
                     {
-                        x = x + (*this)[it_inner.col()]*(-it_inner.value());
+                        x = x + (*this)[static_cast<int>(it_inner.col())]*(-it_inner.value());
                     }
                 }
 
                 // update interval
-                this->element_assign(it_outer.col(), (*this)[it_outer.col()].intersect(x * (one/a_col)));
+                this->element_assign(static_cast<int>(it_outer.col()), (*this)[static_cast<int>(it_outer.col())].intersect(x * (one/a_col)));
             }
         }
     }
@@ -591,6 +591,10 @@ namespace ZonoOpt
 
     IntervalMatrix::IntervalMatrix(const Eigen::Matrix<Interval, -1, -1>& mat)
     {
+        // initialize rows / cols
+        this->rows_ = mat.rows();
+        this->cols_ = mat.cols();
+
         // get triplets
         std::vector<Eigen::Triplet<Interval>> triplets;
         for (int i = 0; i < mat.rows(); ++i)

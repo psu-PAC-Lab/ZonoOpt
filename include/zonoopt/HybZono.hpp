@@ -13,7 +13,7 @@
  */
 
 #include "SparseMatrixUtilities.hpp"
-#include "MI_Solver.hpp"
+#include "BranchAndBound.hpp"
 #include "BnbDataStructures.hpp"
 #include "Inequality.hpp"
 #include "Intervals.hpp"

@@ -333,7 +333,7 @@ namespace ZonoOpt
         mi_data.zero_one_form = this->zero_one_form;
 
         // build MI_ADMM_solver object
-        MI_Solver mi_solver(mi_data);
+        BranchAndBound mi_solver(mi_data);
 
         // warm start if applicable
         if (warm_start_params.z.size() == this->nG)
@@ -373,7 +373,7 @@ namespace ZonoOpt
         mi_data.zero_one_form = this->zero_one_form;
 
         // build MI_ADMM_solver object
-        MI_Solver mi_solver(mi_data);
+        BranchAndBound mi_solver(mi_data);
 
         // solve optimization problem
         n_sols = std::min(n_sols, static_cast<int>(std::pow(2, this->nGb)));
