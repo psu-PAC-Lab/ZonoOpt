@@ -172,6 +172,34 @@ namespace ZonoOpt
         }
 
         /**
+         * @brief checks whether interval contains a value
+         * @param x scalar value
+         * @return flag indicating if interval contains x
+         */
+        bool contains(const zono_float x) const
+        {
+            return x >= this->lb() - zono_eps && x <= this->ub() + zono_eps;
+        }
+
+        /**
+         * @brief checks whether interval is single-valued (i.e., width is 0 within numerical tolerance)
+         * @return flag indicating if interval is single-value
+         */
+        bool is_single_valued() const
+        {
+            return this->width() < zono_eps;
+        }
+
+        /**
+         * @brief checks whether interval is empty
+         * @return flag indicating if interval is empty
+         */
+        bool is_empty() const
+        {
+            return boost::numeric::empty(_val);
+        }
+
+        /**
          * @brief get center of interval
          * @return center of interval
          */
@@ -390,7 +418,6 @@ namespace ZonoOpt
 
 
     private:
-        explicit Interval(const boost::numeric::interval<zono_float>& val) : _val(val) {}
 
         typedef boost::numeric::interval_lib::policies<
             boost::numeric::interval_lib::save_state< boost::numeric::interval_lib::rounded_transc_std<zono_float>>,
@@ -398,14 +425,9 @@ namespace ZonoOpt
         > interval_policy;
 
         boost::numeric::interval<zono_float, interval_policy> _val;
+
+        explicit Interval(const boost::numeric::interval<zono_float, interval_policy>& val) : _val(val) {}
     };
-
-
-
-
-
-
-
 
 
     /**
@@ -470,18 +492,19 @@ namespace ZonoOpt
         // element-wise assignment, access
 
         /**
-         * @brief Element-wise access, used for assignment
-         * @param i index
-         * @return IntervalView for element i in Box
-         */
-        IntervalView operator[](size_t i);
-
-        /**
          * @brief Element-wise access
          * @param i index
          * @return Interval for element i in Box
          */
-        Interval operator[](size_t i) const;
+        Interval operator[](const size_t i) const;
+
+
+        /**
+         * @brief Element-wise assignment
+         * @param i index
+         * @param val interval to assign
+         */
+         void element_assign(int i, const Interval& val);
 
         /**
          * @brief get size of Box object

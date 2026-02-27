@@ -319,7 +319,7 @@ namespace ZonoOpt
                 s_pos = d.dot(this->G * sol.z + this->c);
 
             // store bounds
-            box[i] = Interval(s_neg, s_pos);
+            box.element_assign(i, Interval(s_neg, s_pos));
         }
 
         return box;
@@ -391,10 +391,10 @@ namespace ZonoOpt
                 for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it_k(A_rm, i); it_k; ++it_k)
                 {
                     if (it_j.col() == it_k.col()) continue;
-                    y = y - E[it_k.col()].to_interval() * (it_k.value() / a_ij);
+                    y = y - E[it_k.col()]*(it_k.value()/a_ij);
                 }
-                R[it_j.col()].intersect_assign(R[it_j.col()], y.as_view());
-                E[it_j.col()].intersect_assign(E[it_j.col()], R[it_j.col()]);
+                R.element_assign(it_j.col(), R[it_j.col()].intersect(y));
+                E.element_assign(it_j.col(), E[it_j.col()].intersect(R[it_j.col()]));
             }
         }
 
@@ -457,7 +457,7 @@ namespace ZonoOpt
         {
             // get r_j
             const zono_float r_j = std::max<zono_float>(
-                zero, std::max<zono_float>(std::abs(R[j].to_interval().lb), std::abs(R[j].to_interval().ub)) - one);
+                zero, std::max<zono_float>(std::abs(R[j].lb()), std::abs(R[j].ub())) - one);
             if (r_j < zono_eps)
             {
                 haus_vec.emplace_back(j, zero);

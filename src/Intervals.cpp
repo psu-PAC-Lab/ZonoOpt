@@ -17,8 +17,8 @@ namespace ZonoOpt
 
         for (Eigen::Index i = 0; i < static_cast<Eigen::Index>(vals.size()); i++)
         {
-            this->x_lb(i) = vals[i].y_min();
-            this->x_ub(i) = vals[i].y_max();
+            this->x_lb(i) = vals[i].lb();
+            this->x_ub(i) = vals[i].ub();
         }
     }
 
@@ -29,8 +29,8 @@ namespace ZonoOpt
 
         for (Eigen::Index i = 0; i < vals.size(); i++)
         {
-            this->x_lb(i) = vals(i).y_min();
-            this->x_ub(i) = vals(i).y_max();
+            this->x_lb(i) = vals(i).lb();
+            this->x_ub(i) = vals(i).ub();
         }
     }
 
@@ -58,18 +58,17 @@ namespace ZonoOpt
         this->x_ub = other.x_ub;
     }
 
-    IntervalView Box::operator[](const size_t i)
-    {
-        if (i >= static_cast<size_t>(x_lb.size()))
-            throw std::out_of_range("Index out of range");
-        return {&x_lb(static_cast<Eigen::Index>(i)), &x_ub(static_cast<Eigen::Index>(i))};
-    }
-
     Interval Box::operator[](const size_t i) const
     {
         if (i >= static_cast<size_t>(x_lb.size()))
             throw std::out_of_range("Index out of range");
         return {x_lb(static_cast<Eigen::Index>(i)), x_ub(static_cast<Eigen::Index>(i))};
+    }
+
+    void Box::element_assign(const int i, const Interval& val)
+    {
+        this->x_lb(i) = val.lb();
+        this->x_ub(i) = val.ub();
     }
 
     size_t Box::size() const
@@ -228,7 +227,7 @@ namespace ZonoOpt
             y[i] = Interval(0, 0);
             for (int j = 0; j < A.cols(); j++)
             {
-                y[i].add_assign(y[i], ((*this)[j] * A(i, j)).as_view());
+                y.element_assign(i, y[i] + (*this)[j]*A(i, j));
             }
         }
         return y;
@@ -249,7 +248,7 @@ namespace ZonoOpt
             y[i] = Interval(0, 0);
             for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(A, i); it; ++it)
             {
-                y[i].add_assign(y[i], ((*this)[it.col()] * it.value()).as_view());
+                y.element_assign(i, y[i] + (*this)[it.col()]*it.value());
             }
         }
         return y;
@@ -266,7 +265,7 @@ namespace ZonoOpt
 
         // linear map
         for (int i = 0; i < this->x_lb.size(); i++)
-            y.add_assign(y, ((*this)[i] * x(i)));
+            y = y + (*this)[i]*x(i);
         return y;
     }
 
@@ -320,7 +319,7 @@ namespace ZonoOpt
             Interval y(0, 0);
             for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(A, k); it; ++it)
             {
-                y.add_assign(y, (*this)[it.col()].to_interval() * it.value());
+                y = y + (*this)[it.col()]*it.value();
             }
 
             // check validity
@@ -349,12 +348,12 @@ namespace ZonoOpt
                 {
                     if (it_inner.col() != it_outer.col())
                     {
-                        x.add_assign(x, (*this)[it_inner.col()].to_interval() * (-it_inner.value()));
+                        x = x + (*this)[it_inner.col()]*(-it_inner.value());
                     }
                 }
 
                 // update interval
-                (*this)[it_outer.col()].intersect_assign((*this)[it_outer.col()], (x * (one / a_col)).as_view());
+                this->element_assign(it_outer.col(), (*this)[it_outer.col()].intersect(x * (one/a_col)));
             }
         }
     }
@@ -468,13 +467,13 @@ namespace ZonoOpt
 
                 // test if low value is valid
                 Box low_box(this->x_lb, this->x_ub);
-                low_box[ib] = Interval(this->bin_low, this->bin_low);
+                low_box.element_assign(ib, Interval(this->bin_low, this->bin_low));
                 low_box.contract_backward(A, b, constraints);
                 const bool low_valid = low_box.contract_forward(A, b, constraints);
 
                 // test if high value is valid
                 Box high_box(this->x_lb, this->x_ub);
-                high_box[ib] = Interval(this->bin_high, this->bin_high);
+                high_box.element_assign(ib, Interval(this->bin_high, this->bin_high));
                 high_box.contract_backward(A, b, constraints);
                 const bool high_valid = high_box.contract_forward(A, b, constraints);
 
@@ -599,7 +598,7 @@ namespace ZonoOpt
         {
             for (int j = 0; j < mat.cols(); j++)
             {
-                if (std::abs(mat(i, j).y_min()) > zono_eps || std::abs(mat(i, j).y_max()) > zono_eps)
+                if (std::abs(mat(i, j).lb()) > zono_eps || std::abs(mat(i, j).ub()) > zono_eps)
                     triplets.emplace_back(i, j, mat(i, j));
             }
         }
@@ -616,12 +615,12 @@ namespace ZonoOpt
         Box y(this->rows_);
 
         // linear map
-        for (size_t i = 0; i < this->rows_; i++)
+        for (int i = 0; i < static_cast<int>(this->rows_); i++)
         {
             y[i] = Interval(0, 0);
             for (const auto& [j, val] : this->mat_[i])
             {
-                y[i].add_assign(y[i], (val * v[static_cast<Eigen::Index>(j)]).as_view());
+                y.element_assign(i, y[i] + val * v[static_cast<Eigen::Index>(j)]);
             }
         }
         return y;
@@ -637,12 +636,12 @@ namespace ZonoOpt
         Box y(this->rows_);
 
         // linear map
-        for (size_t i = 0; i < this->rows_; i++)
+        for (int i = 0; i < static_cast<int>(this->rows_); i++)
         {
             y[i] = Interval(0, 0);
             for (const auto& [j, val] : this->mat_[i])
             {
-                y[i].add_assign(y[i], (box[j] * val).as_view());
+                y.element_assign(i, y[i] + (box[j] * val));
             }
         }
         return y;

@@ -9,7 +9,7 @@ using namespace ZonoOpt;
 
 zono_float f(const Eigen::Vector<double, n_dims>& x)
 {
-    return 2.*std::pow(std::tan(x[0]), -1.2) + std::cos(x[1])/3. + std::sin(x[0] + std::atan(x[2]))*std::sinh(x[7]) + std::exp(x[4]/x[3]) - std::acos(x[5])*std::asin(x[6])/std::log(x[0]);
+    return 2.*std::pow(std::tan(x[0]), 2) + std::cos(x[1])/3. + std::sin(x[0] + std::atan(x[2]))*std::sinh(x[7]) + std::exp(x[4]/x[3]) - std::acos(x[5])*std::asin(x[6])/std::log(x[0]);
 }
 
 Interval f_int(const Box& x)
@@ -17,7 +17,7 @@ Interval f_int(const Box& x)
     if (x.size() != n_dims)
         throw std::invalid_argument("Box must have size " + std::to_string(n_dims));
 
-    return (x[0].tan().pow(-1.2))*2. + x[1].cos()/3. + (x[0] + x[2].arctan()).sin()*x[7].sinh() + (x[4]/x[3]).exp() - (x[5].arccos() * x[6].arcsin())/x[0].log();
+    return (x[0].tan().pow(2))*2. + x[1].cos()/3. + (x[0] + x[2].arctan()).sin()*x[7].sinh() + (x[4]/x[3]).exp() - (x[5].arccos() * x[6].arcsin())/x[0].log();
 }
 
 int main()
