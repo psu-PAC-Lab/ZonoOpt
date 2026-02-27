@@ -19,6 +19,7 @@
 #include <cmath>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <boost/numeric/interval.hpp>
 
 
 /*
@@ -31,854 +32,26 @@ namespace ZonoOpt
 {
     using namespace detail;
 
-    // forward declarations
-    struct Interval;
-    struct IntervalView;
 
     /**
-     * @brief Base class for Interval and IntervalView
-     *
-     * This class defines the interface for Interval and IntervalView
-     * using the CRTP.
-     *
+     * @brief Interval class, wraps boost::numeric::interval
      */
-    template <typename Derived>
-    struct IntervalBase
+    class Interval
     {
-        /**
-         * @brief Returns reference to interval lower bound
-         * @return reference to y_min
-         */
-        zono_float& y_min() { return static_cast<Derived*>(this)->get_y_min(); }
-
-        /**
-         * @brief Returns reference to interval upper bound
-         * @return reference to y_max
-         */
-        zono_float& y_max() { return static_cast<Derived*>(this)->get_y_max(); }
-
-        /**
-         * @brief Returns const reference to interval lower bound
-         * @return reference to y_min
-         */
-        const zono_float& y_min() const { return static_cast<const Derived*>(this)->get_y_min(); }
-
-        /**
-         * @brief Returns const reference to interval upper bound
-         * @return reference to y_max
-         */
-        const zono_float& y_max() const { return static_cast<const Derived*>(this)->get_y_max(); }
-
-        /**
-         * @brief Sets interval bounds
-         * @param min lower bound
-         * @param max upper bound
-         */
-        void set(const zono_float min, const zono_float max)
-        {
-            y_min() = min;
-            y_max() = max;
-        }
-
-        /**
-         * @brief sets interval to x1 + x2
-         * @param x1 interval
-         * @param x2 interval
-         */
-        void add_assign(const Derived& x1, const Derived& x2)
-        {
-            if (x1.is_empty() || x2.is_empty())
-            {
-                set_empty();
-                return;
-            }
-
-            y_min() = x1.y_min() + x2.y_min();
-            y_max() = x1.y_max() + x2.y_max();
-
-            fix_nans();
-        }
-
-        /**
-         * @brief sets interval to x1 - x2
-         * @param x1 interval
-         * @param x2 interval
-         */
-        void subtract_assign(const Derived& x1, const Derived& x2)
-        {
-            if (x1.is_empty() || x2.is_empty())
-            {
-                set_empty();
-                return;
-            }
-
-            y_min() = x1.y_min() - x2.y_max();
-            y_max() = x1.y_max() - x2.y_min();
-
-            fix_nans();
-        }
-
-        /**
-         * @brief sets interval to x1 * x2
-         * @param x1 interval
-         * @param x2 interval
-         */
-        void multiply_assign(const Derived& x1, const Derived& x2)
-        {
-            if (x1.is_empty() || x2.is_empty())
-            {
-                set_empty();
-                return;
-            }
-
-            zono_float a = x1.y_min() * x2.y_min();
-            zono_float b = x1.y_min() * x2.y_max();
-            zono_float c = x1.y_max() * x2.y_min();
-            zono_float d = x1.y_max() * x2.y_max();
-
-            y_min() = std::min({a, b, c, d});
-            y_max() = std::max({a, b, c, d});
-
-            fix_nans();
-        }
-
-        /**
-         * @brief sets interval to alpha * x
-         * @param x interval
-         * @param alpha scalar
-         */
-        void multiply_assign(const Derived& x, zono_float alpha)
-        {
-            if (x.is_empty())
-            {
-                set_empty();
-                return;
-            }
-
-            if (alpha >= 0)
-            {
-                y_min() = x.y_min() * alpha;
-                y_max() = x.y_max() * alpha;
-            }
-            else
-            {
-                y_min() = x.y_max() * alpha;
-                y_max() = x.y_min() * alpha;
-            }
-
-            fix_nans();
-        }
-
-        /**
-         * @brief sets interval to abs(x)
-         * 
-         * @param x interval
-         */
-        void abs_assign(const Derived& x)
-        {
-            if (x.is_empty())
-            {
-                set_empty();
-                return;
-            }
-
-            if (x.y_min() >= 0) // positive
-            {
-                set(x.y_min(), x.y_max());
-            }
-            else if (x.y_max() <= 0) // negative
-            {
-                set(-x.y_max(), -x.y_min());
-            }
-            else // spans zero
-            {
-                set(0, std::max(-x.y_min(), x.y_max()));
-            }
-        }
-
-        /**
-         * @brief set interval to x^n
-         * 
-         * @param x interval
-         * @param n power
-         */
-        void pow_assign(const Derived& x, zono_float n) 
-        {
-            if (x.is_empty())
-            {
-                set_empty();
-                return;
-            }
-
-            const zono_float n_rnd = std::round(n);
-            const bool is_int = std::abs(n - n_rnd) < zono_eps;
-            const int n_int = static_cast<int>(n_rnd);
-
-            zono_float min = x.y_min();
-            zono_float max = x.y_max();
-
-            // fractional power handling
-            if (!is_int) 
-            {
-                if (min < -zono_eps)
-                    throw std::invalid_argument("Fractional power with negative base");
-                else if (min >= -zono_eps && min < 0)
-                    min = 0; // snap to 0
-            }
-
-            // positive power
-            if (n > zono_eps) 
-            {
-                if (is_int && n_int % 2 == 0) // even power
-                {
-                    if (min <= 0 && max >= 0) // contains zero
-                    {
-                        y_min() = 0;
-                        y_max() = std::max(std::pow(min, n), std::pow(max, n));
-                    } 
-                    else 
-                    {
-                        y_min() = std::min(std::pow(min, n), std::pow(max, n));
-                        y_max() = std::max(std::pow(min, n), std::pow(max, n));
-                    }
-                } 
-                else // odd or fractional
-                {
-                    y_min() = std::pow(min, n);
-                    y_max() = std::pow(max, n);
-                }
-            }
-            // negative power
-            else if (n < -zono_eps) 
-            {
-                if (min <= 0 && max >= 0) // includes zero
-                {
-                    if (is_int && n_int % 2 == 0) 
-                    {
-                        y_min() = std::min(std::pow(min, n), std::pow(max, n));
-                        y_max() = std::numeric_limits<zono_float>::infinity();
-                    } 
-                    else 
-                    {
-                        y_min() = -std::numeric_limits<zono_float>::infinity();
-                        y_max() = std::numeric_limits<zono_float>::infinity();
-                    }
-                } 
-                else 
-                {
-                    Derived inv;
-                    inv.set(min, max);
-                    inv.inverse();
-                    pow_assign(inv, -n);
-                }
-            }
-            else 
-            {
-                set(1.0, 1.0);
-            }
-        }
-
-        /**
-         * @brief sets interval to its inverse
-         */
-        void inverse()
-        {
-            if (is_empty()) return;
-
-            const zono_float min = y_min();
-            const zono_float max = y_max();
-
-            if (min < zono_eps && max > zono_eps) // contains zero
-            {
-                y_min() = -std::numeric_limits<zono_float>::infinity();
-                y_max() = std::numeric_limits<zono_float>::infinity();
-            }
-            else if (std::abs(min) < zono_eps && max > zono_eps) // zero at lower bound
-            {
-                y_min() = one / max;
-                y_max() = std::numeric_limits<zono_float>::infinity();
-            }
-            else if (min < zono_eps && std::abs(max) < zono_eps) // zero at upper bound
-            {
-                y_min() = -std::numeric_limits<zono_float>::infinity();
-                y_max() = one / min;
-            }
-            else if (std::abs(min) < zono_eps && std::abs(max) < zono_eps) // zero interval
-            {
-                if (min > 0)
-                {
-                    y_min() = std::numeric_limits<zono_float>::infinity();
-                    y_max() = std::numeric_limits<zono_float>::infinity();
-                }
-                else if (max < 0)
-                {
-                    y_min() = -std::numeric_limits<zono_float>::infinity();
-                    y_max() = -std::numeric_limits<zono_float>::infinity();
-                }
-                else
-                {
-                    y_min() = -std::numeric_limits<zono_float>::infinity();
-                    y_max() = std::numeric_limits<zono_float>::infinity();
-                }
-            }
-            else // (min > zono_eps || max < -zono_eps)
-            {
-                y_min() = one / max;
-                y_max() = one / min;
-            }
-        }
-
-        /**
-         * @brief sets interval to x1 / x2
-         * @param x1 interval
-         * @param x2 interval
-         */
-        void divide_assign(const Derived& x1, const Derived& x2)
-        {
-            if (x1.is_empty() || x2.is_empty())
-            {
-                set_empty();
-                return;
-            }
-
-            Derived inv = x2;
-            inv.inverse();
-            multiply_assign(x1, inv);
-        }
-
-        /**
-         * @brief sets interval to intersection of x1 and x2
-         * @param x1 interval
-         * @param x2 interval
-         */
-        void intersect_assign(const Derived& x1, const Derived& x2)
-        {
-            if (x1.is_empty() || x2.is_empty())
-            {
-                set_empty();
-                return;
-            }
-
-            if (x1.y_min() > x2.y_max() + zono_eps || x2.y_min() > x1.y_max() + zono_eps) // empty set
-            {
-                set_empty();
-            }
-            else
-            {
-                y_min() = std::max(x1.y_min(), x2.y_min());
-                y_max() = std::min(x1.y_max(), x2.y_max());
-            }
-        }
-
-        /**
-         * @brief checks whether interval is empty
-         * @return flag indicating if interval is empty
-         */
-        bool is_empty() const
-        {
-            return y_min() - y_max() > zono_eps;
-        }
-
-        /**
-         * @brief Sets interval to empty set [inf, -inf]
-         */
-        void set_empty()
-        {
-            set(std::numeric_limits<zono_float>::infinity(), -std::numeric_limits<zono_float>::infinity());
-        }
-
-        /**
-         * @brief checks whether interval contains a value
-         * @param y scalar value
-         * @return flag indicating if interval contains y
-         */
-        bool contains(zono_float y) const
-        {
-            return y >= y_min() - zono_eps && y <= y_max() + zono_eps;
-        }
-
-        /**
-         * @brief checks whether interval is single-valued (i.e., width is 0 within numerical tolerance)
-         * @return flag indicating if interval is single-value
-         */
-        bool is_single_valued() const
-        {
-            return std::abs(y_max() - y_min()) < zono_eps;
-        }
-
-        /**
-         * @brief get width of interval (ub - lb)
-         * @return interval width
-         */
-        zono_float width() const
-        {
-            return y_max() - y_min();
-        }
-
-        /**
-         * @brief sets interval to its radius (i.e., half the width, centered at zero)
-         */
-        void radius_assign()
-        {
-            if (is_empty()) return;
-
-            zono_float w = width();
-            y_min() = -w / 2;
-            y_max() = w / 2;
-        }
-
-        /**
-         * @brief compute interval containing sin(x) over x
-         * @param x input interval
-         */
-        void sin_assign(const Derived& x)
-        {
-            // input checking
-            if (x.is_empty())
-            {
-                set_empty();
-                return;
-            }
-            
-            if (std::isinf(x.y_max()) || std::isinf(x.y_min()))
-            {
-                set(-one, one);
-                return;
-            }
-
-            if (x.y_max() - x.y_min() >= two * pi)
-            {
-                y_max() = one;
-                y_min() = -one;
-            }
-            else
-            {
-                // shift domain to [-pi, pi]
-                zono_float u = x.y_max(); // init
-                zono_float l = x.y_min(); // init
-                while (u > pi)
-                {
-                    u -= two * pi;
-                    l -= two * pi;
-                }
-                while (l < -pi)
-                {
-                    u += two * pi;
-                    l += two * pi;
-                }
-
-                // get bounds
-                y_max() = ((l < pi / two && pi / two < u) || (l < -3 * pi / two && -3 * pi / two < u))
-                              ? one
-                              : std::max(std::sin(u), std::sin(l));
-                y_min() = ((l < -pi / two && -pi / two < u) || (l < 3 * pi / two && 3 * pi / two < u))
-                              ? -one
-                              : std::min(std::sin(u), std::sin(l));
-            }
-        }
-
-        /**
-         * @brief compute interval containing cos(x) over x
-         * @param x input interval
-         */
-        void cos_assign(const Derived& x)
-        {
-            Derived x_sin;
-            x_sin.set(x.y_min() + pi / two, x.y_max() + pi / two);
-            sin_assign(x_sin);
-        }
-
-        /**
-         * @brief compute interval containing tan(x) over x
-         * @param x input interval
-         */
-        void tan_assign(const Derived& x)
-        {
-            // input checking
-            if (x.is_empty())
-            {
-                set_empty();
-                return;
-            }
-            
-            if (std::isinf(x.y_max()) || std::isinf(x.y_min()))
-            {
-                set(-std::numeric_limits<zono_float>::infinity(), std::numeric_limits<zono_float>::infinity());
-                return;
-            }
-
-            if (x.y_max() - x.y_min() >= pi)
-            {
-                set(-std::numeric_limits<zono_float>::infinity(), std::numeric_limits<zono_float>::infinity());
-            }
-            else
-            {
-                // shift domain to [-pi, pi]
-                zono_float u = x.y_max(); // init
-                zono_float l = x.y_min(); // init
-                while (u > pi)
-                {
-                    u -= two * pi;
-                    l -= two * pi;
-                }
-                while (l < -pi)
-                {
-                    u += two * pi;
-                    l += two * pi;
-                }
-
-                // get bounds
-                if ((l < -pi / two && -pi / two < u) || (l < pi / two && pi / two < u))
-                {
-                    set(-std::numeric_limits<zono_float>::infinity(), std::numeric_limits<zono_float>::infinity());
-                }
-                else
-                {
-                    set(std::tan(l), std::tan(u));
-                }
-            }
-        }
-
-        /**
-         * @brief compute interval containing arcsin(x) over x
-         * @param x input interval
-         */
-        void arcsin_assign(const Derived& x)
-        {
-            Derived y;
-            y.intersect_assign(x, Derived(-one, one)); // intersect with domain
-
-            if (y.is_empty())
-            {
-                set_empty();
-                return;
-            }
-
-            y_min() = std::asin(y.y_min());
-            y_max() = std::asin(y.y_max());
-        }
-
-        /**
-         * @brief compute interval containing arccos(x) over x
-         * @param x input interval
-         */
-        void arccos_assign(const Derived& x)
-        {
-            Derived y;
-            y.intersect_assign(x, Derived(-one, one)); // intersect with domain
-
-            if (y.is_empty())
-            {
-                set_empty();
-                return;
-            }
-
-            y_min() = std::acos(y.y_max());
-            y_max() = std::acos(y.y_min());
-        }
-
-        /**
-         * @brief compute interval containing arctan(x) over x
-         * @param x input interval
-         */
-        void arctan_assign(const Derived& x)
-        {
-            if (x.is_empty())
-            {
-                set_empty();
-                return;
-            }
-
-            y_min() = std::atan(x.y_min());
-            y_max() = std::atan(x.y_max());
-        }
-
-        /**
-         * @brief compute interval containing exp(x) over x
-         * @param x input interval
-         */
-        void exp_assign(const Derived& x)
-        {
-            if (x.is_empty())
-            {
-                set_empty();
-                return;
-            }
-
-            y_min() = std::exp(x.y_min());
-            y_max() = std::exp(x.y_max());
-        }
-
-        /**
-         * @brief compute interval containing a^x over x, where a is a positive scalar
-         * 
-         * @param x input interval
-         * @param a positive scalar
-         */
-        void exp_a_assign(const Derived& x, zono_float a)
-        {
-            if (a < zono_eps)
-                throw std::invalid_argument("exp_a_assign: base a must be greater than 0");
-
-            if (x.is_empty())
-            {
-                set_empty();
-                return;
-            }
-
-            if (a < one) // decreasing
-            {
-                y_min() = std::pow(a, x.y_max());
-                y_max() = std::pow(a, x.y_min());
-            }
-            else // increasing
-            {
-                y_min() = std::pow(a, x.y_min());
-                y_max() = std::pow(a, x.y_max());
-            }
-        }
-
-        /**
-         * @brief compute interval containing log(x) (base e) over x
-         * 
-         * @param x input interval
-         */
-        void log_assign(const Derived& x)
-        {
-            Derived y;
-            y.intersect_assign(x, Derived(0, std::numeric_limits<zono_float>::infinity())); // intersect with domain
-
-            if (y.is_empty())
-            {
-                set_empty();
-                return;
-            }
-            
-            y_min() = y.y_min() < zono_eps ? -std::numeric_limits<zono_float>::infinity() : std::log(y.y_min());
-            y_max() = y.y_max() < zono_eps ? -std::numeric_limits<zono_float>::infinity() : std::log(y.y_max());
-        }
-
-        /**
-         * @brief compute interval containing log_a(x) (log base a) over x, where a is a positive scalar
-         * 
-         * @param x input interval
-         * @param a positive scalar
-         */
-        void log_a_assign(const Derived& x, zono_float a)
-        {
-            if (std::abs(a - one) < zono_eps)
-                throw std::invalid_argument("log_a_assign: base a cannot be 1");
-
-            Derived y;
-            y.intersect_assign(x, Derived(0, std::numeric_limits<zono_float>::infinity())); // intersect with domain
-
-            if (y.is_empty())
-            {
-                set_empty();
-                return;
-            }
-            
-            const zono_float log_min = y.y_min() < zono_eps ? -std::numeric_limits<zono_float>::infinity() : std::log(y.y_min());
-            const zono_float log_max = y.y_max() < zono_eps ? -std::numeric_limits<zono_float>::infinity() : std::log(y.y_max());
-            
-            if (a < one) // decreasing
-            {
-                y_min() = log_max / std::log(a);
-                y_max() = log_min / std::log(a);
-            }
-            else // increasing
-            {
-                y_min() = log_min / std::log(a);
-                y_max() = log_max / std::log(a);
-            }
-        }
-
-        /**
-         * @brief compute interval containing sinh(x) over x
-         * 
-         * @param x input interval
-         */
-        void sinh_assign(const Derived& x)
-        {
-            if (x.is_empty())
-            {
-                set_empty();
-                return;
-            }
-
-            y_min() = std::sinh(x.y_min());
-            y_max() = std::sinh(x.y_max());
-        }
-
-        /**
-         * @brief compute interval containing cosh(x) over x
-         * 
-         * @param x input interval
-         */
-        void cosh_assign(const Derived& x)
-        {
-            if (x.is_empty())
-            {
-                set_empty();
-                return;
-            }
-
-            if (x.y_max() < -zono_eps) // monotonic decreasing
-            {
-                y_min() = std::cosh(x.y_max());
-                y_max() = std::cosh(x.y_min());
-            }
-            else if (x.y_min() > zono_eps) // monotonic increasing
-            {
-                y_min() = std::cosh(x.y_min());
-                y_max() = std::cosh(x.y_max());
-            }
-            else // non-monotonic, contains 0
-            {
-                y_min() = one;
-                y_max() = std::max(std::cosh(x.y_min()), std::cosh(x.y_max()));
-            }
-        }
-
-        /**
-         * @brief compute interval containing tanh(x) over x
-         * 
-         * @param x input interval
-         */
-        void tanh_assign(const Derived& x)
-        {
-            if (x.is_empty())
-            {
-                set_empty();
-                return;
-            }
-
-            y_min() = std::tanh(x.y_min());
-            y_max() = std::tanh(x.y_max());
-        }
-
-        /**
-         * @brief compute interval containing arcsinh(x) over x
-         * 
-         * @param x input interval
-         */
-        void arcsinh_assign(const Derived& x)
-        {
-            if (x.is_empty())
-            {
-                set_empty();
-                return;
-            }
-
-            y_min() = std::asinh(x.y_min());
-            y_max() = std::asinh(x.y_max());
-        }
-
-        /**
-         * @brief compute interval containing arccosh(x) over x
-         * 
-         * @param x input interval
-         */
-        void arccosh_assign(const Derived& x)
-        {
-            Derived y;
-            y.intersect_assign(x, Derived(one, std::numeric_limits<zono_float>::infinity())); // intersect with domain
-
-            if (y.is_empty())
-            {
-                set_empty();
-                return;
-            }
-            
-            y_min() = std::acosh(y.y_min());
-            y_max() = std::acosh(y.y_max());
-        }
-
-        /**
-         * @brief compute interval containing arctanh(x) over x
-         * 
-         * @param x input interval
-         */
-        void arctanh_assign(const Derived& x)
-        {
-            Derived y;
-            y.intersect_assign(x, Derived(-one, one)); // intersect with domain
-
-            if (y.is_empty())
-            {
-                set_empty();
-                return;
-            }
-
-            if (y.y_min() < -one + zono_eps)
-            {
-                y_min() = -std::numeric_limits<zono_float>::infinity();
-            }
-            else if (y.y_min() > one - zono_eps)
-            {
-                y_min() = std::numeric_limits<zono_float>::infinity();
-            }
-            else
-            {
-                y_min() = std::atanh(y.y_min());
-            }
-
-            if (y.y_max() > one - zono_eps)
-            {
-                y_max() = std::numeric_limits<zono_float>::infinity();
-            }
-            else if (y.y_max() < -one + zono_eps)
-            {
-                y_max() = -std::numeric_limits<zono_float>::infinity();
-            }
-            else
-            {
-                y_max() = std::atanh(y.y_max());
-            }
-        }
-
-    private:
-        
-        void fix_nans()
-        {
-            if (std::isnan(y_min()))
-            {
-                y_min() = -std::numeric_limits<zono_float>::infinity();
-            }
-            if (std::isnan(y_max()))
-            {
-                y_max() = std::numeric_limits<zono_float>::infinity();
-            }
-        }
-
-    };
-
-    /**
-     * @brief Interval class
-     *
-     * Implements interface from IntervalBase. This class owns its lower and upper bounds.
-     */
-    struct Interval : IntervalBase<Interval>
-    {
-        // members
-        /// lower bound
-        zono_float lb;
-
-        /// upper bound
-        zono_float ub;
-
+    public:
         // constructor
+
         /**
          * @brief default constructor
          */
-        Interval() : lb(0), ub(0) {}
+        Interval() : _val(zero, zero) {}
 
         /**
          * @brief Interval constructor
          * @param y_min lower bound
          * @param y_max upper bound
          */
-        Interval(zono_float y_min, zono_float y_max) : lb(y_min), ub(y_max) {}
+        Interval(const zono_float y_min, const zono_float y_max) : _val(y_min, y_max) {}
 
         /**
          * @brief Clone Interval object
@@ -890,30 +63,8 @@ namespace ZonoOpt
         }
 
         // get methods
-
-        /**
-         * @brief get reference to lower bound
-         * @return reference to lower bound
-         */
-        zono_float& get_y_min() { return lb; }
-
-        /**
-         * @brief get reference to upper bound
-         * @return reference to upper bound
-         */
-        zono_float& get_y_max() { return ub; }
-
-        /**
-         * @brief get const reference to lower bound
-         * @return reference to lower bound
-         */
-        const zono_float& get_y_min() const { return lb; }
-
-        /**
-         * @brief get const reference to upper bound
-         * @return reference to upper bound
-         */
-        const zono_float& get_y_max() const { return ub; }
+        zono_float lb() const { return _val.lower(); }
+        zono_float ub() const { return _val.upper(); }
 
         // operators
 
@@ -924,22 +75,18 @@ namespace ZonoOpt
          */
         Interval operator+(const Interval& other) const
         {
-            Interval result;
-            result.add_assign(*this, other);
-            return result;
+            return Interval(this->_val + other._val);
         }
 
         /**
          * @brief interval addition with scalar
-         * 
+         *
          * @param alpha scalar
-         * @return this + alpha 
+         * @return this + alpha
          */
-        Interval operator+(zono_float alpha) const
+        Interval operator+(const zono_float alpha) const
         {
-            Interval result;
-            result.add_assign(*this, Interval(alpha, alpha));
-            return result;
+            return Interval(this->_val + alpha);
         }
 
         /**
@@ -949,22 +96,18 @@ namespace ZonoOpt
          */
         Interval operator-(const Interval& other) const
         {
-            Interval result;
-            result.subtract_assign(*this, other);
-            return result;
+            return Interval(this->_val - other._val);
         }
 
         /**
          * @brief interval subtraction with scalar
-         * 
+         *
          * @param alpha scalar
          * @return this - alpha
          */
-        Interval operator-(zono_float alpha) const
+        Interval operator-(const zono_float alpha) const
         {
-            Interval result;
-            result.subtract_assign(*this, Interval(alpha, alpha));
-            return result;
+            return Interval(this->_val - alpha);
         }
 
         /**
@@ -974,84 +117,18 @@ namespace ZonoOpt
          */
         Interval operator*(const Interval& other) const
         {
-            Interval result;
-            result.multiply_assign(*this, other);
-            return result;
+            return Interval(this->_val * other._val);
         }
 
         /**
          * @brief interval multiplication with scalar
+         *
          * @param alpha scalar
          * @return this * alpha
          */
-        Interval operator*(zono_float alpha) const
+        Interval operator*(const zono_float alpha) const
         {
-            Interval result;
-            result.multiply_assign(*this, alpha);
-            return result;
-        }
-
-        /**
-         * @brief interval division with scalar
-         * 
-         * @param alpha scalar
-         * @return this / alpha
-         */
-        Interval operator/(zono_float alpha) const
-        {
-            if (std::abs(alpha) < zono_eps)
-            {
-                if (y_min() > zono_eps)
-                {
-                    return Interval(std::numeric_limits<zono_float>::infinity(), std::numeric_limits<zono_float>::infinity());
-                }
-                else if (y_max() < -zono_eps)
-                {
-                    return Interval(-std::numeric_limits<zono_float>::infinity(), -std::numeric_limits<zono_float>::infinity());
-                }
-                else
-                {
-                    return Interval(-std::numeric_limits<zono_float>::infinity(), std::numeric_limits<zono_float>::infinity());
-                }
-            }
-
-            return *this * (one / alpha);
-        }
-        
-        /**
-         * @brief get absolute value of interval
-         * 
-         * @return |this|
-         */
-        Interval abs() const
-        {
-            Interval result;
-            result.abs_assign(*this);
-            return result;
-        }
-
-        /**
-         * @brief interval power
-         * 
-         * @param n power
-         * @return this^n 
-         */
-        Interval pow(zono_float n) const
-        {
-            Interval result = *this;
-            result.pow_assign(*this, n); 
-            return result;
-        }
-
-        /**
-         * @brief interval inverse
-         * @return inverse of this
-         */
-        Interval inv() const
-        {
-            Interval result = *this;
-            result.inverse();
-            return result;
+            return Interval(this->_val * alpha);
         }
 
         /**
@@ -1061,9 +138,27 @@ namespace ZonoOpt
          */
         Interval operator/(const Interval& other) const
         {
-            Interval result;
-            result.divide_assign(*this, other);
-            return result;
+            return Interval(this->_val / other._val);
+        }
+
+        /**
+         * @brief interval division with scalar
+         *
+         * @param alpha scalar
+         * @return this / alpha
+         */
+        Interval operator/(const zono_float alpha) const
+        {
+            return Interval(this->_val / alpha);
+        }
+
+        /**
+         * @brief interval inverse
+         * @return inverse of this
+         */
+        Interval inv() const
+        {
+            return Interval(boost::numeric::interval_lib::multiplicative_inverse(_val));
         }
 
         /**
@@ -1073,9 +168,7 @@ namespace ZonoOpt
          */
         Interval intersect(const Interval& other) const
         {
-            Interval result;
-            result.intersect_assign(*this, other);
-            return result;
+            return Interval(boost::numeric::intersect(_val, other._val));
         }
 
         /**
@@ -1084,7 +177,16 @@ namespace ZonoOpt
          */
         zono_float center() const
         {
-            return (ub + lb) / two;
+            return boost::numeric::median(_val);
+        }
+
+        /**
+         * @brief get width of interval
+         * @return width of interval
+         */
+        zono_float width() const
+        {
+            return _val.upper() - _val.lower();
         }
 
         /**
@@ -1095,25 +197,183 @@ namespace ZonoOpt
          */
         Interval radius() const
         {
-            zono_float r = this->width() / two;
+            const zono_float r = this->width() / two;
             return Interval(-r, r);
         }
 
-        // as interval view
-        /**
-         * @brief IntervalView interface for Interval
-         * @return IntervalView of this
-         */
-        IntervalView as_view();
 
-        // print methods
         /**
-         * @brief print method for Interval
+         * @brief get absolute value of interval
+         * @return |this|
+         */
+        Interval abs() const
+        {
+            return Interval(boost::numeric::abs(_val));
+        }
+
+        /**
+         * @brief get square root of interval
+         * @return sqrt(this)
+         */
+        Interval sqrt() const
+        {
+            return Interval(boost::numeric::sqrt(_val));
+        }
+
+        /**
+         * @brief interval power
+         *
+         * @param n power
+         * @return this^n
+         */
+        Interval pow(const int n) const
+        {
+            return Interval(boost::numeric::pow(_val, n));
+        }
+
+        /**
+         * @brief interval nth root
+         * @param n nth root
+         * @return root_n(this)
+         */
+        Interval nth_root(const int n) const
+        {
+            return Interval(boost::numeric::nth_root(_val, n));
+        }
+
+        /**
+         * @brief compute interval containing exp(x) for all x in interval
+         * @return interval containing exp(x)
+         */
+        Interval exp() const
+        {
+            return Interval(boost::numeric::exp(_val));
+        }
+
+        /**
+         * @brief compute interval containing log(x) (base e) for all x in interval
+         * @return interval containing log(x)
+         */
+        Interval log() const
+        {
+            return Interval(boost::numeric::log(_val));
+        }
+
+        /**
+         * @brief compute interval containing sin(x) for all x in interval
+         * @return interval containing sin(x)
+         */
+        Interval sin() const
+        {
+            return Interval(boost::numeric::sin(_val));
+        }
+
+        /**
+         * @brief compute interval containing cos(x) for all x in interval
+         * @return interval containing cos(x)
+         */
+        Interval cos() const
+        {
+            return Interval(boost::numeric::cos(_val));
+        }
+
+        /**
+         * @brief compute interval containing tan(x) for all x in interval
+         * @return interval containing tan(x)
+         */
+        Interval tan() const
+        {
+            return Interval(boost::numeric::tan(_val));
+        }
+
+        /**
+         * @brief compute interval containing arcsin(x) for all x in interval
+         * @return interval containing arcsin(x)
+         */
+        Interval arcsin() const
+        {
+            return Interval(boost::numeric::asin(_val));
+        }
+
+        /**
+         * @brief compute interval containing arccos(x) for all x in interval
+         * @return interval containing arccos(x)
+         */
+        Interval arccos() const
+        {
+            return Interval(boost::numeric::acos(_val));
+        }
+
+        /**
+         * @brief compute interval containing arctan(x) for all x in interval
+         * @return interval containing arctan(x)
+         */
+        Interval arctan() const
+        {
+            return Interval(boost::numeric::atan(_val));
+        }
+
+        /**
+         * @brief compute interval containing sinh(x) for all x in interval
+         * @return interval containing sinh(x)
+         */
+        Interval sinh() const
+        {
+            return Interval(boost::numeric::sinh(_val));
+        }
+
+        /**
+         * @brief compute interval containing cosh(x) for all x in interval
+         * @return interval containing cosh(x)
+         */
+        Interval cosh() const
+        {
+            return Interval(boost::numeric::cosh(_val));
+        }
+
+        /**
+         * @brief compute interval containing tanh(x) for all x in interval
+         * @return interval containing tanh(x)
+         */
+        Interval tanh() const
+        {
+            return Interval(boost::numeric::tanh(_val));
+        }
+
+        /**
+         * @brief compute interval containing arcsinh(x) for all x in interval
+         * @return interval containing arcsinh(x)
+         */
+        Interval arcsinh() const
+        {
+            return Interval(boost::numeric::asinh(_val));
+        }
+
+        /**
+         * @brief compute interval containing arccosh(x) for all x in interval
+         * @return interval containing arccosh(x)
+         */
+        Interval arccosh() const
+        {
+            return Interval(boost::numeric::acosh(_val));
+        }
+
+        /**
+         * @brief compute interval containing arctanh(x) for all x in interval
+         * @return interval containing arctanh(x)
+         */
+        Interval arctanh() const
+        {
+            return Interval(boost::numeric::atanh(_val));
+        }
+
+        /**
+         * @brief print method for interval
          * @return string representation of interval
          */
         std::string print() const
         {
-            return "Interval: [" + std::to_string(lb) + ", " + std::to_string(ub) + "]";
+            return "Interval: [" + std::to_string(lb()) + ", " + std::to_string(ub()) + "]";
         }
 
         /**
@@ -1128,276 +388,25 @@ namespace ZonoOpt
             return os;
         }
 
-        /**
-         * @brief compute interval containing sin(x) for all x in interval
-         * @return interval containing sin(x)
-         */
-        Interval sin() const
-        {
-            Interval result;
-            result.sin_assign(*this);
-            return result;
-        }
 
-        /**
-         * @brief compute interval containing cos(x) for all x in interval
-         * @return interval containing cos(x)
-         */
-        Interval cos() const
-        {
-            Interval result;
-            result.cos_assign(*this);
-            return result;
-        }
+    private:
+        explicit Interval(const boost::numeric::interval<zono_float>& val) : _val(val) {}
 
-        /**
-         * @brief compute interval containing tan(x) for all x in interval
-         * @return interval containing tan(x)
-         */
-        Interval tan() const
-        {
-            Interval result;
-            result.tan_assign(*this);
-            return result;
-        }
+        typedef boost::numeric::interval_lib::policies<
+            boost::numeric::interval_lib::save_state< boost::numeric::interval_lib::rounded_transc_std<zono_float>>,
+            boost::numeric::interval_lib::checking_base<zono_float>
+        > interval_policy;
 
-        /**
-         * @brief compute interval containing arcsin(x) for all x in interval
-         * @return interval containing arcsin(x)
-         */
-        Interval arcsin() const
-        {
-            Interval result;
-            result.arcsin_assign(*this);
-            return result;
-        }
-
-        /**
-         * @brief compute interval containing arccos(x) for all x in interval
-         * @return interval containing arccos(x)
-         */
-        Interval arccos() const
-        {
-            Interval result;
-            result.arccos_assign(*this);
-            return result;
-        }
-
-        /**
-         * @brief compute interval containing arctan(x) for all x in interval
-         * @return interval containing arctan(x)
-         */
-        Interval arctan() const
-        {
-            Interval result;
-            result.arctan_assign(*this);
-            return result;
-        }
-
-        /**
-         * @brief compute interval containing exp(x) for all x in interval
-         * @return interval containing exp(x)
-         */
-        Interval exp() const
-        {
-            Interval result;
-            result.exp_assign(*this);
-            return result;
-        }
-
-         /**
-         * @brief compute interval containing a^x over x, where a is a positive scalar
-         * @param a positive scalar
-         * @return interval containing a^x
-         */
-        Interval exp_a(zono_float a) const
-        {
-            Interval result;
-            result.exp_a_assign(*this, a);
-            return result;
-        }
-
-        /**
-         * @brief compute interval containing log(x) (base e) for all x in interval 
-         * 
-         * @return interval containing log(x)
-         */
-        Interval log() const
-        {
-            Interval result;
-            result.log_assign(*this);
-            return result;
-        }
-
-        /**
-         * @brief compute interval containing log_a(x) (log base a) over x, where a is a positive scalar
-         * @param a positive scalar
-         * @return interval containing log_a(x)
-         */
-        Interval log_a(zono_float a) const
-        {
-            Interval result;
-            result.log_a_assign(*this, a);
-            return result;
-        }
-
-        /**
-         * @brief compute interval containing sinh(x) for all x in interval
-         * 
-         * @return interval containing sinh(x)
-         */
-        Interval sinh() const
-        {
-            Interval result;
-            result.sinh_assign(*this);
-            return result;
-        }
-
-        /**
-         * @brief compute interval containing cosh(x) for all x in interval
-         * 
-         * @return interval containing cosh(x)
-         */
-        Interval cosh() const
-        {
-            Interval result;
-            result.cosh_assign(*this);
-            return result;
-        }
-
-        /**
-         * @brief compute interval containing tanh(x) for all x in interval
-         * 
-         * @return interval containing tanh(x)
-         */
-        Interval tanh() const
-        {
-            Interval result;
-            result.tanh_assign(*this);
-            return result;
-        }
-
-        /**
-         * @brief compute interval containing arcsinh(x) for all x in interval
-         * 
-         * @return interval containing arcsinh(x)
-         */
-        Interval arcsinh() const
-        {
-            Interval result;
-            result.arcsinh_assign(*this);
-            return result;
-        }
-
-        /**
-         * @brief compute interval containing arccosh(x) for all x in interval
-         * 
-         * @return interval containing arccosh(x)
-         */
-        Interval arccosh() const
-        {
-            Interval result;
-            result.arccosh_assign(*this);
-            return result;
-        }
-
-        /**
-         * @brief compute interval containing arctanh(x) for all x in interval
-         * 
-         * @return interval containing arctanh(x)
-         */
-        Interval arctanh() const
-        {
-            Interval result;
-            result.arctanh_assign(*this);
-            return result;
-        }
+        boost::numeric::interval<zono_float, interval_policy> _val;
     };
 
-    /**
-     * @brief IntervalView class
-     *
-     * Implements interface from IntervalBase. This class does not own its lower and upper bounds.
-     */
-    struct IntervalView : IntervalBase<IntervalView>
-    {
-        // members
 
-        /// pointer to lower bound
-        zono_float* lb_ptr = nullptr;
 
-        /// pointer to upper bound
-        zono_float* ub_ptr = nullptr;
 
-        // constructor
 
-        /**
-         * @brief constructor for IntervalView
-         * @param y_min lower bound pointer
-         * @param y_max upper bound pointer
-         */
-        IntervalView(zono_float* y_min, zono_float* y_max) : lb_ptr(y_min), ub_ptr(y_max) {}        
 
-        // assignment
 
-        /**
-         * @brief Assignment operator
-         * @tparam Derived either Interval or IntervalView
-         * @param other other interval
-         * @return this = other
-         */
-        template <typename Derived>
-        IntervalView& operator=(const IntervalBase<Derived>& other)
-        {
-            y_min() = other.y_min();
-            y_max() = other.y_max();
-            return *this;
-        }
 
-        // to Interval
-        /**
-         * @brief convert to Interval class
-         * @return interval as Interval
-         */
-        Interval to_interval() const;
-
-        // methods
-
-        /**
-         * @brief get reference to lower bound
-         * @return reference to lower bound
-         */
-        zono_float& get_y_min() { return *lb_ptr; }
-
-        /**
-         * @brief get reference to upper bound
-         * @return reference to upper bound
-         */
-        zono_float& get_y_max() { return *ub_ptr; }
-
-        /**
-         * @brief get const reference to lower bound
-         * @return reference to lower bound
-         */
-        const zono_float& get_y_min() const { return *lb_ptr; }
-
-        /**
-         * @brief get const reference to upper bound
-         * @return reference to upper bound
-         */
-        const zono_float& get_y_max() const { return *ub_ptr; }
-    };
-
-    // implementations
-    inline Interval IntervalView::to_interval() const
-    {
-        return Interval(*lb_ptr, *ub_ptr);
-    }
-
-    inline IntervalView Interval::as_view()
-    {
-        return IntervalView(&lb, &ub);
-    }
 
     /**
      * @brief Box (i.e., interval vector) class

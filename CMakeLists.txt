@@ -68,6 +68,21 @@ if (NOT TARGET Eigen3::Eigen)
     message(FATAL_ERROR "Failed to fetch Eigen dependency.")
 endif()
 
+find_package(Boost)
+if (NOT Boost_FOUND)
+    if (ZONOOPT_INSTALL)
+        message(FATAL_ERROR "Boost not found on system. Required for ZONOOPT_INSTALL.")
+    else()
+        message(STATUS "Boost not found, fetching 1.90.0 via FetchContent...")
+        FetchContent_Declare(
+            boost_default
+            GIT_REPOSITORY "https://github.com/boostorg/boost.git"
+            GIT_TAG        "boost-1.90.0"
+        )
+        FetchContent_MakeAvailable(boost_default)
+    endif()
+endif()
+
 # python dependencies
 if (ZONOOPT_BUILD_PYTHON_BINDINGS)
     # Find the module development requirements (requires FindPython from 3.17 or
@@ -115,7 +130,7 @@ else()
 endif()
 
 # link Eigen
-target_link_libraries(${TARGET_VAR} PUBLIC Eigen3::Eigen)
+target_link_libraries(${TARGET_VAR} PUBLIC Eigen3::Eigen Boost::boost)
 
 # include directories
 target_include_directories(${TARGET_VAR} PUBLIC
