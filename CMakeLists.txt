@@ -88,6 +88,7 @@ if (NOT Boost_FOUND)
         # Fetch interval and its dependencies
         fetch_boost_lib(interval interval)
         fetch_boost_lib(config config)
+        fetch_boost_lib(detail detail)
         fetch_boost_lib(assert assert)
         fetch_boost_lib(core core)
         fetch_boost_lib(static_assert static_assert)
