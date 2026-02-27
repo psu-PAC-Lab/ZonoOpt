@@ -24,11 +24,9 @@ Interval f_int(const Box& x)
     return (x0.tan().pow(-2))*2. + (x1/x0).cos()/3. + (x0 + x2.arctan()).sin()*x0.sinh() + (x1.abs() + 1).arccosh().exp() - (x0.arccos()*x1.arcsin())/(x2.pow(2)).log();
 }
 
-int main()
+void run_interval_test(zono_float x_min, zono_float x_max)
 {
-    // input intervals
-    const zono_float x_min = 0.1;
-    const zono_float x_max = 0.2;
+    // create box for input intervals
     Eigen::Vector<zono_float, -1> x_lb = Eigen::Vector<zono_float, n_dims>::Constant(x_min);
     Eigen::Vector<zono_float, -1> x_ub = Eigen::Vector<zono_float, n_dims>::Constant(x_max);
     const Box x (x_lb, x_ub);
@@ -49,6 +47,18 @@ int main()
         err_ss << "f(" << x_sample.transpose() << ") = " << f_sample << " not in " << f_interval;
         test_assert(f_interval.contains(f_sample), err_ss.str());
     }
+}
+
+int main()
+{
+    // Case 1: positive range
+    run_interval_test(0.1, 0.2);
+    
+    // Case 2: negative range, approaching 0
+    run_interval_test(-0.2, -0.001);
+
+    // Case 3: spanning 0
+    run_interval_test(-1., 1.);
 
     return 0;
 }
