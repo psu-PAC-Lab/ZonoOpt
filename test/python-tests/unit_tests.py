@@ -327,6 +327,51 @@ def test_safety_verification():
     assert zono.intersection(X, O).is_empty()
     print('Passed: Safety Verification')
 
+def test_interval_arithmetic():
+    
+    np.random.seed(0)
+
+    # constants
+    n_dims = 3
+    n_samples = 10000
+    
+    # expression
+    f = lambda x: 2*np.tan(x[0])**(-2) + np.cos(x[1]/x[0])/3. + np.sin(x[0] + np.arctan(x[2]))*np.sinh(x[0]) + np.exp(np.arccosh(np.abs(x[1]) + 1)) - np.arccos(x[0])*np.arcsin(x[1])/np.log(x[2]**2)
+
+    # interval expression
+    f_int = lambda x: (x[0].tan()**(-2))*2. + (x[1]/x[0]).cos()/3. + (x[0] + x[2].arctan()).sin()*x[0].sinh() + (x[1].abs() + 1).arccosh().exp() - (x[0].arccos()*x[1].arcsin())/(x[2]**2).log()
+
+    def _run_interval_test(x_min, x_max):
+        x = zono.Box(x_min*np.ones(n_dims), x_max*np.ones(n_dims)) # box
+        x_sample = np.random.uniform(x_min, x_max, (n_samples, n_dims)) # generate random points in interval
+
+        # get bounding interval
+        f_bounds = f_int(x)
+
+        # get samples
+        f_samples = np.array([f(x_sample[i,:]) for i in range(n_samples)])
+
+        # plot
+        # import matplotlib.pyplot as plt
+        # fig = plt.hist([fs for fs in f_samples if not np.isnan(fs) and not np.isinf(fs)], bins=100, density=True)
+        # print(f'Interval bounds: {f_bounds}')
+        # plt.show()
+
+        # check that all samples evaluate to values within the computed interval
+        for f_sample in f_samples:
+            assert np.isnan(f_sample) or f_bounds.contains(f_sample)
+
+    # Case 1: positive range
+    _run_interval_test(0.1, 0.2)
+    
+    # Case 2: negative range, approaching 0
+    _run_interval_test(-0.2, -0.001)
+
+    # Case 3: spanning 0
+    _run_interval_test(-1., 1.)
+
+    print('Passed: Interval Arithmetic')
+
 
 # run the unit tests
 test_vrep_2_hz()
@@ -337,3 +382,4 @@ test_support()
 test_point_contain()
 test_get_leaves()
 test_safety_verification()
+test_interval_arithmetic()

@@ -15,17 +15,13 @@ if(ZONOOPT_INSTALL OR "$ENV{CIBUILDWHEEL}" STREQUAL "1")
 endif()
 message(STATUS "ZONOOPT_USE_NATIVE set to: ${ZONOOPT_USE_NATIVE}")
 
-option(ZONOOPT_BUILD_TESTING "Build tests" ON)
-if (ZONOOPT_BUILD_PYTHON_BINDINGS)
-    set(ZONOOPT_BUILD_TESTING OFF CACHE BOOL "Disable testing when building Python bindings" FORCE)
-endif()
-message(STATUS "ZONOOPT_BUILD_TESTING set to: ${ZONOOPT_BUILD_TESTING}")
-
 set(ZONO_FLOAT "double" CACHE STRING "The underlying floating-point type for ZonoOpt library.")
 message(STATUS "ZONO_FLOAT set to: ${ZONO_FLOAT}")
 
 set(ZONO_EPS "1e-12" CACHE STRING "Numerical precision for floating point comparisons in ZonoOpt.")
 message(STATUS "ZONO_EPS set to: ${ZONO_EPS}")
+
+
 
 # project name
 if (ZONOOPT_BUILD_PYTHON_BINDINGS)
@@ -45,6 +41,8 @@ else()
     )
     set(TARGET_VAR ZonoOpt)
 endif()
+
+include(CTest)
 
 # Eigen dependency
 include(FetchContent)
@@ -68,6 +66,50 @@ if (NOT TARGET Eigen3::Eigen)
     message(FATAL_ERROR "Failed to fetch Eigen dependency.")
 endif()
 
+
+function(fetch_boost_lib name repo)
+  FetchContent_Declare(
+    boost_${name}
+    GIT_REPOSITORY https://github.com/boostorg/${repo}.git
+    GIT_TAG boost-1.90.0
+  )
+  FetchContent_MakeAvailable(boost_${name})
+  list(APPEND BOOST_INCLUDE_DIRS ${boost_${name}_SOURCE_DIR}/include)
+  set(BOOST_INCLUDE_DIRS ${BOOST_INCLUDE_DIRS} PARENT_SCOPE)
+endfunction()
+
+find_package(Boost CONFIG)
+if (NOT Boost_FOUND)
+   if (ZONOOPT_INSTALL)
+        message(FATAL_ERROR "Boost not found on system. Required for ZONOOPT_INSTALL.")
+   else()
+        message(STATUS "Boost not found, fetching 1.90.0 via FetchContent...")
+
+        # Fetch interval and its dependencies
+        fetch_boost_lib(interval interval)
+        fetch_boost_lib(config config)
+        fetch_boost_lib(detail detail)
+        fetch_boost_lib(assert assert)
+        fetch_boost_lib(core core)
+        fetch_boost_lib(static_assert static_assert)
+        fetch_boost_lib(throw_exception throw_exception)
+        fetch_boost_lib(type_traits type_traits)
+        fetch_boost_lib(preprocessor preprocessor)
+        fetch_boost_lib(concept_check concept_check)
+        fetch_boost_lib(numeric_conversion numeric_conversion)
+
+        add_library(boost_interval INTERFACE)
+        target_include_directories(boost_interval INTERFACE ${BOOST_INCLUDE_DIRS})
+        set(boost_handle boost_interval)
+   endif()
+else()
+    set(boost_handle Boost::boost)
+endif()
+
+if (NOT TARGET ${boost_handle})
+    message(FATAL_ERROR "Failed to fetch Boost dependency.")
+endif()
+
 # python dependencies
 if (ZONOOPT_BUILD_PYTHON_BINDINGS)
     # Find the module development requirements (requires FindPython from 3.17 or
@@ -87,7 +129,7 @@ set(SOURCE_FILES
     src/Point.cpp
     src/EmptySet.cpp
     src/Intervals.cpp
-    src/MI_Solver.cpp
+    src/BranchAndBound.cpp
 )
 
 # build
@@ -114,8 +156,9 @@ else()
     )
 endif()
 
-# link Eigen
+# link Eigen and Boost
 target_link_libraries(${TARGET_VAR} PUBLIC Eigen3::Eigen)
+target_link_libraries(${TARGET_VAR} PUBLIC ${boost_handle})
 
 # include directories
 target_include_directories(${TARGET_VAR} PUBLIC
@@ -151,7 +194,7 @@ if (ZONOOPT_USE_NATIVE)
 endif()
 
 # testing
-if (ZONOOPT_BUILD_TESTING)
+if (BUILD_TESTING)
     enable_testing()
     add_subdirectory(test)
 endif()

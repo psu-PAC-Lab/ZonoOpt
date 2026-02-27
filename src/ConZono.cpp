@@ -319,7 +319,7 @@ namespace ZonoOpt
                 s_pos = d.dot(this->G * sol.z + this->c);
 
             // store bounds
-            box[i] = Interval(s_neg, s_pos);
+            box.set_element(i, Interval(s_neg, s_pos));
         }
 
         return box;
@@ -391,17 +391,17 @@ namespace ZonoOpt
                 for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it_k(A_rm, i); it_k; ++it_k)
                 {
                     if (it_j.col() == it_k.col()) continue;
-                    y = y - E[it_k.col()].to_interval() * (it_k.value() / a_ij);
+                    y = y - E.get_element(static_cast<int>(it_k.col()))*(it_k.value()/a_ij);
                 }
-                R[it_j.col()].intersect_assign(R[it_j.col()], y.as_view());
-                E[it_j.col()].intersect_assign(E[it_j.col()], R[it_j.col()]);
+                R.set_element(static_cast<int>(it_j.col()), R.get_element(static_cast<int>(it_j.col())).intersect(y));
+                E.set_element(static_cast<int>(it_j.col()), E.get_element(static_cast<int>(it_j.col())).intersect(R.get_element(static_cast<int>(it_j.col()))));
             }
         }
 
         // make sure conzono isn't empty (interval check)
         for (int j = 0; j < this->nG; ++j)
         {
-            if (E[j].is_empty())
+            if (E.get_element(j).is_empty())
                 throw std::runtime_error("ConZono constraint reduction: set is empty");
         }
 
@@ -431,9 +431,11 @@ namespace ZonoOpt
                                                             const int end_index) -> Eigen::PermutationMatrix<
             Eigen::Dynamic, Eigen::Dynamic>
         {
-            assert(
-                start_index >= 0 && end_index >= 0 && start_index < size && end_index < size && start_index <
-                end_index);
+            if (!(start_index >= 0 && end_index >= 0 && start_index < size && end_index < size && start_index < end_index))
+            {
+                throw std::invalid_argument("Shift permute: invalid indices");
+            }
+
             Eigen::PermutationMatrix<Eigen::Dynamic, Eigen::Dynamic> P(size);
             for (int i = 0; i < start_index; ++i)
             {
@@ -455,7 +457,7 @@ namespace ZonoOpt
         {
             // get r_j
             const zono_float r_j = std::max<zono_float>(
-                zero, std::max<zono_float>(std::abs(R[j].to_interval().lb), std::abs(R[j].to_interval().ub)) - one);
+                zero, std::max<zono_float>(std::abs(R.get_element(j).lb()), std::abs(R.get_element(j).ub())) - one);
             if (r_j < zono_eps)
             {
                 haus_vec.emplace_back(j, zero);

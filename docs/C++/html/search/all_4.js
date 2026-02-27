@@ -16,6 +16,5 @@ var searchData=
   ['eps_5fr_13',['eps_r',['../structZonoOpt_1_1OptSettings.html#a58306d6af3d56963a746017677ae500e',1,'ZonoOpt::OptSettings']]],
   ['equal_14',['EQUAL',['../namespaceZonoOpt.html#aced04faf7b9db5f2f34dd76808bf10eeaa20d036f1c97d9e4b68a5870aed74e05',1,'ZonoOpt']]],
   ['examples_15',['Examples',['../index.html#autotoc_md4',1,'']]],
-  ['exp_16',['exp',['../structZonoOpt_1_1Interval.html#a366fd3da643609ddaa14000cafd47f91',1,'ZonoOpt::Interval']]],
-  ['exp_5fassign_17',['exp_assign',['../structZonoOpt_1_1IntervalBase.html#ad312cc247be378e3522c0721c28a46f9',1,'ZonoOpt::IntervalBase']]]
+  ['exp_16',['exp',['../classZonoOpt_1_1Interval.html#a366fd3da643609ddaa14000cafd47f91',1,'ZonoOpt::Interval']]]
 ];

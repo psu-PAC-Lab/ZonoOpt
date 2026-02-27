@@ -2,7 +2,7 @@
 
 namespace ZonoOpt::detail
 {
-    MI_Solver::MI_Solver(const MI_data& data) : data(data), node_queue(comp)
+    BranchAndBound::BranchAndBound(const MI_data& data) : data(data), node_queue(comp)
     {
         // check settings validity
         if (!this->data.admm_data->settings.settings_valid())
@@ -38,35 +38,35 @@ namespace ZonoOpt::detail
         }
     }
 
-    OptSolution MI_Solver::solve()
+    OptSolution BranchAndBound::solve()
     {
         this->multi_sol = false;
         auto sol = solver_core();
         return std::get<OptSolution>(sol);
     }
 
-    std::pair<std::vector<OptSolution>, OptSolution> MI_Solver::multi_solve(const int max_sols)
+    std::pair<std::vector<OptSolution>, OptSolution> BranchAndBound::multi_solve(const int max_sols)
     {
         this->multi_sol = true;
         auto sol = solver_core(max_sols);
         return std::get<std::pair<std::vector<OptSolution>, OptSolution>>(sol);
     }
 
-    std::unique_ptr<Node, MI_Solver::NodeDeleter> MI_Solver::make_node(const std::shared_ptr<ADMM_data>& admm_data)
+    std::unique_ptr<Node, BranchAndBound::NodeDeleter> BranchAndBound::make_node(const std::shared_ptr<ADMM_data>& admm_data)
     {
         void* mem = pool.allocate(sizeof(Node), alignof(Node));
         auto node = new(mem) Node(admm_data);
         return {node, NodeDeleter(&pool)};
     }
 
-    std::unique_ptr<Node, MI_Solver::NodeDeleter> MI_Solver::clone_node(const std::unique_ptr<Node, NodeDeleter>& other)
+    std::unique_ptr<Node, BranchAndBound::NodeDeleter> BranchAndBound::clone_node(const std::unique_ptr<Node, NodeDeleter>& other)
     {
         void* mem = pool.allocate(sizeof(Node), alignof(Node));
         Node* node = new(mem) Node(*other);
         return {node, NodeDeleter(&pool)};
     }
 
-    std::variant<OptSolution, std::pair<std::vector<OptSolution>, OptSolution>> MI_Solver::solver_core(int max_sols)
+    std::variant<OptSolution, std::pair<std::vector<OptSolution>, OptSolution>> BranchAndBound::solver_core(int max_sols)
     {
         // start timer
         auto start = std::chrono::high_resolution_clock::now();
@@ -184,11 +184,11 @@ namespace ZonoOpt::detail
             }
             else if (low_cutoff)
             {
-                (*this->admm_fp_data->x_box)[i] = Interval(high, high);
+                this->admm_fp_data->x_box->set_element(i, Interval(high, high));
             }
             else if (high_cutoff)
             {
-                (*this->admm_fp_data->x_box)[i] = Interval(low, low);
+                this->admm_fp_data->x_box->set_element(i, Interval(low, low));
             }
         }
 
@@ -232,7 +232,7 @@ namespace ZonoOpt::detail
                 // copies over matrix factorization
                 for (int i = this->data.idx_b.first; i < this->data.idx_b.first + this->data.idx_b.second; i++)
                 {
-                    (*convex_node_data->x_box)[i] = Interval(sol.z(i), sol.z(i));
+                    convex_node_data->x_box->set_element(i, Interval(sol.z(i), sol.z(i)));
                 }
                 convex_node_data->settings.eps_prim = this->data.admm_data->settings.eps_prim; // strengthen tolerances
                 convex_node_data->settings.eps_dual = this->data.admm_data->settings.eps_dual; // strengthen tolerances
@@ -441,7 +441,7 @@ namespace ZonoOpt::detail
         }
     }
 
-    void MI_Solver::solve_and_branch(const std::unique_ptr<Node, NodeDeleter>& node)
+    void BranchAndBound::solve_and_branch(const std::unique_ptr<Node, NodeDeleter>& node)
     {
         // objective prior to solving
         const zono_float J_min_prior = node->solution.J;
@@ -463,8 +463,8 @@ namespace ZonoOpt::detail
             this->total_startup_time += node->solution.startup_time;
         };
 
-        // return if infeasible, not converged, or no optimal solution exists in branch
-        if (!(node->solution.infeasible || !node->solution.converged || (node->solution.J > this->J_max && !this->
+        // return if infeasible or no optimal solution exists in branch
+        if (!(node->solution.infeasible || (node->solution.J > this->J_max && !this->
             multi_sol)))
         {
             // check if node is integer feasible
@@ -488,7 +488,7 @@ namespace ZonoOpt::detail
                 }
 
                 // make sure return conditions are not met after refining
-                if (node->solution.infeasible || !node->solution.converged || (node->solution.J > this->J_max && !this->
+                if (node->solution.infeasible || (node->solution.J > this->J_max && !this->
                     multi_sol))
                 {
                     cleanup(); // cleanup function
@@ -529,7 +529,7 @@ namespace ZonoOpt::detail
         cleanup(); // cleanup function
     }
 
-    void MI_Solver::admm_fp_solve(const std::unique_ptr<ADMM_FP_solver>& node)
+    void BranchAndBound::admm_fp_solve(const std::unique_ptr<ADMM_FP_solver>& node)
     {
         // solve
         OptSolution sol = node->solve(&this->done);
@@ -549,7 +549,7 @@ namespace ZonoOpt::detail
                 // copies over matrix factorization
                 for (int i = this->data.idx_b.first; i < this->data.idx_b.first + this->data.idx_b.second; i++)
                 {
-                    (*convex_node_data->x_box)[i] = Interval(sol.z(i), sol.z(i));
+                    convex_node_data->x_box->set_element(i, Interval(sol.z(i), sol.z(i)));
                 }
                 convex_node_data->settings.eps_prim = this->data.admm_data->settings.eps_prim; // strengthen tolerances
                 convex_node_data->settings.eps_dual = this->data.admm_data->settings.eps_dual; // strengthen tolerances
@@ -600,7 +600,7 @@ namespace ZonoOpt::detail
         ++this->iter_admm_fp; // increment ADMM-FP iterations
     }
 
-    bool MI_Solver::is_integer_feasible(const Eigen::Ref<const Eigen::Vector<zono_float, -1>> xb) const
+    bool BranchAndBound::is_integer_feasible(const Eigen::Ref<const Eigen::Vector<zono_float, -1>> xb) const
     {
         const zono_float low = this->data.zero_one_form ? zero : -one;
         constexpr zono_float high = 1;
@@ -613,7 +613,7 @@ namespace ZonoOpt::detail
         return true;
     }
 
-    void MI_Solver::branch_most_frac(const std::unique_ptr<Node, NodeDeleter>& node)
+    void BranchAndBound::branch_most_frac(const std::unique_ptr<Node, NodeDeleter>& node)
     {
         // must be at least 1 binary variable
         if (this->data.idx_b.second <= 0)
@@ -648,6 +648,16 @@ namespace ZonoOpt::detail
         left->warmstart(node->solution.z, node->solution.u);
         right->warmstart(node->solution.z, node->solution.u);
 
+        // lambda to update J_threads vector with node objective before pushing to queue
+        auto dive_solve = [this](std::unique_ptr<Node, NodeDeleter>& node)
+        {
+            // add node objective to J_threads vector
+            this->J_threads.add(node->solution.J);
+
+            // solve and branch on node
+            this->solve_and_branch(node);
+        };
+
         switch (this->data.admm_data->settings.search_mode)
         {
         case (0):
@@ -666,23 +676,23 @@ namespace ZonoOpt::detail
                 }
                 else if (left_inf)
                 {
-                    this->solve_and_branch(right);
+                    dive_solve(right);
                 }
                 else if (right_inf)
                 {
-                    this->solve_and_branch(left);
+                    dive_solve(left);
                 }
                 else // both branches feasible
                 {
-                    if (left->get_box().width() > right->get_box().width()) // left is worse
+                    if (left->get_box().width() > right->get_box().width()) // right is greater depth
                     {
                         this->push_node(std::move(left));
-                        this->solve_and_branch(right);
+                        dive_solve(right);
                     }
-                    else // right is worse
+                    else // left is greater depth
                     {
                         this->push_node(std::move(right));
-                        this->solve_and_branch(left);
+                        dive_solve(left);
                     }
                 }
                 break;
@@ -696,7 +706,7 @@ namespace ZonoOpt::detail
         }
     }
 
-    void MI_Solver::worker_loop()
+    void BranchAndBound::worker_loop()
     {
         while (!this->done)
         {
@@ -713,7 +723,7 @@ namespace ZonoOpt::detail
         }
     }
 
-    void MI_Solver::admm_fp_loop(std::unique_ptr<ADMM_FP_solver>&& node)
+    void BranchAndBound::admm_fp_loop(std::unique_ptr<ADMM_FP_solver>&& node)
     {
         admm_fp_solve(node); // warm-started with root relaxation solution
         while (!this->done)
@@ -728,7 +738,7 @@ namespace ZonoOpt::detail
         }
     }
 
-    void MI_Solver::push_node(std::unique_ptr<Node, NodeDeleter>&& node)
+    void BranchAndBound::push_node(std::unique_ptr<Node, NodeDeleter>&& node)
     {
         std::unique_lock<std::mutex> lock(pq_mtx);
         this->node_queue.push(std::move(node));
@@ -736,7 +746,7 @@ namespace ZonoOpt::detail
         pq_cv_admm_fp.notify_one();
     }
 
-    void MI_Solver::prune(const zono_float J_prune)
+    void BranchAndBound::prune(const zono_float J_prune)
     {
         // create node with J = J_prune
         const std::unique_ptr<Node, NodeDeleter> n = this->make_node(this->bnb_data);
@@ -747,7 +757,7 @@ namespace ZonoOpt::detail
         }
     }
 
-    bool MI_Solver::check_bin_equal(const OptSolution& sol1, const OptSolution& sol2) const
+    bool BranchAndBound::check_bin_equal(const OptSolution& sol1, const OptSolution& sol2) const
     {
         return (sol1.z.segment(this->data.idx_b.first, this->data.idx_b.second) - sol2.z.segment(
                    this->data.idx_b.first, this->data.idx_b.second))

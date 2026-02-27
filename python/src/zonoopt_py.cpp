@@ -139,11 +139,23 @@ PYBIND11_MODULE(_core, m)
     py::class_<Interval>(m, "Interval",
             R"pbdoc(
                 Interval class
-
-                Implements interface from IntervalBase. This class owns its lower and upper bounds.
+                
+                Wraps boost::numeric::interval
             )pbdoc")
-        .def_readwrite("lb", &Interval::lb, "lower bound")
-        .def_readwrite("ub", &Interval::ub, "upper bound")
+        .def("lb", &Interval::lb, 
+            R"pbdoc(
+                Get lower bound
+
+                Returns:
+                    float: lower bound
+            )pbdoc")
+        .def("ub", &Interval::ub, 
+            R"pbdoc(
+                Get upper bound
+
+                Returns:
+                    float: upper bound
+            )pbdoc")
         .def(py::init<zono_float, zono_float>(), py::arg("y_min"), py::arg("y_max"),
             R"pbdoc(
                 Interval constructor.
@@ -154,7 +166,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
         .def("__repr__", &Interval::print,
             R"pbdoc(
-                print method for Interval
+                Print method for Interval
 
                 Returns:
                     str: string representation of interval
@@ -166,7 +178,7 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: copy of interval
             )pbdoc")
-        .def("__add__", &Interval::operator+, py::arg("other"),
+        .def("__add__", [](const Interval& self, const Interval& other) -> Interval { return self + other; }, py::arg("other"),
             R"pbdoc(
                 Interval addition
 
@@ -176,7 +188,17 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: self + other
             )pbdoc")
-        .def("__sub__", &Interval::operator-, py::arg("other"),
+        .def("__add__", [](const Interval& self, const zono_float alpha) -> Interval { return self + alpha; }, py::arg("alpha"),
+            R"pbdoc(
+                Interval addition with scalar
+
+                Args:
+                    alpha (float): scalar to add
+
+                Returns:
+                    Interval: self + alpha
+            )pbdoc")
+        .def("__sub__", [](const Interval& self, const Interval& other) -> Interval { return self - other; }, py::arg("other"),
             R"pbdoc(
                 Interval subtraction
 
@@ -185,6 +207,16 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     Interval: self - other
+            )pbdoc")
+        .def("__sub__", [](const Interval& self, const zono_float alpha) -> Interval { return self - alpha; }, py::arg("alpha"),
+            R"pbdoc(
+                Interval subtraction with scalar
+
+                Args:
+                    alpha (float): scalar to subtract
+
+                Returns:
+                    Interval: self - alpha
             )pbdoc")
         .def("__mul__", [](const Interval& self, const Interval& other) -> Interval { return self*other; } ,
             py::arg("other"),
@@ -208,7 +240,19 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: alpha * self
             )pbdoc")
-        .def("__truediv__", &Interval::operator/, py::arg("other"),
+        .def("__truediv__", [](const Interval& self, const zono_float alpha) -> Interval { return self/alpha; },
+            py::arg("alpha"),
+            R"pbdoc(
+                Interval division with scalar
+
+                Args:
+                    alpha (float): scalar divisor
+
+                Returns:
+                    Interval: self / alpha
+            )pbdoc"
+        )
+        .def("__truediv__", [](const Interval& self, const Interval& other) -> Interval { return self/other; }, py::arg("other"),
             R"pbdoc(
                 Interval division
 
@@ -217,6 +261,40 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     Interval: self / other
+            )pbdoc")
+        .def("__pow__", [](const Interval& self, const int n) -> Interval { return self.pow(n); }, py::arg("n"),
+            R"pbdoc(
+                Interval power
+
+                Args:
+                    n (int): exponent
+
+                Returns:
+                    Interval: self^n
+            )pbdoc")
+        .def("sqrt", &Interval::sqrt,
+            R"pbdoc(
+                Interval square root
+
+                Returns:
+                    Interval: sqrt(self)
+            )pbdoc")
+        .def("nth_root", &Interval::nth_root, py::arg("n"),
+            R"pbdoc(
+                Interval nth root
+
+                Args:
+                    n (int): root
+
+                Returns:
+                    Interval: root_n(self)
+            )pbdoc")
+        .def("abs", &Interval::abs,
+            R"pbdoc(
+                Absolute value of interval
+
+                Returns:
+                    Interval: |self|
             )pbdoc")
         .def("inv", &Interval::inv,
             R"pbdoc(
@@ -331,6 +409,55 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: interval containing exp(x)
             )pbdoc")
+        .def("log", &Interval::log,
+            R"pbdoc(
+                Compute interval containing log(x) (base e) for all x in interval
+
+                Returns:
+                    Interval: interval containing log(x)
+            )pbdoc")
+        .def("sinh", &Interval::sinh,
+            R"pbdoc(
+                Compute interval containing sinh(x) for all x in interval
+
+                Returns:
+                    Interval: interval containing sinh(x)
+            )pbdoc")
+        .def("cosh", &Interval::cosh,
+            R"pbdoc(
+                Compute interval containing cosh(x) for all x in interval
+
+                Returns:
+                    Interval: interval containing cosh(x)
+            )pbdoc")
+        .def("tanh", &Interval::tanh,
+            R"pbdoc(
+                Compute interval containing tanh(x) for all x in interval
+
+                Returns:
+                    Interval: interval containing tanh(x)
+            )pbdoc")
+        .def("arcsinh", &Interval::arcsinh,
+            R"pbdoc(
+                Compute interval containing arcsinh(x) for all x in interval
+
+                Returns:
+                    Interval: interval containing arcsinh(x)
+            )pbdoc")
+        .def("arccosh", &Interval::arccosh,
+            R"pbdoc(
+                Compute interval containing arccosh(x) for all x in interval
+
+                Returns:
+                    Interval: interval containing arccosh(x)
+            )pbdoc")
+        .def("arctanh", &Interval::arctanh,
+            R"pbdoc(
+                Compute interval containing arctanh(x) for all x in interval
+
+                Returns:
+                    Interval: interval containing arctanh(x)
+            )pbdoc")
     ;
 
     py::class_<Box>(m, "Box", "Box (i.e., interval vector) class")
@@ -342,6 +469,14 @@ PYBIND11_MODULE(_core, m)
                     x_lb (numpy.array): vector of lower bounds
                     x_ub (numpy.array): vector of upper bounds
             )pbdoc")
+        .def_static("from_array", [](const std::vector<Interval>& vals) -> Box
+            { return Box(vals); }, py::arg("vals"),
+            R"pbdoc(
+                Constructor from array of intervals
+
+                Args:
+                    vals (list of Interval): list of intervals to construct box from
+            )pbdoc")
         .def("__repr__", &Box::print,
             R"pbdoc(
                 print method for Box
@@ -350,7 +485,7 @@ PYBIND11_MODULE(_core, m)
                     str: string representation of Box
             )pbdoc")
         .def("__setitem__", [](Box& self, const int i, const Interval& val) -> void
-            { self[i] = val; }, py::arg("i"), py::arg("val"),
+            { self.set_element(i, val); }, py::arg("i"), py::arg("val"),
             R"pbdoc(
                 Set indexed interval in box to specified value
 
@@ -359,7 +494,7 @@ PYBIND11_MODULE(_core, m)
                     val (Interval): new interval for index i in Box
             )pbdoc")
         .def("__getitem__", [](const Box& self, const int i) -> Interval
-            { return self[i]; }, py::arg("i"),
+            { return self.get_element(i); }, py::arg("i"),
             R"pbdoc(
                 Get interval at index i
 
@@ -530,6 +665,53 @@ PYBIND11_MODULE(_core, m)
                 Args:
                     mat_lb (scipy.sparse.csc_matrix): matrix of lower bounds
                     mat_ub (scipy.sparse.csc_matrix): matrix of upper bounds
+            )pbdoc")
+        .def_static("from_array", [](const std::vector<std::vector<Interval>>& vals) -> IntervalMatrix
+            { 
+                if (vals.empty()) return IntervalMatrix();
+
+                // convert to Eigen matrix of intervals
+                size_t rows = vals.size();
+                size_t cols = vals[0].size();
+                Eigen::Matrix<Interval, -1, -1> mat(rows, cols);
+                for (size_t i = 0; i < rows; ++i)
+                {
+                    if (vals[i].size() != cols)
+                    {
+                        throw std::invalid_argument("IntervalMatrix from_array: inconsistent dimensions");
+                    }
+
+                    for (size_t j = 0; j < cols; ++j)
+                    {
+                        mat(i, j) = vals[i][j];
+                    }
+                }
+                return IntervalMatrix(mat);
+            }, py::arg("vals"),
+            R"pbdoc(
+                IntervalMatrix constructor from matrix of intervals
+
+                Args:
+                    vals (list of list of Interval): matrix of intervals
+            )pbdoc")
+        .def_static("from_triplets", [](int rows, int cols, const std::vector<std::tuple<int, int, Interval>>& triplets) -> IntervalMatrix
+            {
+                // convert to Eigen triplets
+                std::vector<Eigen::Triplet<Interval>> eig_triplets;
+                eig_triplets.reserve(triplets.size());
+                for (size_t i = 0; i < triplets.size(); ++i)
+                {
+                    eig_triplets.emplace_back(std::get<0>(triplets[i]), std::get<1>(triplets[i]), std::get<2>(triplets[i]));
+                }
+                return IntervalMatrix(static_cast<size_t>(rows), static_cast<size_t>(cols), eig_triplets);
+            }, py::arg("rows"), py::arg("cols"), py::arg("triplets"),
+            R"pbdoc(
+                IntervalMatrix constructor from triplets
+
+                Args:
+                    rows (int): number of rows
+                    cols (int): number of columns
+                    triplets (list of tuple of (int, int, Interval)): list of triplets, where each triplet is (row, col, value)
             )pbdoc")
         .def("center", &IntervalMatrix::center,
             R"pbdoc(

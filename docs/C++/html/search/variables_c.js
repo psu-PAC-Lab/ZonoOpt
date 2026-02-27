@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['polish_0',['polish',['../structZonoOpt_1_1OptSettings.html#a08dc026c49076a5d8c1ce8e132a48ee6',1,'ZonoOpt::OptSettings']]],
-  ['primal_5fresidual_1',['primal_residual',['../structZonoOpt_1_1OptSolution.html#a9bb49c721a085472a57bfcb3530cd365',1,'ZonoOpt::OptSolution']]]
+  ['rho_0',['rho',['../structZonoOpt_1_1OptSettings.html#aa9daad3982cfea491e0aa34451dc53dd',1,'ZonoOpt::OptSettings']]],
+  ['rng_5fseed_1',['rng_seed',['../structZonoOpt_1_1OptSettings.html#a461a2b8cf4bcfa6010ab06b4a00209e3',1,'ZonoOpt::OptSettings']]],
+  ['run_5ftime_2',['run_time',['../structZonoOpt_1_1OptSolution.html#a4c924318807a20bd19229fe1d7995de2',1,'ZonoOpt::OptSolution']]]
 ];

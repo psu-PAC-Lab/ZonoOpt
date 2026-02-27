@@ -125,21 +125,20 @@ constraints are represented as a zonotopic set, custom optimization routines are
 Some key features of the ZonoOpt library are as follows:</p>
 <ul class="simple">
 <li><p>All classes and methods are implemented using sparse linear algebra via the Eigen library.</p></li>
-<li><p>ZonoOpt has no external dependencies beyond Eigen, making it easy to integrate into robotics projects using C++ or Python.</p></li>
+<li><p>ZonoOpt has no external dependencies beyond Eigen and Boost, making it easy to integrate into robotics projects using C++ or Python.</p></li>
 <li><p>Polymorphism is used to provide a common interface for zonotopes, constrained zonotopes, and hybrid zonotopes while allowing for specialized implementations.</p>
 <ul>
 <li><p>E.g., <code class="docutils literal notranslate"><span class="pre">support</span></code> is more efficient for zonotopes than for constrained zonotopes.</p></li>
 </ul>
 </li>
 <li><p>Factors are flexibly defined as either $[\xi_c \quad \xi_b]^T \in [0,1]^{nGc} \times \lbrace 0,1 \rbrace^{nGb}$ or the more standard form $[\xi_c \quad \xi_b]^T \in [-1,1]^{nGc} \times \lbrace -1,1 \rbrace^{nGb}$ to facilitate certain set operations.</p></li>
-<li><p>Basic interval arithmetic is provided via the <code class="docutils literal notranslate"><span class="pre">Interval</span></code> and <code class="docutils literal notranslate"><span class="pre">Box</span></code> classes.</p></li>
+<li><p>Basic interval arithmetic is provided via the <code class="docutils literal notranslate"><span class="pre">Interval</span></code>, <code class="docutils literal notranslate"><span class="pre">Box</span></code>, and <code class="docutils literal notranslate"><span class="pre">IntervalMatrix</span></code> classes. Boost is used for most interval computations.</p></li>
 </ul>
 </section>
 <section id="building-and-installing">
 <h3>Building and Installing<a class="headerlink" href="#building-and-installing" title="Link to this heading"></a></h3>
 <p>Python bindings can be installed from PyPI with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">zonoopt</span></code>. To build the bindings from source, use <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.</span></code>. Note that a C++ compiler is required to build from source.</p>
 <p>This library can be used in CMake projects either via <code class="docutils literal notranslate"><span class="pre">add_subdirectory</span></code> or by installing the library.
-Including the library via <code class="docutils literal notranslate"><span class="pre">add_subdirectory</span></code> is recommended when possible as it permits more aggressive CPU optimizations (i.e., <code class="docutils literal notranslate"><span class="pre">-march=native</span></code>).
 When building the library for installation, you must set the option ZONOOPT_INSTALL to ON, i.e., <code class="docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">-DZONOOPT_INSTALL=ON</span> <span class="pre">-S</span> <span class="pre">.</span> <span class="pre">-B</span> <span class="pre">build</span></code>.</p>
 <p>Example CMake usage is as follows:</p>
 <div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">cmake_minimum_required</span><span class="p">(</span><span class="s">VERSION</span><span class="w"> </span><span class="s">3.15...3.27</span><span class="p">)</span>

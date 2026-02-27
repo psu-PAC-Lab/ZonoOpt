@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['x_0',['x',['../structZonoOpt_1_1OptSolution.html#a368f78677b734dff01f9e7504ca42697',1,'ZonoOpt::OptSolution']]],
-  ['x_5flb_1',['x_lb',['../classZonoOpt_1_1Box.html#a52d8b201b051296414594e137415f69c',1,'ZonoOpt::Box']]],
-  ['x_5fub_2',['x_ub',['../classZonoOpt_1_1Box.html#a3ee63fadce580e7859546441a3e11f03',1,'ZonoOpt::Box']]]
+  ['z_0',['z',['../structZonoOpt_1_1WarmStartParams.html#a67c7ba962b1e7dae7fd0a3de2e41dff6',1,'ZonoOpt::WarmStartParams::z'],['../structZonoOpt_1_1OptSolution.html#a487b453e89bf468a8534b1fafdf08565',1,'ZonoOpt::OptSolution::z']]],
+  ['zero_5fone_5fform_1',['zero_one_form',['../classZonoOpt_1_1HybZono.html#a4e37404489e8ad6a73586ba545563a63',1,'ZonoOpt::HybZono']]]
 ];

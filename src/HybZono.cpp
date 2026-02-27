@@ -127,9 +127,9 @@ namespace ZonoOpt
         std::vector<std::pair<int, zono_float>> fixed_vars;
         for (int i = 0; i < this->nG; ++i)
         {
-            if (box[i].is_single_valued())
+            if (box.get_element(i).is_single_valued())
             {
-                fixed_vars.emplace_back(i, box[i].get_y_max());
+                fixed_vars.emplace_back(i, box.get_element(i).ub());
                 if (i < this->nGc)
                 {
                     idx_c_to_remove.insert(i);
@@ -333,7 +333,7 @@ namespace ZonoOpt
         mi_data.zero_one_form = this->zero_one_form;
 
         // build MI_ADMM_solver object
-        MI_Solver mi_solver(mi_data);
+        BranchAndBound mi_solver(mi_data);
 
         // warm start if applicable
         if (warm_start_params.z.size() == this->nG)
@@ -373,7 +373,7 @@ namespace ZonoOpt
         mi_data.zero_one_form = this->zero_one_form;
 
         // build MI_ADMM_solver object
-        MI_Solver mi_solver(mi_data);
+        BranchAndBound mi_solver(mi_data);
 
         // solve optimization problem
         n_sols = std::min(n_sols, static_cast<int>(std::pow(2, this->nGb)));
@@ -828,7 +828,7 @@ namespace ZonoOpt
                 s_pos = d.dot(this->G * sol.z + this->c);
 
             // store bounds
-            box[i] = Interval(s_neg, s_pos);
+            box.set_element(i, Interval(s_neg, s_pos));
         }
 
         return box;

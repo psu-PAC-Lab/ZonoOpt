@@ -22,16 +22,16 @@
 #include <memory_resource>
 #include <cmath>
 
-#include "MI_DataStructures.hpp"
+#include "BnbDataStructures.hpp"
 #include "SolverDataStructures.hpp"
 #include "ADMM.hpp"
 
 namespace ZonoOpt::detail
 {
-    class MI_Solver
+    class BranchAndBound
     {
     public:
-        explicit MI_Solver(const MI_data& data);
+        explicit BranchAndBound(const MI_data& data);
 
         // solve
         OptSolution solve();

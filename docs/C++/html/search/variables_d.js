@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['rho_0',['rho',['../structZonoOpt_1_1OptSettings.html#aa9daad3982cfea491e0aa34451dc53dd',1,'ZonoOpt::OptSettings']]],
-  ['rng_5fseed_1',['rng_seed',['../structZonoOpt_1_1OptSettings.html#a461a2b8cf4bcfa6010ab06b4a00209e3',1,'ZonoOpt::OptSettings']]],
-  ['run_5ftime_2',['run_time',['../structZonoOpt_1_1OptSolution.html#a4c924318807a20bd19229fe1d7995de2',1,'ZonoOpt::OptSolution']]]
+  ['search_5fmode_0',['search_mode',['../structZonoOpt_1_1OptSettings.html#ae9f8f56825ea6c4207a68290c718bdb8',1,'ZonoOpt::OptSettings']]],
+  ['sharp_1',['sharp',['../classZonoOpt_1_1HybZono.html#a96987ca477202427deb307b4fe0e7da0',1,'ZonoOpt::HybZono']]],
+  ['single_5fthreaded_5fadmm_5ffp_2',['single_threaded_admm_fp',['../structZonoOpt_1_1OptSettings.html#af8b8f7f0e3df1dc16665cf9a9a7efc3f',1,'ZonoOpt::OptSettings']]],
+  ['startup_5ftime_3',['startup_time',['../structZonoOpt_1_1OptSolution.html#ae06a6c2f5ea6bd1e7ffeffc0b2a22275',1,'ZonoOpt::OptSolution']]]
 ];

@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['vrep_5f2_5fconzono_0',['vrep_2_conzono',['../group__ZonoOpt__SetupFunctions.html#gac52f05464954432151ae50802a4da669',1,'ZonoOpt']]],
-  ['vrep_5f2_5fhybzono_1',['vrep_2_hybzono',['../group__ZonoOpt__SetupFunctions.html#ga114416de3febe96790877b3a064f2290',1,'ZonoOpt']]]
+  ['ub_0',['ub',['../classZonoOpt_1_1Interval.html#ab7eeae49684e90e1bf75e085a7cc6a3a',1,'ZonoOpt::Interval']]],
+  ['union_5fof_5fmany_1',['union_of_many',['../group__ZonoOpt__SetOperations.html#ga74e540bb5cb3dee56069affcea646a25',1,'ZonoOpt']]],
+  ['upper_2',['upper',['../classZonoOpt_1_1Box.html#a7e2fa323afdb2ca4b2f9d09d44745442',1,'ZonoOpt::Box']]]
 ];

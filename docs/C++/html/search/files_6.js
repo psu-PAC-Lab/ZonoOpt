@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['mi_5fdatastructures_2ehpp_0',['MI_DataStructures.hpp',['../MI__DataStructures_8hpp.html',1,'']]],
-  ['mi_5fsolver_2ecpp_1',['MI_Solver.cpp',['../MI__Solver_8cpp.html',1,'']]],
-  ['mi_5fsolver_2ehpp_2',['MI_Solver.hpp',['../MI__Solver_8hpp.html',1,'']]]
+  ['inequality_2ehpp_0',['Inequality.hpp',['../Inequality_8hpp.html',1,'']]],
+  ['intervals_2ecpp_1',['Intervals.cpp',['../Intervals_8cpp.html',1,'']]],
+  ['intervals_2ehpp_2',['Intervals.hpp',['../Intervals_8hpp.html',1,'']]]
 ];
