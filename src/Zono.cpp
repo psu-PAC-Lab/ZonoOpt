@@ -293,7 +293,7 @@ namespace ZonoOpt
         Eigen::SparseMatrix<zono_float> G(static_cast<Eigen::Index>(box.size()), static_cast<Eigen::Index>(box.size()));
         for (int i = 0; i < static_cast<int>(box.size()); i++)
         {
-            triplets.emplace_back(i, i, box[i].width() / two);
+            triplets.emplace_back(i, i, box.get_element(i).width() / two);
         }
 #if EIGEN_VERSION_AT_LEAST(5, 0, 0)
         G.setFromSortedTriplets(triplets.begin(), triplets.end());

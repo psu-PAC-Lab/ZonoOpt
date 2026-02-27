@@ -391,17 +391,17 @@ namespace ZonoOpt
                 for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it_k(A_rm, i); it_k; ++it_k)
                 {
                     if (it_j.col() == it_k.col()) continue;
-                    y = y - E[it_k.col()]*(it_k.value()/a_ij);
+                    y = y - E.get_element(it_k.col())*(it_k.value()/a_ij);
                 }
-                R.element_assign(it_j.col(), R[it_j.col()].intersect(y));
-                E.element_assign(it_j.col(), E[it_j.col()].intersect(R[it_j.col()]));
+                R.element_assign(it_j.col(), R.get_element(it_j.col()).intersect(y));
+                E.element_assign(it_j.col(), E.get_element(it_j.col()).intersect(R.get_element(it_j.col())));
             }
         }
 
         // make sure conzono isn't empty (interval check)
         for (int j = 0; j < this->nG; ++j)
         {
-            if (E[j].is_empty())
+            if (E.get_element(j).is_empty())
                 throw std::runtime_error("ConZono constraint reduction: set is empty");
         }
 
@@ -457,7 +457,7 @@ namespace ZonoOpt
         {
             // get r_j
             const zono_float r_j = std::max<zono_float>(
-                zero, std::max<zono_float>(std::abs(R[j].lb()), std::abs(R[j].ub())) - one);
+                zero, std::max<zono_float>(std::abs(R.get_element(j).lb()), std::abs(R.get_element(j).ub())) - one);
             if (r_j < zono_eps)
             {
                 haus_vec.emplace_back(j, zero);

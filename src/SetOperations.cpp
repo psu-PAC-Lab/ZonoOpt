@@ -101,7 +101,7 @@ namespace ZonoOpt
         std::vector<Eigen::Triplet<zono_float>> triplets;
         for (int i = 0; i < R_rows; ++i)
         {
-            triplets.emplace_back(i, i, 0.5 * (m[i].width() + diam_R_abs_M.row(i).sum()));
+            triplets.emplace_back(i, i, 0.5 * (m.get_element(i).width() + diam_R_abs_M.row(i).sum()));
         }
         Eigen::SparseMatrix<zono_float> P(R_rows, R_rows);
 #if EIGEN_VERSION_AT_LEAST(5, 0, 0)

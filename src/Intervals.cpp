@@ -58,7 +58,7 @@ namespace ZonoOpt
         this->x_ub = other.x_ub;
     }
 
-    Interval Box::operator[](const int i) const
+    Interval Box::get_element(const int i) const
     {
         if (i >= x_lb.size())
             throw std::out_of_range("Index out of range");
@@ -93,7 +93,7 @@ namespace ZonoOpt
         zono_float w = 0;
         for (Eigen::Index i = 0; i < x_lb.size(); i++)
         {
-            w = std::max(w, (*this)[i].width());
+            w = std::max(w, this->get_element(i).width());
         }
         return w;
     }
@@ -103,7 +103,7 @@ namespace ZonoOpt
         Eigen::Vector<zono_float, -1> c(this->size());
         for (Eigen::Index i = 0; i < static_cast<Eigen::Index>(this->size()); i++)
         {
-            c(i) = (*this)[i].center();
+            c(i) = get_element(i).center();
         }
         return c;
     }
@@ -113,7 +113,7 @@ namespace ZonoOpt
         Box out(this->size());
         for (Eigen::Index i = 0; i < static_cast<Eigen::Index>(this->size()); i++)
         {
-            out[i] = (*this)[i].radius();
+            out.element_assign(i, get_element(i).radius());
         }
         return out;
     }
@@ -125,7 +125,7 @@ namespace ZonoOpt
         Box out = *this;
         for (size_t i = 0; i < this->size(); ++i)
         {
-            out[i] = (*this)[i] + other[i];
+            out.element_assign(i, get_element(i) + other.get_element(i));
         }
         return out;
     }
@@ -137,7 +137,7 @@ namespace ZonoOpt
         Box out = *this;
         for (size_t i = 0; i < this->size(); ++i)
         {
-            out[i] = (*this)[i] - other[i];
+            out.element_assign(i, this->get_element(i) - other.get_element(i));
         }
         return out;
     }
@@ -149,7 +149,7 @@ namespace ZonoOpt
         Box out = *this;
         for (size_t i = 0; i < this->size(); ++i)
         {
-            out[i] = (*this)[i] * other[i];
+            out.element_assign(i, this->get_element(i) * other.get_element(i));
         }
         return out;
     }
@@ -159,7 +159,7 @@ namespace ZonoOpt
         Box out = *this;
         for (size_t i = 0; i < this->size(); ++i)
         {
-            out[i] = (*this)[i] * alpha;
+            out.element_assign(i, this->get_element(i) * alpha);
         }
         return out;
     }
@@ -171,7 +171,7 @@ namespace ZonoOpt
         Box out = *this;
         for (size_t i = 0; i < this->size(); ++i)
         {
-            out[i] = (*this)[i] / other[i];
+            out.element_assign(i, this->get_element(i) / other.get_element(i));
         }
         return out;
     }
@@ -224,10 +224,10 @@ namespace ZonoOpt
         // linear map
         for (int i = 0; i < A.rows(); i++)
         {
-            y[i] = Interval(0, 0);
+            y.element_assign(i, Interval(0, 0));
             for (int j = 0; j < A.cols(); j++)
             {
-                y.element_assign(i, y[i] + (*this)[j]*A(i, j));
+                y.element_assign(i, y.get_element(i) + this->get_element(j)*A(i, j));
             }
         }
         return y;
@@ -245,10 +245,10 @@ namespace ZonoOpt
         // linear map
         for (int i = 0; i < A.rows(); i++)
         {
-            y[i] = Interval(0, 0);
+            y.element_assign(i, Interval(0, 0));
             for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(A, i); it; ++it)
             {
-                y.element_assign(i, y[i] + (*this)[it.col()]*it.value());
+                y.element_assign(i, y.get_element(i) + this->get_element(it.col())*it.value());
             }
         }
         return y;
@@ -265,7 +265,7 @@ namespace ZonoOpt
 
         // linear map
         for (int i = 0; i < this->x_lb.size(); i++)
-            y = y + (*this)[i]*x(i);
+            y = y + get_element(i)*x(i);
         return y;
     }
 
@@ -281,7 +281,7 @@ namespace ZonoOpt
         ss << "Box: " << std::endl;
         for (Eigen::Index i = 0; i < x_lb.size(); i++)
         {
-            ss << "  " << (*this)[i] << std::endl;
+            ss << "  " << this->get_element(i) << std::endl;
         }
         return ss.str();
     }
@@ -319,7 +319,7 @@ namespace ZonoOpt
             Interval y(0, 0);
             for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(A, k); it; ++it)
             {
-                y = y + (*this)[static_cast<int>(it.col())]*it.value();
+                y = y + this->get_element(static_cast<int>(it.col()))*it.value();
             }
 
             // check validity
@@ -347,12 +347,12 @@ namespace ZonoOpt
                 {
                     if (it_inner.col() != it_outer.col())
                     {
-                        x = x + (*this)[static_cast<int>(it_inner.col())]*(-it_inner.value());
+                        x = x + this->get_element(static_cast<int>(it_inner.col()))*(-it_inner.value());
                     }
                 }
 
                 // update interval
-                this->element_assign(static_cast<int>(it_outer.col()), (*this)[static_cast<int>(it_outer.col())].intersect(x * (one/a_col)));
+                this->element_assign(static_cast<int>(it_outer.col()), this->get_element(static_cast<int>(it_outer.col())).intersect(x * (one/a_col)));
             }
         }
     }
@@ -461,7 +461,7 @@ namespace ZonoOpt
             // binary variable probing
             for (const int ib : bin_vars)
             {
-                if ((*this)[ib].is_single_valued())
+                if (this->get_element(ib).is_single_valued())
                     continue; // already fixed
 
                 // test if low value is valid
@@ -620,10 +620,10 @@ namespace ZonoOpt
         // linear map
         for (int i = 0; i < static_cast<int>(this->rows_); i++)
         {
-            y[i] = Interval(0, 0);
+            y.element_assign(i, Interval(0, 0));
             for (const auto& [j, val] : this->mat_[i])
             {
-                y.element_assign(i, y[i] + val * v[static_cast<Eigen::Index>(j)]);
+                y.element_assign(i, y.get_element(i) + val * v[static_cast<Eigen::Index>(j)]);
             }
         }
         return y;
@@ -641,10 +641,10 @@ namespace ZonoOpt
         // linear map
         for (int i = 0; i < static_cast<int>(this->rows_); i++)
         {
-            y[i] = Interval(0, 0);
+            y.element_assign(i, Interval(0, 0));
             for (const auto& [j, val] : this->mat_[i])
             {
-                y.element_assign(i, y[i] + (box[j] * val));
+                y.element_assign(i, y.get_element(i) + (box.get_element(j) * val));
             }
         }
         return y;

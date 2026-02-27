@@ -503,7 +503,7 @@ namespace ZonoOpt
          * @param i index
          * @return Interval for element i in Box
          */
-        Interval operator[](int i) const;
+        Interval get_element(int i) const;
 
 
         /**

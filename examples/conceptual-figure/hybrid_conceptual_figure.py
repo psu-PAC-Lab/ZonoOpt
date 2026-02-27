@@ -154,11 +154,21 @@ with plt.rc_context(rc_context):
     fig = plt.figure(constrained_layout=True, figsize=figsize)
     ax = fig.add_subplot(111)
 
+    settings = zono.OptSettings()
+    settings.use_interval_contractor = False
+    settings.search_mode = 0
+    settings.n_threads_bnb = 1
+    settings.n_threads_admm_fp = 0
+    settings.polish = False
+    
+    # settings.verbose = True
+    # settings.verbosity_interval = 1
+
     h = [None, None]
     for i in range(N+1):
         X = zono.project_onto_dims(Z, idx_x[i][0:2])
-        h[0] = zono.plot(X, color=(205./255., 201./255., 255./255.), edgecolor=None)[0]
-        h[1] = ax.plot(z_sol[idx_x[i][0]], z_sol[idx_x[i][1]], 'or', markersize=4)[0]
+        h[0] = zono.plot(X, color=(205./255., 201./255., 255./255.), edgecolor=None, settings=settings)
+        h[1] = ax.plot(z_sol[idx_x[i][0]], z_sol[idx_x[i][1]], 'or', markersize=4)
 
     ax.grid(alpha=0.2)
     ax.legend(h, ['Reachable sets', 'Trajectory plan'], loc='upper left')

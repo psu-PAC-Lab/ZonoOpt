@@ -127,9 +127,9 @@ namespace ZonoOpt
         std::vector<std::pair<int, zono_float>> fixed_vars;
         for (int i = 0; i < this->nG; ++i)
         {
-            if (box[i].is_single_valued())
+            if (box.get_element(i).is_single_valued())
             {
-                fixed_vars.emplace_back(i, box[i].ub());
+                fixed_vars.emplace_back(i, box.get_element(i).ub());
                 if (i < this->nGc)
                 {
                     idx_c_to_remove.insert(i);
@@ -828,7 +828,7 @@ namespace ZonoOpt
                 s_pos = d.dot(this->G * sol.z + this->c);
 
             // store bounds
-            box[i] = Interval(s_neg, s_pos);
+            box.element_assign(i, Interval(s_neg, s_pos));
         }
 
         return box;

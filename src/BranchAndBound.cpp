@@ -184,11 +184,11 @@ namespace ZonoOpt::detail
             }
             else if (low_cutoff)
             {
-                (*this->admm_fp_data->x_box)[i] = Interval(high, high);
+                this->admm_fp_data->x_box->element_assign(i, Interval(high, high));
             }
             else if (high_cutoff)
             {
-                (*this->admm_fp_data->x_box)[i] = Interval(low, low);
+                this->admm_fp_data->x_box->element_assign(i, Interval(low, low));
             }
         }
 
