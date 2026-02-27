@@ -828,7 +828,7 @@ namespace ZonoOpt
                 s_pos = d.dot(this->G * sol.z + this->c);
 
             // store bounds
-            box.element_assign(i, Interval(s_neg, s_pos));
+            box.set_element(i, Interval(s_neg, s_pos));
         }
 
         return box;

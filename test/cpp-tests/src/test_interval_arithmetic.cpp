@@ -5,11 +5,11 @@
 
 using namespace ZonoOpt;
 
-#define n_dims 8
+#define n_dims 3
 
 zono_float f(const Eigen::Vector<double, n_dims>& x)
 {
-    return 2.*std::pow(std::tan(x[0]), 2) + std::cos(x[1])/3. + std::sin(x[0] + std::atan(x[2]))*std::sinh(x[7]) + std::exp(x[4]/x[3]) - std::acos(x[5])*std::asin(x[6])/std::log(x[0]);
+    return 2*std::pow(std::tan(x[0]), -2) + std::cos(x[1]/x[0])/3. + std::sin(x[0] + std::atan(x[2]))*std::sinh(x[0]) + std::exp(std::acosh(std::abs(x[1]) + 1)) - std::acos(x[0])*std::asin(x[1])/std::log(std::pow(x[2], 2));
 }
 
 Interval f_int(const Box& x)
@@ -17,7 +17,11 @@ Interval f_int(const Box& x)
     if (x.size() != n_dims)
         throw std::invalid_argument("Box must have size " + std::to_string(n_dims));
 
-    return (x[0].tan().pow(2))*2. + x[1].cos()/3. + (x[0] + x[2].arctan()).sin()*x[7].sinh() + (x[4]/x[3]).exp() - (x[5].arccos() * x[6].arcsin())/x[0].log();
+    Interval x0 = x.get_element(0);
+    Interval x1 = x.get_element(1);
+    Interval x2 = x.get_element(2);
+
+    return (x0.tan().pow(-2))*2. + (x1/x0).cos()/3. + (x0 + x2.arctan()).sin()*x0.sinh() + (x1.abs() + 1).arccosh().exp() - (x0.arccos()*x1.arcsin())/(x2.pow(2)).log();
 }
 
 int main()

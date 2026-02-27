@@ -319,7 +319,7 @@ namespace ZonoOpt
                 s_pos = d.dot(this->G * sol.z + this->c);
 
             // store bounds
-            box.element_assign(i, Interval(s_neg, s_pos));
+            box.set_element(i, Interval(s_neg, s_pos));
         }
 
         return box;
@@ -393,8 +393,8 @@ namespace ZonoOpt
                     if (it_j.col() == it_k.col()) continue;
                     y = y - E.get_element(it_k.col())*(it_k.value()/a_ij);
                 }
-                R.element_assign(it_j.col(), R.get_element(it_j.col()).intersect(y));
-                E.element_assign(it_j.col(), E.get_element(it_j.col()).intersect(R.get_element(it_j.col())));
+                R.set_element(it_j.col(), R.get_element(it_j.col()).intersect(y));
+                E.set_element(it_j.col(), E.get_element(it_j.col()).intersect(R.get_element(it_j.col())));
             }
         }
 

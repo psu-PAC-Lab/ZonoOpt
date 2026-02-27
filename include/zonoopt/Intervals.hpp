@@ -511,7 +511,7 @@ namespace ZonoOpt
          * @param i index
          * @param val interval to assign
          */
-        void element_assign(int i, const Interval& val);
+        void set_element(int i, const Interval& val);
 
         /**
          * @brief get size of Box object

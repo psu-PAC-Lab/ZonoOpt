@@ -485,7 +485,7 @@ PYBIND11_MODULE(_core, m)
                     str: string representation of Box
             )pbdoc")
         .def("__setitem__", [](Box& self, const int i, const Interval& val) -> void
-            { self[i] = val; }, py::arg("i"), py::arg("val"),
+            { self.set_element(i, val); }, py::arg("i"), py::arg("val"),
             R"pbdoc(
                 Set indexed interval in box to specified value
 
@@ -494,7 +494,7 @@ PYBIND11_MODULE(_core, m)
                     val (Interval): new interval for index i in Box
             )pbdoc")
         .def("__getitem__", [](const Box& self, const int i) -> Interval
-            { return self[i]; }, py::arg("i"),
+            { return self.get_element(i); }, py::arg("i"),
             R"pbdoc(
                 Get interval at index i
 

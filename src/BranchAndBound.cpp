@@ -184,11 +184,11 @@ namespace ZonoOpt::detail
             }
             else if (low_cutoff)
             {
-                this->admm_fp_data->x_box->element_assign(i, Interval(high, high));
+                this->admm_fp_data->x_box->set_element(i, Interval(high, high));
             }
             else if (high_cutoff)
             {
-                this->admm_fp_data->x_box->element_assign(i, Interval(low, low));
+                this->admm_fp_data->x_box->set_element(i, Interval(low, low));
             }
         }
 
@@ -232,7 +232,7 @@ namespace ZonoOpt::detail
                 // copies over matrix factorization
                 for (int i = this->data.idx_b.first; i < this->data.idx_b.first + this->data.idx_b.second; i++)
                 {
-                    convex_node_data->x_box->element_assign(i, Interval(sol.z(i), sol.z(i)));
+                    convex_node_data->x_box->set_element(i, Interval(sol.z(i), sol.z(i)));
                 }
                 convex_node_data->settings.eps_prim = this->data.admm_data->settings.eps_prim; // strengthen tolerances
                 convex_node_data->settings.eps_dual = this->data.admm_data->settings.eps_dual; // strengthen tolerances
@@ -549,7 +549,7 @@ namespace ZonoOpt::detail
                 // copies over matrix factorization
                 for (int i = this->data.idx_b.first; i < this->data.idx_b.first + this->data.idx_b.second; i++)
                 {
-                    convex_node_data->x_box->element_assign(i, Interval(sol.z(i), sol.z(i)));
+                    convex_node_data->x_box->set_element(i, Interval(sol.z(i), sol.z(i)));
                 }
                 convex_node_data->settings.eps_prim = this->data.admm_data->settings.eps_prim; // strengthen tolerances
                 convex_node_data->settings.eps_dual = this->data.admm_data->settings.eps_dual; // strengthen tolerances

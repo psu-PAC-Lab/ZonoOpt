@@ -225,7 +225,7 @@ namespace ZonoOpt::detail
         bool fix_bound(int ind, const zono_float val)
         {
             // update bounds
-            this->x_box.element_assign(ind, Interval(val, val));
+            this->x_box.set_element(ind, Interval(val, val));
 
             // run contractor
             const bool contractor_feasible = this->startup(this->x_box, this->solution, {ind});
