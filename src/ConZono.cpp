@@ -391,10 +391,10 @@ namespace ZonoOpt
                 for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it_k(A_rm, i); it_k; ++it_k)
                 {
                     if (it_j.col() == it_k.col()) continue;
-                    y = y - E.get_element(it_k.col())*(it_k.value()/a_ij);
+                    y = y - E.get_element(static_cast<int>(it_k.col()))*(it_k.value()/a_ij);
                 }
-                R.set_element(it_j.col(), R.get_element(it_j.col()).intersect(y));
-                E.set_element(it_j.col(), E.get_element(it_j.col()).intersect(R.get_element(it_j.col())));
+                R.set_element(static_cast<int>(it_j.col()), R.get_element(static_cast<int>(it_j.col())).intersect(y));
+                E.set_element(static_cast<int>(it_j.col()), E.get_element(static_cast<int>(it_j.col())).intersect(R.get_element(static_cast<int>(it_j.col()))));
             }
         }
 

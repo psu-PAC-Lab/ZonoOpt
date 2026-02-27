@@ -91,7 +91,7 @@ namespace ZonoOpt
     zono_float Box::width() const
     {
         zono_float w = 0;
-        for (Eigen::Index i = 0; i < x_lb.size(); i++)
+        for (int i = 0; i < x_lb.size(); i++)
         {
             w = std::max(w, this->get_element(i).width());
         }
@@ -101,7 +101,7 @@ namespace ZonoOpt
     Eigen::Vector<zono_float, -1> Box::center() const
     {
         Eigen::Vector<zono_float, -1> c(this->size());
-        for (Eigen::Index i = 0; i < static_cast<Eigen::Index>(this->size()); i++)
+        for (int i = 0; i < static_cast<int>(this->size()); i++)
         {
             c(i) = get_element(i).center();
         }
@@ -111,7 +111,7 @@ namespace ZonoOpt
     Box Box::radius() const
     {
         Box out(this->size());
-        for (Eigen::Index i = 0; i < static_cast<Eigen::Index>(this->size()); i++)
+        for (int i = 0; i < static_cast<int>(this->size()); i++)
         {
             out.set_element(i, get_element(i).radius());
         }
@@ -123,7 +123,7 @@ namespace ZonoOpt
         if (this->size() != other.size())
             throw std::invalid_argument("Box addition: inconsistent dimensions");
         Box out = *this;
-        for (size_t i = 0; i < this->size(); ++i)
+        for (int i = 0; i < static_cast<int>(this->size()); ++i)
         {
             out.set_element(i, get_element(i) + other.get_element(i));
         }
@@ -135,7 +135,7 @@ namespace ZonoOpt
         if (this->size() != other.size())
             throw std::invalid_argument("Box subtraction: inconsistent dimensions");
         Box out = *this;
-        for (size_t i = 0; i < this->size(); ++i)
+        for (int i = 0; i < static_cast<int>(this->size()); ++i)
         {
             out.set_element(i, this->get_element(i) - other.get_element(i));
         }
@@ -147,7 +147,7 @@ namespace ZonoOpt
         if (this->size() != other.size())
             throw std::invalid_argument("Box multiplication: inconsistent dimensions");
         Box out = *this;
-        for (size_t i = 0; i < this->size(); ++i)
+        for (int i = 0; i < static_cast<int>(this->size()); ++i)
         {
             out.set_element(i, this->get_element(i) * other.get_element(i));
         }
@@ -157,7 +157,7 @@ namespace ZonoOpt
     Box Box::operator*(zono_float alpha) const
     {
         Box out = *this;
-        for (size_t i = 0; i < this->size(); ++i)
+        for (int i = 0; i < static_cast<int>(this->size()); ++i)
         {
             out.set_element(i, this->get_element(i) * alpha);
         }
@@ -169,7 +169,7 @@ namespace ZonoOpt
         if (this->size() != other.size())
             throw std::invalid_argument("Box division: inconsistent dimensions");
         Box out = *this;
-        for (size_t i = 0; i < this->size(); ++i)
+        for (int i = 0; i < static_cast<int>(this->size()); ++i)
         {
             out.set_element(i, this->get_element(i) / other.get_element(i));
         }
@@ -248,7 +248,7 @@ namespace ZonoOpt
             y.set_element(i, Interval(0, 0));
             for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(A, i); it; ++it)
             {
-                y.set_element(i, y.get_element(i) + this->get_element(it.col())*it.value());
+                y.set_element(i, y.get_element(i) + this->get_element(static_cast<int>(it.col()))*it.value());
             }
         }
         return y;
@@ -279,7 +279,7 @@ namespace ZonoOpt
     {
         std::stringstream ss;
         ss << "Box: " << std::endl;
-        for (Eigen::Index i = 0; i < x_lb.size(); i++)
+        for (int i = 0; i < static_cast<int>(x_lb.size()); i++)
         {
             ss << "  " << this->get_element(i) << std::endl;
         }
@@ -330,8 +330,8 @@ namespace ZonoOpt
         return true; // constraints valid
     }
 
-    void Box::contract_backward(const Eigen::SparseMatrix<double, Eigen::RowMajor>& A,
-                                const Eigen::Vector<double, -1>& b, const std::set<int>& constraints)
+    void Box::contract_backward(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A,
+                                const Eigen::Vector<zono_float, -1>& b, const std::set<int>& constraints)
     {
         // loop through constraints
         for (const int k : constraints)
@@ -644,7 +644,7 @@ namespace ZonoOpt
             y.set_element(i, Interval(0, 0));
             for (const auto& [j, val] : this->mat_[i])
             {
-                y.set_element(i, y.get_element(i) + (box.get_element(j) * val));
+                y.set_element(i, y.get_element(i) + (box.get_element(static_cast<int>(j)) * val));
             }
         }
         return y;
