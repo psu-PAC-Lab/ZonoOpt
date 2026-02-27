@@ -15,17 +15,13 @@ if(ZONOOPT_INSTALL OR "$ENV{CIBUILDWHEEL}" STREQUAL "1")
 endif()
 message(STATUS "ZONOOPT_USE_NATIVE set to: ${ZONOOPT_USE_NATIVE}")
 
-option(ZONOOPT_BUILD_TESTING "Build tests" ON)
-if (ZONOOPT_BUILD_PYTHON_BINDINGS)
-    set(ZONOOPT_BUILD_TESTING OFF CACHE BOOL "Disable testing when building Python bindings" FORCE)
-endif()
-message(STATUS "ZONOOPT_BUILD_TESTING set to: ${ZONOOPT_BUILD_TESTING}")
-
 set(ZONO_FLOAT "double" CACHE STRING "The underlying floating-point type for ZonoOpt library.")
 message(STATUS "ZONO_FLOAT set to: ${ZONO_FLOAT}")
 
 set(ZONO_EPS "1e-12" CACHE STRING "Numerical precision for floating point comparisons in ZonoOpt.")
 message(STATUS "ZONO_EPS set to: ${ZONO_EPS}")
+
+
 
 # project name
 if (ZONOOPT_BUILD_PYTHON_BINDINGS)
@@ -45,6 +41,8 @@ else()
     )
     set(TARGET_VAR ZonoOpt)
 endif()
+
+include(CTest)
 
 # Eigen dependency
 include(FetchContent)
@@ -195,7 +193,7 @@ if (ZONOOPT_USE_NATIVE)
 endif()
 
 # testing
-if (ZONOOPT_BUILD_TESTING)
+if (BUILD_TESTING)
     enable_testing()
     add_subdirectory(test)
 endif()
