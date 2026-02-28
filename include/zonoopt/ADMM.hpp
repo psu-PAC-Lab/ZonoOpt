@@ -42,11 +42,16 @@ namespace ZonoOpt
 {
     /**
      * @brief Warm start parameters for optimization routines in ZonoOpt library.
-     *
+     * 
+     * This specifically contains primal and dual variables for ADMM warm-starting.
      */
     struct WarmStartParams
     {
-        Eigen::Vector<zono_float, -1> z, u;
+        /// primal variable
+        Eigen::Vector<zono_float, -1> z;
+
+        /// dual variable
+        Eigen::Vector<zono_float, -1> u;
     };
 
     namespace detail

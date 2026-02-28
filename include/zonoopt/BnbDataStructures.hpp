@@ -1,8 +1,8 @@
-#ifndef ZONOOPT_MI_DATA_STRUCTURES_
-#define ZONOOPT_MI_DATA_STRUCTURES_
+#ifndef ZONOOPT_BNB_DATA_STRUCTURES_
+#define ZONOOPT_BNB_DATA_STRUCTURES_
 
 /**
- * @file MI_DataStructures.hpp
+ * @file BnbDataStructures.hpp
  * @author Josh Robbins (jrobbins@psu.edu)
  * @brief Data structures for mixed-integer optimization in ZonoOpt library.
  * @version 1.0

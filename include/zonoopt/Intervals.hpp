@@ -20,19 +20,22 @@
 #include <cmath>
 #include <boost/numeric/interval.hpp>
 
-// need this to get inverse hyperbolics to compile with MSVC
-template<class T>
-struct rounded_transc_fixed : boost::numeric::interval_lib::rounded_transc_std<T> {
-    static T asinh_down(const T& x) { using std::asinh; return asinh(x); }
-    static T asinh_up  (const T& x) { using std::asinh; return asinh(x); }
-    static T acosh_down(const T& x) { using std::acosh; return acosh(x); }
-    static T acosh_up  (const T& x) { using std::acosh; return acosh(x); }
-    static T atanh_down(const T& x) { using std::atanh; return atanh(x); }
-    static T atanh_up  (const T& x) { using std::atanh; return atanh(x); }
-};
-
 namespace ZonoOpt
 {
+    namespace detail
+    {
+        // need this to get inverse hyperbolics to compile with MSVC
+        template<class T>
+        struct rounded_transc_fixed : boost::numeric::interval_lib::rounded_transc_std<T> {
+            static T asinh_down(const T& x) { using std::asinh; return asinh(x); }
+            static T asinh_up  (const T& x) { using std::asinh; return asinh(x); }
+            static T acosh_down(const T& x) { using std::acosh; return acosh(x); }
+            static T acosh_up  (const T& x) { using std::acosh; return acosh(x); }
+            static T atanh_down(const T& x) { using std::atanh; return atanh(x); }
+            static T atanh_up  (const T& x) { using std::atanh; return atanh(x); }
+        };
+    }
+
     using namespace detail;
 
 
@@ -88,7 +91,7 @@ namespace ZonoOpt
         /**
          * @brief Interval addition
          * @param other other interval
-         * @return this + other
+         * @return enclosure of this + other
          */
         Interval operator+(const Interval& other) const
         {
@@ -99,7 +102,7 @@ namespace ZonoOpt
          * @brief Interval addition with scalar
          *
          * @param alpha scalar
-         * @return this + alpha
+         * @return enclosure of this + alpha
          */
         Interval operator+(const zono_float alpha) const
         {
@@ -109,7 +112,7 @@ namespace ZonoOpt
         /**
          * @brief Interval subtraction
          * @param other other interval
-         * @return this - other
+         * @return enclosure of this - other
          */
         Interval operator-(const Interval& other) const
         {
@@ -120,7 +123,7 @@ namespace ZonoOpt
          * @brief Interval subtraction with scalar
          *
          * @param alpha scalar
-         * @return this - alpha
+         * @return enclosure of this - alpha
          */
         Interval operator-(const zono_float alpha) const
         {
@@ -130,7 +133,7 @@ namespace ZonoOpt
         /**
          * @brief Interval multiplication
          * @param other other interval
-         * @return this * other
+         * @return enclosure of this * other
          */
         Interval operator*(const Interval& other) const
         {
@@ -141,7 +144,7 @@ namespace ZonoOpt
          * @brief Interval multiplication with scalar
          *
          * @param alpha scalar
-         * @return this * alpha
+         * @return enclosure of this * alpha
          */
         Interval operator*(const zono_float alpha) const
         {
@@ -151,7 +154,7 @@ namespace ZonoOpt
         /**
          * @brief Interval division
          * @param other other interval
-         * @return this / other
+         * @return enclosure of this / other
          */
         Interval operator/(const Interval& other) const
         {
@@ -162,7 +165,7 @@ namespace ZonoOpt
          * @brief Interval division with scalar
          *
          * @param alpha scalar
-         * @return this / alpha
+         * @return enclosure of this / alpha
          */
         Interval operator/(const zono_float alpha) const
         {
@@ -171,7 +174,7 @@ namespace ZonoOpt
 
         /**
          * @brief Interval inverse
-         * @return inverse of this
+         * @return enclosure of inverse
          */
         Interval inv() const
         {
@@ -249,7 +252,7 @@ namespace ZonoOpt
 
         /**
          * @brief Get absolute value of interval
-         * @return |this|
+         * @return enclosure of |this|
          */
         Interval abs() const
         {
@@ -258,7 +261,7 @@ namespace ZonoOpt
 
         /**
          * @brief Get square root of interval
-         * @return sqrt(this)
+         * @return enclosure of sqrt(this)
          */
         Interval sqrt() const
         {
@@ -269,7 +272,7 @@ namespace ZonoOpt
          * @brief Interval power
          *
          * @param n power
-         * @return this^n
+         * @return enclosure of this^n
          */
         Interval pow(const int n) const
         {
@@ -279,7 +282,7 @@ namespace ZonoOpt
         /**
          * @brief Interval nth root
          * @param n nth root
-         * @return root_n(this)
+         * @return enclosure of root_n(this)
          */
         Interval nth_root(const int n) const
         {
@@ -288,7 +291,7 @@ namespace ZonoOpt
 
         /**
          * @brief Compute interval containing exp(x) for all x in interval
-         * @return interval containing exp(x)
+         * @return enclosure of exp(x)
          */
         Interval exp() const
         {
@@ -297,7 +300,7 @@ namespace ZonoOpt
 
         /**
          * @brief Compute interval containing log(x) (base e) for all x in interval
-         * @return interval containing log(x)
+         * @return enclosure of log(x)
          */
         Interval log() const
         {
@@ -306,7 +309,7 @@ namespace ZonoOpt
 
         /**
          * @brief Compute interval containing sin(x) for all x in interval
-         * @return interval containing sin(x)
+         * @return enclosure of sin(x)
          */
         Interval sin() const
         {
@@ -315,7 +318,7 @@ namespace ZonoOpt
 
         /**
          * @brief Compute interval containing cos(x) for all x in interval
-         * @return interval containing cos(x)
+         * @return enclosure of cos(x)
          */
         Interval cos() const
         {
@@ -324,7 +327,7 @@ namespace ZonoOpt
 
         /**
          * @brief Compute interval containing tan(x) for all x in interval
-         * @return interval containing tan(x)
+         * @return enclosure of tan(x)
          */
         Interval tan() const
         {
@@ -333,7 +336,7 @@ namespace ZonoOpt
 
         /**
          * @brief Compute interval containing arcsin(x) for all x in interval
-         * @return interval containing arcsin(x)
+         * @return enclosure of arcsin(x)
          */
         Interval arcsin() const
         {
@@ -342,7 +345,7 @@ namespace ZonoOpt
 
         /**
          * @brief Compute interval containing arccos(x) for all x in interval
-         * @return interval containing arccos(x)
+         * @return enclosure of arccos(x)
          */
         Interval arccos() const
         {
@@ -351,7 +354,7 @@ namespace ZonoOpt
 
         /**
          * @brief Compute interval containing arctan(x) for all x in interval
-         * @return interval containing arctan(x)
+         * @return enclosure of arctan(x)
          */
         Interval arctan() const
         {
@@ -360,7 +363,7 @@ namespace ZonoOpt
 
         /**
          * @brief Compute interval containing sinh(x) for all x in interval
-         * @return interval containing sinh(x)
+         * @return enclosure of sinh(x)
          */
         Interval sinh() const
         {
@@ -369,7 +372,7 @@ namespace ZonoOpt
 
         /**
          * @brief Compute interval containing cosh(x) for all x in interval
-         * @return interval containing cosh(x)
+         * @return enclosure of cosh(x)
          */
         Interval cosh() const
         {
@@ -378,7 +381,7 @@ namespace ZonoOpt
 
         /**
          * @brief Compute interval containing tanh(x) for all x in interval
-         * @return interval containing tanh(x)
+         * @return enclosure of tanh(x)
          */
         Interval tanh() const
         {
@@ -387,7 +390,7 @@ namespace ZonoOpt
 
         /**
          * @brief Compute interval containing arcsinh(x) for all x in interval
-         * @return interval containing arcsinh(x)
+         * @return enclosure of arcsinh(x)
          */
         Interval arcsinh() const
         {
@@ -396,7 +399,7 @@ namespace ZonoOpt
 
         /**
          * @brief Compute interval containing arccosh(x) for all x in interval
-         * @return interval containing arccosh(x)
+         * @return enclosure of arccosh(x)
          */
         Interval arccosh() const
         {
@@ -405,7 +408,7 @@ namespace ZonoOpt
 
         /**
          * @brief Compute interval containing arctanh(x) for all x in interval
-         * @return interval containing arctanh(x)
+         * @return enclosure of arctanh(x)
          */
         Interval arctanh() const
         {
@@ -524,7 +527,7 @@ namespace ZonoOpt
         void set_element(int i, const Interval& val);
 
         /**
-         * @brief get size of Box object
+         * @brief Get size of Box object
          * @return size of box
          */
         size_t size() const;
@@ -566,7 +569,7 @@ namespace ZonoOpt
         zono_float width() const;
 
         /**
-         * @brief get radius of box
+         * @brief Get radius of box
          * @return radius of box
          *
          * Returns box with intervals centered at zero with width equal to the width of the original box
@@ -574,7 +577,7 @@ namespace ZonoOpt
         Box radius() const;
 
         /**
-         * @brief get center of box
+         * @brief Get center of box
          * @return center of box
          */
         Eigen::Vector<zono_float, -1> center() const;
@@ -582,37 +585,37 @@ namespace ZonoOpt
         // operator overloading
 
         /**
-         * @brief elementwise addition
+         * @brief Elementwise addition
          * @param other rhs box
-         * @return this + other (elementwise)
+         * @return enclosure of this + other (elementwise)
          */
         Box operator+(const Box& other) const;
 
         /**
-         * @brief elementwise subtraction
+         * @brief Elementwise subtraction
          * @param other rhs box
-         * @return this - other (elementwise)
+         * @return enclosure of this - other (elementwise)
          */
         Box operator-(const Box& other) const;
 
         /**
-         * @brief elementwise multiplication
+         * @brief Elementwise multiplication
          * @param other rhs box
-         * @return this * other (elementwise)
+         * @return enclosure of this * other (elementwise)
          */
         Box operator*(const Box& other) const;
 
         /**
-         * @brief elementwise multiplication with scalar
+         * @brief Elementwise multiplication with scalar
          * @param alpha scalar multiplier
-         * @return alpha * this (elementwise)
+         * @return enclosure of alpha * this (elementwise)
          */
         Box operator*(zono_float alpha) const;
 
         /**
-         * @brief elementwise division
+         * @brief Elementwise division
          * @param other rhs box
-         * @return this / other (elementwise)
+         * @return enclosure of this / other (elementwise)
          */
         Box operator/(const Box& other) const;
 

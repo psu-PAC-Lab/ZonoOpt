@@ -1,10 +1,10 @@
-#ifndef ZONOOPT_MI_SOLVER_
-#define ZONOOPT_MI_SOLVER_
+#ifndef ZONOOPT_BRANCH_AND_BOUND_
+#define ZONOOPT_BRANCH_AND_BOUND_
 
 /**
- * @file MI_Solver.hpp
+ * @file BranchAndBound.hpp
  * @author Josh Robbins (jrobbins@psu.edu)
- * @brief Internal mixed-integer optimization routines for ZonoOpt library.
+ * @brief Internal branch-and-bound routines for ZonoOpt library.
  * @version 1.0
  * @date 2025-06-04
  * 
