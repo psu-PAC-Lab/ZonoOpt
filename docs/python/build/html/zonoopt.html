@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ZonoOpt Module &mdash; zonoopt 2.0.1 documentation</title>
+  <title>ZonoOpt Module &mdash; zonoopt 2.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=f5cff4aa"></script>
+      <script src="_static/documentation_options.js?v=20623aea"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -138,6 +138,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#zonoopt.Interval"><code class="docutils literal notranslate"><span class="pre">Interval</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.__add__"><code class="docutils literal notranslate"><span class="pre">Interval.__add__()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.__mul__"><code class="docutils literal notranslate"><span class="pre">Interval.__mul__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.__pow__"><code class="docutils literal notranslate"><span class="pre">Interval.__pow__()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.__sub__"><code class="docutils literal notranslate"><span class="pre">Interval.__sub__()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.__truediv__"><code class="docutils literal notranslate"><span class="pre">Interval.__truediv__()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.abs"><code class="docutils literal notranslate"><span class="pre">Interval.abs()</span></code></a></li>
@@ -368,7 +369,7 @@ Robbins, J.A., Siefert, J.A., and Pangborn, H.C., “Sparsity-Promoting Reachabi
 <dl class="simple">
 <dt>Args:</dt><dd><p>other (Box): rhs box</p>
 </dd>
-<dt>Returns:</dt><dd><p>Box: self * other (elementwise)</p>
+<dt>Returns:</dt><dd><p>Box: enclosure of self * other (elementwise)</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -379,7 +380,7 @@ Robbins, J.A., Siefert, J.A., and Pangborn, H.C., “Sparsity-Promoting Reachabi
 <dl class="simple">
 <dt>Args:</dt><dd><p>alpha (float): scalar multiplier</p>
 </dd>
-<dt>Returns:</dt><dd><p>Box: alpha * self (elementwise)</p>
+<dt>Returns:</dt><dd><p>Box: enclosure of alpha * self (elementwise)</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -410,7 +411,7 @@ Robbins, J.A., Siefert, J.A., and Pangborn, H.C., “Sparsity-Promoting Reachabi
 <dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box"><em>Box</em></a>) – rhs box</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>self - other (elementwise)</p>
+<dd class="field-even"><p>enclosure of self - other (elementwise)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box">Box</a></p>
@@ -427,7 +428,7 @@ Robbins, J.A., Siefert, J.A., and Pangborn, H.C., “Sparsity-Promoting Reachabi
 <dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box"><em>Box</em></a>) – rhs box</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>self / other (elementwise)</p>
+<dd class="field-even"><p>enclosure of self / other (elementwise)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box">Box</a></p>
@@ -441,7 +442,7 @@ Robbins, J.A., Siefert, J.A., and Pangborn, H.C., “Sparsity-Promoting Reachabi
 <dd><p>Gets center of box (x_ub + x_lb) / 2</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>center of interval</p>
+<dd class="field-odd"><p>center of box</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>numpy.array</p>
@@ -721,7 +722,7 @@ The set dimension is n, and the number of equality constraints is nC.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.HybZono.bounding_box">
-<span class="sig-name descname"><span class="pre">bounding_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7a8f51f56af0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></span><a class="headerlink" href="#zonoopt.HybZono.bounding_box" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">bounding_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x716f4e2ffaf0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></span><a class="headerlink" href="#zonoopt.HybZono.bounding_box" title="Link to this definition"></a></dt>
 <dd><p>Computes a bounding box of the set object as a Box object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -772,7 +773,7 @@ X = {G xi + c | A xi = b, xi in [-1-delta_m, 1+delta+m]^{nG}}.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.HybZono.contains_point">
-<span class="sig-name descname"><span class="pre">contains_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">x:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7a8f51ee6b30&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#zonoopt.HybZono.contains_point" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">contains_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">x:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x716f4e30a070&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#zonoopt.HybZono.contains_point" title="Link to this definition"></a></dt>
 <dd><p>Checks whether the point x is contained in the set object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1077,7 +1078,7 @@ for ADMM-FP, these will instead be used for branch and bound search.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.HybZono.is_empty">
-<span class="sig-name descname"><span class="pre">is_empty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7a8f51f46470&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#zonoopt.HybZono.is_empty" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">is_empty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x716f4e309ab0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#zonoopt.HybZono.is_empty" title="Link to this definition"></a></dt>
 <dd><p>Returns true if the set is provably empty, false otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1168,7 +1169,7 @@ for ADMM-FP, these will instead be used for branch and bound search.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.HybZono.optimize_over">
-<span class="sig-name descname"><span class="pre">optimize_over</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">P:</span> <span class="pre">scipy.sparse.csc_matrix[numpy.float64],</span> <span class="pre">q:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">c:</span> <span class="pre">typing.SupportsFloat</span> <span class="pre">|</span> <span class="pre">typing.SupportsIndex</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7a8f52099630&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'[m,</span> <span class="pre">1]'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#zonoopt.HybZono.optimize_over" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">optimize_over</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">P:</span> <span class="pre">scipy.sparse.csc_matrix[numpy.float64],</span> <span class="pre">q:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">c:</span> <span class="pre">typing.SupportsFloat</span> <span class="pre">|</span> <span class="pre">typing.SupportsIndex</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x716f4e2fccf0&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'[m,</span> <span class="pre">1]'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#zonoopt.HybZono.optimize_over" title="Link to this definition"></a></dt>
 <dd><p>Solves optimization problem with quadratic objective over the current set</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1193,7 +1194,7 @@ for ADMM-FP, these will instead be used for branch and bound search.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.HybZono.project_point">
-<span class="sig-name descname"><span class="pre">project_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">x:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7a8f51f46230&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'[m,</span> <span class="pre">1]'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#zonoopt.HybZono.project_point" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">project_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">x:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x716f4fab1730&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'[m,</span> <span class="pre">1]'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#zonoopt.HybZono.project_point" title="Link to this definition"></a></dt>
 <dd><p>Returns the projection of the point x onto the set object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1257,7 +1258,7 @@ Unused factors are also removed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.HybZono.support">
-<span class="sig-name descname"><span class="pre">support</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">d:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7a8f51f56730&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#zonoopt.HybZono.support" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">support</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">d:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x716f4e309e30&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#zonoopt.HybZono.support" title="Link to this definition"></a></dt>
 <dd><p>Computes support function of the set in the direction d.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1501,7 +1502,7 @@ Unused factors are also removed.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>other (Interval): rhs interval</p>
 </dd>
-<dt>Returns:</dt><dd><p>Interval: self + other</p>
+<dt>Returns:</dt><dd><p>Interval: enclosure of self + other</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -1512,7 +1513,7 @@ Unused factors are also removed.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>alpha (float): scalar to add</p>
 </dd>
-<dt>Returns:</dt><dd><p>Interval: self + alpha</p>
+<dt>Returns:</dt><dd><p>Interval: enclosure of self + alpha</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -1531,7 +1532,7 @@ Unused factors are also removed.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>other (Interval): rhs interval</p>
 </dd>
-<dt>Returns:</dt><dd><p>Interval: self * other</p>
+<dt>Returns:</dt><dd><p>Interval: enclosure of self * other</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -1542,12 +1543,29 @@ Unused factors are also removed.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>alpha (float): scalar multiplier</p>
 </dd>
-<dt>Returns:</dt><dd><p>Interval: alpha * self</p>
+<dt>Returns:</dt><dd><p>Interval: enclosure of alpha * self</p>
 </dd>
 </dl>
 </div></blockquote>
 </li>
 </ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.Interval.__pow__">
+<span class="sig-name descname"><span class="pre">__pow__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsInt</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsIndex</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a></span></span><a class="headerlink" href="#zonoopt.Interval.__pow__" title="Link to this definition"></a></dt>
+<dd><p>Interval power</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>n</strong> (<em>int</em>) – exponent</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>enclosure of self^n</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1561,7 +1579,7 @@ Unused factors are also removed.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>other (Interval): rhs interval</p>
 </dd>
-<dt>Returns:</dt><dd><p>Interval: self - other</p>
+<dt>Returns:</dt><dd><p>Interval: enclosure of self - other</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -1572,7 +1590,7 @@ Unused factors are also removed.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>alpha (float): scalar to subtract</p>
 </dd>
-<dt>Returns:</dt><dd><p>Interval: self - alpha</p>
+<dt>Returns:</dt><dd><p>Interval: enclosure of self - alpha</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -1591,7 +1609,7 @@ Unused factors are also removed.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>alpha (float): scalar divisor</p>
 </dd>
-<dt>Returns:</dt><dd><p>Interval: self / alpha</p>
+<dt>Returns:</dt><dd><p>Interval: enclosure of self / alpha</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -1602,7 +1620,7 @@ Unused factors are also removed.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>other (Interval): rhs interval</p>
 </dd>
-<dt>Returns:</dt><dd><p>Interval: self / other</p>
+<dt>Returns:</dt><dd><p>Interval: enclosure of self / other</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -1616,7 +1634,7 @@ Unused factors are also removed.</p>
 <dd><p>Absolute value of interval</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a href="#id1"><span class="problematic" id="id2">|self|</span></a></p>
+<dd class="field-odd"><p>enclosure of abs(self)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
@@ -1630,7 +1648,7 @@ Unused factors are also removed.</p>
 <dd><p>Compute interval containing arccos(x) for all x in interval</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>interval containing arccos(x)</p>
+<dd class="field-odd"><p>enclosure of interval containing arccos(x)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
@@ -1644,7 +1662,7 @@ Unused factors are also removed.</p>
 <dd><p>Compute interval containing arccosh(x) for all x in interval</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>interval containing arccosh(x)</p>
+<dd class="field-odd"><p>enclosure of interval containing arccosh(x)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
@@ -1658,7 +1676,7 @@ Unused factors are also removed.</p>
 <dd><p>Compute interval containing arcsin(x) for all x in interval</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>interval containing arcsin(x)</p>
+<dd class="field-odd"><p>enclosure of interval containing arcsin(x)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
@@ -1672,7 +1690,7 @@ Unused factors are also removed.</p>
 <dd><p>Compute interval containing arcsinh(x) for all x in interval</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>interval containing arcsinh(x)</p>
+<dd class="field-odd"><p>enclosure of interval containing arcsinh(x)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
@@ -1686,7 +1704,7 @@ Unused factors are also removed.</p>
 <dd><p>Compute interval containing arctan(x) for all x in interval</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>interval containing arctan(x)</p>
+<dd class="field-odd"><p>enclosure of interval containing arctan(x)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
@@ -1700,7 +1718,7 @@ Unused factors are also removed.</p>
 <dd><p>Compute interval containing arctanh(x) for all x in interval</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>interval containing arctanh(x)</p>
+<dd class="field-odd"><p>enclosure of interval containing arctanh(x)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
@@ -1759,7 +1777,7 @@ Unused factors are also removed.</p>
 <dd><p>Compute interval containing cos(x) for all x in interval</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>interval containing cos(x)</p>
+<dd class="field-odd"><p>enclosure of interval containing cos(x)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
@@ -1773,7 +1791,7 @@ Unused factors are also removed.</p>
 <dd><p>Compute interval containing cosh(x) for all x in interval</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>interval containing cosh(x)</p>
+<dd class="field-odd"><p>enclosure of interval containing cosh(x)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
@@ -1787,7 +1805,7 @@ Unused factors are also removed.</p>
 <dd><p>Compute interval containing exp(x) for all x in interval</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>interval containing exp(x)</p>
+<dd class="field-odd"><p>enclosure of interval containing exp(x)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
@@ -1818,7 +1836,7 @@ Unused factors are also removed.</p>
 <dd><p>Interval inverse</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>inverse of self</p>
+<dd class="field-odd"><p>enclosure of inverse</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
@@ -1846,7 +1864,7 @@ Unused factors are also removed.</p>
 <dd><p>Checks whether interval is single-valued (i.e., width is 0 within numerical tolerance)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>flag indicating if interval is single-value</p>
+<dd class="field-odd"><p>flag indicating if interval is single-valued</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>bool</p>
@@ -1874,7 +1892,7 @@ Unused factors are also removed.</p>
 <dd><p>Compute interval containing log(x) (base e) for all x in interval</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>interval containing log(x)</p>
+<dd class="field-odd"><p>enclosure of interval containing log(x)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
@@ -1891,7 +1909,7 @@ Unused factors are also removed.</p>
 <dd class="field-odd"><p><strong>n</strong> (<em>int</em>) – root</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>root_n(self)</p>
+<dd class="field-even"><p>enclosure of root_n(self)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
@@ -1920,7 +1938,7 @@ Unused factors are also removed.</p>
 <dd><p>Compute interval containing sin(x) for all x in interval</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>interval containing sin(x)</p>
+<dd class="field-odd"><p>enclosure of interval containing sin(x)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
@@ -1934,7 +1952,7 @@ Unused factors are also removed.</p>
 <dd><p>Compute interval containing sinh(x) for all x in interval</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>interval containing sinh(x)</p>
+<dd class="field-odd"><p>enclosure of interval containing sinh(x)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
@@ -1948,7 +1966,7 @@ Unused factors are also removed.</p>
 <dd><p>Interval square root</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>sqrt(self)</p>
+<dd class="field-odd"><p>enclosure of sqrt(self)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
@@ -1962,7 +1980,7 @@ Unused factors are also removed.</p>
 <dd><p>Compute interval containing tan(x) for all x in interval</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>interval containing tan(x)</p>
+<dd class="field-odd"><p>enclosure of interval containing tan(x)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
@@ -1976,7 +1994,7 @@ Unused factors are also removed.</p>
 <dd><p>Compute interval containing tanh(x) for all x in interval</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>interval containing tanh(x)</p>
+<dd class="field-odd"><p>enclosure of interval containing tanh(x)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
@@ -2566,6 +2584,7 @@ Unused factors are also removed.</p>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zonoopt.</span></span><span class="sig-name descname"><span class="pre">WarmStartParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.WarmStartParams" title="zonoopt._core.WarmStartParams"><span class="pre">zonoopt._core.WarmStartParams</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.WarmStartParams" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Warm start parameters for optimization routines in ZonoOpt library.</p>
+<p>This specifically contains primal and dual variables for ADMM warm-starting.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.WarmStartParams.copy">
 <span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.WarmStartParams" title="zonoopt._core.WarmStartParams"><span class="pre">zonoopt._core.WarmStartParams</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.WarmStartParams" title="zonoopt._core.WarmStartParams"><span class="pre">zonoopt._core.WarmStartParams</span></a></span></span><a class="headerlink" href="#zonoopt.WarmStartParams.copy" title="Link to this definition"></a></dt>
@@ -2583,13 +2602,13 @@ Unused factors are also removed.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="zonoopt.WarmStartParams.u">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">u</span></span><a class="headerlink" href="#zonoopt.WarmStartParams.u" title="Link to this definition"></a></dt>
-<dd><p>warm start dual variable</p>
+<dd><p>dual variable</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="zonoopt.WarmStartParams.z">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z</span></span><a class="headerlink" href="#zonoopt.WarmStartParams.z" title="Link to this definition"></a></dt>
-<dd><p>warm start primal variable</p>
+<dd><p>primal variable</p>
 </dd></dl>
 
 </dd></dl>

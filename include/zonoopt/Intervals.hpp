@@ -252,7 +252,7 @@ namespace ZonoOpt
 
         /**
          * @brief Get absolute value of interval
-         * @return enclosure of |this|
+         * @return enclosure of abs(this)
          */
         Interval abs() const
         {

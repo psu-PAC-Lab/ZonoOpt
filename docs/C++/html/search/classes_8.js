@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['rounded_5ftransc_5ffixed_0',['rounded_transc_fixed',['../structrounded__transc__fixed.html',1,'']]]
+  ['warmstartparams_0',['WarmStartParams',['../structZonoOpt_1_1WarmStartParams.html',1,'ZonoOpt']]]
 ];

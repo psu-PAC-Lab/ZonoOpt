@@ -296,7 +296,7 @@ PYBIND11_MODULE(_core, m)
                 Absolute value of interval
 
                 Returns:
-                    Interval: enclosure of |self|
+                    Interval: enclosure of abs(self)
             )pbdoc")
         .def("inv", &Interval::inv,
             R"pbdoc(
