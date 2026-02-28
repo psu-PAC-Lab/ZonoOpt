@@ -32,7 +32,7 @@ class Box:
                         Gets center of box (x_ub + x_lb) / 2
 
                         Returns:
-                            numpy.array: center of interval
+                            numpy.array: center of box
             
         '''
     def contract(self, A: scipy.sparse.csr_matrix[numpy.float64], b: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], iter: typing.SupportsInt | typing.SupportsIndex) -> bool:
@@ -205,7 +205,7 @@ class Box:
                             other (Box): rhs box
 
                         Returns:
-                            Box: self * other (elementwise)
+                            Box: enclosure of self * other (elementwise)
             
 
         2. __mul__(self: zonoopt._core.Box, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
@@ -217,7 +217,7 @@ class Box:
                             alpha (float): scalar multiplier
 
                         Returns:
-                            Box: alpha * self (elementwise)
+                            Box: enclosure of alpha * self (elementwise)
             
         """
     @overload
@@ -234,7 +234,7 @@ class Box:
                             other (Box): rhs box
 
                         Returns:
-                            Box: self * other (elementwise)
+                            Box: enclosure of self * other (elementwise)
             
 
         2. __mul__(self: zonoopt._core.Box, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
@@ -246,7 +246,7 @@ class Box:
                             alpha (float): scalar multiplier
 
                         Returns:
-                            Box: alpha * self (elementwise)
+                            Box: enclosure of alpha * self (elementwise)
             
         """
     def __setitem__(self, i: typing.SupportsInt | typing.SupportsIndex, val: Interval) -> None:
@@ -270,7 +270,7 @@ class Box:
                             other (Box): rhs box
 
                         Returns:
-                            Box: self - other (elementwise)
+                            Box: enclosure of self - other (elementwise)
             
         """
     def __truediv__(self, other: Box) -> Box:
@@ -283,7 +283,7 @@ class Box:
                             other (Box): rhs box
 
                         Returns:
-                            Box: self / other (elementwise)
+                            Box: enclosure of self / other (elementwise)
             
         """
 
@@ -391,7 +391,7 @@ class HybZono:
             
         '''
     def bounding_box(self, settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> Box:
-        """bounding_box(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x74b97f9f77f0>) -> zonoopt._core.Box
+        """bounding_box(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x77976aec74f0>) -> zonoopt._core.Box
 
 
                         Computes a bounding box of the set object as a Box object.
@@ -432,7 +432,7 @@ class HybZono:
             
         '''
     def contains_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x74b97f9f7570>) -> bool
+        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x77976aec72b0>) -> bool
 
 
                         Checks whether the point x is contained in the set object.
@@ -659,7 +659,7 @@ class HybZono:
             
         """
     def is_empty(self, settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        """is_empty(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x74b97f9f6ff0>) -> bool
+        """is_empty(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x77976aec6df0>) -> bool
 
 
                         Returns true if the set is provably empty, false otherwise.
@@ -724,7 +724,7 @@ class HybZono:
             
         """
     def optimize_over(self, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], c: typing.SupportsFloat | typing.SupportsIndex = ..., settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x74b97f9f6b30>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x77976aec67f0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Solves optimization problem with quadratic objective over the current set
@@ -744,7 +744,7 @@ class HybZono:
             
         '''
     def project_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x74b9808958f0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x77976aec6af0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Returns the projection of the point x onto the set object.
@@ -796,7 +796,7 @@ class HybZono:
             
         '''
     def support(self, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> float:
-        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x74b97ff1f330>) -> float
+        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x77976da18d30>) -> float
 
 
                         Computes support function of the set in the direction d.
@@ -983,6 +983,7 @@ class Interval:
                             y_max (float): upper bound
             
         """
+    @overload
     def abs(self) -> Interval:
         """abs(self: zonoopt._core.Interval) -> zonoopt._core.Interval
 
@@ -990,7 +991,18 @@ class Interval:
                         Absolute value of interval
 
                         Returns:
-                            Interval: |self|
+                            Interval: enclosure of abs(self)
+            
+        """
+    @overload
+    def abs(self) -> Any:
+        """abs(self: zonoopt._core.Interval) -> zonoopt._core.Interval
+
+
+                        Absolute value of interval
+
+                        Returns:
+                            Interval: enclosure of abs(self)
             
         """
     @overload
@@ -1001,7 +1013,7 @@ class Interval:
                         Compute interval containing arccos(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing arccos(x)
+                            Interval: enclosure of interval containing arccos(x)
             
         """
     @overload
@@ -1012,7 +1024,7 @@ class Interval:
                         Compute interval containing arccos(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing arccos(x)
+                            Interval: enclosure of interval containing arccos(x)
             
         """
     @overload
@@ -1023,7 +1035,7 @@ class Interval:
                         Compute interval containing arccos(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing arccos(x)
+                            Interval: enclosure of interval containing arccos(x)
             
         """
     @overload
@@ -1034,7 +1046,7 @@ class Interval:
                         Compute interval containing arccosh(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing arccosh(x)
+                            Interval: enclosure of interval containing arccosh(x)
             
         """
     @overload
@@ -1045,7 +1057,7 @@ class Interval:
                         Compute interval containing arccosh(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing arccosh(x)
+                            Interval: enclosure of interval containing arccosh(x)
             
         """
     @overload
@@ -1056,7 +1068,7 @@ class Interval:
                         Compute interval containing arccosh(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing arccosh(x)
+                            Interval: enclosure of interval containing arccosh(x)
             
         """
     @overload
@@ -1067,7 +1079,7 @@ class Interval:
                         Compute interval containing arcsin(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing arcsin(x)
+                            Interval: enclosure of interval containing arcsin(x)
             
         """
     @overload
@@ -1078,7 +1090,7 @@ class Interval:
                         Compute interval containing arcsin(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing arcsin(x)
+                            Interval: enclosure of interval containing arcsin(x)
             
         """
     @overload
@@ -1089,7 +1101,7 @@ class Interval:
                         Compute interval containing arcsin(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing arcsin(x)
+                            Interval: enclosure of interval containing arcsin(x)
             
         """
     @overload
@@ -1100,7 +1112,7 @@ class Interval:
                         Compute interval containing arcsinh(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing arcsinh(x)
+                            Interval: enclosure of interval containing arcsinh(x)
             
         """
     @overload
@@ -1111,7 +1123,7 @@ class Interval:
                         Compute interval containing arcsinh(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing arcsinh(x)
+                            Interval: enclosure of interval containing arcsinh(x)
             
         """
     @overload
@@ -1122,7 +1134,7 @@ class Interval:
                         Compute interval containing arcsinh(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing arcsinh(x)
+                            Interval: enclosure of interval containing arcsinh(x)
             
         """
     @overload
@@ -1133,7 +1145,7 @@ class Interval:
                         Compute interval containing arctan(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing arctan(x)
+                            Interval: enclosure of interval containing arctan(x)
             
         """
     @overload
@@ -1144,7 +1156,7 @@ class Interval:
                         Compute interval containing arctan(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing arctan(x)
+                            Interval: enclosure of interval containing arctan(x)
             
         """
     @overload
@@ -1155,7 +1167,7 @@ class Interval:
                         Compute interval containing arctan(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing arctan(x)
+                            Interval: enclosure of interval containing arctan(x)
             
         """
     @overload
@@ -1166,7 +1178,7 @@ class Interval:
                         Compute interval containing arctanh(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing arctanh(x)
+                            Interval: enclosure of interval containing arctanh(x)
             
         """
     @overload
@@ -1177,7 +1189,7 @@ class Interval:
                         Compute interval containing arctanh(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing arctanh(x)
+                            Interval: enclosure of interval containing arctanh(x)
             
         """
     @overload
@@ -1188,7 +1200,7 @@ class Interval:
                         Compute interval containing arctanh(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing arctanh(x)
+                            Interval: enclosure of interval containing arctanh(x)
             
         """
     def center(self) -> float:
@@ -1232,7 +1244,7 @@ class Interval:
                         Compute interval containing cos(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing cos(x)
+                            Interval: enclosure of interval containing cos(x)
             
         """
     @overload
@@ -1243,7 +1255,7 @@ class Interval:
                         Compute interval containing cos(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing cos(x)
+                            Interval: enclosure of interval containing cos(x)
             
         """
     @overload
@@ -1254,7 +1266,7 @@ class Interval:
                         Compute interval containing cos(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing cos(x)
+                            Interval: enclosure of interval containing cos(x)
             
         """
     @overload
@@ -1265,7 +1277,7 @@ class Interval:
                         Compute interval containing cosh(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing cosh(x)
+                            Interval: enclosure of interval containing cosh(x)
             
         """
     @overload
@@ -1276,7 +1288,7 @@ class Interval:
                         Compute interval containing cosh(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing cosh(x)
+                            Interval: enclosure of interval containing cosh(x)
             
         """
     @overload
@@ -1287,7 +1299,7 @@ class Interval:
                         Compute interval containing cosh(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing cosh(x)
+                            Interval: enclosure of interval containing cosh(x)
             
         """
     @overload
@@ -1298,7 +1310,7 @@ class Interval:
                         Compute interval containing exp(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing exp(x)
+                            Interval: enclosure of interval containing exp(x)
             
         """
     @overload
@@ -1309,7 +1321,7 @@ class Interval:
                         Compute interval containing exp(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing exp(x)
+                            Interval: enclosure of interval containing exp(x)
             
         """
     @overload
@@ -1320,7 +1332,7 @@ class Interval:
                         Compute interval containing exp(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing exp(x)
+                            Interval: enclosure of interval containing exp(x)
             
         """
     def intersect(self, other: Interval) -> Interval:
@@ -1343,7 +1355,7 @@ class Interval:
                         Interval inverse
 
                         Returns:
-                            Interval: inverse of self
+                            Interval: enclosure of inverse
             
         """
     def is_empty(self) -> bool:
@@ -1363,7 +1375,7 @@ class Interval:
                         Checks whether interval is single-valued (i.e., width is 0 within numerical tolerance)
 
                         Returns:
-                            bool: flag indicating if interval is single-value
+                            bool: flag indicating if interval is single-valued
             
         """
     def lb(self) -> float:
@@ -1384,7 +1396,7 @@ class Interval:
                         Compute interval containing log(x) (base e) for all x in interval
 
                         Returns:
-                            Interval: interval containing log(x)
+                            Interval: enclosure of interval containing log(x)
             
         """
     @overload
@@ -1395,7 +1407,7 @@ class Interval:
                         Compute interval containing log(x) (base e) for all x in interval
 
                         Returns:
-                            Interval: interval containing log(x)
+                            Interval: enclosure of interval containing log(x)
             
         """
     @overload
@@ -1406,7 +1418,7 @@ class Interval:
                         Compute interval containing log(x) (base e) for all x in interval
 
                         Returns:
-                            Interval: interval containing log(x)
+                            Interval: enclosure of interval containing log(x)
             
         """
     def nth_root(self, n: typing.SupportsInt | typing.SupportsIndex) -> Interval:
@@ -1419,7 +1431,7 @@ class Interval:
                             n (int): root
 
                         Returns:
-                            Interval: root_n(self)
+                            Interval: enclosure of root_n(self)
             
         """
     def radius(self) -> Interval:
@@ -1442,7 +1454,7 @@ class Interval:
                         Compute interval containing sin(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing sin(x)
+                            Interval: enclosure of interval containing sin(x)
             
         """
     @overload
@@ -1453,7 +1465,7 @@ class Interval:
                         Compute interval containing sin(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing sin(x)
+                            Interval: enclosure of interval containing sin(x)
             
         """
     @overload
@@ -1464,7 +1476,7 @@ class Interval:
                         Compute interval containing sin(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing sin(x)
+                            Interval: enclosure of interval containing sin(x)
             
         """
     @overload
@@ -1475,7 +1487,7 @@ class Interval:
                         Compute interval containing sinh(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing sinh(x)
+                            Interval: enclosure of interval containing sinh(x)
             
         """
     @overload
@@ -1486,7 +1498,7 @@ class Interval:
                         Compute interval containing sinh(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing sinh(x)
+                            Interval: enclosure of interval containing sinh(x)
             
         """
     @overload
@@ -1497,7 +1509,7 @@ class Interval:
                         Compute interval containing sinh(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing sinh(x)
+                            Interval: enclosure of interval containing sinh(x)
             
         """
     @overload
@@ -1508,7 +1520,7 @@ class Interval:
                         Interval square root
 
                         Returns:
-                            Interval: sqrt(self)
+                            Interval: enclosure of sqrt(self)
             
         """
     @overload
@@ -1519,7 +1531,7 @@ class Interval:
                         Interval square root
 
                         Returns:
-                            Interval: sqrt(self)
+                            Interval: enclosure of sqrt(self)
             
         """
     @overload
@@ -1530,7 +1542,7 @@ class Interval:
                         Compute interval containing tan(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing tan(x)
+                            Interval: enclosure of interval containing tan(x)
             
         """
     @overload
@@ -1541,7 +1553,7 @@ class Interval:
                         Compute interval containing tan(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing tan(x)
+                            Interval: enclosure of interval containing tan(x)
             
         """
     @overload
@@ -1552,7 +1564,7 @@ class Interval:
                         Compute interval containing tan(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing tan(x)
+                            Interval: enclosure of interval containing tan(x)
             
         """
     @overload
@@ -1563,7 +1575,7 @@ class Interval:
                         Compute interval containing tanh(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing tanh(x)
+                            Interval: enclosure of interval containing tanh(x)
             
         """
     @overload
@@ -1574,7 +1586,7 @@ class Interval:
                         Compute interval containing tanh(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing tanh(x)
+                            Interval: enclosure of interval containing tanh(x)
             
         """
     @overload
@@ -1585,7 +1597,7 @@ class Interval:
                         Compute interval containing tanh(x) for all x in interval
 
                         Returns:
-                            Interval: interval containing tanh(x)
+                            Interval: enclosure of interval containing tanh(x)
             
         """
     def ub(self) -> float:
@@ -1622,7 +1634,7 @@ class Interval:
                             other (Interval): rhs interval
 
                         Returns:
-                            Interval: self + other
+                            Interval: enclosure of self + other
             
 
         2. __add__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
@@ -1634,7 +1646,7 @@ class Interval:
                             alpha (float): scalar to add
 
                         Returns:
-                            Interval: self + alpha
+                            Interval: enclosure of self + alpha
             
         """
     @overload
@@ -1651,7 +1663,7 @@ class Interval:
                             other (Interval): rhs interval
 
                         Returns:
-                            Interval: self + other
+                            Interval: enclosure of self + other
             
 
         2. __add__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
@@ -1663,7 +1675,7 @@ class Interval:
                             alpha (float): scalar to add
 
                         Returns:
-                            Interval: self + alpha
+                            Interval: enclosure of self + alpha
             
         """
     @overload
@@ -1680,7 +1692,7 @@ class Interval:
                             other (Interval): rhs interval
 
                         Returns:
-                            Interval: self * other
+                            Interval: enclosure of self * other
             
 
         2. __mul__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
@@ -1692,7 +1704,7 @@ class Interval:
                             alpha (float): scalar multiplier
 
                         Returns:
-                            Interval: alpha * self
+                            Interval: enclosure of alpha * self
             
         """
     @overload
@@ -1709,7 +1721,7 @@ class Interval:
                             other (Interval): rhs interval
 
                         Returns:
-                            Interval: self * other
+                            Interval: enclosure of self * other
             
 
         2. __mul__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
@@ -1721,7 +1733,7 @@ class Interval:
                             alpha (float): scalar multiplier
 
                         Returns:
-                            Interval: alpha * self
+                            Interval: enclosure of alpha * self
             
         """
     def __pow__(self, n: typing.SupportsInt | typing.SupportsIndex) -> Interval:
@@ -1734,7 +1746,7 @@ class Interval:
                             n (int): exponent
 
                         Returns:
-                            Interval: self^n
+                            Interval: enclosure of self^n
             
         """
     @overload
@@ -1751,7 +1763,7 @@ class Interval:
                             other (Interval): rhs interval
 
                         Returns:
-                            Interval: self - other
+                            Interval: enclosure of self - other
             
 
         2. __sub__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
@@ -1763,7 +1775,7 @@ class Interval:
                             alpha (float): scalar to subtract
 
                         Returns:
-                            Interval: self - alpha
+                            Interval: enclosure of self - alpha
             
         """
     @overload
@@ -1780,7 +1792,7 @@ class Interval:
                             other (Interval): rhs interval
 
                         Returns:
-                            Interval: self - other
+                            Interval: enclosure of self - other
             
 
         2. __sub__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
@@ -1792,7 +1804,7 @@ class Interval:
                             alpha (float): scalar to subtract
 
                         Returns:
-                            Interval: self - alpha
+                            Interval: enclosure of self - alpha
             
         """
     @overload
@@ -1809,7 +1821,7 @@ class Interval:
                             alpha (float): scalar divisor
 
                         Returns:
-                            Interval: self / alpha
+                            Interval: enclosure of self / alpha
             
 
         2. __truediv__(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -> zonoopt._core.Interval
@@ -1821,7 +1833,7 @@ class Interval:
                             other (Interval): rhs interval
 
                         Returns:
-                            Interval: self / other
+                            Interval: enclosure of self / other
             
         """
     @overload
@@ -1838,7 +1850,7 @@ class Interval:
                             alpha (float): scalar divisor
 
                         Returns:
-                            Interval: self / alpha
+                            Interval: enclosure of self / alpha
             
 
         2. __truediv__(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -> zonoopt._core.Interval
@@ -1850,7 +1862,7 @@ class Interval:
                             other (Interval): rhs interval
 
                         Returns:
-                            Interval: self / other
+                            Interval: enclosure of self / other
             
         """
 
@@ -2306,6 +2318,8 @@ class Point(Zono):
 class WarmStartParams:
     """
             Warm start parameters for optimization routines in ZonoOpt library.
+
+            This specifically contains primal and dual variables for ADMM warm-starting.
         """
     u: typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']
     z: typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']

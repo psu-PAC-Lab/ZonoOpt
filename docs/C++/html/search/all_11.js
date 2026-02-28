@@ -8,7 +8,6 @@ var searchData=
   ['remove_5fredundancy_5',['remove_redundancy',['../classZonoOpt_1_1HybZono.html#a6db0f006ddbe7d66d9fb2aaadca67199',1,'ZonoOpt::HybZono::remove_redundancy()'],['../classZonoOpt_1_1Point.html#a6b1a78851f2767f59d2e4053938988f5',1,'ZonoOpt::Point::remove_redundancy()']]],
   ['rho_6',['rho',['../structZonoOpt_1_1OptSettings.html#aa9daad3982cfea491e0aa34451dc53dd',1,'ZonoOpt::OptSettings']]],
   ['rng_5fseed_7',['rng_seed',['../structZonoOpt_1_1OptSettings.html#a461a2b8cf4bcfa6010ab06b4a00209e3',1,'ZonoOpt::OptSettings']]],
-  ['rounded_5ftransc_5ffixed_8',['rounded_transc_fixed',['../structrounded__transc__fixed.html',1,'']]],
-  ['rows_9',['rows',['../classZonoOpt_1_1IntervalMatrix.html#a0bc12d80aa6560a114c9a0560aaf99d8',1,'ZonoOpt::IntervalMatrix']]],
-  ['run_5ftime_10',['run_time',['../structZonoOpt_1_1OptSolution.html#a4c924318807a20bd19229fe1d7995de2',1,'ZonoOpt::OptSolution']]]
+  ['rows_8',['rows',['../classZonoOpt_1_1IntervalMatrix.html#a0bc12d80aa6560a114c9a0560aaf99d8',1,'ZonoOpt::IntervalMatrix']]],
+  ['run_5ftime_9',['run_time',['../structZonoOpt_1_1OptSolution.html#a4c924318807a20bd19229fe1d7995de2',1,'ZonoOpt::OptSolution']]]
 ];

@@ -122,10 +122,12 @@ PYBIND11_MODULE(_core, m)
     py::class_<WarmStartParams>(m, "WarmStartParams",
         R"pbdoc(
             Warm start parameters for optimization routines in ZonoOpt library.
+
+            This specifically contains primal and dual variables for ADMM warm-starting.
         )pbdoc")
         .def(py::init())
-        .def_readwrite("z", &WarmStartParams::z, "warm start primal variable")
-        .def_readwrite("u", &WarmStartParams::u, "warm start dual variable")
+        .def_readwrite("z", &WarmStartParams::z, "primal variable")
+        .def_readwrite("u", &WarmStartParams::u, "dual variable")
         .def("copy", [](const WarmStartParams& self) -> WarmStartParams
             { return self; },
             R"pbdoc(
@@ -186,7 +188,7 @@ PYBIND11_MODULE(_core, m)
                     other (Interval): rhs interval
 
                 Returns:
-                    Interval: self + other
+                    Interval: enclosure of self + other
             )pbdoc")
         .def("__add__", [](const Interval& self, const zono_float alpha) -> Interval { return self + alpha; }, py::arg("alpha"),
             R"pbdoc(
@@ -196,7 +198,7 @@ PYBIND11_MODULE(_core, m)
                     alpha (float): scalar to add
 
                 Returns:
-                    Interval: self + alpha
+                    Interval: enclosure of self + alpha
             )pbdoc")
         .def("__sub__", [](const Interval& self, const Interval& other) -> Interval { return self - other; }, py::arg("other"),
             R"pbdoc(
@@ -206,7 +208,7 @@ PYBIND11_MODULE(_core, m)
                     other (Interval): rhs interval
 
                 Returns:
-                    Interval: self - other
+                    Interval: enclosure of self - other
             )pbdoc")
         .def("__sub__", [](const Interval& self, const zono_float alpha) -> Interval { return self - alpha; }, py::arg("alpha"),
             R"pbdoc(
@@ -216,7 +218,7 @@ PYBIND11_MODULE(_core, m)
                     alpha (float): scalar to subtract
 
                 Returns:
-                    Interval: self - alpha
+                    Interval: enclosure of self - alpha
             )pbdoc")
         .def("__mul__", [](const Interval& self, const Interval& other) -> Interval { return self*other; } ,
             py::arg("other"),
@@ -227,7 +229,7 @@ PYBIND11_MODULE(_core, m)
                     other (Interval): rhs interval
 
                 Returns:
-                    Interval: self * other
+                    Interval: enclosure of self * other
             )pbdoc")
         .def("__mul__", [](const Interval& self, const zono_float alpha) -> Interval { return self*alpha; },
             py::arg("alpha"),
@@ -238,7 +240,7 @@ PYBIND11_MODULE(_core, m)
                     alpha (float): scalar multiplier
 
                 Returns:
-                    Interval: alpha * self
+                    Interval: enclosure of alpha * self
             )pbdoc")
         .def("__truediv__", [](const Interval& self, const zono_float alpha) -> Interval { return self/alpha; },
             py::arg("alpha"),
@@ -249,7 +251,7 @@ PYBIND11_MODULE(_core, m)
                     alpha (float): scalar divisor
 
                 Returns:
-                    Interval: self / alpha
+                    Interval: enclosure of self / alpha
             )pbdoc"
         )
         .def("__truediv__", [](const Interval& self, const Interval& other) -> Interval { return self/other; }, py::arg("other"),
@@ -260,7 +262,7 @@ PYBIND11_MODULE(_core, m)
                     other (Interval): rhs interval
 
                 Returns:
-                    Interval: self / other
+                    Interval: enclosure of self / other
             )pbdoc")
         .def("__pow__", [](const Interval& self, const int n) -> Interval { return self.pow(n); }, py::arg("n"),
             R"pbdoc(
@@ -270,14 +272,14 @@ PYBIND11_MODULE(_core, m)
                     n (int): exponent
 
                 Returns:
-                    Interval: self^n
+                    Interval: enclosure of self^n
             )pbdoc")
         .def("sqrt", &Interval::sqrt,
             R"pbdoc(
                 Interval square root
 
                 Returns:
-                    Interval: sqrt(self)
+                    Interval: enclosure of sqrt(self)
             )pbdoc")
         .def("nth_root", &Interval::nth_root, py::arg("n"),
             R"pbdoc(
@@ -287,21 +289,21 @@ PYBIND11_MODULE(_core, m)
                     n (int): root
 
                 Returns:
-                    Interval: root_n(self)
+                    Interval: enclosure of root_n(self)
             )pbdoc")
         .def("abs", &Interval::abs,
             R"pbdoc(
                 Absolute value of interval
 
                 Returns:
-                    Interval: |self|
+                    Interval: enclosure of abs(self)
             )pbdoc")
         .def("inv", &Interval::inv,
             R"pbdoc(
                 Interval inverse
 
                 Returns:
-                    Interval: inverse of self
+                    Interval: enclosure of inverse
             )pbdoc")
         .def("intersect", &Interval::intersect, py::arg("other"),
             R"pbdoc(
@@ -335,7 +337,7 @@ PYBIND11_MODULE(_core, m)
                 Checks whether interval is single-valued (i.e., width is 0 within numerical tolerance)
 
                 Returns:
-                    bool: flag indicating if interval is single-value
+                    bool: flag indicating if interval is single-valued
             )pbdoc")
         .def("width", &Interval::width,
             R"pbdoc(
@@ -365,98 +367,98 @@ PYBIND11_MODULE(_core, m)
                 Compute interval containing sin(x) for all x in interval
 
                 Returns:
-                    Interval: interval containing sin(x)
+                    Interval: enclosure of interval containing sin(x)
             )pbdoc")
         .def("cos", &Interval::cos,
             R"pbdoc(
                 Compute interval containing cos(x) for all x in interval
 
                 Returns:
-                    Interval: interval containing cos(x)
+                    Interval: enclosure of interval containing cos(x)
             )pbdoc")
         .def("tan", &Interval::tan,
             R"pbdoc(
                 Compute interval containing tan(x) for all x in interval
 
                 Returns:
-                    Interval: interval containing tan(x)
+                    Interval: enclosure of interval containing tan(x)
             )pbdoc")
         .def("arcsin", &Interval::arcsin,
             R"pbdoc(
                 Compute interval containing arcsin(x) for all x in interval
 
                 Returns:
-                    Interval: interval containing arcsin(x)
+                    Interval: enclosure of interval containing arcsin(x)
             )pbdoc")
         .def("arccos", &Interval::arccos,
             R"pbdoc(
                 Compute interval containing arccos(x) for all x in interval
 
                 Returns:
-                    Interval: interval containing arccos(x)
+                    Interval: enclosure of interval containing arccos(x)
             )pbdoc")
         .def("arctan", &Interval::arctan,
             R"pbdoc(
                 Compute interval containing arctan(x) for all x in interval
 
                 Returns:
-                    Interval: interval containing arctan(x)
+                    Interval: enclosure of interval containing arctan(x)
             )pbdoc")
         .def("exp", &Interval::exp,
             R"pbdoc(
                 Compute interval containing exp(x) for all x in interval
 
                 Returns:
-                    Interval: interval containing exp(x)
+                    Interval: enclosure of interval containing exp(x)
             )pbdoc")
         .def("log", &Interval::log,
             R"pbdoc(
                 Compute interval containing log(x) (base e) for all x in interval
 
                 Returns:
-                    Interval: interval containing log(x)
+                    Interval: enclosure of interval containing log(x)
             )pbdoc")
         .def("sinh", &Interval::sinh,
             R"pbdoc(
                 Compute interval containing sinh(x) for all x in interval
 
                 Returns:
-                    Interval: interval containing sinh(x)
+                    Interval: enclosure of interval containing sinh(x)
             )pbdoc")
         .def("cosh", &Interval::cosh,
             R"pbdoc(
                 Compute interval containing cosh(x) for all x in interval
 
                 Returns:
-                    Interval: interval containing cosh(x)
+                    Interval: enclosure of interval containing cosh(x)
             )pbdoc")
         .def("tanh", &Interval::tanh,
             R"pbdoc(
                 Compute interval containing tanh(x) for all x in interval
 
                 Returns:
-                    Interval: interval containing tanh(x)
+                    Interval: enclosure of interval containing tanh(x)
             )pbdoc")
         .def("arcsinh", &Interval::arcsinh,
             R"pbdoc(
                 Compute interval containing arcsinh(x) for all x in interval
 
                 Returns:
-                    Interval: interval containing arcsinh(x)
+                    Interval: enclosure of interval containing arcsinh(x)
             )pbdoc")
         .def("arccosh", &Interval::arccosh,
             R"pbdoc(
                 Compute interval containing arccosh(x) for all x in interval
 
                 Returns:
-                    Interval: interval containing arccosh(x)
+                    Interval: enclosure of interval containing arccosh(x)
             )pbdoc")
         .def("arctanh", &Interval::arctanh,
             R"pbdoc(
                 Compute interval containing arctanh(x) for all x in interval
 
                 Returns:
-                    Interval: interval containing arctanh(x)
+                    Interval: enclosure of interval containing arctanh(x)
             )pbdoc")
     ;
 
@@ -562,7 +564,7 @@ PYBIND11_MODULE(_core, m)
                 Gets center of box (x_ub + x_lb) / 2
 
                 Returns:
-                    numpy.array: center of interval
+                    numpy.array: center of box
             )pbdoc")
         .def("contract", &Box::contract, py::arg("A"), py::arg("b"), py::arg("iter"),
             R"pbdoc(
@@ -619,7 +621,7 @@ PYBIND11_MODULE(_core, m)
                     other (Box): rhs box
 
                 Returns:
-                    Box: self - other (elementwise)
+                    Box: enclosure of self - other (elementwise)
             )pbdoc")
         .def("__mul__", [](const Box& self, const Box& other) -> Box { return self*other; } ,
             py::arg("other"),
@@ -630,7 +632,7 @@ PYBIND11_MODULE(_core, m)
                     other (Box): rhs box
 
                 Returns:
-                    Box: self * other (elementwise)
+                    Box: enclosure of self * other (elementwise)
             )pbdoc")
         .def("__mul__", [](const Box& self, const zono_float alpha) -> Box { return self*alpha; },
             py::arg("alpha"),
@@ -641,7 +643,7 @@ PYBIND11_MODULE(_core, m)
                     alpha (float): scalar multiplier
 
                 Returns:
-                    Box: alpha * self (elementwise)
+                    Box: enclosure of alpha * self (elementwise)
             )pbdoc")
         .def("__truediv__", &Box::operator/, py::arg("other"),
             R"pbdoc(
@@ -651,7 +653,7 @@ PYBIND11_MODULE(_core, m)
                     other (Box): rhs box
 
                 Returns:
-                    Box: self / other (elementwise)
+                    Box: enclosure of self / other (elementwise)
             )pbdoc")
     ;
 

@@ -78,7 +78,7 @@ function(fetch_boost_lib name repo)
   set(BOOST_INCLUDE_DIRS ${BOOST_INCLUDE_DIRS} PARENT_SCOPE)
 endfunction()
 
-find_package(Boost CONFIG)
+find_package(Boost 1.81 CONFIG)
 if (NOT Boost_FOUND)
    if (ZONOOPT_INSTALL)
         message(FATAL_ERROR "Boost not found on system. Required for ZONOOPT_INSTALL.")

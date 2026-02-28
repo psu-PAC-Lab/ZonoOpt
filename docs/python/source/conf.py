@@ -9,7 +9,7 @@
 project = 'zonoopt'
 copyright = '2025, Joshua Robbins'
 author = 'Joshua Robbins'
-release = '2.0.1'
+release = '2.1.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -54,7 +54,7 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['../../../images']
 
 def skip_special_members(app, what, name, obj, skip, options):
-    if name.startswith('__') and name.endswith('__') and name not in ['__add__', '__sub__', '__mul__', '__truediv__', '__getitem__', '__setitem__']:
+    if name.startswith('__') and name.endswith('__') and name not in ['__add__', '__sub__', '__mul__', '__truediv__', '__getitem__', '__setitem__', '__pow__']:
         return True
     return skip
 
