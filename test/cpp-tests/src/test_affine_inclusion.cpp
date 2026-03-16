@@ -5,7 +5,7 @@
 
 using namespace ZonoOpt;
 
-std::tuple<Zono, Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>, Eigen::VectorXd> random_example(int n, int nG, int n_out)
+std::tuple<Zono, Eigen::MatrixXd, Eigen::MatrixXd, Eigen::VectorXd> random_example(int n, int nG, int n_out)
 {
     // generate zonotope
     Eigen::MatrixXd G = Eigen::MatrixXd::Random(n, nG);
@@ -29,7 +29,7 @@ std::tuple<Zono, Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>, Eigen
         }
     }
 
-    return std::make_tuple(Z, R_lb.sparseView(), R_ub.sparseView(), s);
+    return std::make_tuple(Z, R_lb, R_ub, s);
 }
 
 
@@ -45,11 +45,9 @@ int main()
         IntervalMatrix Rint (R_lb, R_ub);
         auto Z_inc = affine_inclusion(Z, Rint, s);
 
-        std::cout << Rint << std::endl;
-
         // lower and upper bounds
-        auto Z_lb = affine_map(Z, R_lb, s);
-        auto Z_ub = affine_map(Z, R_ub, s);
+        auto Z_lb = affine_map(Z, R_lb.sparseView(), s);
+        auto Z_ub = affine_map(Z, R_ub.sparseView(), s);
 
         // make sure centers of Z_lb and Z_ub are inside Z_inc
         Zono Z_lb_zono = *dynamic_cast<Zono*>(Z_lb.get());

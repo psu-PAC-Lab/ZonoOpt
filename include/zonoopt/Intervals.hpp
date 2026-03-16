@@ -830,14 +830,6 @@ namespace ZonoOpt
         IntervalMatrix(size_t rows, size_t cols, const std::vector<Eigen::Triplet<Interval>>& triplets);
 
         /**
-         * @brief IntervalMatrix constructor using sparse lower and upper bound matrices
-         * @param mat_lb lower bound matrix
-         * @param mat_ub upper bound matrix
-         */
-        IntervalMatrix(const Eigen::SparseMatrix<zono_float>& mat_lb,
-                       const Eigen::SparseMatrix<zono_float>& mat_ub);
-
-        /**
          * @brief IntervalMatrix constructor using dense lower and upper bound matrices
          * @param mat_lb lower bound matrix
          * @param mat_ub upper bound matrix

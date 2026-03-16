@@ -374,23 +374,23 @@ def test_interval_arithmetic():
 
 def test_affine_inclusion():
 
-    def _random_example(n, nG, rng_seed=None):
+    def _random_example(n, nG, n_out, rng_seed=None):
 
         # rng seed
         if rng_seed is not None:
             np.random.seed(rng_seed)
 
-        # generate conzono
+        # generate zonotope
         G = np.random.rand(n, nG)
         c = np.random.rand(n)
 
         Z = zono.Zono(G, c)
 
         # offset
-        s = 10.*np.random.rand(2)
+        s = 10.*np.random.rand(n_out)
 
         # random affine map
-        R = np.random.randn(2, n)
+        R = np.random.randn(n_out, n)
         R_lb = R.copy()
         R_ub = R.copy()
         for i in range(2):
@@ -404,14 +404,12 @@ def test_affine_inclusion():
     for seed in range(10):
 
         # get test case
-        Z, R_lb, R_ub, s = _random_example(n=5, nG=10, rng_seed=seed)
+        Z, R_lb, R_ub, s = _random_example(n=5, nG=10, n_out = 3, rng_seed=seed)
 
         # affine inclusion
         Rint = zono.IntervalMatrix(R_lb, R_ub)
         Z_inc = zono.affine_inclusion(Z, Rint, s)
-
-        print(Rint)
-
+        
         # lower and upper bounds
         Z_lb = zono.affine_map(Z, R_lb, s)
         Z_ub = zono.affine_map(Z, R_ub, s)
