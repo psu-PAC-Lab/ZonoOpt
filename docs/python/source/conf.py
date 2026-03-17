@@ -9,7 +9,7 @@
 project = 'zonoopt'
 copyright = '2025, Joshua Robbins'
 author = 'Joshua Robbins'
-release = '2.1.0'
+release = '2.1.1'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

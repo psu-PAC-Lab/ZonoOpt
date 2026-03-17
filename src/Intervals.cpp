@@ -558,37 +558,6 @@ namespace ZonoOpt
         *this = IntervalMatrix(static_cast<size_t>(mat_lb.rows()), static_cast<size_t>(mat_lb.cols()), triplets);
     }
 
-    IntervalMatrix::IntervalMatrix(const Eigen::SparseMatrix<zono_float>& mat_lb,
-                                   const Eigen::SparseMatrix<zono_float>& mat_ub)
-    {
-        if (mat_lb.rows() != mat_ub.rows() || mat_lb.cols() != mat_ub.cols())
-            throw std::invalid_argument("IntervalMatrix: mat_lb and mat_ub must have the same dimensions");
-
-        // initialize rows / cols
-        this->rows_ = mat_lb.rows();
-        this->cols_ = mat_lb.cols();
-
-        // get triplets
-        std::vector<Eigen::Triplet<Interval>> triplets;
-        for (int k = 0; k < mat_lb.outerSize(); ++k)
-        {
-            for (Eigen::SparseMatrix<zono_float>::InnerIterator it_lb(mat_lb, k); it_lb; ++it_lb)
-            {
-                triplets.emplace_back(static_cast<int>(it_lb.row()), static_cast<int>(it_lb.col()), Interval(it_lb.value(), zero));
-            }
-        }
-        for (int k = 0; k < mat_ub.outerSize(); ++k)
-        {
-            for (Eigen::SparseMatrix<zono_float>::InnerIterator it_ub(mat_ub, k); it_ub; ++it_ub)
-            {
-                triplets.emplace_back(static_cast<int>(it_ub.row()), static_cast<int>(it_ub.col()), Interval(zero, it_ub.value()));
-            }
-        }
-
-        // let logic in triplet constructor take care of combining
-        *this = IntervalMatrix(static_cast<size_t>(mat_lb.rows()), static_cast<size_t>(mat_lb.cols()), triplets);
-    }
-
     IntervalMatrix::IntervalMatrix(const Eigen::Matrix<Interval, -1, -1>& mat)
     {
         // initialize rows / cols

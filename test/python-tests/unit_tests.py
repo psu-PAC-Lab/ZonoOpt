@@ -372,6 +372,55 @@ def test_interval_arithmetic():
 
     print('Passed: Interval Arithmetic')
 
+def test_affine_inclusion():
+
+    def _random_example(n, nG, n_out, rng_seed=None):
+
+        # rng seed
+        if rng_seed is not None:
+            np.random.seed(rng_seed)
+
+        # generate zonotope
+        G = np.random.rand(n, nG)
+        c = np.random.rand(n)
+
+        Z = zono.Zono(G, c)
+
+        # offset
+        s = 10.*np.random.rand(n_out)
+
+        # random affine map
+        R = np.random.randn(n_out, n)
+        R_lb = R.copy()
+        R_ub = R.copy()
+        for i in range(2):
+            for j in range(n):
+                drij = 0.1*np.random.rand()
+                R_lb[i,j] = R[i,j] - drij
+                R_ub[i,j] = R[i,j] + drij
+
+        return Z, R_lb, R_ub, s
+    
+    for seed in range(10):
+
+        # get test case
+        Z, R_lb, R_ub, s = _random_example(n=5, nG=10, n_out = 3, rng_seed=seed)
+
+        # affine inclusion
+        Rint = zono.IntervalMatrix(R_lb, R_ub)
+        Z_inc = zono.affine_inclusion(Z, Rint, s)
+        
+        # lower and upper bounds
+        Z_lb = zono.affine_map(Z, R_lb, s)
+        Z_ub = zono.affine_map(Z, R_ub, s)
+
+        # make sure centers of Z_lb and Z_ub are inside Z_inc
+        assert Z_inc.contains_point(Z_lb.get_center())
+        assert Z_inc.contains_point(Z_ub.get_center())
+
+    print('Passed: Affine Inclusion')
+
+
 
 # run the unit tests
 test_vrep_2_hz()
@@ -383,3 +432,4 @@ test_point_contain()
 test_get_leaves()
 test_safety_verification()
 test_interval_arithmetic()
+test_affine_inclusion()
