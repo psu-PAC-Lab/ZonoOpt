@@ -1347,7 +1347,7 @@ PYBIND11_MODULE(_core, m)
             Args:
                 v (numpy.array)
             )pbdoc")
-        .def("__rmul__", [](const HybZono& self, const Eigen::Matrix<zono_float, -1, -1>& R) { return R * self; }, 
+        .def("__rmatmul__", [](const HybZono& self, const Eigen::Matrix<zono_float, -1, -1>& R) { return R * self; }, 
             py::is_operator(), 
             R"pbdoc(
             Affine map with dense matrix
@@ -1359,7 +1359,7 @@ PYBIND11_MODULE(_core, m)
                 HybZono: R*self
             )pbdoc"
         )
-        .def("__rmul__", [](const HybZono& self, const Eigen::SparseMatrix<zono_float>& R) { return R * self;},
+        .def("__rmatmul__", [](const HybZono& self, const Eigen::SparseMatrix<zono_float>& R) { return R * self;},
             py::is_operator(),
             R"pbdoc(
             Affine map with sparse matrix

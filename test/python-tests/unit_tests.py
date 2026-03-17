@@ -526,12 +526,12 @@ def test_operator_overloading():
 
     # affine map - sparse
     Z_set = zono.affine_map(Z1, M_sp)
-    Z_op = M_sp * Z1
+    Z_op = M_sp @ Z1
     assert check_equal(Z_set, Z_op), "Affine map with sparse matrix failed"
 
     # affine map - dense
     Z_set = zono.affine_map(Z1, M)
-    Z_op = M * Z1
+    Z_op = M @ Z1
     assert check_equal(Z_set, Z_op), "Affine map with dense matrix failed"
 
     # cartesian product
