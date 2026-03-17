@@ -534,20 +534,6 @@ def test_operator_overloading():
     Z_op = M * Z1
     assert check_equal(Z_set, Z_op), "Affine map with dense matrix failed"
 
-    # *= sparse
-    Z_set = Z1.copy()
-    Z_op = Z1.copy()
-    Z_set = zono.affine_map(Z_set, M_sp)
-    Z_op *= M_sp
-    assert check_equal(Z_set, Z_op), "Affine map with sparse matrix *= failed"
-
-    # *= dense
-    Z_set = Z1.copy()
-    Z_op = Z1.copy()
-    Z_set = zono.affine_map(Z_set, M)
-    Z_op *= M
-    assert check_equal(Z_set, Z_op), "Affine map with dense matrix *= failed"
-
     # cartesian product
     Z_set = zono.cartesian_product(Z1, Z2)
     Z_op = Z1 * Z2
@@ -570,7 +556,6 @@ def test_operator_overloading():
     Z_op = Z1.copy()
     Z_set = zono.cartesian_product(Z_set, P3)
     Z_op *= c3
-    print(Z_op)
     assert check_equal(Z_set, Z_op), "Cartesian product with point *= failed"
 
     # intersection
@@ -579,7 +564,7 @@ def test_operator_overloading():
     assert check_equal(Z_set, Z_op), "Intersection failed"
 
     # union
-    Z_set = zono.union(Z1, Z2)
+    Z_set = zono.union_of_many((Z1, Z2))
     Z_op = Z1 | Z2
     assert check_equal(Z_set, Z_op), "Union failed"
 
@@ -588,6 +573,8 @@ def test_operator_overloading():
     Z_op = -Z1
     assert check_equal(Z_set, Z_op), "Unary minus failed"
 
+    # finish
+    print('Passed: Operator Overloading')
 
 # run the unit tests
 test_vrep_2_hz()

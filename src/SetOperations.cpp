@@ -29,7 +29,9 @@ namespace ZonoOpt
 
         if (R.cols() != Z.n || R.rows() != s_ptr->size())
         {
-            throw std::invalid_argument("affine_map: invalid input dimensions.");
+            std::stringstream ss;
+            ss << "R dims: " << R.rows() << " x " << R.cols() << ", n = " << Z.n << " s dims: " << s_ptr->size();
+            throw std::invalid_argument("affine_map: invalid input dimensions." + ss.str());
         }
 
         // early exit

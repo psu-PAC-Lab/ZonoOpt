@@ -497,20 +497,6 @@ class HybZono
         friend std::unique_ptr<HybZono> operator*(const Eigen::Matrix<zono_float, -1, -1>& R, const HybZono& Z);
 
         /**
-         * @brief in-place affine map with sparse matrix
-         * 
-         * @param R 
-         */
-        void operator*=(const Eigen::SparseMatrix<zono_float>& R); 
-
-        /**
-         * @brief in-place affine map with dense matrix
-         * 
-         * @param R 
-         */
-        void operator*=(const Eigen::Matrix<zono_float, -1, -1>& R);
-
-        /**
          * @brief pontryagin difference
          * 
          * @param other 

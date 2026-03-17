@@ -129,18 +129,6 @@ int main()
     Z_op = M * (*Z1);
     test_assert(check_equal(*Z_set, *Z_op), "Affine map with dense matrix failed");
 
-    // *= sparse
-    Z_set.reset(Z1->clone());
-    Z_op.reset(Z1->clone());
-    Z_set = affine_map(*Z1, M_sp);
-    *Z_op *= M_sp;
-    test_assert(check_equal(*Z_set, *Z_op), "Affine map with sparse matrix *= failed");
-
-    // *= dense
-    Z_op.reset(Z1->clone());
-    *Z_op *= M;
-    test_assert(check_equal(*Z_set, *Z_op), "Affine map with dense matrix *= failed");
-
     // cartesian product
     Z_set = cartesian_product(*Z1, *Z2);
     Z_op = *Z1 * (*Z2);

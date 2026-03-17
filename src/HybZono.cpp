@@ -937,16 +937,6 @@ namespace ZonoOpt
         return affine_map(Z, R.sparseView());
     }
 
-    void HybZono::operator*=(const Eigen::SparseMatrix<zono_float>& R)
-    {
-        *this = *(R * (*this));
-    }
-
-    void HybZono::operator*=(const Eigen::Matrix<zono_float, -1, -1>& R)
-    {
-        *this = *(R * (*this));
-    }
-
     std::unique_ptr<HybZono> HybZono::operator-() const
     {
         // make identity matrix
