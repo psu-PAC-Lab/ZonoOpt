@@ -659,14 +659,14 @@ PYBIND11_MODULE(_core, m)
 
     // interval matrix
     py::class_<IntervalMatrix>(m, "IntervalMatrix", "Interval matrix class")
-        .def(py::init<const Eigen::SparseMatrix<zono_float>&, const Eigen::SparseMatrix<zono_float>&>(),
+        .def(py::init<const Eigen::Matrix<zono_float, -1, -1>&, const Eigen::Matrix<zono_float, -1, -1>&>(),
             py::arg("mat_lb"), py::arg("mat_ub"),
             R"pbdoc(
                 IntervalMatrix constructor
 
                 Args:
-                    mat_lb (scipy.sparse.csc_matrix): matrix of lower bounds
-                    mat_ub (scipy.sparse.csc_matrix): matrix of upper bounds
+                    mat_lb (numpy.array): matrix of lower bounds
+                    mat_ub (numpy.array): matrix of upper bounds
             )pbdoc")
         .def_static("from_array", [](const std::vector<std::vector<Interval>>& vals) -> IntervalMatrix
             { 
