@@ -905,4 +905,59 @@ namespace ZonoOpt
         return EmptySetCast != nullptr;
     }
 
+    // operator overloading
+    std::unique_ptr<HybZono> HybZono::operator+(HybZono& other) const
+    {
+        return minkowski_sum(*this, other);
+    }
+
+    std::unique_ptr<HybZono> HybZono::operator+(const Eigen::Vector<zono_float, -1>& v) const
+    {
+        Point p(v);
+        return minkowski_sum(*this, p);
+    }
+
+    void HybZono::operator+=(HybZono& other)
+    {
+        *this = *(*this + other);
+    }
+
+    void HybZono::operator+=(const Eigen::Vector<zono_float, -1>& v)
+    {
+        *this = *(*this + v);
+    }
+
+    std::unique_ptr<HybZono> operator*(const Eigen::SparseMatrix<zono_float>& R, const HybZono& Z)
+    {
+        return affine_map(Z, R);
+    }
+
+    std::unique_ptr<HybZono> operator*(const Eigen::Matrix<zono_float, -1, -1>& R, const HybZono& Z)
+    {
+        return affine_map(Z, R.sparseView());
+    }
+
+    void HybZono::operator*=(const Eigen::SparseMatrix<zono_float>& R)
+    {
+        *this = *(R * (*this));
+    }
+
+    void HybZono::operator*=(const Eigen::Matrix<zono_float, -1, -1>& R)
+    {
+        *this = *(R * (*this));
+    }
+
+    std::unique_ptr<HybZono> HybZono::operator-() const
+    {
+        // make identity matrix
+        Eigen::SparseMatrix<zono_float> mI(this->n, this->n);
+        std::vector<Eigen::Triplet<zono_float>> triplets;
+        for (int i = 0; i < this->n; ++i)
+        {
+            triplets.emplace_back(i, i, -one);
+        }
+        mI.setFromTriplets(triplets.begin(), triplets.end());
+        return affine_map(*this, mI);
+    }
+
 }

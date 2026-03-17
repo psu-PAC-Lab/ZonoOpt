@@ -446,6 +446,17 @@ class HybZono
         friend std::unique_ptr<HybZono> vrep_2_hybzono(const std::vector<Eigen::Matrix<zono_float, -1, -1>> &Vpolys, bool expose_indicators);
         friend std::unique_ptr<HybZono> zono_union_2_hybzono(std::vector<std::shared_ptr<Zono>> &Zs, bool expose_indicators);
 
+        // operator overloading
+        std::unique_ptr<HybZono> operator+(HybZono& other) const; // minkowski sum
+        std::unique_ptr<HybZono> operator+(const Eigen::Vector<zono_float, -1>& v) const; // minkowski sum with point
+        void operator+=(HybZono& other); // in-place minkowski sum
+        void operator+=(const Eigen::Vector<zono_float, -1>& v); // in-place minkowski sum with point
+        friend std::unique_ptr<HybZono> operator*(const Eigen::SparseMatrix<zono_float>& R, const HybZono& Z); // affine map with sparse matrix
+        friend std::unique_ptr<HybZono> operator*(const Eigen::Matrix<zono_float, -1, -1>& R, const HybZono& Z); // affine map with dense matrix
+        void operator*=(const Eigen::SparseMatrix<zono_float>& R); // in-place affine map with sparse matrix
+        void operator*=(const Eigen::Matrix<zono_float, -1, -1>& R); // in-place affine map with dense matrix
+        std::unique_ptr<HybZono> operator-() const; // unary minus
+
     protected:
 
         // fields
