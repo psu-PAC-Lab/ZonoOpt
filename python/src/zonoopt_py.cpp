@@ -1580,19 +1580,14 @@ PYBIND11_MODULE(_core, m)
         R"pbdoc(
             Computes the Pontryagin difference Z1 - Z2.
             
-            For inner approximations (exact=false), the algorithm from Vinod et. al. 2025 is used.
+            For inner approximations (exact = false), the algorithm from Vinod et. al. 2025 is used.
             Note that this algorithm is exact when the minuend is a constrained zonotope and the matrix [G;A] is invertible.
             Exact Pontryagin difference can only be computed when the subtrahend is a zonotope.
-            If subtrahend is a constrained zonotope, it will first be over-approximated as a zonotope.
-            If subtrahend is a hybrid zonotope, a get_leaves operation will first be performed to produce
-            a union of constrained zonotopes.
-            If the minuend is a hybrid zonotope and exact is false, a get_leaves operation will be performed for 
-            Z1 to reduce the number of leaves in the resulting set.
             
             Args:
                 Z1 (HybZono): minuend
-                Z2 (ConZono): subtrahend
-                exact (bool, optional): require output to be exact, otherwise inner approximation will be returned
+                Z2 (Zono): subtrahend
+                exact (bool, optional): require output to be exact, otherwise inner approximation will be returned (default true)
             
             Returns:
                 HybZono: zonotopic set

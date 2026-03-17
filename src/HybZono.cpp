@@ -960,12 +960,12 @@ namespace ZonoOpt
         return affine_map(*this, mI);
     }
 
-    std::unique_ptr<HybZono> HybZono::operator-(Zono& other) const
+    std::unique_ptr<HybZono> HybZono::operator-(Zono& other)
     {
         return pontry_diff(*this, other);
     }
 
-    std::unique_ptr<HybZono> HybZono::operator-(const Eigen::Vector<zono_float, -1>& v) const
+    std::unique_ptr<HybZono> HybZono::operator-(const Eigen::Vector<zono_float, -1>& v)
     {
         Point p(v);
         return pontry_diff(*this, p);

@@ -430,7 +430,7 @@ class HybZono
         friend std::unique_ptr<HybZono> affine_inclusion(const HybZono& Z, const IntervalMatrix& R, const Eigen::Vector<zono_float, -1>& s);
         friend std::unique_ptr<HybZono> project_onto_dims(const HybZono& Z, const std::vector<int>& dims);
         friend std::unique_ptr<HybZono> minkowski_sum(const HybZono& Z1, HybZono& Z2);
-        friend std::unique_ptr<HybZono> pontry_diff(HybZono& Z1, HybZono& Z2, bool exact);
+        friend std::unique_ptr<HybZono> pontry_diff(HybZono& Z1, Zono& Z2, bool exact);
         friend std::unique_ptr<HybZono> intersection(const HybZono& Z1, HybZono& Z2, 
             const Eigen::SparseMatrix<zono_float>& R);
         friend std::unique_ptr<HybZono> intersection_over_dims(const HybZono& Z1, HybZono& Z2, 
@@ -516,7 +516,7 @@ class HybZono
          * @param other 
          * @return std::unique_ptr<HybZono> 
          */
-        std::unique_ptr<HybZono> operator-(Zono& other) const;
+        std::unique_ptr<HybZono> operator-(Zono& other);
 
         /**
          * @brief pontryagin difference with point
@@ -524,7 +524,7 @@ class HybZono
          * @param v 
          * @return std::unique_ptr<HybZono> 
          */
-        std::unique_ptr<HybZono> operator-(const Eigen::Vector<zono_float, -1>& v) const;
+        std::unique_ptr<HybZono> operator-(const Eigen::Vector<zono_float, -1>& v);
 
         /**
          * @brief in-place pontryagin difference
@@ -740,20 +740,15 @@ std::unique_ptr<HybZono> minkowski_sum(const HybZono& Z1, HybZono& Z2);
  *
  * @param Z1 minuend
  * @param Z2 subtrahend
- * @param exact require output to be exact, otherwise inner approximation will be returned
+ * @param exact require output to be exact, otherwise inner approximation will be returned (default true)
  * @return zonotopic set
  * @ingroup ZonoOpt_SetOperations
  *
  * For inner approximations (exact = false), the algorithm from Vinod et. al. 2025 is used.
  * Note that this algorithm is exact when the minuend is a constrained zonotope and the matrix [G;A] is invertible.
  * Exact Pontryagin difference can only be computed when the subtrahend is a zonotope.
- * If subtrahend is a constrained zonotope, it will first be over-approximated as a zonotope.
- * If subtrahend is a hybrid zonotope, a get_leaves operation will first be performed to produce
- * a union of constrained zonotopes.
- * If the minuend is a hybrid zonotope and exact is false, a get_leaves operation will be performed for 
- * Z1 to reduce the number of leaves in the resulting set.
  */
-std::unique_ptr<HybZono> pontry_diff(HybZono& Z1, HybZono& Z2, bool exact=false);
+std::unique_ptr<HybZono> pontry_diff(HybZono& Z1, Zono& Z2, bool exact=true);
 
 /**
  * @brief Computes the generalized intersection of sets Z1 and Z2 over the matrix R.
