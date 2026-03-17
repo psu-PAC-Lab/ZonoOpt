@@ -497,6 +497,30 @@ class HybZono
         friend std::unique_ptr<HybZono> operator*(const Eigen::Matrix<zono_float, -1, -1>& R, const HybZono& Z);
 
         /**
+         * @brief scalar multiplication: returns f*Z
+         * 
+         * @param f 
+         * @return std::unique_ptr<HybZono> 
+         */
+        std::unique_ptr<HybZono> operator*(zono_float f) const;
+
+        /**
+         * @brief scalar multiplication: returns f*Z
+         * 
+         * @param f 
+         * @param Z 
+         * @return std::unique_ptr<HybZono> 
+         */
+        friend std::unique_ptr<HybZono> operator*(zono_float f, const HybZono& Z);
+
+        /**
+         * @brief scalar multiplication in place
+         * 
+         * @param f 
+         */
+        void operator*=(zono_float f);
+
+        /**
          * @brief pontryagin difference
          * 
          * @param other 

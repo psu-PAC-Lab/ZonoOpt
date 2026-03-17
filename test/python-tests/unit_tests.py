@@ -534,6 +534,23 @@ def test_operator_overloading():
     Z_op = M @ Z1
     assert check_equal(Z_set, Z_op), "Affine map with dense matrix failed"
 
+    # scalar multiplication - left
+    f = 3.2
+    Z_set = zono.affine_map(Z1, f*np.eye(Z1.get_n()))
+    Z_op = f * Z1
+    assert check_equal(Z_set, Z_op), "Scalar multiplication (left) failed"
+
+    # scalar multiplication - right
+    Z_op = Z1 * f
+    assert check_equal(Z_set, Z_op), "Scalar multiplication (right) failed"
+
+    # *=
+    Z_set = Z1.copy()
+    Z_op = Z1.copy()
+    Z_set = zono.affine_map(Z_set, f*np.eye(Z_set.get_n()))
+    Z_op *= f
+    assert check_equal(Z_set, Z_op), "Scalar multiplication *= failed"
+
     # cartesian product
     Z_set = zono.cartesian_product(Z1, Z2)
     Z_op = Z1 * Z2

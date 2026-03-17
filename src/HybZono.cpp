@@ -937,6 +937,32 @@ namespace ZonoOpt
         return affine_map(Z, R.sparseView());
     }
 
+    std::unique_ptr<HybZono> HybZono::operator*(zono_float f) const
+    {
+        Eigen::SparseMatrix<zono_float> fI(this->n, this->n);
+        std::vector<Eigen::Triplet<zono_float>> triplets;
+        for (int i = 0; i < this->n; ++i)
+        {
+            triplets.emplace_back(i, i, f);
+        }
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
+        fI.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
+        fI.setFromTriplets(triplets.begin(), triplets.end());
+#endif
+        return affine_map(*this, fI);
+    }
+
+    std::unique_ptr<HybZono> operator*(zono_float f, const HybZono& Z)
+    {
+        return Z * f;
+    }
+
+    void HybZono::operator*=(zono_float f)
+    {
+        *this = *(*this * f);
+    }
+
     std::unique_ptr<HybZono> HybZono::operator-() const
     {
         // make identity matrix
@@ -946,7 +972,11 @@ namespace ZonoOpt
         {
             triplets.emplace_back(i, i, -one);
         }
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
+        mI.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
         mI.setFromTriplets(triplets.begin(), triplets.end());
+#endif
         return affine_map(*this, mI);
     }
 

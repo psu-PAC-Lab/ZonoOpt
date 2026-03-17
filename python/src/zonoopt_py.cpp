@@ -1371,6 +1371,42 @@ PYBIND11_MODULE(_core, m)
                 HybZono: R*self
             )pbdoc"
         )
+        .def("__mul__", [](const HybZono& self, zono_float f) { return self * f; }, 
+            py::is_operator(),
+            R"pbdoc(
+            Scalar multiplication
+
+            Args:
+                f (float)
+
+            Returns:
+                HybZono: self*f
+            )pbdoc"
+        )
+        .def("__rmul__", [](const HybZono& self, zono_float f) { return self * f; }, 
+            py::is_operator(),
+            R"pbdoc(
+            Scalar multiplication
+
+            Args:
+                f (float)
+
+            Returns:
+                HybZono: self*f
+            )pbdoc"
+        )
+        .def("__imul__", [](HybZono& self, zono_float f) { self *= f; return &self; }, 
+            py::is_operator(),
+            R"pbdoc(
+            In-place scalar multiplication
+
+            Args:
+                f (float)
+
+            Returns:
+                HybZono: self*f
+            )pbdoc"
+        )
         .def("__sub__", [](HybZono& self, Zono& other){ return self - other; },
             py::is_operator(),
             R"pbdoc(

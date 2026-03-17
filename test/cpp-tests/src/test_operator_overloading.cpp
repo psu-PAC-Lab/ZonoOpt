@@ -129,6 +129,24 @@ int main()
     Z_op = M * (*Z1);
     test_assert(check_equal(*Z_set, *Z_op), "Affine map with dense matrix failed");
 
+    // scalar multiplication - left
+    double f = 3.2;
+    Eigen::SparseMatrix<double> fI = (f*Eigen::MatrixXd::Identity(2, 2)).sparseView();
+    Z_set = affine_map(*Z1, fI);
+    Z_op = f * (*Z1);
+    test_assert(check_equal(*Z_set, *Z_op), "Scalar multiplication with left scalar failed");
+
+    // scalar multiplication - right
+    Z_op = (*Z1) * f;
+    test_assert(check_equal(*Z_set, *Z_op), "Scalar multiplication with right scalar failed");
+
+    // *=
+    Z_set.reset(Z1->clone());
+    Z_op.reset(Z1->clone());
+    Z_set = affine_map(*Z_set, fI);
+    *Z_op *= f;
+    test_assert(check_equal(*Z_set, *Z_op), "Scalar multiplication *= failed");
+
     // cartesian product
     Z_set = cartesian_product(*Z1, *Z2);
     Z_op = *Z1 * (*Z2);
