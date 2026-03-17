@@ -960,4 +960,59 @@ namespace ZonoOpt
         return affine_map(*this, mI);
     }
 
+    std::unique_ptr<HybZono> HybZono::operator-(Zono& other) const
+    {
+        return pontry_diff(*this, other);
+    }
+
+    std::unique_ptr<HybZono> HybZono::operator-(const Eigen::Vector<zono_float, -1>& v) const
+    {
+        Point p(v);
+        return pontry_diff(*this, p);
+    }
+
+    void HybZono::operator-=(Zono& other)
+    {
+        *this = *(*this - other);
+    }
+
+    void HybZono::operator-=(const Eigen::Vector<zono_float, -1>& v)
+    {
+        *this = *(*this - v);
+    }
+
+    std::unique_ptr<HybZono> HybZono::operator*(HybZono& other) const
+    {
+        return cartesian_product(*this, other);
+    }
+
+    std::unique_ptr<HybZono> HybZono::operator*(const Eigen::Vector<zono_float, -1>& v) const
+    {
+        Point p(v);
+        return cartesian_product(*this, p);
+    }
+
+    void HybZono::operator*=(HybZono& other)
+    {
+        *this = *(*this * other);
+    }
+
+    void HybZono::operator*=(const Eigen::Vector<zono_float, -1>& v)
+    {
+        *this = *(*this * v);
+    }
+
+    std::unique_ptr<HybZono> HybZono::operator&&(HybZono& other) const
+    {
+        return intersection(*this, other);
+    }
+
+    std::unique_ptr<HybZono> HybZono::operator||(HybZono& other) const
+    {
+        std::vector<std::shared_ptr<HybZono>> hzs;
+        hzs.push_back(std::make_shared<HybZono>(*this));
+        hzs.push_back(std::make_shared<HybZono>(other));
+        return union_of_many(hzs);
+    }
+
 }

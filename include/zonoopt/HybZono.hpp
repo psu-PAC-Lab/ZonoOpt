@@ -447,14 +447,150 @@ class HybZono
         friend std::unique_ptr<HybZono> zono_union_2_hybzono(std::vector<std::shared_ptr<Zono>> &Zs, bool expose_indicators);
 
         // operator overloading
-        std::unique_ptr<HybZono> operator+(HybZono& other) const; // minkowski sum
-        std::unique_ptr<HybZono> operator+(const Eigen::Vector<zono_float, -1>& v) const; // minkowski sum with point
-        void operator+=(HybZono& other); // in-place minkowski sum
-        void operator+=(const Eigen::Vector<zono_float, -1>& v); // in-place minkowski sum with point
-        friend std::unique_ptr<HybZono> operator*(const Eigen::SparseMatrix<zono_float>& R, const HybZono& Z); // affine map with sparse matrix
-        friend std::unique_ptr<HybZono> operator*(const Eigen::Matrix<zono_float, -1, -1>& R, const HybZono& Z); // affine map with dense matrix
-        void operator*=(const Eigen::SparseMatrix<zono_float>& R); // in-place affine map with sparse matrix
-        void operator*=(const Eigen::Matrix<zono_float, -1, -1>& R); // in-place affine map with dense matrix
+
+        /**
+         * @brief minkowski sum
+         * 
+         * @param other
+         * @return std::unique_ptr<HybZono> 
+         */
+        std::unique_ptr<HybZono> operator+(HybZono& other) const;
+
+        /**
+         * @brief minkowski sum with point
+         * 
+         * @param v
+         * @return std::unique_ptr<HybZono> 
+         */
+        std::unique_ptr<HybZono> operator+(const Eigen::Vector<zono_float, -1>& v) const;
+        
+        /**
+         * @brief in-place minkowski sum
+         * 
+         * @param other 
+         */
+        void operator+=(HybZono& other);
+
+        /**
+         * @brief in-place minkowski sum with point
+         * 
+         * @param v
+         */
+        void operator+=(const Eigen::Vector<zono_float, -1>& v);
+
+        /**
+         * @brief affine map with sparse matrix: returns R*Z
+         * 
+         * @param R 
+         * @param Z 
+         * @return std::unique_ptr<HybZono> 
+         */
+        friend std::unique_ptr<HybZono> operator*(const Eigen::SparseMatrix<zono_float>& R, const HybZono& Z);
+
+        /**
+         * @brief affine map with dense matrix: returns R*Z
+         * 
+         * @param R 
+         * @param Z 
+         * @return std::unique_ptr<HybZono> 
+         */
+        friend std::unique_ptr<HybZono> operator*(const Eigen::Matrix<zono_float, -1, -1>& R, const HybZono& Z);
+
+        /**
+         * @brief in-place affine map with sparse matrix
+         * 
+         * @param R 
+         */
+        void operator*=(const Eigen::SparseMatrix<zono_float>& R); 
+
+        /**
+         * @brief in-place affine map with dense matrix
+         * 
+         * @param R 
+         */
+        void operator*=(const Eigen::Matrix<zono_float, -1, -1>& R);
+
+        /**
+         * @brief pontryagin difference
+         * 
+         * @param other 
+         * @return std::unique_ptr<HybZono> 
+         */
+        std::unique_ptr<HybZono> operator-(Zono& other) const;
+
+        /**
+         * @brief pontryagin difference with point
+         * 
+         * @param v 
+         * @return std::unique_ptr<HybZono> 
+         */
+        std::unique_ptr<HybZono> operator-(const Eigen::Vector<zono_float, -1>& v) const;
+
+        /**
+         * @brief in-place pontryagin difference
+         * 
+         * @param other 
+         */
+        void operator-=(Zono& other);
+
+        /**
+         * @brief in-place pontryagin difference with point
+         * 
+         * @param v 
+         */
+        void operator-=(const Eigen::Vector<zono_float, -1>& v);
+
+        /**
+         * @brief cartesian product
+         * 
+         * @param other 
+         * @return std::unique_ptr<HybZono> 
+         */
+        std::unique_ptr<HybZono> operator*(HybZono& other) const;
+
+        /**
+         * @brief cartesian product with point
+         * 
+         * @param v 
+         * @return std::unique_ptr<HybZono> 
+         */
+        std::unique_ptr<HybZono> operator*(const Eigen::Vector<zono_float, -1>& v) const;
+
+        /**
+         * @brief in-place cartesian product
+         * 
+         * @param other 
+         */
+        void operator*=(HybZono& other);
+
+        /**
+         * @brief in-place cartesian product with point
+         * 
+         * @param v 
+         */
+        void operator*=(const Eigen::Vector<zono_float, -1>& v);
+
+        /**
+         * @brief intersection
+         * 
+         * @param other 
+         * @return std::unique_ptr<HybZono> 
+         */
+        std::unique_ptr<HybZono> operator&&(HybZono& other) const;
+
+        /**
+         * @brief union
+         * 
+         * @param other 
+         * @return std::unique_ptr<HybZono> 
+         */
+        std::unique_ptr<HybZono> operator||(HybZono& other) const;
+
+        /**
+         * @brief unary minus: returns -I * this
+         * 
+         * @return std::unique_ptr<HybZono> 
+         */
         std::unique_ptr<HybZono> operator-() const; // unary minus
 
     protected:
