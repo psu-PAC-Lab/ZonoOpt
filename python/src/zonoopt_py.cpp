@@ -1576,7 +1576,7 @@ PYBIND11_MODULE(_core, m)
             Returns:
                 HybZono: zonotopic set
         )pbdoc");
-    m.def("pontry_diff", &pontry_diff, py::arg("Z1"), py::arg("Z2"), py::arg("exact")=false,
+    m.def("pontry_diff", &pontry_diff, py::arg("Z1"), py::arg("Z2"), py::arg("exact")=true,
         R"pbdoc(
             Computes the Pontryagin difference Z1 - Z2.
             

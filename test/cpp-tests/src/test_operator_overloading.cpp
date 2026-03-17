@@ -1,0 +1,188 @@
+#include "ZonoOpt.hpp"
+#include "unit_test_utilities.hpp"
+#include <cmath>
+
+using namespace ZonoOpt;
+
+bool check_matrix_equal(const Eigen::MatrixXd& A, const Eigen::MatrixXd& B)
+{
+    if (A.rows() != B.rows() || A.cols() != B.cols()) return false;
+
+    for (int i=0; i<A.rows(); ++i) {
+        for (int j=0; j<A.cols(); ++j) {
+            if (std::abs(A(i,j) - B(i,j)) > zono_eps)
+                return false;
+        }
+    }
+
+    return true;
+}
+
+bool check_vector_equal(const Eigen::VectorXd& A, const Eigen::VectorXd& B) {
+    if (A.size() != B.size()) return false;
+
+    for (int i=0; i<A.size(); ++i) {
+        if (std::abs(A(i,0) - B(i,0)) > zono_eps)
+            return false;
+    }
+
+    return true;
+}
+
+bool check_equal(const HybZono& Z1, HybZono& Z2)
+{
+    if (Z2.is_0_1_form() != Z1.is_0_1_form())
+    {
+        Z2.convert_form();
+    }
+
+    // make sure dimensions are the same
+    if (Z1.get_n() != Z2.get_n() || Z1.get_nGc() != Z2.get_nGc() || Z1.get_nGb() != Z2.get_nGb() || Z1.get_nC() != Z2.get_nC())
+        return false;
+
+    // make sure matrices are the same
+    const bool G_equal = check_matrix_equal(Z1.get_G().toDense(), Z2.get_G().toDense());
+    const bool c_equal = check_matrix_equal(Z1.get_c(), Z2.get_c());
+    const bool A_equal = check_matrix_equal(Z1.get_A(), Z2.get_A());
+    const bool b_equal = check_matrix_equal(Z1.get_b(), Z2.get_b());
+
+    return G_equal && c_equal && A_equal && b_equal;
+}
+
+
+int main()
+{
+    // make 2 zonotopes and a point
+    Eigen::VectorXd c1(2);
+    c1 << 1., 2.;
+    auto Z1 = make_regular_zono_2D(1., 8, false, c1);
+
+    Eigen::VectorXd c2(2);
+    c2 << -3., 1.;
+    auto Z2 = make_regular_zono_2D(0.1, 6, false, c2);
+
+    Eigen::VectorXd c3(2);
+    c3 << 3., -2.;
+    Point P3(c3);
+
+    // matrix
+    Eigen::MatrixXd M(1,2);
+    M << 32., 1.2;
+    Eigen::SparseMatrix<double> M_sp = M.sparseView();
+
+    // check operators are consistent with set operations
+
+    // minkowski sum
+    auto Z_set = minkowski_sum(*Z1, *Z2);
+    auto Z_op = *Z1 + *Z2;
+    test_assert(check_equal(*Z_set, *Z_op), "Minkowski sum failed");
+
+    // +=
+    Z_set.reset(Z1->clone());
+    Z_op.reset(Z1->clone());
+    Z_set = minkowski_sum(*Z_set, *Z2);
+    *Z_op += *Z2;
+    test_assert(check_equal(*Z_set, *Z_op), "Minkowski sum += failed");
+
+    // minkowski sum with point
+    Z_set = minkowski_sum(*Z1, P3);
+    Z_op = *Z1 + c3;
+    test_assert(check_equal(*Z_set, *Z_op), "Minkowski sum with point failed");
+
+    // +=
+    Z_set.reset(Z1->clone());
+    Z_op.reset(Z1->clone());
+    Z_set = minkowski_sum(*Z_set, P3);
+    *Z_op += c3;
+    test_assert(check_equal(*Z_set, *Z_op), "Minkowski sum with point += failed");
+
+    // pontry diff
+    Z_set = pontry_diff(*Z1, *Z2, true);
+    Z_op = *Z1 - *Z2;
+    test_assert(check_equal(*Z_set, *Z_op), "Pontryagin difference failed");
+
+    // -=
+    Z_set.reset(Z1->clone());
+    Z_op.reset(Z1->clone());
+    Z_set = pontry_diff(*Z_set, *Z2, true);
+    *Z_op -= *Z2;
+    test_assert(check_equal(*Z_set, *Z_op), "Pontryagin difference -= failed");
+
+    // pontry diff with point
+    Z_set = pontry_diff(*Z1, P3, true);
+    Z_op = *Z1 - c3;
+    test_assert(check_equal(*Z_set, *Z_op), "Pontryagin difference with point failed");
+
+    // -=
+    Z_set.reset(Z1->clone());
+    Z_op.reset(Z1->clone());
+    Z_set = pontry_diff(*Z_set, P3, true);
+    *Z_op -= c3;
+    test_assert(check_equal(*Z_set, *Z_op), "Pontryagin difference with point -= failed");
+
+    // affine map - sparse
+    Z_set = affine_map(*Z1, M_sp);
+    Z_op = M_sp * (*Z1);
+    test_assert(check_equal(*Z_set, *Z_op), "Affine map with sparse matrix failed");
+
+    // affine map - dense
+    Z_op = M * (*Z1);
+    test_assert(check_equal(*Z_set, *Z_op), "Affine map with dense matrix failed");
+
+    // *= sparse
+    Z_set.reset(Z1->clone());
+    Z_op.reset(Z1->clone());
+    Z_set = affine_map(*Z1, M_sp);
+    *Z_op *= M_sp;
+    test_assert(check_equal(*Z_set, *Z_op), "Affine map with sparse matrix *= failed");
+
+    // *= dense
+    Z_op.reset(Z1->clone());
+    *Z_op *= M;
+    test_assert(check_equal(*Z_set, *Z_op), "Affine map with dense matrix *= failed");
+
+    // cartesian product
+    Z_set = cartesian_product(*Z1, *Z2);
+    Z_op = *Z1 * (*Z2);
+    test_assert(check_equal(*Z_set, *Z_op), "Cartesian product failed");
+
+    // *=
+    Z_set.reset(Z1->clone());
+    Z_op.reset(Z1->clone());
+    Z_set = cartesian_product(*Z_set, *Z2);
+    *Z_op *= *Z2;
+    test_assert(check_equal(*Z_set, *Z_op), "Cartesian product *= failed");
+
+    // cartesian product with point
+    Z_set = cartesian_product(*Z1, P3);
+    Z_op = *Z1 * c3;
+    test_assert(check_equal(*Z_set, *Z_op), "Cartesian product with point failed");
+
+    // *=
+    Z_set.reset(Z1->clone());
+    Z_op.reset(Z1->clone());
+    Z_set = cartesian_product(*Z_set, P3);
+    *Z_op *= c3;
+    test_assert(check_equal(*Z_set, *Z_op), "Cartesian product with point *= failed");
+
+    // intersection
+    Z_set = intersection(*Z1, *Z2);
+    Z_op = *Z1 && *Z2;
+    test_assert(check_equal(*Z_set, *Z_op), "Intersection failed");
+
+    // union
+    std::vector<std::shared_ptr<HybZono>> Zs;
+    Zs.push_back(std::make_shared<HybZono>(*Z1));
+    Zs.push_back(std::make_shared<HybZono>(*Z2));
+    Z_set = union_of_many(Zs, false, false);
+    Z_op = *Z1 || *Z2;
+    test_assert(check_equal(*Z_set, *Z_op), "Union failed");
+
+    // unary minus
+    Eigen::SparseMatrix<double> mI = (-Eigen::MatrixXd::Identity(2, 2)).sparseView();
+    Z_set = affine_map(*Z1, mI);
+    Z_op = -(*Z1);
+    test_assert(check_equal(*Z_set, *Z_op), "Unary minus failed");
+
+    return 0;
+}
