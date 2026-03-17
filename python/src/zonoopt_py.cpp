@@ -1307,14 +1307,14 @@ PYBIND11_MODULE(_core, m)
             Returns:
                 HybZono
             )pbdoc")
-        .def("__iadd__", [](HybZono& self, HybZono& other) { self += other;},
+        .def("__iadd__", [](HybZono& self, HybZono& other) { self += other; return self; },
             R"pbdoc(
             In-place Minkowski sum
 
             Args:
                 other (HybZono)
             )pbdoc")
-        .def("__iadd__", [](HybZono& self, const Eigen::Vector<zono_float, -1>& v){ self += v; },
+        .def("__iadd__", [](HybZono& self, const Eigen::Vector<zono_float, -1>& v){ self += v; return self; },
             R"pbdoc(
             In-place Minkowski sum with point
 
@@ -1343,7 +1343,7 @@ PYBIND11_MODULE(_core, m)
                 HybZono: R*self
             )pbdoc"
         )
-        .def("__imul__", [](HybZono& self, const Eigen::SparseMatrix<zono_float>& R) { self *= R; },
+        .def("__imul__", [](HybZono& self, const Eigen::SparseMatrix<zono_float>& R) { self *= R; return self; },
             R"pbdoc(
             In-place affine map with sparse matrix
 
@@ -1351,7 +1351,7 @@ PYBIND11_MODULE(_core, m)
                 R (scipy.csc_matrix)
             )pbdoc"
         )
-        .def("__imul__", [](HybZono& self, const Eigen::Matrix<zono_float, -1, -1>& R) { self *= R; },
+        .def("__imul__", [](HybZono& self, const Eigen::Matrix<zono_float, -1, -1>& R) { self *= R; return self; },
             R"pbdoc(
             In-place affine map with dense matrix
 
@@ -1381,7 +1381,7 @@ PYBIND11_MODULE(_core, m)
                 HybZono
             )pbdoc"
         )
-        .def("__isub__", [](HybZono& self, Zono& other) {self -= other; },
+        .def("__isub__", [](HybZono& self, Zono& other) {self -= other; return self; },
             R"pbdoc(
             In-place Pontryagin difference
 
@@ -1389,7 +1389,7 @@ PYBIND11_MODULE(_core, m)
                 other (Zono)
             )pbdoc"
         )
-        .def("__isub__", [](HybZono& self, const Eigen::Vector<zono_float, -1>& v) {self -= v; },
+        .def("__isub__", [](HybZono& self, const Eigen::Vector<zono_float, -1>& v) {self -= v; return self; },
             R"pbdoc(
             In-place Pontryagin difference with point
 
@@ -1419,7 +1419,7 @@ PYBIND11_MODULE(_core, m)
                 HybZono
             )pbdoc"
         )
-        .def("__imul__", [](HybZono& self, HybZono& other) { self *= other; },
+        .def("__imul__", [](HybZono& self, HybZono& other) { self *= other; return self; },
             R"pbdoc(
             In-place Cartesian product
 
@@ -1427,7 +1427,7 @@ PYBIND11_MODULE(_core, m)
                 other (HybZono)
             )pbdoc"
         )
-        .def("__imul__", [](HybZono& self, const Eigen::Vector<zono_float, -1>& v) { self *= v; },
+        .def("__imul__", [](HybZono& self, const Eigen::Vector<zono_float, -1>& v) { self *= v; return self; },
             R"pbdoc(
             In-place Cartesian product with point
 
@@ -1435,7 +1435,7 @@ PYBIND11_MODULE(_core, m)
                 v (numpy.array)
             )pbdoc"
         )
-        .def("__and__", [](const HybZono& self, HybZono& other) { return self && other; },
+        .def("__and__", [](const HybZono& self, HybZono& other) { return self & other; },
             R"pbdoc(
             Intersection
 
@@ -1446,7 +1446,7 @@ PYBIND11_MODULE(_core, m)
                 HybZono
             )pbdoc"
         )
-        .def("__or__", [](const HybZono& self, HybZono& other) { return self || other; },
+        .def("__or__", [](const HybZono& self, HybZono& other) { return self | other; },
             R"pbdoc(
             Union
 

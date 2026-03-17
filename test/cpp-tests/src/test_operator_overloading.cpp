@@ -40,7 +40,7 @@ bool check_equal(const HybZono& Z1, HybZono& Z2)
     if (Z1.get_n() != Z2.get_n() || Z1.get_nGc() != Z2.get_nGc() || Z1.get_nGb() != Z2.get_nGb() || Z1.get_nC() != Z2.get_nC())
         return false;
 
-    // make sure matrices are the same
+    // make sure matrices and vectors are the same
     const bool G_equal = check_matrix_equal(Z1.get_G().toDense(), Z2.get_G().toDense());
     const bool c_equal = check_matrix_equal(Z1.get_c(), Z2.get_c());
     const bool A_equal = check_matrix_equal(Z1.get_A(), Z2.get_A());
@@ -167,7 +167,7 @@ int main()
 
     // intersection
     Z_set = intersection(*Z1, *Z2);
-    Z_op = *Z1 && *Z2;
+    Z_op = *Z1 & *Z2;
     test_assert(check_equal(*Z_set, *Z_op), "Intersection failed");
 
     // union
@@ -175,7 +175,7 @@ int main()
     Zs.push_back(std::make_shared<HybZono>(*Z1));
     Zs.push_back(std::make_shared<HybZono>(*Z2));
     Z_set = union_of_many(Zs, false, false);
-    Z_op = *Z1 || *Z2;
+    Z_op = *Z1 | *Z2;
     test_assert(check_equal(*Z_set, *Z_op), "Union failed");
 
     // unary minus

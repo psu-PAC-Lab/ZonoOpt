@@ -1002,12 +1002,12 @@ namespace ZonoOpt
         *this = *(*this * v);
     }
 
-    std::unique_ptr<HybZono> HybZono::operator&&(HybZono& other) const
+    std::unique_ptr<HybZono> HybZono::operator&(HybZono& other) const
     {
         return intersection(*this, other);
     }
 
-    std::unique_ptr<HybZono> HybZono::operator||(HybZono& other) const
+    std::unique_ptr<HybZono> HybZono::operator|(HybZono& other) const
     {
         std::vector<std::shared_ptr<HybZono>> hzs;
         hzs.push_back(std::make_shared<HybZono>(*this));

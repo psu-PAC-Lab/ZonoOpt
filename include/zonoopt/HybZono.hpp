@@ -576,7 +576,7 @@ class HybZono
          * @param other 
          * @return std::unique_ptr<HybZono> 
          */
-        std::unique_ptr<HybZono> operator&&(HybZono& other) const;
+        std::unique_ptr<HybZono> operator&(HybZono& other) const;
 
         /**
          * @brief union
@@ -584,7 +584,7 @@ class HybZono
          * @param other 
          * @return std::unique_ptr<HybZono> 
          */
-        std::unique_ptr<HybZono> operator||(HybZono& other) const;
+        std::unique_ptr<HybZono> operator|(HybZono& other) const;
 
         /**
          * @brief unary minus: returns -I * this
