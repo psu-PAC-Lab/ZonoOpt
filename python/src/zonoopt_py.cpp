@@ -1287,6 +1287,187 @@ PYBIND11_MODULE(_core, m)
             Returns:
                 HybZono: A copy of the hybrid zonotope object.
             )pbdoc")
+        .def("__add__", [](const HybZono& self, HybZono& other) { return self + other; },
+            R"pbdoc(
+            Minkowski sum
+
+            Args:
+                other (HybZono)
+
+            Returns:
+                HybZono
+            )pbdoc")
+        .def("__add__", [](const HybZono& self, const Eigen::Vector<zono_float, -1>& v){ return self + v; },
+            R"pbdoc(
+            Minkowski sum with point
+
+            Args:
+                v (numpy.array)
+
+            Returns:
+                HybZono
+            )pbdoc")
+        .def("__iadd__", [](HybZono& self, HybZono& other) { self += other;},
+            R"pbdoc(
+            In-place Minkowski sum
+
+            Args:
+                other (HybZono)
+            )pbdoc")
+        .def("__iadd__", [](HybZono& self, const Eigen::Vector<zono_float, -1>& v){ self += v; },
+            R"pbdoc(
+            In-place Minkowski sum with point
+
+            Args:
+                v (numpy.array)
+            )pbdoc")
+        .def("__rmul__", [](const HybZono& self, const Eigen::SparseMatrix<zono_float>& R) { return R * self; },
+            R"pbdoc(
+            Affine map with sparse matrix
+
+            Args:
+                R (scipy.csc_matrix)
+
+            Returns:
+                HybZono: R*self
+            )pbdoc"
+        )
+        .def("__rmul__", [](const HybZono& self, const Eigen::Matrix<zono_float, -1, -1>& R) {return R * self; },
+            R"pbdoc(
+            Affine map with dense matrix
+
+            Args:
+                R (numpy.array)
+
+            Returns:
+                HybZono: R*self
+            )pbdoc"
+        )
+        .def("__imul__", [](HybZono& self, const Eigen::SparseMatrix<zono_float>& R) { self *= R; },
+            R"pbdoc(
+            In-place affine map with sparse matrix
+
+            Args:
+                R (scipy.csc_matrix)
+            )pbdoc"
+        )
+        .def("__imul__", [](HybZono& self, const Eigen::Matrix<zono_float, -1, -1>& R) { self *= R; },
+            R"pbdoc(
+            In-place affine map with dense matrix
+
+            Args:
+                R (numpy.array)
+            )pbdoc"
+        )
+        .def("__sub__", [](HybZono& self, Zono& other){ return self - other; },
+            R"pbdoc(
+            Pontryagin difference
+
+            Args:
+                other (Zono)
+
+            Returns:
+                HybZono
+            )pbdoc"
+        )
+        .def("__sub__", [](HybZono& self, const Eigen::Vector<zono_float, -1>& v){ return self - v; },
+            R"pbdoc(
+            Pontryagin difference with point
+
+            Args:
+                v (numpy.array)
+
+            Returns:
+                HybZono
+            )pbdoc"
+        )
+        .def("__isub__", [](HybZono& self, Zono& other) {self -= other; },
+            R"pbdoc(
+            In-place Pontryagin difference
+
+            Args:
+                other (Zono)
+            )pbdoc"
+        )
+        .def("__isub__", [](HybZono& self, const Eigen::Vector<zono_float, -1>& v) {self -= v; },
+            R"pbdoc(
+            In-place Pontryagin difference with point
+
+            Args:
+                v (numpy.array)
+            )pbdoc"
+        )
+        .def("__mul__", [](const HybZono& self, HybZono& other) { return self * other; },
+            R"pbdoc(
+            Cartesian product
+
+            Args:
+                other (HybZono)
+
+            Returns:
+                HybZono
+            )pbdoc"
+        )
+        .def("__mul__", [](const HybZono& self, const Eigen::Vector<zono_float, -1>& v) { return self * v; },
+            R"pbdoc(
+            Cartesian product with point
+
+            Args:
+                v (numpy.array)
+
+            Returns:
+                HybZono
+            )pbdoc"
+        )
+        .def("__imul__", [](HybZono& self, HybZono& other) { self *= other; },
+            R"pbdoc(
+            In-place Cartesian product
+
+            Args:
+                other (HybZono)
+            )pbdoc"
+        )
+        .def("__imul__", [](HybZono& self, const Eigen::Vector<zono_float, -1>& v) { self *= v; },
+            R"pbdoc(
+            In-place Cartesian product with point
+
+            Args:
+                v (numpy.array)
+            )pbdoc"
+        )
+        .def("__and__", [](const HybZono& self, HybZono& other) { return self && other; },
+            R"pbdoc(
+            Intersection
+
+            Args:
+                other (HybZono)
+
+            Returns:
+                HybZono
+            )pbdoc"
+        )
+        .def("__or__", [](const HybZono& self, HybZono& other) { return self || other; },
+            R"pbdoc(
+            Union
+
+            Args:
+                other (HybZono)
+
+            Returns:
+                HybZono
+            )pbdoc"
+        )
+        .def("__neg__", [](const HybZono& self){return -self; },
+            R"pbdoc(
+            Unary minus
+
+            Args:
+                other (HybZono)
+
+            Returns:
+                HybZono: -I * self
+            )pbdoc"
+        )
     ;
 
     // conzono class
