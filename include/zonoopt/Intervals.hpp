@@ -694,6 +694,22 @@ namespace ZonoOpt
          */
         Eigen::Vector<zono_float, -1> center() const;
 
+        /**
+         * @brief Box intersection
+         * 
+         * @param other other
+         * @return intersection of this and other
+         */
+        Box intersect(const Box& other) const;
+
+        /**
+         * @brief Box interval hull
+         * 
+         * @param other other box
+         * @return interval hull of this and other
+         */
+        Box interval_hull(const Box& other) const;
+
         // operator overloading
 
         /**
@@ -849,6 +865,22 @@ namespace ZonoOpt
          * @return enclosure of -this
          */
         Box operator-() const;
+
+        /**
+         * @brief Box intersection
+         * 
+         * @param other other box
+         * @return Intersection of this and other
+         */
+        Box operator&(const Box& other) const;
+
+        /**
+         * @brief Box interval hull
+         * 
+         * @param other box
+         * @return Interval hull of this and other
+         */
+        Box operator|(const Box& other) const;
 
         // interval contractors
 

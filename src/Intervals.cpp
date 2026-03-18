@@ -118,6 +118,31 @@ namespace ZonoOpt
         return out;
     }
 
+    Box Box::intersect(const Box& other) const
+    {
+        if (this->size() != other.size())
+            throw std::invalid_argument("Box intersection: inconsistent dimensions");
+        Box out = *this;
+        for (int i = 0; i < static_cast<int>(this->size()); ++i)
+        {
+            out.set_element(i, get_element(i).intersect(other.get_element(i)));
+        }
+        return out;
+    }
+
+    Box Box::interval_hull(const Box& other) const
+    {
+        if (this->size() != other.size())
+            throw std::invalid_argument("Box interval hull: inconsistent dimensions");
+        Box out = *this;
+        for (int i = 0; i < static_cast<int>(this->size()); ++i)
+        {
+            out.set_element(i, get_element(i).interval_hull(other.get_element(i)));
+        }
+        return out;
+    }
+
+
     Box Box::operator+(const Box& other) const
     {
         if (this->size() != other.size())
@@ -298,6 +323,16 @@ namespace ZonoOpt
             out.set_element(i, -this->get_element(i));
         }
         return out;
+    }
+
+    Box Box::operator&(const Box& other) const
+    {
+        return this->intersect(other);
+    }
+
+    Box Box::operator|(const Box& other) const
+    {
+        return this->interval_hull(other);
     }
 
     bool Box::contract(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A,

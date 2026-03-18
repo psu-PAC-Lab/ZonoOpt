@@ -694,6 +694,26 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: result of linear map of box with vector
             )pbdoc")
+        .def("interval_hull", &Box::interval_hull, py::arg("other"),
+            R"pbdoc(
+                Interval hull of two boxes
+
+                Args:
+                    other (Box): other box
+
+                Returns:
+                    Box: interval hull of self and other
+            )pbdoc")
+        .def("intersect", &Box::intersect, py::arg("other"),
+            R"pbdoc(
+                Intersection of two boxes
+
+                Args:
+                    other (Box): other box
+
+                Returns:
+                    Box: intersection of self and other
+            )pbdoc")
         .def("__add__", [](const Box& self, const Box& other) -> Box { return self + other; },
             py::is_operator(),
             R"pbdoc(
@@ -902,6 +922,28 @@ PYBIND11_MODULE(_core, m)
                     Box: enclosure of -self
             )pbdoc"
         )
+        .def("__and__", &Box::operator&,
+            py::is_operator(),
+            R"pbdoc(
+                Intersection operator
+
+                Args:
+                    other (Box): other box
+
+                Returns:
+                    Box: intersection of self and other
+            )pbdoc")
+        .def("__or__", &Box::operator|,
+            py::is_operator(),
+            R"pbdoc(
+                Interval hull operator
+
+                Args:
+                    other (Box): other box
+
+                Returns:
+                    Box: interval hull of self and other
+            )pbdoc")
     ;
 
     box_cl.attr("__array_priority__") = 100.;
