@@ -497,6 +497,14 @@ class HybZono
         friend std::unique_ptr<HybZono> operator*(const Eigen::Matrix<zono_float, -1, -1>& R, const HybZono& Z);
 
         /**
+         * @brief affine inclusion with interval matrix: returns R*Z
+         * @param R
+         * @param Z
+         * @return std::unique_ptr<HybZono>
+         */
+        friend std::unique_ptr<HybZono> operator*(const IntervalMatrix& R, const HybZono& Z);
+
+        /**
          * @brief scalar multiplication: returns f*Z
          * 
          * @param f 

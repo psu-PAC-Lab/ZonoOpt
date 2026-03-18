@@ -937,6 +937,11 @@ namespace ZonoOpt
         return affine_map(Z, R.sparseView());
     }
 
+    std::unique_ptr<HybZono> operator*(const IntervalMatrix& R, const HybZono& Z)
+    {
+        return affine_inclusion(Z, R);
+    }
+
     std::unique_ptr<HybZono> HybZono::operator*(zono_float f) const
     {
         Eigen::SparseMatrix<zono_float> fI(this->n, this->n);

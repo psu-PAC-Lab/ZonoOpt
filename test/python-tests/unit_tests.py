@@ -474,6 +474,9 @@ def test_operator_overloading():
     M = np.array([[32., 1.2]])
     M_sp = sp.csc_matrix(M)
 
+    M_upper = np.array([[33., 1.4]])
+    M_int = zono.IntervalMatrix(M, M_upper)
+
     # check operators are consistent with set operations
 
     # minkowski sum
@@ -533,6 +536,11 @@ def test_operator_overloading():
     Z_set = zono.affine_map(Z1, M)
     Z_op = M @ Z1
     assert check_equal(Z_set, Z_op), "Affine map with dense matrix failed"
+
+    # affine inclusion
+    Z_set = zono.affine_inclusion(Z1, M_int)
+    Z_op = M_int @ Z1
+    assert check_equal(Z_set, Z_op), "Affine inclusion failed"
 
     # scalar multiplication - left
     f = 3.2

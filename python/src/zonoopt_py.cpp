@@ -2127,6 +2127,18 @@ PYBIND11_MODULE(_core, m)
                 HybZono: R*self
             )pbdoc"
         )
+        .def("__rmatmul__", [](const HybZono& self, const IntervalMatrix& R) {return R * self; },
+            py::is_operator(),
+            R"pbdoc(
+            Affine inclusion with interval matrix
+
+            Args:
+                R (IntervalMatrix)
+
+            Returns:
+                HybZono: R*self
+            )pbdoc"
+            )
         .def("__mul__", [](const HybZono& self, zono_float f) { return self * f; }, 
             py::is_operator(),
             R"pbdoc(

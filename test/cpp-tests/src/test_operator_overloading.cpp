@@ -70,6 +70,11 @@ int main()
     M << 32., 1.2;
     Eigen::SparseMatrix<double> M_sp = M.sparseView();
 
+    Eigen::MatrixXd M_upper(1, 2);
+    M_upper << 33., 1.4;
+
+    IntervalMatrix M_int(M, M_upper);
+
     // check operators are consistent with set operations
 
     // minkowski sum
@@ -128,6 +133,11 @@ int main()
     // affine map - dense
     Z_op = M * (*Z1);
     test_assert(check_equal(*Z_set, *Z_op), "Affine map with dense matrix failed");
+
+    // affine inclusion
+    Z_set = affine_inclusion(*Z1, M_int);
+    Z_op = M_int * (*Z1);
+    test_assert(check_equal(*Z_set, *Z_op), "Affine inclusion failed");
 
     // scalar multiplication - left
     double f = 3.2;
