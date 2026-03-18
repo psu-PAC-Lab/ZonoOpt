@@ -833,6 +833,88 @@ namespace ZonoOpt
         return y;
     }
 
+    IntervalMatrix operator+(const Interval& interval, const IntervalMatrix& mat)
+    {
+        return mat + interval;
+    }
+
+    IntervalMatrix IntervalMatrix::operator*(zono_float alpha) const
+    {
+        IntervalMatrix mat(*this);
+        for (int i=0; i<static_cast<int>(mat.rows()); ++i)
+        {
+            for (auto& [k, val] : mat.mat_[i])
+            {
+                val *= alpha;
+            }
+        }
+        return mat;
+    }
+
+    void IntervalMatrix::operator*=(zono_float alpha)
+    {
+        *this = *this * alpha;
+    }
+
+    IntervalMatrix IntervalMatrix::operator*(const Interval& interval) const
+    {
+        IntervalMatrix mat(*this);
+        for (int i=0; i<static_cast<int>(mat.rows()); ++i)
+        {
+            for (auto& [k, val] : mat.mat_[i])
+            {
+                val *= interval;
+            }
+        }
+        return mat;
+    }
+
+    IntervalMatrix operator*(zono_float alpha, const IntervalMatrix& A)
+    {
+        return A * alpha;
+    }
+
+    void IntervalMatrix::operator*=(const Interval& interval)
+    {
+        *this = *this * interval;
+    }
+
+    IntervalMatrix IntervalMatrix::operator/(zono_float alpha) const
+    {
+        IntervalMatrix mat(*this);
+        for (int i=0; i<static_cast<int>(mat.rows()); ++i)
+        {
+            for (auto& [k, val] : mat.mat_[i])
+            {
+                val /= alpha;
+            }
+        }
+        return mat;
+    }
+
+    void IntervalMatrix::operator/=(zono_float alpha)
+    {
+        *this = *this / alpha;
+    }
+
+    IntervalMatrix IntervalMatrix::operator/(const Interval& interval) const
+    {
+        IntervalMatrix mat(*this);
+        for (int i=0; i<static_cast<int>(mat.rows()); ++i)
+        {
+            for (auto& [k, val] : mat.mat_[i])
+            {
+                val /= interval;
+            }
+        }
+        return mat;
+    }
+
+    void IntervalMatrix::operator/=(const Interval& interval)
+    {
+        *this = *this / interval;
+    }
+
     IntervalMatrix IntervalMatrix::operator*(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A) const
     {
         // input handling
@@ -857,6 +939,12 @@ namespace ZonoOpt
             }
         }
         return {rows, cols, triplets};
+    }
+
+    IntervalMatrix IntervalMatrix::operator*(const Eigen::Matrix<zono_float, -1, -1>& A) const
+    {
+        const Eigen::SparseMatrix<zono_float, Eigen::RowMajor> A_sp = A.sparseView();
+        return *this * A_sp;
     }
 
     IntervalMatrix IntervalMatrix::operator*(const IntervalMatrix& other) const
@@ -884,6 +972,11 @@ namespace ZonoOpt
         return {rows, cols, triplets};
     }
 
+    void IntervalMatrix::operator*=(const IntervalMatrix& other)
+    {
+        *this = *this * other;
+    }
+
     IntervalMatrix IntervalMatrix::operator+(const IntervalMatrix& other) const
     {
         // input handling
@@ -906,6 +999,11 @@ namespace ZonoOpt
         return {this->rows_, this->cols_, triplets};
     }
 
+    void IntervalMatrix::operator+=(const IntervalMatrix& other)
+    {
+        *this = *this + other;
+    }
+
     IntervalMatrix IntervalMatrix::operator-(const IntervalMatrix& other) const
     {
         // input handling
@@ -926,6 +1024,137 @@ namespace ZonoOpt
             }
         }
         return {this->rows_, this->cols_, triplets};
+    }
+
+    IntervalMatrix IntervalMatrix::operator+(const Interval& interval) const
+    {
+        IntervalMatrix mat(*this);
+        for (int i=0; i<static_cast<int>(mat.rows()); ++i)
+        {
+            for (auto& [k, val] : mat.mat_[i])
+            {
+                val += interval;
+            }
+        }
+        return mat;
+    }
+
+    void IntervalMatrix::operator+=(const Interval& interval)
+    {
+        *this = *this + interval;
+    }
+
+    IntervalMatrix IntervalMatrix::operator+(zono_float alpha) const
+    {
+        IntervalMatrix mat(*this);
+        for (int i=0; i<static_cast<int>(mat.rows()); ++i)
+        {
+            for (auto& [k, val] : mat.mat_[i])
+            {
+                val += alpha;
+            }
+        }
+        return mat;
+    }
+
+    void IntervalMatrix::operator+=(zono_float alpha)
+    {
+        *this = *this + alpha;
+    }
+
+    IntervalMatrix operator-(const Interval& interval, const IntervalMatrix& mat)
+    {
+        return -mat + interval;
+    }
+
+    void IntervalMatrix::operator-=(const IntervalMatrix& other)
+    {
+        *this = *this - other;
+    }
+
+    IntervalMatrix IntervalMatrix::operator-(const Interval& interval) const
+    {
+        IntervalMatrix mat(*this);
+        for (int i=0; i<static_cast<int>(mat.rows()); ++i)
+        {
+            for (auto& [k, val] : mat.mat_[i])
+            {
+                val -= interval;
+            }
+        }
+        return mat;
+    }
+
+    void IntervalMatrix::operator-=(const Interval& interval)
+    {
+        *this = *this - interval;
+    }
+
+    IntervalMatrix IntervalMatrix::operator-(zono_float alpha) const
+    {
+        IntervalMatrix mat(*this);
+        for (int i=0; i<static_cast<int>(mat.rows()); ++i)
+        {
+            for (auto& [k, val] : mat.mat_[i])
+            {
+                val -= alpha;
+            }
+        }
+        return mat;
+    }
+
+    void IntervalMatrix::operator-=(zono_float alpha)
+    {
+        *this = *this - alpha;
+    }
+
+    IntervalMatrix operator-(zono_float alpha, const IntervalMatrix& A)
+    {
+        return -A + alpha;
+    }
+
+    IntervalMatrix operator*(const Interval& interval, const IntervalMatrix& A)
+    {
+        return A * interval;
+    }
+
+    IntervalMatrix operator/(zono_float alpha, const IntervalMatrix& A)
+    {
+        IntervalMatrix mat(A);
+        for (int i=0; i<static_cast<int>(mat.rows()); ++i)
+        {
+            for (auto& [k, val] : mat.mat_[i])
+            {
+                val = alpha / val;
+            }
+        }
+        return mat;
+    }
+
+    IntervalMatrix operator/(const Interval& interval, const IntervalMatrix& A)
+    {
+        IntervalMatrix mat(A);
+        for (int i=0; i<static_cast<int>(mat.rows()); ++i)
+        {
+            for (auto& [k, val] : mat.mat_[i])
+            {
+                val = interval / val;
+            }
+        }
+        return mat;
+    }
+
+    IntervalMatrix IntervalMatrix::operator-() const
+    {
+        IntervalMatrix mat(*this);
+        for (int i=0; i<static_cast<int>(mat.rows()); ++i)
+        {
+            for (auto& [k, val] : mat.mat_[i])
+            {
+                val = -val;
+            }
+        }
+        return mat;
     }
 
     Eigen::SparseMatrix<zono_float> IntervalMatrix::center() const

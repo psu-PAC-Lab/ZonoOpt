@@ -1058,7 +1058,7 @@ PYBIND11_MODULE(_core, m)
     box_cl.attr("__array_priority__") = 100.;
 
     // interval matrix
-    py::class_<IntervalMatrix>(m, "IntervalMatrix", "Interval matrix class")
+    auto int_mat_cl = py::class_<IntervalMatrix>(m, "IntervalMatrix", "Interval matrix class")
         .def(py::init<const Eigen::Matrix<zono_float, -1, -1>&, const Eigen::Matrix<zono_float, -1, -1>&>(),
             py::arg("mat_lb"), py::arg("mat_ub"),
             R"pbdoc(
@@ -1151,8 +1151,8 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     IntervalMatrix: radius of interval matrix
             )pbdoc")
-        .def("__mul__", [](const IntervalMatrix& self, const Eigen::Vector<zono_float, -1>& v) -> Box
-            { return self*v; }, py::arg("v"),
+        .def("__matmul__", [](const IntervalMatrix& self, const Eigen::Vector<zono_float, -1>& v) -> Box
+            { return self*v; },
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix multiplication with vector
@@ -1163,8 +1163,8 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Box: resulting box
             )pbdoc")
-        .def("__mul__", [](const IntervalMatrix& self, const Box& box) -> Box
-            { return self*box; }, py::arg("box"),
+        .def("__matmul__", [](const IntervalMatrix& self, const Box& box) -> Box
+            { return self*box; },
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix multiplication with Box
@@ -1175,11 +1175,134 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Box: resulting box
             )pbdoc")
-        .def("__mul__", [](const IntervalMatrix& self, const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A) -> IntervalMatrix
-            { return self*A; }, py::arg("A"),
+        .def("__mul__", [](const IntervalMatrix& self, zono_float alpha)
+            { return self*alpha; },
             py::is_operator(),
             R"pbdoc(
-                IntervalMatrix multiplication with matrix
+                IntervalMatrix multiplication with scalar
+
+                Args:
+                    alpha (float): scalar multiplier
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix
+            )pbdoc")
+        .def("__rmul__", [](const IntervalMatrix& self, zono_float alpha)
+            { return alpha*self; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix multiplication with scalar
+
+                Args:
+                    alpha (float): scalar multiplier
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix
+            )pbdoc")
+        .def("__imul__", [](IntervalMatrix& self, zono_float alpha)
+                { self*=alpha; return &self; },
+                py::is_operator(),
+                R"pbdoc(
+                    IntervalMatrix multiplication with scalar in-place
+
+                    Args:
+                        alpha (float): scalar multiplier
+                )pbdoc")
+        .def("__mul__", [](const IntervalMatrix& self, const Interval& interval){ return self*interval; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix elementwise multiplication with interval
+
+                Args:
+                    interval (Interval): interval multiplier
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix
+            )pbdoc")
+        .def("__rmul__", [](const IntervalMatrix& self, const Interval& interval){ return interval*self; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix elementwise multiplication with interval
+
+                Args:
+                    interval (Interval): interval multiplier
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix
+            )pbdoc")
+        .def("__imul__", [](IntervalMatrix& self, const Interval& interval){ self*=interval; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix elementwise multiplication with interval in-place
+
+                Args:
+                    interval (Interval): interval multiplier
+            )pbdoc")
+        .def("__truediv__", [](const IntervalMatrix& self, zono_float alpha){ return self / alpha; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix elementwise division by scalar
+
+                Args:
+                    alpha (float): scalar to divide
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix (self / alpha)
+            )pbdoc")
+        .def("__rtruediv__", [](const IntervalMatrix& self, zono_float alpha){ return alpha / self; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix elementwise scalar division
+
+                Args:
+                    alpha (float): scalar
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix (alpha / self)
+            )pbdoc")
+        .def("__itruediv__", [](IntervalMatrix& self, zono_float alpha){ self /= alpha; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix elementwise division by scalar in-place
+
+                Args:
+                    alpha (float): scalar to divide
+            )pbdoc")
+        .def("__truediv__", [](const IntervalMatrix& self, const Interval& interval){ return self / interval; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix elementwise division by interval
+
+                Args:
+                    interval (Interval): interval to divide
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix (self / interval)
+            )pbdoc")
+        .def("__rtruediv__", [](const IntervalMatrix& self, const Interval& interval){ return interval / self; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix elementwise interval division
+
+                Args:
+                    interval (Interval): interval
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix (interval / self)
+            )pbdoc")
+        .def("__itruediv__", [](IntervalMatrix& self, const Interval& interval){ self /= interval; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix elementwise division by interval in-place
+
+                Args:
+                    interval (Interval): interval to divide
+            )pbdoc")
+        .def("__matmul__", [](const IntervalMatrix& self, const Eigen::Matrix<zono_float, -1, -1>& A) -> IntervalMatrix
+            { return self*A; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix multiplication with dense matrix
 
                 Args:
                     A (scipy.sparse.csr_matrix): rhs matrix
@@ -1187,8 +1310,44 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     IntervalMatrix: resulting interval matrix
             )pbdoc")
-        .def("__mul__", [](const IntervalMatrix& self, const IntervalMatrix& other) -> IntervalMatrix
-            { return self*other; }, py::arg("other"),
+        .def("__matmul__", [](const IntervalMatrix& self, const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A) -> IntervalMatrix
+            { return self*A; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix multiplication with sparse matrix
+
+                Args:
+                    A (scipy.sparse.csr_matrix): rhs matrix
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix
+            )pbdoc")
+        .def("__rmatmul__", [](const IntervalMatrix& self, const Eigen::Matrix<zono_float, -1, -1>& A) -> IntervalMatrix
+            { return A*self; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix multiplication with dense matrix
+
+                Args:
+                    A (scipy.sparse.csr_matrix): lhs matrix
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix
+            )pbdoc")
+        .def("__rmatmul__", [](const IntervalMatrix& self, const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A) -> IntervalMatrix
+            { return A*self; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix multiplication with sparse matrix
+
+                Args:
+                    A (scipy.sparse.csr_matrix): rhs matrix
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix
+            )pbdoc")
+        .def("__matmul__", [](const IntervalMatrix& self, const IntervalMatrix& other) -> IntervalMatrix
+            { return self*other; },
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix multiplication with another IntervalMatrix
@@ -1199,7 +1358,16 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     IntervalMatrix: resulting interval matrix
             )pbdoc")
-        .def("__add__", &IntervalMatrix::operator+, py::arg("other"),
+        .def("__imatmul__", [](IntervalMatrix& self, const IntervalMatrix& other)
+            { self*=other; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix multiplication with another IntervalMatrix in-place
+
+                Args:
+                    other (IntervalMatrix): rhs interval matrix
+            )pbdoc")
+        .def("__add__", [](const IntervalMatrix& self, const IntervalMatrix& other){ return self+other; },
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix addition
@@ -1210,7 +1378,75 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     IntervalMatrix: resulting interval matrix
             )pbdoc")
-        .def("__sub__", &IntervalMatrix::operator-, py::arg("other"),
+        .def("__iadd__", [](IntervalMatrix& self, const IntervalMatrix& other) { self+=other; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix addition in-place
+
+                Args:
+                    other (IntervalMatrix): rhs interval matrix
+            )pbdoc")
+        .def("__add__", [](const IntervalMatrix& self, const Interval& interval){ return self+interval; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix elementwise addition with interval
+
+                Args:
+                    interval (Interval): interval to add
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix
+            )pbdoc")
+        .def("__radd__", [](const IntervalMatrix& self, const Interval& interval){ return interval+self; },
+                py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix elementwise addition with interval
+
+                Args:
+                    interval (Interval): interval to add
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix
+            )pbdoc")
+        .def("__iadd__", [](IntervalMatrix& self, const Interval& interval){ self+=interval; return &self; },
+                py::is_operator(),
+                R"pbdoc(
+                IntervalMatrix elementwise addition with interval in-place
+
+                Args:
+                    interval (Interval): interval to add
+            )pbdoc")
+        .def("__add__", [](const IntervalMatrix& self, zono_float alpha){ return self+alpha; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix elementwise addition with scalar
+
+                Args:
+                    alpha (float): interval to add
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix
+            )pbdoc")
+        .def("__radd__", [](const IntervalMatrix& self, zono_float alpha){ return alpha+self; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix elementwise addition with scalar
+
+                Args:
+                    alpha (float): interval to add
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix
+            )pbdoc")
+        .def("__iadd__", [](IntervalMatrix& self, zono_float alpha){ self+=alpha; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix elementwise addition with scalar in-place
+
+                Args:
+                    alpha (float): interval to add
+            )pbdoc")
+        .def("__sub__", [](const IntervalMatrix& self, const IntervalMatrix& other){ return self-other; },
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix subtraction
@@ -1220,6 +1456,82 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     IntervalMatrix: resulting interval matrix
+            )pbdoc")
+        .def("__isub__", [](IntervalMatrix& self, const IntervalMatrix& other){ self-=other; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix subtraction in-place
+
+                Args:
+                    other (IntervalMatrix): rhs interval matrix
+            )pbdoc")
+        .def("__sub__", [](const IntervalMatrix& self, const Interval& interval){ return self-interval; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix elementwise interval subtraction
+
+                Args:
+                    interval (Interval): interval to subtract
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix (self - interval)
+            )pbdoc")
+        .def("__rsub__", [](const IntervalMatrix& self, const Interval& interval){ return interval-self; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix elementwise interval subtraction
+
+                Args:
+                    interval (Interval): interval from which to subtract
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix (interval - self)
+            )pbdoc")
+        .def("__isub__", [](IntervalMatrix& self, const Interval& interval){ self-=interval; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix elementwise interval subtraction in-place
+
+                Args:
+                    interval (Interval): interval to subtract
+            )pbdoc")
+        .def("__sub__", [](const IntervalMatrix& self, zono_float alpha){ return self-alpha; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix elementwise scalar subtraction
+
+                Args:
+                    alpha (float): scalar to subtract
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix (self - alpha)
+            )pbdoc")
+        .def("__rsub__", [](const IntervalMatrix& self, zono_float alpha){ return alpha-self; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix elementwise scalar subtraction
+
+                Args:
+                    alpha (float): scalar from which to subtract
+
+                Returns:
+                    IntervalMatrix: resulting interval matrix (alpha - self)
+            )pbdoc")
+        .def("__isub__", [](IntervalMatrix& self, zono_float alpha){ self-=alpha; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix elementwise scalar subtraction in-place
+
+                Args:
+                    alpha (float): scalar to subtract
+            )pbdoc")
+        .def("__neg__", [](const IntervalMatrix& self){ return -self; },
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix negation
+
+                Returns:
+                    IntervalMatrix: negated interval matrix
             )pbdoc")
         .def("rows", &IntervalMatrix::rows,
             R"pbdoc(
@@ -1243,6 +1555,8 @@ PYBIND11_MODULE(_core, m)
                     str: string display of IntervalMatrix
             )pbdoc")
     ;
+
+    int_mat_cl.attr("__array_priority__") = 100.;
 
 
     // hybzono class

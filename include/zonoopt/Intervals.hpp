@@ -1172,7 +1172,7 @@ namespace ZonoOpt
          * 
          * @param mat matrix of intervals
          */
-        IntervalMatrix(const Eigen::Matrix<Interval, -1, -1>& mat);
+        explicit IntervalMatrix(const Eigen::Matrix<Interval, -1, -1>& mat);
 
         /**
          * @brief Get center matrix
@@ -1221,11 +1221,118 @@ namespace ZonoOpt
         Box operator*(const Box& box) const;
 
         /**
-         * @brief IntervalMatrix multiplication with matrix
+         * @brief IntervalMatrix scalar multiplication
+         * @param alpha scalar multiplier
+         * @return resulting interval matrix
+         */
+        IntervalMatrix operator*(zono_float alpha) const;
+
+        /**
+         * @brief IntervalMatrix scalar multiplication in-place
+         * @param alpha scalar multiplier
+         */
+        void operator*=(zono_float alpha);
+
+        /**
+         * @brief IntervalMatrix scalar multiplication
+         * @param alpha scalar multiplier
+         * @param A interval matrix
+         * @return resulting interval matrix
+         */
+        friend IntervalMatrix operator*(zono_float alpha, const IntervalMatrix& A);
+
+        /**
+         * @brief IntervalMatrix elementwise multiplication by interval
+         * @param interval interval to multiply
+         * @return resulting interval matrix
+         */
+        IntervalMatrix operator*(const Interval& interval) const;
+
+        /**
+         * @brief IntervalMatrix elementwise multiplication by interval
+         * @param interval interval to multiply
+         * @param A interval matrix
+         * @return resulting interval matrix
+         */
+        friend IntervalMatrix operator*(const Interval& interval, const IntervalMatrix& A);
+
+        /**
+         * @brief IntervalMatrix elementwise multiplication by interval in-place
+         * @param interval interval to multiply
+         */
+        void operator*=(const Interval& interval);
+
+        /**
+         * @brief IntervalMatrix elementwise division by scalar
+         * @param alpha scalar to divide
+         * @return resulting interval matrix (this / alpha)
+         */
+        IntervalMatrix operator/(zono_float alpha) const;
+
+        /**
+         * @brief IntervalMatrix elementwise scalar division
+         * @param alpha scalar
+         * @param A matrix to divide
+         * @return resulting interval matrix (alpha / this)
+         */
+        friend IntervalMatrix operator/(zono_float alpha, const IntervalMatrix& A);
+
+        /**
+         * @brief IntervalMatrix elementwise division by scalar
+         * @param alpha scalar to divide
+         */
+        void operator/=(zono_float alpha);
+
+        /**
+         * @brief IntervalMatrix elementwise division by interval
+         * @param interval interval to divide
+         * @return resulting interval matrix (this / interval)
+         */
+        IntervalMatrix operator/(const Interval& interval) const;
+
+        /**
+         * @brief IntervalMatrix elementwise interval division
+         * @param interval interval
+         * @param A matrix to divide
+         * @return resulting interval matrix (interval / this)
+         */
+        friend IntervalMatrix operator/(const Interval& interval, const IntervalMatrix& A);
+
+        /**
+         * @brief IntervalMatrix elementwise division by interval in-place
+         * @param interval interval to divide
+         */
+        void operator/=(const Interval& interval);
+
+        /**
+         * @brief IntervalMatrix multiplication with sparse matrix
          * @param A rhs matrix
          * @return resulting interval matrix
          */
         IntervalMatrix operator*(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A) const;
+
+        /**
+         * @brief IntervalMatrix multiplication with sparse matrix
+         * @param A lhs matrix
+         * @param B rhs interval matrix
+         * @return resulting interval matrix
+         */
+        friend IntervalMatrix operator*(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A, const IntervalMatrix& B);
+
+        /**
+         * @brief IntervalMatrix multiplication with dense matrix
+         * @param A rhs matrix
+         * @return resulting interval matrix
+         */
+        IntervalMatrix operator*(const Eigen::Matrix<zono_float, -1, -1>& A) const;
+
+        /**
+         * @brief IntervalMatrix multiplication with dense matrix
+         * @param A lhs matrix
+         * @param B rhs interval matrix
+         * @return resulting interval matrix
+         */
+        friend IntervalMatrix operator*(const Eigen::Matrix<zono_float, -1, -1>& A, const IntervalMatrix& B);
 
         /**
          * @brief IntervalMatrix multiplication with another IntervalMatrix
@@ -1235,6 +1342,12 @@ namespace ZonoOpt
         IntervalMatrix operator*(const IntervalMatrix& other) const;
 
         /**
+         * @brief IntervalMatrix multiplication with another IntervalMatrix in-place
+         * @param other rhs interval matrix
+         */
+        void operator*=(const IntervalMatrix& other);
+
+        /**
          * @brief IntervalMatrix addition
          * @param other rhs interval matrix
          * @return resulting interval matrix
@@ -1242,11 +1355,115 @@ namespace ZonoOpt
         IntervalMatrix operator+(const IntervalMatrix& other) const;
 
         /**
+         * @brief IntervalMatrix addition in-place
+         * @param other rhs interval matrix
+         */
+        void operator+=(const IntervalMatrix& other);
+
+        /**
+         * @brief IntervalMatrix element-wise addition with interval
+         * @param interval interval to add
+         * @return resulting interval matrix
+         */
+        IntervalMatrix operator+(const Interval& interval) const;
+
+        /**
+         * @brief IntervalMatrix element-wise addition with interval
+         * @param interval interval to add
+         * @param mat interval matrix
+         * @return resulting interval matrix
+         */
+        friend IntervalMatrix operator+(const Interval& interval, const IntervalMatrix& mat);
+
+        /**
+         * @brief IntervalMatrix element-wise addition with interval in-place
+         * @param interval interval to add
+         */
+        void operator+=(const Interval& interval);
+
+        /**
+         * @brief IntervalMatrix element-wise addition with scalar
+         * @param alpha scalar to add
+         * @return resulting interval matrix
+         */
+        IntervalMatrix operator+(zono_float alpha) const;
+
+        /**
+         * @brief IntervalMatrix element-wise addition with scalar
+         * @param alpha scalar to add
+         * @param A interval matrix
+         * @return resulting interval matrix
+         */
+        friend IntervalMatrix operator+(zono_float alpha, const IntervalMatrix& A);
+
+        /**
+         * @brief IntervalMatrix element-wise addition with scalar in-place
+         * @param alpha scalar to add
+         */
+        void operator+=(zono_float alpha);
+
+
+        /**
          * @brief IntervalMatrix subtraction
          * @param other rhs interval matrix
          * @return resulting interval matrix
          */
         IntervalMatrix operator-(const IntervalMatrix& other) const;
+
+        /**
+         * @brief IntervalMatrix subtraction in-place
+         * @param other rhs interval matrix
+         */
+        void operator-=(const IntervalMatrix& other);
+
+
+        /**
+         * @brief IntervalMatrix elementwise interval subtraction
+         * @param interval interval to subtract
+         * @return resulting interval matrix
+         */
+        IntervalMatrix operator-(const Interval& interval) const;
+
+        /**
+         * @brief IntervalMatrix elementwise interval subtraction
+         * @param interval interval
+         * @param mat interval matrix to subtract
+         * @return resulting interval matrix
+         */
+        friend IntervalMatrix operator-(const Interval& interval, const IntervalMatrix& mat);
+
+        /**
+         * @brief IntervalMatrix elementwise interval subtraction in-place
+         * @param interval interval
+         */
+        void operator-=(const Interval& interval);
+
+        /**
+         * @brief IntervalMatrix elementwise scalar subtraction
+         * @param alpha scalar to subtract
+         * @return resulting interval matrix
+         */
+        IntervalMatrix operator-(zono_float alpha) const;
+
+        /**
+         * @brief IntervalMatrix elementwise scalar subtraction
+         * @param alpha scalar
+         * @param A interval matrix to subtract
+         * @return resulting interval matrix
+         */
+        friend IntervalMatrix operator-(zono_float alpha, const IntervalMatrix& A);
+
+        /**
+         * @brief IntervalMatrix elementwise scalar subtraction in-place
+         * @param alpha scalar to subtract
+         */
+        void operator-=(zono_float alpha);
+
+        /**
+         * @brief IntervalMatrix negation
+         * @return negated interval matrix
+         */
+        IntervalMatrix operator-() const;
 
         /**
          * @brief Get number of rows
