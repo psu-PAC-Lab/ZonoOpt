@@ -190,7 +190,7 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: interval hull of self and other
             )pbdoc")
-        .def("__add__", [](const Interval& self, const Interval& other) -> Interval { return self + other; }, py::arg("other"),
+        .def("__add__", [](const Interval& self, const Interval& other) -> Interval { return self + other; },
             py::is_operator(),
             R"pbdoc(
                 Interval addition
@@ -201,7 +201,15 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: enclosure of self + other
             )pbdoc")
-        .def("__add__", [](const Interval& self, const zono_float alpha) -> Interval { return self + alpha; }, py::arg("alpha"),
+        .def("__iadd__", [](Interval& self, const Interval& other) { self += other; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                Interval addition in-place
+
+                Args:
+                    other (Interval): rhs interval
+            )pbdoc")
+        .def("__add__", [](const Interval& self, const zono_float alpha) -> Interval { return self + alpha; },
             py::is_operator(),
             R"pbdoc(
                 Interval addition with scalar
@@ -212,7 +220,15 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: enclosure of self + alpha
             )pbdoc")
-        .def("__radd__", [](const Interval& self, const zono_float alpha) -> Interval { return alpha + self; }, py::arg("alpha"),
+        .def("__iadd__", [](Interval& self, const zono_float alpha) { self += alpha; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                Interval addition with scalar in-place
+
+                Args:
+                    alpha (float): scalar to add
+            )pbdoc")
+        .def("__radd__", [](const Interval& self, const zono_float alpha) -> Interval { return alpha + self; },
             py::is_operator(),
             R"pbdoc(
                 Interval right addition with scalar
@@ -224,7 +240,7 @@ PYBIND11_MODULE(_core, m)
                     Interval: enclosure of alpha + self
             )pbdoc"
         )
-        .def("__sub__", [](const Interval& self, const Interval& other) -> Interval { return self - other; }, py::arg("other"),
+        .def("__sub__", [](const Interval& self, const Interval& other) -> Interval { return self - other; },
             py::is_operator(),
             R"pbdoc(
                 Interval subtraction
@@ -235,7 +251,15 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: enclosure of self - other
             )pbdoc")
-        .def("__sub__", [](const Interval& self, const zono_float alpha) -> Interval { return self - alpha; }, py::arg("alpha"),
+        .def("__isub__", [](Interval& self, const Interval& other) { self -= other; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                Interval subtraction in-place
+
+                Args:
+                    other (Interval): rhs interval
+            )pbdoc")
+        .def("__sub__", [](const Interval& self, const zono_float alpha) -> Interval { return self - alpha; },
             py::is_operator(),
             R"pbdoc(
                 Interval subtraction with scalar
@@ -246,7 +270,15 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: enclosure of self - alpha
             )pbdoc")
-        .def("__rsub__", [](const Interval& self, const zono_float alpha) -> Interval { return alpha - self; }, py::arg("alpha"),
+        .def("__isub__", [](Interval& self, const zono_float alpha) { self -= alpha; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                Interval subtraction with scalar in-place
+
+                Args:
+                    alpha (float): scalar to subtract
+            )pbdoc")
+        .def("__rsub__", [](const Interval& self, const zono_float alpha) -> Interval { return alpha - self; },
             py::is_operator(),
             R"pbdoc(
                 Interval right subtraction with scalar
@@ -259,7 +291,6 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__mul__", [](const Interval& self, const Interval& other) -> Interval { return self*other; } ,
-            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Interval multiplication
@@ -270,8 +301,15 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: enclosure of self * other
             )pbdoc")
+        .def("__imul__", [](Interval& self, const Interval& other) { self*=other; return &self; } ,
+            py::is_operator(),
+            R"pbdoc(
+                Interval multiplication in-place
+
+                Args:
+                    other (Interval): rhs interval
+            )pbdoc")
         .def("__mul__", [](const Interval& self, const zono_float alpha) -> Interval { return self*alpha; },
-            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Interval multiplication with scalar
@@ -282,8 +320,15 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: enclosure of alpha * self
             )pbdoc")
+        .def("__imul__", [](Interval& self, const zono_float alpha) { self*=alpha; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                Interval multiplication with scalar in-place
+
+                Args:
+                    alpha (float): scalar multiplier
+            )pbdoc")
         .def("__rmul__", [](const Interval& self, const zono_float alpha) -> Interval { return alpha*self; },
-            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Interval right multiplication with scalar
@@ -296,7 +341,6 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__truediv__", [](const Interval& self, const zono_float alpha) -> Interval { return self/alpha; },
-            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Interval division with scalar
@@ -308,8 +352,16 @@ PYBIND11_MODULE(_core, m)
                     Interval: enclosure of self / alpha
             )pbdoc"
         )
+        .def("__itruediv__", [](Interval& self, const zono_float alpha) { self/=alpha; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                    Interval division with scalar in-place
+
+                    Args:
+                        alpha (float): scalar divisor
+                )pbdoc"
+        )
         .def("__rtruediv__", [](const Interval& self, const zono_float alpha) -> Interval { return alpha/self; },
-            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Interval right division with scalar
@@ -321,18 +373,26 @@ PYBIND11_MODULE(_core, m)
                     Interval: enclosure of alpha / self
             )pbdoc"
         )
-        .def("__truediv__", [](const Interval& self, const Interval& other) -> Interval { return self/other; }, py::arg("other"),
+        .def("__truediv__", [](const Interval& self, const Interval& other) -> Interval { return self/other; },
             py::is_operator(),
             R"pbdoc(
                 Interval division
 
                 Args:
-                    other (Interval): rhs interval
+                    other (Interval): interval to divide
 
                 Returns:
                     Interval: enclosure of self / other
             )pbdoc")
-        .def("__pow__", [](const Interval& self, const int n) -> Interval { return self.pow(n); }, py::arg("n"),
+        .def("__itruediv__", [](Interval& self, const Interval& other) { self/=other; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                Interval division in-place
+
+                Args:
+                    other (Interval): interval to divide
+            )pbdoc")
+        .def("__pow__", [](const Interval& self, const int n) -> Interval { return self.pow(n); },
             py::is_operator(),
             R"pbdoc(
                 Interval power

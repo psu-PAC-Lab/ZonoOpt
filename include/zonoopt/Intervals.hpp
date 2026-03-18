@@ -99,6 +99,15 @@ namespace ZonoOpt
         }
 
         /**
+         * @brief Interval addition in-place
+         * @param other other interval
+         */
+        void operator+=(const Interval& other)
+        {
+            this->_val += other._val;
+        }
+
+        /**
          * @brief Interval addition with scalar
          *
          * @param alpha scalar
@@ -107,6 +116,16 @@ namespace ZonoOpt
         Interval operator+(const zono_float alpha) const
         {
             return Interval(this->_val + alpha);
+        }
+
+        /**
+         * @brief Interval addition with scalar in-place
+         *
+         * @param alpha scalar
+         */
+        void operator+=(const zono_float alpha)
+        {
+            this->_val += alpha;
         }
 
         /**
@@ -132,6 +151,15 @@ namespace ZonoOpt
         }
 
         /**
+         * @brief Interval subtraction in-place
+         * @param other other interval
+         */
+        void operator-=(const Interval& other)
+        {
+            this->_val -= other._val;
+        }
+
+        /**
          * @brief Interval subtraction with scalar
          *
          * @param alpha scalar
@@ -140,6 +168,15 @@ namespace ZonoOpt
         Interval operator-(const zono_float alpha) const
         {
             return Interval(this->_val - alpha);
+        }
+
+        /**
+         * @brief Interval subtraction with scalar in-place
+         * @param alpha scalar to subtract
+         */
+        void operator-=(const zono_float alpha)
+        {
+            this->_val -= alpha;
         }
 
         /**
@@ -165,6 +202,15 @@ namespace ZonoOpt
         }
 
         /**
+         * @brief Interval multiplication in-place
+         * @param other other interval
+         */
+        void operator*=(const Interval& other)
+        {
+            this->_val *= other._val;
+        }
+
+        /**
          * @brief Interval multiplication with scalar
          *
          * @param alpha scalar
@@ -173,6 +219,15 @@ namespace ZonoOpt
         Interval operator*(const zono_float alpha) const
         {
             return Interval(this->_val * alpha);
+        }
+
+        /**
+         * @brief Interval multiplication with scalar in-place
+         * @param alpha scalar
+         */
+        void operator*=(const zono_float alpha)
+        {
+            this->_val *= alpha;
         }
 
         /**
@@ -189,12 +244,21 @@ namespace ZonoOpt
 
         /**
          * @brief Interval division
-         * @param other other interval
+         * @param other interval to divide
          * @return enclosure of this / other
          */
         Interval operator/(const Interval& other) const
         {
             return Interval(this->_val / other._val);
+        }
+
+        /**
+         * @brief Interval division in-place
+         * @param other interval to divide
+         */
+        void operator/=(const Interval& other)
+        {
+            this->_val /= other._val;
         }
 
         /**
@@ -206,6 +270,15 @@ namespace ZonoOpt
         Interval operator/(const zono_float alpha) const
         {
             return Interval(this->_val / alpha);
+        }
+
+        /**
+         * @brief Interval division with scalar in-place
+         * @param alpha scalar
+         */
+        void operator/=(const zono_float alpha)
+        {
+            this->_val /= alpha;
         }
 
         /**
