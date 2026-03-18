@@ -77,14 +77,14 @@ namespace ZonoOpt
          * 
          * @return lower bound 
          */
-        zono_float lb() const { return _val.lower(); }
+        zono_float lower() const { return _val.lower(); }
 
         /**
          * @brief Get upper bound
          * 
          * @return upper bound
          */
-        zono_float ub() const { return _val.upper(); }
+        zono_float upper() const { return _val.upper(); }
 
         // operators
 
@@ -110,6 +110,18 @@ namespace ZonoOpt
         }
 
         /**
+         * @brief Interval addition with scalar
+         * 
+         * @param alpha scalar
+         * @param interval interval
+         * @return enclosure of alpha + interval
+         */
+        friend Interval operator+(const zono_float alpha, const Interval& interval)
+        {
+            return interval + alpha;
+        }
+
+        /**
          * @brief Interval subtraction
          * @param other other interval
          * @return enclosure of this - other
@@ -128,6 +140,18 @@ namespace ZonoOpt
         Interval operator-(const zono_float alpha) const
         {
             return Interval(this->_val - alpha);
+        }
+
+        /**
+         * @brief Interval subtraction with scalar
+         * 
+         * @param alpha scalar
+         * @param interval interval
+         * @return enclosure of alpha - interval
+         */
+        friend Interval operator-( const zono_float alpha, const Interval& interval )
+        {
+            return Interval(alpha - interval._val);
         }
 
         /**
@@ -152,6 +176,18 @@ namespace ZonoOpt
         }
 
         /**
+         * @brief Interval multiplication with scalar
+         * 
+         * @param alpha scalar
+         * @param interval interval
+         * @return enclosure of alpha * interval
+         */
+        friend Interval operator*(const zono_float alpha, const Interval& interval)
+        {
+            return interval*alpha;
+        }
+
+        /**
          * @brief Interval division
          * @param other other interval
          * @return enclosure of this / other
@@ -170,6 +206,49 @@ namespace ZonoOpt
         Interval operator/(const zono_float alpha) const
         {
             return Interval(this->_val / alpha);
+        }
+
+        /**
+         * @brief Interval division with scalar
+         * 
+         * @param alpha scalar
+         * @param interval interval
+         * @return enclosure of alpha / interval
+         */
+        friend Interval operator/(const zono_float alpha, const Interval& interval)
+        {
+            return Interval(alpha / interval._val);
+        }
+
+        /**
+         * @brief Unary minus: returns -1 * this
+         * 
+         * @return enclosure of -this
+         */
+        Interval operator-() const
+        {
+            return Interval(-this->_val);
+        }
+
+        /**
+         * @brief Interval intersection
+         * @param other other interval
+         * @return intersection of this and other
+         */
+        Interval operator&(const Interval& other) const
+        {
+            return this->intersect(other);
+        }
+
+        /**
+         * @brief Interval hull
+         * 
+         * @param other other interval
+         * @return interval hull of this and other
+         */
+        Interval operator|(const Interval& other) const
+        {
+            return this->interval_hull(other);
         }
 
         /**
@@ -192,13 +271,24 @@ namespace ZonoOpt
         }
 
         /**
+         * @brief Interval hull
+         * 
+         * @param other other interval
+         * @return interval hull of this and other
+         */
+        Interval interval_hull(const Interval& other) const
+        {
+            return Interval(boost::numeric::hull(_val, other._val));
+        }
+
+        /**
          * @brief Checks whether interval contains a value
          * @param x scalar value
          * @return flag indicating if interval contains x
          */
         bool contains(const zono_float x) const
         {
-            return x >= this->lb() - zono_eps && x <= this->ub() + zono_eps;
+            return x >= this->lower() - zono_eps && x <= this->upper() + zono_eps;
         }
 
         /**
@@ -277,6 +367,28 @@ namespace ZonoOpt
         Interval pow(const int n) const
         {
             return Interval(boost::numeric::pow(_val, n));
+        }
+
+        /**
+         * @brief Interval power with fractional exponent
+         * 
+         * @param f power
+         * @return enclosure of this^f 
+         * 
+         * Calls integer power if f is an integer within numerical tolerance.
+         * Calls nth_root if f is a positive rational number within numerical tolerance.
+         * Otherwise throws error.
+         */
+        Interval pow(const zono_float f) const
+        {
+            if (std::abs(f - std::round(f)) < zono_eps)
+                return this->pow(static_cast<int>(std::round(f)));
+            
+            zono_float frac = one / f;
+            if (std::abs(frac - std::round(frac)) < zono_eps && frac > zero)
+                return this->nth_root(static_cast<int>(std::round(frac)));
+
+            throw std::invalid_argument("Fractional powers are only supported for integer and positive rational exponents within numerical tolerance");
         }
 
         /**
@@ -421,7 +533,7 @@ namespace ZonoOpt
          */
         std::string print() const
         {
-            return "Interval: [" + std::to_string(lb()) + ", " + std::to_string(ub()) + "]";
+            return "Interval: [" + std::to_string(lower()) + ", " + std::to_string(upper()) + "]";
         }
 
         /**

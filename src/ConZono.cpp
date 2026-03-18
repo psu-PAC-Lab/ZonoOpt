@@ -457,7 +457,7 @@ namespace ZonoOpt
         {
             // get r_j
             const zono_float r_j = std::max<zono_float>(
-                zero, std::max<zono_float>(std::abs(R.get_element(j).lb()), std::abs(R.get_element(j).ub())) - one);
+                zero, std::max<zono_float>(std::abs(R.get_element(j).lower()), std::abs(R.get_element(j).upper())) - one);
             if (r_j < zono_eps)
             {
                 haus_vec.emplace_back(j, zero);

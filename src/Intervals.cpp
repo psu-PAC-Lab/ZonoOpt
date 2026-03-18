@@ -17,8 +17,8 @@ namespace ZonoOpt
 
         for (Eigen::Index i = 0; i < static_cast<Eigen::Index>(vals.size()); i++)
         {
-            this->x_lb(i) = vals[i].lb();
-            this->x_ub(i) = vals[i].ub();
+            this->x_lb(i) = vals[i].lower();
+            this->x_ub(i) = vals[i].upper();
         }
     }
 
@@ -29,8 +29,8 @@ namespace ZonoOpt
 
         for (Eigen::Index i = 0; i < vals.size(); i++)
         {
-            this->x_lb(i) = vals(i).lb();
-            this->x_ub(i) = vals(i).ub();
+            this->x_lb(i) = vals(i).lower();
+            this->x_ub(i) = vals(i).upper();
         }
     }
 
@@ -67,8 +67,8 @@ namespace ZonoOpt
 
     void Box::set_element(const int i, const Interval& val)
     {
-        this->x_lb(i) = val.lb();
-        this->x_ub(i) = val.ub();
+        this->x_lb(i) = val.lower();
+        this->x_ub(i) = val.upper();
     }
 
     size_t Box::size() const
@@ -570,7 +570,7 @@ namespace ZonoOpt
         {
             for (int j = 0; j < mat.cols(); j++)
             {
-                if (std::abs(mat(i, j).lb()) > zono_eps || std::abs(mat(i, j).ub()) > zono_eps)
+                if (std::abs(mat(i, j).lower()) > zono_eps || std::abs(mat(i, j).upper()) > zono_eps)
                     triplets.emplace_back(i, j, mat(i, j));
             }
         }

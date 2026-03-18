@@ -129,7 +129,7 @@ namespace ZonoOpt
         {
             if (box.get_element(i).is_single_valued())
             {
-                fixed_vars.emplace_back(i, box.get_element(i).ub());
+                fixed_vars.emplace_back(i, box.get_element(i).upper());
                 if (i < this->nGc)
                 {
                     idx_c_to_remove.insert(i);

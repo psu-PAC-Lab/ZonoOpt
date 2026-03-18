@@ -339,7 +339,7 @@ def test_interval_arithmetic():
     f = lambda x: 2*np.tan(x[0])**(-2) + np.cos(x[1]/x[0])/3. + np.sin(x[0] + np.arctan(x[2]))*np.sinh(x[0]) + np.exp(np.arccosh(np.abs(x[1]) + 1)) - np.arccos(x[0])*np.arcsin(x[1])/np.log(x[2]**2)
 
     # interval expression
-    f_int = lambda x: (x[0].tan()**(-2))*2. + (x[1]/x[0]).cos()/3. + (x[0] + x[2].arctan()).sin()*x[0].sinh() + (x[1].abs() + 1).arccosh().exp() - (x[0].arccos()*x[1].arcsin())/(x[2]**2).log()
+    f_int = lambda x: 2*(x[0].tan()**(-2)) + (x[1]/x[0]).cos()/3. + (x[0] + x[2].arctan()).sin()*x[0].sinh() + (1 + x[1].abs()).arccosh().exp() - (x[0].arccos()*x[1].arcsin())/(x[2]**2).log()
 
     def _run_interval_test(x_min, x_max):
         x = zono.Box(x_min*np.ones(n_dims), x_max*np.ones(n_dims)) # box

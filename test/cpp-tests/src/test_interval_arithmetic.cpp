@@ -21,7 +21,7 @@ Interval f_int(const Box& x)
     Interval x1 = x.get_element(1);
     Interval x2 = x.get_element(2);
 
-    return (x0.tan().pow(-2))*2. + (x1/x0).cos()/3. + (x0 + x2.arctan()).sin()*x0.sinh() + (x1.abs() + 1).arccosh().exp() - (x0.arccos()*x1.arcsin())/(x2.pow(2)).log();
+    return 2.*(x0.tan().pow(-2)) + (x1/x0).cos()/3. + (x0 + x2.arctan()).sin()*x0.sinh() + (1. + x1.abs()).arccosh().exp() - (x0.arccos()*x1.arcsin())/(x2.pow(2)).log();
 }
 
 void run_interval_test(zono_float x_min, zono_float x_max)
