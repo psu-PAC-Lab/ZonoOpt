@@ -720,12 +720,25 @@ namespace ZonoOpt
         Box operator+(const Box& other) const;
 
         /**
+         * @brief Elementwise addition in-place
+         * @param other other box
+         */
+        void operator+=(const Box& other);
+
+        /**
          * @brief Elementwise addition with vector
          * @param v vector to add
          * @param box box to add
          * @return enclosure of v + box (elementwise)
          */
         Box operator+(const Eigen::Vector<zono_float, -1>& v) const;
+
+
+        /**
+         * @brief Elementwise addition with vector in-place
+         * @param v vector
+         */
+        void operator+=(const Eigen::Vector<zono_float, -1>& v);
 
         /**
          * @brief Elementwise addition with vector
@@ -743,11 +756,23 @@ namespace ZonoOpt
         Box operator-(const Box& other) const;
 
         /**
+         * @brief Elementwise subtraction in-place
+         * @param other other box
+         */
+        void operator-=(const Box& other);
+
+        /**
          * @brief Elementwise subtraction with vector
          * @param v vector to subtract
          * @return enclosure of this - v (elementwise)
          */
         Box operator-(const Eigen::Vector<zono_float, -1>& v) const;
+
+        /**
+         * @brief Elementwise subtraction with vector in-place
+         * @param v vector to subtract
+         */
+        void operator-=(const Eigen::Vector<zono_float, -1>& v);
 
         /**
          * @brief Elementwise subtraction with vector
@@ -765,11 +790,23 @@ namespace ZonoOpt
         Box operator*(const Box& other) const;
 
         /**
+         * @brief Elementwise multiplication in-place
+         * @param other other box
+         */
+        void operator*=(const Box& other);
+
+        /**
          * @brief Elementwise multiplication with scalar
          * @param alpha scalar multiplier
          * @return enclosure of alpha * this (elementwise)
          */
         Box operator*(zono_float alpha) const;
+
+        /**
+         * @brief Elementwise multiplication with scalar in-place
+         * @param alpha scalar multiplier
+         */
+        void operator*=(zono_float alpha);
 
         /**
          * @brief Elementwise multiplication with scalar
@@ -787,6 +824,12 @@ namespace ZonoOpt
         Box operator*(const Eigen::Vector<zono_float, -1>& v) const;
 
         /**
+         * @brief Elementwise multiplication with vector in-place
+         * @param v vector to multiply
+         */
+        void operator*=(const Eigen::Vector<zono_float, -1>& v);
+
+        /**
          * @brief Elementwise multiplication with vector
          * @param v vector to multiply
          * @param box box to multiply
@@ -800,6 +843,12 @@ namespace ZonoOpt
          * @return enclosure of this * interval (elementwise)
          */
         Box operator*(const Interval& interval) const;
+
+        /**
+         * @brief Elementwise multiplication with interval in-place
+         * @param interval interval to multiply
+         */
+        void operator*=(const Interval& interval);
 
         /**
          * @brief Elementwise multiplication with interval
@@ -831,11 +880,23 @@ namespace ZonoOpt
         Box operator/(const Box& other) const;
 
         /**
+         * @brief Elementwise division in-place
+         * @param other rhs box
+         */
+        void operator/=(const Box& other);
+
+        /**
          * @brief Elementwise division with scalar
          * @param alpha scalar divisor
          * @return enclosure of this / alpha (elementwise)
          */
         Box operator/(zono_float alpha) const;
+
+        /**
+         * @brief Elementwise division with scalar
+         * @param alpha scalar divisor
+         */
+        void operator/=(zono_float alpha);
 
         /**
          * @brief Elementwise division with scalar
@@ -851,6 +912,12 @@ namespace ZonoOpt
          * @return enclosure of this / interval (elementwise)
          */
         Box operator/(const Interval& interval) const;
+
+        /**
+         * @brief Elementwise division with interval in-place
+         * @param interval interval to divide
+         */
+        void operator/=(const Interval& interval);
 
         /**
          * @brief Elementwise division with interval

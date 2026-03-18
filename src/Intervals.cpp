@@ -155,6 +155,11 @@ namespace ZonoOpt
         return out;
     }
 
+    void Box::operator+=(const Box& other)
+    {
+        *this = *this + other;
+    }
+
     Box Box::operator+(const Eigen::Vector<zono_float, -1>& v) const
     {
         if (v.size() != static_cast<Eigen::Index>(this->size()))
@@ -165,6 +170,11 @@ namespace ZonoOpt
             out.set_element(i, get_element(i) + v(i));
         }
         return out;
+    }
+
+    void Box::operator+=(const Eigen::Vector<zono_float, -1>& v)
+    {
+        *this = *this + v;
     }
 
     Box operator+(const Eigen::Vector<zono_float, -1>& v, const Box& box)
@@ -184,14 +194,34 @@ namespace ZonoOpt
         return out;
     }
 
+    void Box::operator-=(const Box& other)
+    {
+        *this = *this - other;
+    }
+
     Box Box::operator-(const Eigen::Vector<zono_float, -1>& v) const
     {
         return *this + (-v);
     }
 
+    void Box::operator-=(const Eigen::Vector<zono_float, -1>& v)
+    {
+        *this = *this - v;
+    }
+
     Box operator-(const Eigen::Vector<zono_float, -1>& v, const Box& box)
     {
         return v + (-box);
+    }
+
+    void Box::operator*=(const Box& other)
+    {
+        *this = *this * other;
+    }
+
+    void Box::operator*=(zono_float alpha)
+    {
+        *this = *this * alpha;
     }
 
     Box operator*(zono_float alpha, const Box& box)
@@ -209,6 +239,11 @@ namespace ZonoOpt
             out.set_element(i, get_element(i) * v(i));
         }
         return out;
+    }
+
+    void Box::operator*=(const Eigen::Vector<zono_float, -1>& v)
+    {
+        *this = *this * v;
     }
 
     Box operator*(const Eigen::Vector<zono_float, -1>& v, const Box& box)
@@ -229,6 +264,11 @@ namespace ZonoOpt
     Box operator*(const Interval& interval, const Box& box)
     {
         return box*interval;
+    }
+
+    void Box::operator*=(const Interval& interval)
+    {
+        *this = *this * interval;
     }
 
     Box operator*(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A, const Box& box)
@@ -275,6 +315,11 @@ namespace ZonoOpt
         return out;
     }
 
+    void Box::operator/=(const Box& other)
+    {
+        *this = *this / other;
+    }
+
     Box Box::operator/(zono_float alpha) const
     {
         Box out = *this;
@@ -283,6 +328,11 @@ namespace ZonoOpt
             out.set_element(i, this->get_element(i) / alpha);
         }
         return out;
+    }
+
+    void Box::operator/=(zono_float alpha)
+    {
+        *this = *this / alpha;
     }
 
     Box operator/(zono_float alpha, const Box& box)
@@ -303,6 +353,11 @@ namespace ZonoOpt
             out.set_element(i, this->get_element(i) / interval);
         }
         return out;
+    }
+
+    void Box::operator/=(const Interval& interval)
+    {
+        *this = *this / interval;
     }
 
     Box operator/(const Interval& interval, const Box& box)

@@ -725,6 +725,14 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Box: self + other (elementwise)
             )pbdoc")
+        .def("__iadd__", [](Box& self, const Box& other) { self += other; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise addition in-place
+
+                Args:
+                    other (Box): rhs box
+            )pbdoc")
         .def("__add__", [](const Box& self, const Eigen::Vector<zono_float, -1>& v) -> Box { return self + v; },
             py::is_operator(),
             R"pbdoc(
@@ -735,6 +743,14 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     Box: self + v (elementwise)
+            )pbdoc")
+        .def("__iadd__", [](Box& self, const Eigen::Vector<zono_float, -1>& v) { self += v; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise addition with vector in-place
+
+                Args:
+                    v (np.array): vector
             )pbdoc")
         .def("__radd__", [](const Box& self, const Eigen::Vector<zono_float, -1>& v) -> Box { return v + self; },
             py::is_operator(),
@@ -758,6 +774,14 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Box: enclosure of self - other (elementwise)
             )pbdoc")
+        .def("__isub__", [](Box& self, const Box& other) { self -= other; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise subtraction in-place
+
+                Args:
+                    other (Box): other box
+            )pbdoc")
         .def("__sub__", [](const Box& self, const Eigen::Vector<zono_float, -1>& v) -> Box { return self - v; }, 
             py::is_operator(),
             R"pbdoc(
@@ -768,6 +792,14 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     Box: enclosure of self - v (elementwise)
+            )pbdoc")
+        .def("__isub__", [](Box& self, const Eigen::Vector<zono_float, -1>& v) { self -= v; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise subtraction with vector in-place
+
+                Args:
+                    v (np.array): vector
             )pbdoc")
         .def("__rsub__", [](const Box& self, const Eigen::Vector<zono_float, -1>& v) -> Box { return v - self; }, 
             py::is_operator(),
@@ -780,8 +812,7 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Box: enclosure of v - self (elementwise)
             )pbdoc")
-        .def("__mul__", [](const Box& self, const Box& other) -> Box { return self*other; } ,
-            py::arg("other"),
+        .def("__mul__", [](const Box& self, const Box& other) -> Box { return self*other; },
             py::is_operator(),
             R"pbdoc(
                 Elementwise multiplication
@@ -791,6 +822,14 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     Box: enclosure of self * other (elementwise)
+            )pbdoc")
+        .def("__imul__", [](Box& self, const Box& other) { self*=other; return &self; } ,
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise multiplication in-place
+
+                Args:
+                    other (Box): rhs box
             )pbdoc")
         .def("__mul__", [](const Box& self, const zono_float alpha) -> Box { return self*alpha; },
             py::is_operator(),
@@ -802,6 +841,14 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     Box: enclosure of alpha * self (elementwise)
+            )pbdoc")
+        .def("__imul__", [](Box& self, const zono_float alpha) {  self*=alpha; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise multiplication with scalar in-place
+
+                Args:
+                    alpha (float): scalar multiplier
             )pbdoc")
         .def("__rmul__", [](const Box& self, const zono_float alpha) -> Box { return alpha*self; },
             py::is_operator(),
@@ -825,6 +872,14 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Box: enclosure of self * interval (elementwise)
             )pbdoc")
+        .def("__imul__", [](Box& self, const Interval& interval){ self *= interval; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise multiplication with interval in-place
+
+                Args:
+                    interval (Interval): interval multiplier
+            )pbdoc")
         .def("__rmul__", [](const Box& self, const Interval& interval){ return interval * self; },
             py::is_operator(),
             R"pbdoc(
@@ -846,6 +901,14 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     Box: enclosure of self * v (elementwise)
+            )pbdoc")
+        .def("__imul__", [](Box& self, const Eigen::Vector<zono_float, -1>& v) { self*=v; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise multiplication with vector in-place
+
+                Args:
+                    v (np.array): vector multiplier
             )pbdoc")
         .def("__rmul__", [](const Box& self, const Eigen::Vector<zono_float, -1>& v) -> Box { return v*self; },
             py::is_operator(),
@@ -891,6 +954,14 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Box: enclosure of self / other (elementwise)
             )pbdoc")
+        .def("__itruediv__", [](Box& self, const Box& other) { self/=other; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise division in-place
+
+                Args:
+                    other (Box): rhs box
+            )pbdoc")
         .def("__truediv__", [](const Box& self, const zono_float alpha) -> Box { return self/alpha; },
             py::is_operator(),
             R"pbdoc(
@@ -902,6 +973,14 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Box: enclosure of self / alpha (elementwise)
             )pbdoc")
+        .def("__itruediv__", [](Box& self, const zono_float alpha) { self/=alpha; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise division with scalar in-place
+
+                Args:
+                    alpha (float): scalar divisor
+            )pbdoc")
         .def("__rtruediv__", [](const Box& self, const zono_float alpha) -> Box { return alpha/self; },
             py::is_operator(),
             R"pbdoc(
@@ -912,6 +991,36 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     Box: enclosure of alpha / self (elementwise)
+            )pbdoc")
+        .def("__truediv__", [](const Box& self, const Interval& interval){ return self/interval; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise division with interval
+
+                Args:
+                    interval (Interval): interval dividend
+
+                Returns:
+                    Box: enclosure of self / interval (elementwise)
+            )pbdoc")
+        .def("__rtruediv__", [](const Box& self, const Interval& interval){ return interval/self; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise division with interval
+
+                Args:
+                    interval (Interval): interval
+
+                Returns:
+                    Box: enclosure of interval / self (elementwise)
+            )pbdoc")
+        .def("__itruediv__", [](Box& self, const Interval& interval){ self/=interval; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise division with interval in-place
+
+                Args:
+                    interval (Interval): interval dividend
             )pbdoc")
         .def("__neg__", [](const Box& self) -> Box { return -self; },
             py::is_operator(),
