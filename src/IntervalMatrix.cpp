@@ -245,7 +245,7 @@ namespace ZonoOpt
 
     IntervalMatrix operator*(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A, const IntervalMatrix& B) {
          // input handling
-         if (A.rows() != static_cast<Eigen::Index>(B.cols()) || A.cols() != static_cast<Eigen::Index>(B.rows()))
+         if (A.cols() != static_cast<Eigen::Index>(B.rows()))
              throw std::invalid_argument("IntervalMatrix multiplication with matrix: inconsistent dimensions");
 
          // dimensions
