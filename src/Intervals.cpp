@@ -130,6 +130,23 @@ namespace ZonoOpt
         return out;
     }
 
+    Box Box::operator+(const Eigen::Vector<zono_float, -1>& v) const
+    {
+        if (v.size() != static_cast<Eigen::Index>(this->size()))
+            throw std::invalid_argument("Box addition with vector: inconsistent dimensions");
+        Box out = *this;
+        for (int i = 0; i < static_cast<int>(this->size()); ++i)
+        {
+            out.set_element(i, get_element(i) + v(i));
+        }
+        return out;
+    }
+
+    Box operator+(const Eigen::Vector<zono_float, -1>& v, const Box& box)
+    {
+        return box + v;
+    }
+
     Box Box::operator-(const Box& other) const
     {
         if (this->size() != other.size())
@@ -140,6 +157,63 @@ namespace ZonoOpt
             out.set_element(i, this->get_element(i) - other.get_element(i));
         }
         return out;
+    }
+
+    Box Box::operator-(const Eigen::Vector<zono_float, -1>& v) const
+    {
+        return *this + (-v);
+    }
+
+    Box operator-(const Eigen::Vector<zono_float, -1>& v, const Box& box)
+    {
+        return v + (-box);
+    }
+
+    Box operator*(zono_float alpha, const Box& box)
+    {
+        return box*alpha;
+    }
+
+    Box Box::operator*(const Eigen::Vector<zono_float, -1>& v) const
+    {
+        if (v.size() != static_cast<Eigen::Index>(this->size()))
+            throw std::invalid_argument("Box multiplication with vector: inconsistent dimensions");
+        Box out = *this;
+        for (int i = 0; i < static_cast<int>(this->size()); ++i)
+        {
+            out.set_element(i, get_element(i) * v(i));
+        }
+        return out;
+    }
+
+    Box operator*(const Eigen::Vector<zono_float, -1>& v, const Box& box)
+    {
+        return box*v;
+    }
+
+    Box Box::operator*(const Interval& interval) const
+    {
+        Box out = *this;
+        for (int i = 0; i < static_cast<int>(this->size()); ++i)
+        {
+            out.set_element(i, get_element(i) * interval);
+        }
+        return out;
+    }
+
+    Box operator*(const Interval& interval, const Box& box)
+    {
+        return box*interval;
+    }
+
+    Box operator*(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A, const Box& box)
+    {
+        return box.linear_map(A);
+    }
+
+    Box operator*(const Eigen::Matrix<zono_float, -1, -1>& A, const Box& box)
+    {
+        return box.linear_map(A);
     }
 
     Box Box::operator*(const Box& other) const
@@ -172,6 +246,56 @@ namespace ZonoOpt
         for (int i = 0; i < static_cast<int>(this->size()); ++i)
         {
             out.set_element(i, this->get_element(i) / other.get_element(i));
+        }
+        return out;
+    }
+
+    Box Box::operator/(zono_float alpha) const
+    {
+        Box out = *this;
+        for (int i = 0; i < static_cast<int>(this->size()); ++i)
+        {
+            out.set_element(i, this->get_element(i) / alpha);
+        }
+        return out;
+    }
+
+    Box operator/(zono_float alpha, const Box& box)
+    {
+        Box out = box;
+        for (int i = 0; i < static_cast<int>(box.size()); ++i)
+        {
+            out.set_element(i, alpha / box.get_element(i));
+        }
+        return out;
+    }
+
+    Box Box::operator/(const Interval& interval) const
+    {
+        Box out = *this;
+        for (int i = 0; i < static_cast<int>(this->size()); ++i)
+        {
+            out.set_element(i, this->get_element(i) / interval);
+        }
+        return out;
+    }
+
+    Box operator/(const Interval& interval, const Box& box)
+    {
+        Box out = box;
+        for (int i = 0; i < static_cast<int>(box.size()); ++i)
+        {
+            out.set_element(i, interval / box.get_element(i));
+        }
+        return out;
+    }
+
+    Box Box::operator-() const
+    {
+        Box out = *this;
+        for (int i = 0; i < static_cast<int>(this->size()); ++i)
+        {
+            out.set_element(i, -this->get_element(i));
         }
         return out;
     }

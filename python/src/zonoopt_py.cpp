@@ -180,6 +180,16 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: copy of interval
             )pbdoc")
+        .def("interval_hull", &Interval::interval_hull, py::arg("other"),
+            R"pbdoc(
+                Interval hull
+
+                Args:
+                    other (Interval): other interval
+
+                Returns:
+                    Interval: interval hull of self and other
+            )pbdoc")
         .def("__add__", [](const Interval& self, const Interval& other) -> Interval { return self + other; }, py::arg("other"),
             py::is_operator(),
             R"pbdoc(
@@ -541,7 +551,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
     ;
 
-    py::class_<Box>(m, "Box", "Box (i.e., interval vector) class")
+    auto box_cl = py::class_<Box>(m, "Box", "Box (i.e., interval vector) class")
         .def(py::init<const Eigen::Vector<zono_float, -1>&, const Eigen::Vector<zono_float, -1>&>(), py::arg("x_lb"), py::arg("x_ub"),
             R"pbdoc(
                 Constructor from intervals of lower and upper bounds
@@ -684,7 +694,7 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: result of linear map of box with vector
             )pbdoc")
-        .def("__add__", &Box::operator+, py::arg("other"),
+        .def("__add__", [](const Box& self, const Box& other) -> Box { return self + other; },
             py::is_operator(),
             R"pbdoc(
                 Elementwise addition
@@ -695,16 +705,60 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Box: self + other (elementwise)
             )pbdoc")
-        .def("__sub__", &Box::operator-, py::arg("other"),
+        .def("__add__", [](const Box& self, const Eigen::Vector<zono_float, -1>& v) -> Box { return self + v; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise addition
+
+                Args:
+                    v (np.array): vector
+
+                Returns:
+                    Box: self + v (elementwise)
+            )pbdoc")
+        .def("__radd__", [](const Box& self, const Eigen::Vector<zono_float, -1>& v) -> Box { return v + self; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise addition
+
+                Args:
+                    v (np.array): vector
+
+                Returns:
+                    Box: self + v (elementwise)
+            )pbdoc")
+        .def("__sub__", [](const Box& self, const Box& other) -> Box { return self - other; }, 
             py::is_operator(),
             R"pbdoc(
                 Elementwise subtraction
 
                 Args:
-                    other (Box): rhs box
+                    other (Box): other box
 
                 Returns:
                     Box: enclosure of self - other (elementwise)
+            )pbdoc")
+        .def("__sub__", [](const Box& self, const Eigen::Vector<zono_float, -1>& v) -> Box { return self - v; }, 
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise subtraction
+
+                Args:
+                    v (np.array): vector
+
+                Returns:
+                    Box: enclosure of self - v (elementwise)
+            )pbdoc")
+        .def("__rsub__", [](const Box& self, const Eigen::Vector<zono_float, -1>& v) -> Box { return v - self; }, 
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise subtraction
+
+                Args:
+                    v (np.array): vector
+
+                Returns:
+                    Box: enclosure of v - self (elementwise)
             )pbdoc")
         .def("__mul__", [](const Box& self, const Box& other) -> Box { return self*other; } ,
             py::arg("other"),
@@ -719,7 +773,6 @@ PYBIND11_MODULE(_core, m)
                     Box: enclosure of self * other (elementwise)
             )pbdoc")
         .def("__mul__", [](const Box& self, const zono_float alpha) -> Box { return self*alpha; },
-            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise multiplication with scalar
@@ -730,7 +783,84 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Box: enclosure of alpha * self (elementwise)
             )pbdoc")
-        .def("__truediv__", &Box::operator/, py::arg("other"),
+        .def("__rmul__", [](const Box& self, const zono_float alpha) -> Box { return alpha*self; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise multiplication with scalar
+
+                Args:
+                    alpha (float): scalar multiplier
+
+                Returns:
+                    Box: enclosure of alpha * self (elementwise)
+            )pbdoc")
+        .def("__mul__", [](const Box& self, const Interval& interval){ return self * interval; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise multiplication with interval
+
+                Args:
+                    interval (Interval): interval multiplier
+
+                Returns:
+                    Box: enclosure of self * interval (elementwise)
+            )pbdoc")
+        .def("__rmul__", [](const Box& self, const Interval& interval){ return interval * self; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise multiplication with interval
+
+                Args:
+                    interval (Interval): interval multiplier
+
+                Returns:
+                    Box: enclosure of interval * self (elementwise)
+            )pbdoc")
+        .def("__mul__", [](const Box& self, const Eigen::Vector<zono_float, -1>& v) -> Box { return self*v; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise multiplication with vector
+
+                Args:
+                    v (np.array): vector multiplier
+
+                Returns:
+                    Box: enclosure of self * v (elementwise)
+            )pbdoc")
+        .def("__rmul__", [](const Box& self, const Eigen::Vector<zono_float, -1>& v) -> Box { return v*self; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise multiplication with vector
+
+                Args:
+                    v (np.array): vector multiplier
+
+                Returns:
+                    Box: enclosure of v * self (elementwise)
+            )pbdoc")   
+        .def("__rmatmul__", [](const Box& self, const Eigen::Matrix<zono_float, -1, -1>& A) -> Box { return self.linear_map(A); },
+            py::is_operator(),
+            R"pbdoc(
+                Right matrix multiplication with dense matrix, corresponds to linear map of box with matrix
+
+                Args:
+                    A (numpy.array): linear map matrix
+
+                Returns:
+                    Box: linear mapped box
+            )pbdoc")
+        .def("__rmatmul__", [](const Box& self, const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A) -> Box { return self.linear_map(A); },
+            py::is_operator(),
+            R"pbdoc(
+                Right matrix multiplication with sparse matrix, corresponds to linear map of box with matrix
+
+                Args:
+                    A (scipy.sparse.csr_matrix): linear map matrix
+
+                Returns:
+                    Box: linear mapped box
+            )pbdoc")
+        .def("__truediv__", [](const Box& self, const Box& other) -> Box { return self/other; },
             py::is_operator(),
             R"pbdoc(
                 Elementwise division
@@ -741,7 +871,40 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Box: enclosure of self / other (elementwise)
             )pbdoc")
+        .def("__truediv__", [](const Box& self, const zono_float alpha) -> Box { return self/alpha; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise division with scalar
+
+                Args:
+                    alpha (float): scalar divisor
+
+                Returns:
+                    Box: enclosure of self / alpha (elementwise)
+            )pbdoc")
+        .def("__rtruediv__", [](const Box& self, const zono_float alpha) -> Box { return alpha/self; },
+            py::is_operator(),
+            R"pbdoc(
+                Elementwise division with scalar
+
+                Args:
+                    alpha (float): scalar dividend
+
+                Returns:
+                    Box: enclosure of alpha / self (elementwise)
+            )pbdoc")
+        .def("__neg__", [](const Box& self) -> Box { return -self; },
+            py::is_operator(),
+            R"pbdoc(
+                Unary minus for box
+
+                Returns:
+                    Box: enclosure of -self
+            )pbdoc"
+        )
     ;
+
+    box_cl.attr("__array_priority__") = 100.;
 
     // interval matrix
     py::class_<IntervalMatrix>(m, "IntervalMatrix", "Interval matrix class")

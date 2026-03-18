@@ -704,11 +704,42 @@ namespace ZonoOpt
         Box operator+(const Box& other) const;
 
         /**
+         * @brief Elementwise addition with vector
+         * @param v vector to add
+         * @param box box to add
+         * @return enclosure of v + box (elementwise)
+         */
+        Box operator+(const Eigen::Vector<zono_float, -1>& v) const;
+
+        /**
+         * @brief Elementwise addition with vector
+         * @param v vector to add
+         * @param box box to add
+         * @return enclosure of v + box (elementwise)
+         */
+        friend Box operator+(const Eigen::Vector<zono_float, -1>& v, const Box& box);         
+
+        /**
          * @brief Elementwise subtraction
          * @param other rhs box
          * @return enclosure of this - other (elementwise)
          */
         Box operator-(const Box& other) const;
+
+        /**
+         * @brief Elementwise subtraction with vector
+         * @param v vector to subtract
+         * @return enclosure of this - v (elementwise)
+         */
+        Box operator-(const Eigen::Vector<zono_float, -1>& v) const;
+
+        /**
+         * @brief Elementwise subtraction with vector
+         * @param v vector
+         * @param box box to subtract
+         * @return enclosure of v - box (elementwise)
+         */
+        friend Box operator-(const Eigen::Vector<zono_float, -1>& v, const Box& box);
 
         /**
          * @brief Elementwise multiplication
@@ -725,11 +756,99 @@ namespace ZonoOpt
         Box operator*(zono_float alpha) const;
 
         /**
+         * @brief Elementwise multiplication with scalar
+         * @param alpha scalar multiplier
+         * @param box box to multiply
+         * @return enclosure of alpha * box (elementwise)
+         */
+        friend Box operator*(zono_float alpha, const Box& box);
+
+        /**
+         * @brief Elementwise multiplication with vector
+         * @param v vector to multiply
+         * @return enclosure of this * v (elementwise)
+         */
+        Box operator*(const Eigen::Vector<zono_float, -1>& v) const;
+
+        /**
+         * @brief Elementwise multiplication with vector
+         * @param v vector to multiply
+         * @param box box to multiply
+         * @return enclosure of v * box (elementwise)
+         */
+        friend Box operator*(const Eigen::Vector<zono_float, -1>& v, const Box& box);
+
+        /**
+         * @brief Elementwise multiplication with interval
+         * @param interval interval to multiply
+         * @return enclosure of this * interval (elementwise)
+         */
+        Box operator*(const Interval& interval) const;
+
+        /**
+         * @brief Elementwise multiplication with interval
+         * @param interval interval to multiply
+         * @param box box to multiply
+         * @return enclosure of interval * box (elementwise)
+         */
+        friend Box operator*(const Interval& interval, const Box& box);
+
+        /**
+         * @brief Linear map
+         * @param A matrix to multiply
+         * @return enclosure of A * this
+         */
+        friend Box operator*(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A, const Box& box);
+
+        /**
+         * @brief Linear map
+         * @param A matrix to multiply
+         * @return enclosure of A * this
+         */
+        friend Box operator*(const Eigen::Matrix<zono_float, -1, -1>& A, const Box& box);
+
+        /**
          * @brief Elementwise division
          * @param other rhs box
          * @return enclosure of this / other (elementwise)
          */
         Box operator/(const Box& other) const;
+
+        /**
+         * @brief Elementwise division with scalar
+         * @param alpha scalar divisor
+         * @return enclosure of this / alpha (elementwise)
+         */
+        Box operator/(zono_float alpha) const;
+
+        /**
+         * @brief Elementwise division with scalar
+         * @param alpha scalar divisor
+         * @param box box to divide
+         * @return enclosure of alpha / box (elementwise)
+         */
+        friend Box operator/(zono_float alpha, const Box& box);
+
+        /**
+         * @brief Elementwise division with interval
+         * @param interval interval to divide
+         * @return enclosure of this / interval (elementwise)
+         */
+        Box operator/(const Interval& interval) const;
+
+        /**
+         * @brief Elementwise division with interval
+         * @param interval interval
+         * @param box box to divide
+         * @return enclosure of interval / box (elementwise)
+         */
+        friend Box operator/(const Interval& interval, const Box& box);
+
+        /**
+         * @brief Unary minus: returns -1 * this
+         * @return enclosure of -this
+         */
+        Box operator-() const;
 
         // interval contractors
 
