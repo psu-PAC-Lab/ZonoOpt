@@ -2087,6 +2087,39 @@ PYBIND11_MODULE(_core, m)
             Returns:
                 HybZono
             )pbdoc")
+        .def("__add__", [](const HybZono& self, const Box& box){ return self + box; },
+            py::is_operator(),
+            R"pbdoc(
+            Minkowski sum with box
+
+            Args:
+                box (Box)
+
+            Returns:
+                HybZono
+            )pbdoc")
+        .def("__radd__", [](HybZono& self, const Eigen::Vector<zono_float, -1>& v){ return v + self; },
+            py::is_operator(),
+            R"pbdoc(
+            Minkowski sum with point
+
+            Args:
+                v (numpy.array)
+
+            Returns:
+                HybZono
+            )pbdoc")
+        .def("__radd__", [](HybZono& self, const Box& box){ return box + self; },
+            py::is_operator(),
+            R"pbdoc(
+            Minkowski sum with box
+
+            Args:
+                box (Box)
+
+            Returns:
+                HybZono
+            )pbdoc")
         .def("__iadd__", [](HybZono& self, HybZono& other) { self += other; return &self; },
             py::is_operator(),
             R"pbdoc(
@@ -2102,6 +2135,14 @@ PYBIND11_MODULE(_core, m)
 
             Args:
                 v (numpy.array)
+            )pbdoc")
+        .def("__iadd__", [](HybZono& self, const Box& box){ self += box; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+            In-place Minkowski sum with box
+
+            Args:
+                box (Box)
             )pbdoc")
         .def("__rmatmul__", [](const HybZono& self, const Eigen::Matrix<zono_float, -1, -1>& R) { return R * self; }, 
             py::is_operator(), 
@@ -2199,6 +2240,18 @@ PYBIND11_MODULE(_core, m)
                 HybZono
             )pbdoc"
         )
+        .def("__sub__", [](HybZono& self, const Box& box){ return self - box; },
+            py::is_operator(),
+            R"pbdoc(
+            Pontryagin difference with box
+
+            Args:
+                box (Box)
+
+            Returns:
+                HybZono
+            )pbdoc"
+        )
         .def("__isub__", [](HybZono& self, Zono& other) {self -= other; return &self; },
             py::is_operator(),
             R"pbdoc(
@@ -2217,6 +2270,15 @@ PYBIND11_MODULE(_core, m)
                 v (numpy.array)
             )pbdoc"
         )
+        .def("__isub__", [](HybZono& self, const Box& box){ self -= box; return &self; },
+            py::is_operator(),
+            R"pbdoc(
+                In-place pontryagin difference with box
+
+                Args:
+                    box (Box)
+                )pbdoc"
+        )
         .def("__mul__", [](const HybZono& self, HybZono& other) { return self * other; },
             py::is_operator(),
             R"pbdoc(
@@ -2229,13 +2291,25 @@ PYBIND11_MODULE(_core, m)
                 HybZono
             )pbdoc"
         )
-        .def("__mul__", [](const HybZono& self, const Eigen::Vector<zono_float, -1>& v) { return self * v; },
+        .def("__mul__", [](const HybZono& self, const Box& box) { return self * box; },
             py::is_operator(),
             R"pbdoc(
-            Cartesian product with point
+            Cartesian product with box
 
             Args:
-                v (numpy.array)
+                box (Box)
+
+            Returns:
+                HybZono
+            )pbdoc"
+        )
+        .def("__rmul__", [](HybZono& self, const Box& box) { return box * self; },
+            py::is_operator(),
+            R"pbdoc(
+            Cartesian product with box
+
+            Args:
+                box (Box)
 
             Returns:
                 HybZono
@@ -2250,13 +2324,16 @@ PYBIND11_MODULE(_core, m)
                 other (HybZono)
             )pbdoc"
         )
-        .def("__imul__", [](HybZono& self, const Eigen::Vector<zono_float, -1>& v) { self *= v; return &self; },
+        .def("__imul__", [](HybZono& self, const Box& box) { self *= box; return &self; },
             py::is_operator(),
             R"pbdoc(
-            In-place Cartesian product with point
+            In-place Cartesian product with box
 
             Args:
-                v (numpy.array)
+                box (Box)
+
+            Returns:
+                HybZono
             )pbdoc"
         )
         .def("__and__", [](const HybZono& self, HybZono& other) { return self & other; },

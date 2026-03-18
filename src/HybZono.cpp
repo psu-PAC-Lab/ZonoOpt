@@ -917,6 +917,24 @@ namespace ZonoOpt
         return minkowski_sum(*this, p);
     }
 
+    std::unique_ptr<HybZono> operator+(const Eigen::Vector<zono_float, -1>& v, HybZono& Z)
+    {
+        const Point p(v);
+        return minkowski_sum(p, Z);
+    }
+
+    std::unique_ptr<HybZono> HybZono::operator+(const Box& box) const
+    {
+        const auto Z_box = interval_2_zono(box);
+        return minkowski_sum(*this, *Z_box);
+    }
+
+    std::unique_ptr<HybZono> operator+(const Box& box, HybZono& Z)
+    {
+        const auto Z_box = interval_2_zono(box);
+        return minkowski_sum(*Z_box, Z);
+    }
+
     void HybZono::operator+=(HybZono& other)
     {
         *this = *(*this + other);
@@ -925,6 +943,11 @@ namespace ZonoOpt
     void HybZono::operator+=(const Eigen::Vector<zono_float, -1>& v)
     {
         *this = *(*this + v);
+    }
+
+    void HybZono::operator+=(const Box& box)
+    {
+        *this = *(*this + box);
     }
 
     std::unique_ptr<HybZono> operator*(const Eigen::SparseMatrix<zono_float>& R, const HybZono& Z)
@@ -996,6 +1019,12 @@ namespace ZonoOpt
         return pontry_diff(*this, p);
     }
 
+    std::unique_ptr<HybZono> HybZono::operator-(const Box& box)
+    {
+        const auto Z_box = interval_2_zono(box);
+        return pontry_diff(*this, *Z_box);
+    }
+
     void HybZono::operator-=(Zono& other)
     {
         *this = *(*this - other);
@@ -1006,15 +1035,14 @@ namespace ZonoOpt
         *this = *(*this - v);
     }
 
+    void HybZono::operator-=(const Box& box)
+    {
+        *this = *(*this - box);
+    }
+
     std::unique_ptr<HybZono> HybZono::operator*(HybZono& other) const
     {
         return cartesian_product(*this, other);
-    }
-
-    std::unique_ptr<HybZono> HybZono::operator*(const Eigen::Vector<zono_float, -1>& v) const
-    {
-        Point p(v);
-        return cartesian_product(*this, p);
     }
 
     void HybZono::operator*=(HybZono& other)
@@ -1022,9 +1050,21 @@ namespace ZonoOpt
         *this = *(*this * other);
     }
 
-    void HybZono::operator*=(const Eigen::Vector<zono_float, -1>& v)
+    std::unique_ptr<HybZono> HybZono::operator*(const Box& box) const
     {
-        *this = *(*this * v);
+        const auto Z_box = interval_2_zono(box);
+        return cartesian_product(*this, *Z_box);
+    }
+
+    std::unique_ptr<HybZono> operator*(const Box& box, HybZono& Z)
+    {
+        const auto Z_box = interval_2_zono(box);
+        return cartesian_product(*Z_box, Z);
+    }
+
+    void HybZono::operator*=(const Box& box)
+    {
+        *this = *(*this * box);
     }
 
     std::unique_ptr<HybZono> HybZono::operator&(HybZono& other) const

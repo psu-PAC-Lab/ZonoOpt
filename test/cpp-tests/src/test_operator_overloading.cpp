@@ -75,6 +75,13 @@ int main()
 
     IntervalMatrix M_int(M, M_upper);
 
+    // box
+    Eigen::VectorXd b1(2);
+    Eigen::VectorXd b2(2);
+    b1 << 0., 1.;
+    b2 << 0.1, 1.04;
+    Box box (b1, b2);
+
     // check operators are consistent with set operations
 
     // minkowski sum
@@ -94,12 +101,34 @@ int main()
     Z_op = *Z1 + c3;
     test_assert(check_equal(*Z_set, *Z_op), "Minkowski sum with point failed");
 
+    // left sum
+    Z_set = minkowski_sum(P3, *Z1);
+    Z_op = c3 + *Z1;
+    test_assert(check_equal(*Z_set, *Z_op), "Minkowski sum with point on left failed");
+
     // +=
     Z_set.reset(Z1->clone());
     Z_op.reset(Z1->clone());
     Z_set = minkowski_sum(*Z_set, P3);
     *Z_op += c3;
     test_assert(check_equal(*Z_set, *Z_op), "Minkowski sum with point += failed");
+
+    // minkowski sum with box
+    Z_set = minkowski_sum(*Z1, *interval_2_zono(box));
+    Z_op = *Z1 + box;
+    test_assert(check_equal(*Z_set, *Z_op), "Minkowski sum with box failed");
+
+    // left sum
+    Z_set = minkowski_sum(*interval_2_zono(box), *Z1);
+    Z_op = box + *Z1;
+    test_assert(check_equal(*Z_set, *Z_op), "Minkowski sum with box on left failed");
+
+    // +=
+    Z_set.reset(Z1->clone());
+    Z_op.reset(Z1->clone());
+    Z_set = minkowski_sum(*Z_set, *interval_2_zono(box));
+    *Z_op += box;
+    test_assert(check_equal(*Z_set, *Z_op), "Minkowski sum with box += failed");
 
     // pontry diff
     Z_set = pontry_diff(*Z1, *Z2, true);
@@ -124,6 +153,18 @@ int main()
     Z_set = pontry_diff(*Z_set, P3, true);
     *Z_op -= c3;
     test_assert(check_equal(*Z_set, *Z_op), "Pontryagin difference with point -= failed");
+
+    // pontry diff with box
+    Z_set = pontry_diff(*Z1, *interval_2_zono(box), true);
+    Z_op = *Z1 - box;
+    test_assert(check_equal(*Z_set, *Z_op), "Pontryagin difference with box failed");
+
+    // -=
+    Z_set.reset(Z1->clone());
+    Z_op.reset(Z1->clone());
+    Z_set = pontry_diff(*Z_set, *interval_2_zono(box), true);
+    *Z_op -= box;
+    test_assert(check_equal(*Z_set, *Z_op), "Pontryagin difference with box -= failed");
 
     // affine map - sparse
     Z_set = affine_map(*Z1, M_sp);
@@ -169,17 +210,22 @@ int main()
     *Z_op *= *Z2;
     test_assert(check_equal(*Z_set, *Z_op), "Cartesian product *= failed");
 
-    // cartesian product with point
-    Z_set = cartesian_product(*Z1, P3);
-    Z_op = *Z1 * c3;
-    test_assert(check_equal(*Z_set, *Z_op), "Cartesian product with point failed");
+    // cartesian product with box
+    Z_set = cartesian_product(*Z1, *interval_2_zono(box));
+    Z_op = *Z1 * box;
+    test_assert(check_equal(*Z_set, *Z_op), "Cartesian product with box failed");
+
+    // cartesian product with box on left
+    Z_set = cartesian_product(*interval_2_zono(box), *Z1);
+    Z_op = box * (*Z1);
+    test_assert(check_equal(*Z_set, *Z_op), "Cartesian product with box on left failed");
 
     // *=
     Z_set.reset(Z1->clone());
     Z_op.reset(Z1->clone());
-    Z_set = cartesian_product(*Z_set, P3);
-    *Z_op *= c3;
-    test_assert(check_equal(*Z_set, *Z_op), "Cartesian product with point *= failed");
+    Z_set = cartesian_product(*Z_set, *interval_2_zono(box));
+    *Z_op *= box;
+    test_assert(check_equal(*Z_set, *Z_op), "Cartesian product with box *= failed");
 
     // intersection
     Z_set = intersection(*Z1, *Z2);

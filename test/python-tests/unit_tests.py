@@ -477,6 +477,9 @@ def test_operator_overloading():
     M_upper = np.array([[33., 1.4]])
     M_int = zono.IntervalMatrix(M, M_upper)
 
+    # box
+    box = zono.Box([0., 1.], [0.1, 1.04])
+
     # check operators are consistent with set operations
 
     # minkowski sum
@@ -496,12 +499,34 @@ def test_operator_overloading():
     Z_op = Z1 + c3
     assert check_equal(Z_set, Z_op), "Minkowski sum with point failed"
 
+    # left sum
+    Z_set = zono.minkowski_sum(P3, Z1)
+    Z_op = c3 + Z1
+    assert check_equal(Z_set, Z_op), "Left Minkowski sum with point failed"
+
     # +=
     Z_set = Z1.copy()
     Z_op = Z1.copy()
     Z_set = zono.minkowski_sum(Z_set, P3)
     Z_op += c3
     assert check_equal(Z_set, Z_op), "Minkowski sum with point += failed"
+
+    # minkowski sum with box
+    Z_set = zono.minkowski_sum(Z1, zono.interval_2_zono(box))
+    Z_op = Z1 + box
+    assert check_equal(Z_set, Z_op), "Minkowski sum with box failed"
+
+    # left sum
+    Z_set = zono.minkowski_sum(zono.interval_2_zono(box), Z1)
+    Z_op = box + Z1
+    assert check_equal(Z_set, Z_op), "Left Minkowski sum with box failed"
+
+    # +=
+    Z_set = Z1.copy()
+    Z_op = Z1.copy()
+    Z_set = zono.minkowski_sum(Z_set, zono.interval_2_zono(box))
+    Z_op += box
+    assert check_equal(Z_set, Z_op), "Minkowski sum with box += failed"
 
     # pontry diff
     Z_set = zono.pontry_diff(Z1, Z2, exact=True)
@@ -526,6 +551,18 @@ def test_operator_overloading():
     Z_set = zono.pontry_diff(Z_set, P3, exact=True)
     Z_op -= c3
     assert check_equal(Z_set, Z_op), "Pontryagin difference with point -= failed"
+
+    # pontry diff with box
+    Z_set = zono.pontry_diff(Z1, zono.interval_2_zono(box), exact=True)
+    Z_op = Z1 - box
+    assert check_equal(Z_set, Z_op), "Pontryagin difference with box failed"
+
+    # -=
+    Z_set = Z1.copy()
+    Z_op = Z1.copy()
+    Z_set = zono.pontry_diff(Z_set, zono.interval_2_zono(box), exact=True)
+    Z_op -= box
+    assert check_equal(Z_set, Z_op), "Pontryagin difference with box -= failed"
 
     # affine map - sparse
     Z_set = zono.affine_map(Z1, M_sp)
@@ -571,17 +608,22 @@ def test_operator_overloading():
     Z_op *= Z2
     assert check_equal(Z_set, Z_op), "Cartesian product *= failed"
 
-    # cartesian product with point
-    Z_set = zono.cartesian_product(Z1, P3)
-    Z_op = Z1 * c3
-    assert check_equal(Z_set, Z_op), "Cartesian product with point failed"
+    # cartesian product with box
+    Z_set = zono.cartesian_product(Z1, zono.interval_2_zono(box))
+    Z_op = Z1 * box
+    assert check_equal(Z_set, Z_op), "Cartesian product with box failed"
+
+    # cartesian product with box on left
+    Z_set = zono.cartesian_product(zono.interval_2_zono(box), Z1)
+    Z_op = box * Z1
+    assert check_equal(Z_set, Z_op), "Cartesian product with box on left failed"
 
     # *=
     Z_set = Z1.copy()
     Z_op = Z1.copy()
-    Z_set = zono.cartesian_product(Z_set, P3)
-    Z_op *= c3
-    assert check_equal(Z_set, Z_op), "Cartesian product with point *= failed"
+    Z_set = zono.cartesian_product(Z_set, zono.interval_2_zono(box))
+    Z_op *= box
+    assert check_equal(Z_set, Z_op), "Cartesian product with box *= failed"
 
     # intersection
     Z_set = zono.intersection(Z1, Z2)
