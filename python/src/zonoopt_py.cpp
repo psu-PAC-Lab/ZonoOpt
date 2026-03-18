@@ -8,8 +8,6 @@ namespace py = pybind11;
 #include "ZonoOpt.hpp"
 using namespace ZonoOpt;
 
-#include <sstream>
-
 PYBIND11_MODULE(_core, m)
 {
     m.doc() = R"pbdoc(

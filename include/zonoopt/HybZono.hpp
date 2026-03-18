@@ -16,7 +16,7 @@
 #include "BranchAndBound.hpp"
 #include "BnbDataStructures.hpp"
 #include "Inequality.hpp"
-#include "Intervals.hpp"
+#include "IntervalMatrix.hpp"
 
 #include <stdexcept>
 #include <limits>
