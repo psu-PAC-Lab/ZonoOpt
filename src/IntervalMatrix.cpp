@@ -82,6 +82,32 @@ namespace ZonoOpt
         *this = IntervalMatrix(static_cast<size_t>(mat.rows()), static_cast<size_t>(mat.cols()), triplets);
     }
 
+    std::vector<std::vector<Interval>> IntervalMatrix::to_array() const
+    {
+        std::vector<std::vector<Interval>> mat;
+        
+        // initialize with zero intervals
+        for (int i = 0; i < static_cast<int>(this->rows_); ++i)
+        {
+            mat.emplace_back(std::vector<Interval>());
+            for (int j = 0; j < static_cast<int>(this->cols_); ++j)
+            {
+                mat[i].emplace_back(Interval(zero, zero));
+            }
+        }
+
+        // loop through triplets and fill in dense matrix
+        for (int i = 0; i < static_cast<int>(this->rows_); ++i)
+        {
+            for (const auto& [j, val] : this->mat_[i])
+            {
+                mat[i][j] = val;
+            }
+        }
+
+        return mat;
+    }
+
     Box IntervalMatrix::operator*(const Eigen::Vector<zono_float, -1>& v) const
     {
         // input handling
@@ -479,6 +505,16 @@ namespace ZonoOpt
         return mat;
     }
 
+    IntervalMatrix IntervalMatrix::operator&(const IntervalMatrix& other) const
+    {
+        return this->intersect(other);
+    }
+
+    IntervalMatrix IntervalMatrix::operator|(const IntervalMatrix& other) const
+    {
+        return this->interval_hull(other);
+    }
+
     Eigen::SparseMatrix<zono_float> IntervalMatrix::center() const
     {
         std::vector<Eigen::Triplet<zono_float>> triplets;
@@ -535,6 +571,72 @@ namespace ZonoOpt
             }
         }
         return w;
+    }
+
+    IntervalMatrix IntervalMatrix::intersect(const IntervalMatrix& other) const
+    {
+        // input handling
+        if (other.rows_ != this->rows_ || other.cols_ != this->cols_)
+            throw std::invalid_argument("IntervalMatrix intersection with IntervalMatrix: inconsistent dimensions");
+
+        // convert to dense
+        const auto mat_this = this->to_array();
+        const auto mat_other = other.to_array();
+
+        // lambda to check if an element is zero
+        auto is_zero = [](const Interval& interval) -> bool
+        {
+            return interval.is_single_valued() && interval.contains(zero);
+        };
+
+        // loop through and intersect each element
+        std::vector<Eigen::Triplet<Interval>> triplets;
+        for (int i=0; i<static_cast<int>(this->rows_); ++i)
+        {
+            for (int j=0; j<static_cast<int>(this->cols_); ++j)
+            {
+                const Interval& interval_this = mat_this[i][j];
+                const Interval& interval_other = mat_other[i][j];
+                if (!(is_zero(interval_this) && is_zero(interval_other)))
+                {
+                    triplets.emplace_back(i, j, interval_this.intersect(interval_other));
+                }
+            }
+        }
+        return {this->rows_, this->cols_, triplets};
+    }
+
+    IntervalMatrix IntervalMatrix::interval_hull(const IntervalMatrix& other) const
+    {
+        // input handling
+        if (other.rows_ != this->rows_ || other.cols_ != this->cols_)
+            throw std::invalid_argument("IntervalMatrix intersection with IntervalMatrix: inconsistent dimensions");
+
+        // convert to dense
+        const auto mat_this = this->to_array();
+        const auto mat_other = other.to_array();
+
+        // lambda to check if an element is zero
+        auto is_zero = [](const Interval& interval) -> bool
+        {
+            return interval.is_single_valued() && interval.contains(zero);
+        };
+
+        // loop through and compute hull of each element
+        std::vector<Eigen::Triplet<Interval>> triplets;
+        for (int i=0; i<static_cast<int>(this->rows_); ++i)
+        {
+            for (int j=0; j<static_cast<int>(this->cols_); ++j)
+            {
+                const Interval& interval_this = mat_this[i][j];
+                const Interval& interval_other = mat_other[i][j];
+                if (!(is_zero(interval_this) && is_zero(interval_other)))
+                {
+                    triplets.emplace_back(i, j, interval_this.interval_hull(interval_other));
+                }
+            }
+        }
+        return {this->rows_, this->cols_, triplets};
     }
 
     std::string IntervalMatrix::print() const

@@ -57,6 +57,13 @@ namespace ZonoOpt
         explicit IntervalMatrix(const Eigen::Matrix<Interval, -1, -1>& mat);
 
         /**
+         * @brief Convert to a vector of vectors of Intervals (row-major)
+         * 
+         * @return vector of vectors of Intervals
+         */
+        std::vector<std::vector<Interval>> to_array() const;
+
+        /**
          * @brief Get center matrix
          * @return center matrix
          *
@@ -87,6 +94,22 @@ namespace ZonoOpt
          * Specifically, this returns the max width for any interval in the interval matrix
          */
         zono_float width() const;
+
+        /**
+         * @brief Interval matrix intersection
+         * 
+         * @param other interval matrix to intersect with
+         * @return IntervalMatrix 
+         */
+        IntervalMatrix intersect(const IntervalMatrix& other) const;
+
+        /**
+         * @brief Interval matrix interval hull
+         * 
+         * @param other interval matrix to compute hull with
+         * @return IntervalMatrix 
+         */
+        IntervalMatrix interval_hull(const IntervalMatrix& other) const;
 
         /**
          * @brief IntervalMatrix multiplication with vector
@@ -346,6 +369,22 @@ namespace ZonoOpt
          * @return negated interval matrix
          */
         IntervalMatrix operator-() const;
+
+        /**
+         * @brief Interval matrix intersection oeprator
+         * 
+         * @param other interval matrix to intersect with
+         * @return IntervalMatrix 
+         */
+        IntervalMatrix operator&(const IntervalMatrix& other) const;
+
+        /**
+         * @brief Interval matrix interval hull operator
+         * 
+         * @param other interval matrix to compute hull with
+         * @return IntervalMatrix 
+         */
+        IntervalMatrix operator|(const IntervalMatrix& other) const;
 
         /**
          * @brief Get number of rows

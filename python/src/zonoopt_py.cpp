@@ -626,6 +626,13 @@ PYBIND11_MODULE(_core, m)
                 Args:
                     vals (list of Interval): list of intervals to construct box from
             )pbdoc")
+        .def("to_array", &Box::to_array,
+            R"pbdoc(
+                Convert to array of intervals
+
+                Returns:
+                    list of Interval: box as list of intervals
+            )pbdoc")
         .def("__repr__", &Box::print,
             R"pbdoc(
                 print method for Box
@@ -1173,6 +1180,13 @@ PYBIND11_MODULE(_core, m)
                     cols (int): number of columns
                     triplets (list of tuple of (int, int, Interval)): list of triplets, where each triplet is (row, col, value)
             )pbdoc")
+        .def("to_array", &IntervalMatrix::to_array, 
+            R"pbdoc(
+                Convert interval matrix to 2D array of intervals
+
+                Returns:
+                    list of list of Interval: 2D array of intervals corresponding to interval matrix
+            )pbdoc")
         .def("center", &IntervalMatrix::center,
             R"pbdoc(
                 Get center matrix
@@ -1208,6 +1222,26 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     IntervalMatrix: radius of interval matrix
+            )pbdoc")
+        .def("intersect", &IntervalMatrix::intersect,
+            R"pbdoc(
+                Intersection of two interval matrices
+
+                Args:
+                    other (IntervalMatrix): other interval matrix
+
+                Returns:
+                    IntervalMatrix: intersection of self and other
+            )pbdoc")
+        .def("interval_hull", &IntervalMatrix::interval_hull,
+            R"pbdoc(
+                Interval hull of two interval matrices
+
+                Args:
+                    other (IntervalMatrix): other interval matrix
+
+                Returns:
+                    IntervalMatrix: interval hull of self and other
             )pbdoc")
         .def("__matmul__", [](const IntervalMatrix& self, const Eigen::Vector<zono_float, -1>& v) -> Box
             { return self*v; },
@@ -1590,6 +1624,28 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     IntervalMatrix: negated interval matrix
+            )pbdoc")
+        .def("__and__", &IntervalMatrix::operator&,
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix intersection operator
+
+                Args:
+                    other (IntervalMatrix): other interval matrix
+
+                Returns:
+                    IntervalMatrix: intersection of self and other
+            )pbdoc")
+        .def("__or__", &IntervalMatrix::operator|,
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix interval hull operator
+
+                Args:
+                    other (IntervalMatrix): other interval matrix
+
+                Returns:
+                    IntervalMatrix: interval hull of self and other
             )pbdoc")
         .def("rows", &IntervalMatrix::rows,
             R"pbdoc(

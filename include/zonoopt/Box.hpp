@@ -56,6 +56,13 @@ namespace ZonoOpt
          */
         Box(const Eigen::Vector<zono_float, -1>& x_lb, const Eigen::Vector<zono_float, -1>& x_ub);
 
+        /**
+         * @brief Convert to vector of intervals
+         * 
+         * @return std::vector<Interval> 
+         */
+        std::vector<Interval> to_array() const;
+
         // virtual destructor
         /**
          * @brief Virtual destructor

@@ -57,6 +57,16 @@ namespace ZonoOpt {
         this->x_ub = other.x_ub;
     }
 
+    std::vector<Interval> Box::to_array() const
+    {
+        std::vector<Interval> vals;
+        for (int i = 0; i < x_lb.size(); ++i)
+        {
+            vals.emplace_back(x_lb(i), x_ub(i));
+        }
+        return vals;
+    }
+
     Interval Box::get_element(const int i) const
     {
         if (i >= x_lb.size())
