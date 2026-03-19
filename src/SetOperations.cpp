@@ -321,30 +321,116 @@ namespace ZonoOpt
                                                     const Eigen::Vector<zono_float, -1>& f,
                                                     const Eigen::SparseMatrix<zono_float>& R)
     {
-        // use the constrain function
+        // // use the constrain function
 
-        // convert H to row-major to efficiently convert into Inequality form
-        Eigen::SparseMatrix<zono_float, Eigen::RowMajor> H_rm = H;
-        std::vector<Inequality> ineqs;
-        for (int k = 0; k < H_rm.rows(); ++k)
+        // // convert H to row-major to efficiently convert into Inequality form
+        // Eigen::SparseMatrix<zono_float, Eigen::RowMajor> H_rm = H;
+        // std::vector<Inequality> ineqs;
+        // for (int k = 0; k < H_rm.rows(); ++k)
+        // {
+        //     // get row of constraint matrix
+        //     std::vector<Eigen::Triplet<zono_float>> trips_row = get_triplets_row<zono_float>(H_rm, k);
+
+        //     // build constraint
+        //     Inequality ineq(static_cast<int>(H_rm.cols()));
+        //     for (const auto& trip : trips_row)
+        //     {
+        //         ineq.add_term(trip.col(), trip.value());
+        //     }
+        //     ineq.set_rhs(f(k));
+        //     ineq.set_ineq_type(LESS_OR_EQUAL);
+
+        //     ineqs.push_back(ineq);
+        // }
+
+        // // call constrain
+        // return constrain(Z, ineqs, R);
+
+        // DEBUGGING: manually implement the identity from Bird 2023
+
+        // trivial case
+        if (Z.is_empty_set())
         {
-            // get row of constraint matrix
-            std::vector<Eigen::Triplet<zono_float>> trips_row = get_triplets_row<zono_float>(H_rm, k);
-
-            // build constraint
-            Inequality ineq(static_cast<int>(H_rm.cols()));
-            for (const auto& trip : trips_row)
-            {
-                ineq.add_term(trip.col(), trip.value());
-            }
-            ineq.set_rhs(f(k));
-            ineq.set_ineq_type(LESS_OR_EQUAL);
-
-            ineqs.push_back(ineq);
+            return std::make_unique<EmptySet>(Z.n);
         }
 
-        // call constrain
-        return constrain(Z, ineqs, R);
+        // handle default arguments
+        const Eigen::SparseMatrix<zono_float>* R_ptr = nullptr;
+        Eigen::SparseMatrix<zono_float> R_def;
+        if (R.rows() == 0 && R.cols() == 0)
+        {
+            R_def.resize(Z.n, Z.n);
+            R_def.setIdentity();
+            R_ptr = &R_def;
+        }
+        else
+        {
+            R_ptr = &R;
+        }
+
+        // check dimensions
+        if (H.rows() != f.size() || H.cols() != Z.n ||  R_ptr->cols() != Z.n)
+        {
+            throw std::invalid_argument("Halfspace intersection: inconsistent input dimensions.");
+        }
+
+        // make sure in -1,1 form
+        if (Z.zero_one_form) Z.convert_form();
+
+        // compute dm
+        Eigen::Vector<zono_float, -1> dm = f - H * (*R_ptr) * Z.c; // init
+        
+        for (int k=0; k<Z.Gc.cols(); ++k)
+        {
+            Eigen::Vector<zono_float, -1> Gc_k = Z.Gc.col(k);
+            dm += (H * (*R_ptr) * Gc_k).cwiseAbs();
+        }
+
+        for (int k=0; k<Z.Gb.cols(); ++k)
+        {
+            Eigen::Vector<zono_float, -1> Gb_k = Z.Gb.col(k);
+            dm += (H * (*R_ptr) * Gb_k).cwiseAbs();
+        }
+
+        // generators
+        const int n_cons = H.rows();
+
+        Eigen::SparseMatrix<zono_float> Gc = Z.Gc;
+        Gc.conservativeResize(Z.n, Z.nGc + n_cons); // add zeros
+
+        const Eigen::SparseMatrix<zono_float> Gb = Z.Gb;
+        const Eigen::Vector<zono_float, -1> c = Z.c;
+
+        // constraints
+        Eigen::SparseMatrix<zono_float> Ac = Z.Ac;
+        Ac.conservativeResize(Z.nC, Z.nGc + n_cons); // add zeros
+        const Eigen::SparseMatrix<zono_float> HRGc = H * (*R_ptr) * Z.Gc;
+        Eigen::SparseMatrix<zono_float> dm2 (n_cons, n_cons);
+        std::vector<Eigen::Triplet<zono_float>> tripvec;
+        for (int i = 0; i < n_cons; ++i)
+        {
+            tripvec.emplace_back(i, i, dm(i)/two);
+        }
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
+        dm2.setFromSortedTriplets(tripvec.begin(), tripvec.end());
+#else
+        dm2.setFromTriplets(tripvec.begin(), tripvec.end());
+#endif
+        Eigen::SparseMatrix<zono_float> Ac_cons = hcat(HRGc, dm2);
+        Ac = vcat(Ac, Ac_cons);
+
+        const Eigen::SparseMatrix<zono_float> HRGb = H * (*R_ptr) * Z.Gb;
+        const Eigen::SparseMatrix<zono_float> Ab = vcat(Z.Ab, HRGb);
+
+        Eigen::Vector<zono_float, -1> b = Z.b;
+        b.conservativeResize(Z.nC + n_cons);
+        b.segment(Z.nC, n_cons) = f - H * (*R_ptr) * Z.c - dm/two;
+
+        // return correct output type
+        if (Z.is_hybzono())
+            return std::make_unique<HybZono>(Gc, Gb, c, Ac, Ab, b, Z.zero_one_form, false);
+        else
+            return std::make_unique<ConZono>(Gc, c, Ac, b, Z.zero_one_form);
     }
 
     // pontryagin difference
