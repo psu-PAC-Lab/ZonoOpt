@@ -130,6 +130,21 @@ namespace ZonoOpt
             return this->interval_hull(other);
         }
 
+        bool Interval::operator<=(const Interval& other) const
+        {
+            return other.contains_set(*this);
+        }
+
+        bool Interval::operator>=(const Interval& other) const
+        {
+            return this->contains_set(other);
+        }
+
+        bool Interval::operator==(const Interval& other) const
+        {
+            return this->contains_set(other) && other.contains_set(*this);
+        }
+
         Interval Interval::inv() const
         {
             return Interval(boost::numeric::interval_lib::multiplicative_inverse(_val));
@@ -148,6 +163,11 @@ namespace ZonoOpt
         bool Interval::contains(const zono_float x) const
         {
             return x >= this->lower() - zono_eps && x <= this->upper() + zono_eps;
+        }
+
+        bool Interval::contains_set(const Interval& other) const
+        {
+            return this->contains(other.lower()) && this->contains(other.upper());
         }
 
         bool Interval::is_single_valued() const

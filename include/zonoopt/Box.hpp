@@ -181,6 +181,14 @@ namespace ZonoOpt
          */
         bool contains(const Eigen::Vector<zono_float, -1>& v);
 
+        /**
+         * @brief Check set containment
+         * 
+         * @param other box to check if subset
+         * @return true if other is a subset of this
+         */
+        bool contains_set(const Box& other) const;
+
         // operator overloading
 
         /**
@@ -419,6 +427,30 @@ namespace ZonoOpt
          * @return Interval hull of this and other
          */
         Box operator|(const Box& other) const;
+
+        /**
+         * @brief Set containment operator
+         * 
+         * @param other 
+         * @return true if this is subset of other
+         */
+        bool operator<=(const Box& other) const;
+
+        /**
+         * @brief Set containment operator
+         * 
+         * @param other 
+         * @return true if this is superset of other
+         */
+        bool operator>=(const Box& other) const;
+
+        /**
+         * @brief Set equality operator
+         * 
+         * @param other 
+         * @return true if sets are equal
+         */
+        bool operator==(const Box& other) const;
 
         // interval contractors
 

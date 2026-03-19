@@ -529,6 +529,21 @@ namespace ZonoOpt
         return this->interval_hull(other);
     }
 
+    bool IntervalMatrix::operator<=(const IntervalMatrix& other) const
+    {
+        return other.contains_set(*this);
+    }
+
+    bool IntervalMatrix::operator>=(const IntervalMatrix& other) const
+    {
+        return this->contains_set(other);
+    }
+
+    bool IntervalMatrix::operator==(const IntervalMatrix& other) const
+    {
+        return this->contains_set(other) && other.contains_set(*this);
+    }
+
     Eigen::SparseMatrix<zono_float> IntervalMatrix::center() const
     {
         std::vector<Eigen::Triplet<zono_float>> triplets;
@@ -669,6 +684,28 @@ namespace ZonoOpt
             for (int j=0; j<static_cast<int>(this->cols_); ++j)
             {
                 if (!arr_this[i][j].contains(mat_dense(i, j)))
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    bool IntervalMatrix::contains_set(const IntervalMatrix& other) const
+    {
+        // make sure dimensions are consistent
+        if (other.rows_ != this->rows_ || other.cols_ != this->cols_)
+            throw std::invalid_argument("IntervalMatrix contains_set with IntervalMatrix: inconsistent dimensions");
+
+        // convert to dense
+        const auto arr_this = this->to_array();
+        const auto arr_other = other.to_array();
+
+        // loop through and check if each element is contained
+        for (int i=0; i<static_cast<int>(this->rows_); ++i)
+        {
+            for (int j=0; j<static_cast<int>(this->cols_); ++j)
+            {
+                if (!arr_this[i][j].contains_set(arr_other[i][j]))
                     return false;
             }
         }

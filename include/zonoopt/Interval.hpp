@@ -253,6 +253,30 @@ namespace ZonoOpt
         Interval operator|(const Interval& other) const;
 
         /**
+         * @brief Set containment operator
+         * 
+         * @param other 
+         * @return true if this interval is a subset of other, false otherwise
+         */
+        bool operator<=(const Interval& other) const;
+
+        /**
+         * @brief Set containment operator
+         * 
+         * @param other 
+         * @return true if this interval is a superset of other, false otherwise
+         */
+        bool operator>=(const Interval& other) const;
+        
+        /**
+         * @brief Set equality operator
+         * 
+         * @param other 
+         * @return true if intervals are equal, false otherwise
+         */
+        bool operator==(const Interval& other) const;
+
+        /**
          * @brief Interval inverse
          * @return enclosure of inverse
          */
@@ -279,6 +303,14 @@ namespace ZonoOpt
          * @return flag indicating if interval contains x
          */
         bool contains(const zono_float x) const;
+
+        /**
+         * @brief Set containment for intervals
+         * 
+         * @param other interval to check if is subset
+         * @return true if this interval contains other or is equal, false otherwise
+         */
+        bool contains_set(const Interval& other) const;
 
         /**
          * @brief Checks whether interval is single-valued (i.e., width is 0 within numerical tolerance)

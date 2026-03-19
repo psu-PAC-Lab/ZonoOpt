@@ -163,6 +163,18 @@ namespace ZonoOpt {
         return true;
     }
 
+    bool Box::contains_set(const Box& other) const
+    {
+        if (this->size() != other.size())
+            throw std::invalid_argument("Box contains_set: inconsistent dimensions");
+        for (int i = 0; i < static_cast<int>(this->size()); ++i)
+        {
+            if (!get_element(i).contains_set(other.get_element(i)))
+                return false;
+        }
+        return true;
+    }
+
     Box Box::operator+(const Box& other) const
     {
         if (this->size() != other.size())
@@ -408,6 +420,21 @@ namespace ZonoOpt {
     Box Box::operator|(const Box& other) const
     {
         return this->interval_hull(other);
+    }
+
+    bool Box::operator<=(const Box& other) const
+    {
+        return other.contains_set(*this);
+    }
+
+    bool Box::operator>=(const Box& other) const
+    {
+        return this->contains_set(other);
+    }
+
+    bool Box::operator==(const Box& other) const
+    {
+        return this->contains_set(other) && other.contains_set(*this);
     }
 
     bool Box::contract(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A,

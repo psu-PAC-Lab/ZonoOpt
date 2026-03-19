@@ -127,6 +127,14 @@ namespace ZonoOpt
         bool contains(const Eigen::SparseMatrix<zono_float>& mat) const;
 
         /**
+         * @brief Check whether the interval matrix contains another interval matrix
+         * 
+         * @param other interval matrix
+         * @return true if other is contained in this, false otherwise
+         */
+        bool contains_set(const IntervalMatrix& other) const;
+
+        /**
          * @brief IntervalMatrix multiplication with vector
          * @param v rhs vector
          * @return resulting box
@@ -400,6 +408,30 @@ namespace ZonoOpt
          * @return IntervalMatrix 
          */
         IntervalMatrix operator|(const IntervalMatrix& other) const;
+
+        /**
+         * @brief Set containment operator
+         * 
+         * @param other 
+         * @return true if this is subset of other
+         */
+        bool operator<=(const IntervalMatrix& other) const;
+
+        /**
+         * @brief Set containment operator
+         * 
+         * @param other 
+         * @return true if this is superset of other
+         */
+        bool operator>=(const IntervalMatrix& other) const;
+
+        /**
+         * @brief Set equality operator
+         * 
+         * @param other 
+         * @return true if this and other are equal
+         */
+        bool operator==(const IntervalMatrix& other) const;
 
         /**
          * @brief Get number of rows

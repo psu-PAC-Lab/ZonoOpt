@@ -421,6 +421,49 @@ PYBIND11_MODULE(_core, m)
                     Interval: enclosure of -self
             )pbdoc"
         )
+        .def("__eq__", &Interval::operator==,
+            py::is_operator(),
+            R"pbdoc(
+                Interval equality
+
+                Args:
+                    other (Interval): other interval
+
+                Returns:
+                    bool: flag indicating whether intervals are equal
+            )pbdoc")
+        .def("__le__", &Interval::operator<=,
+            py::is_operator(),
+            R"pbdoc(
+                Interval subset operator
+
+                Args:
+                    other (Interval): other interval
+
+                Returns:
+                    bool: flag indicating whether self is a subset of other
+            )pbdoc")
+        .def("__ge__", &Interval::operator>=,
+            py::is_operator(),
+            R"pbdoc(
+                Interval superset operator
+
+                Args:
+                    other (Interval): other interval
+
+                Returns:
+                    bool: flag indicating whether self is a superset of other
+            )pbdoc")
+        .def("contains_set", &Interval::contains_set, py::arg("other"),
+            R"pbdoc(
+                Checks whether interval contains another interval
+
+                Args:
+                    other (Interval): other interval
+
+                Returns:
+                    bool: flag indicating whether self contains other
+            )pbdoc")
         .def("sqrt", &Interval::sqrt,
             R"pbdoc(
                 Interval square root
@@ -731,6 +774,16 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     bool: flag indicating whether box contains v
+            )pbdoc")
+        .def("contains_set", &Box::contains_set, py::arg("other"),
+            R"pbdoc(
+                Checks whether box contains another box
+
+                Args:
+                    other (Box): other box
+
+                Returns:
+                    bool: flag indicating whether self contains other
             )pbdoc")
         .def("contract", &Box::contract, py::arg("A"), py::arg("b"), py::arg("iter"),
             R"pbdoc(
@@ -1128,6 +1181,39 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Box: interval hull of self and other
             )pbdoc")
+        .def("__eq__", &Box::operator==,
+            py::is_operator(),
+            R"pbdoc(
+                Box equality
+
+                Args:
+                    other (Box): other box
+
+                Returns:
+                    bool: flag indicating whether boxes are equal
+            )pbdoc")
+        .def("__le__", &Box::operator<=,
+            py::is_operator(),
+            R"pbdoc(
+                Box subset operator
+
+                Args:
+                    other (Box): other box
+
+                Returns:
+                    bool: flag indicating whether self is a subset of other
+            )pbdoc")
+        .def("__ge__", &Box::operator>=,
+            py::is_operator(),
+            R"pbdoc(
+                Box superset operator
+
+                Args:
+                    other (Box): other box
+
+                Returns:
+                    bool: flag indicating whether self is a superset of other
+            )pbdoc")
     ;
 
     box_cl.attr("__array_priority__") = 100.;
@@ -1280,6 +1366,16 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     bool: true if self contains A
+            )pbdoc")
+        .def("contains_set", &IntervalMatrix::contains_set, py::arg("other"),
+            R"pbdoc(
+                Checks whether interval matrix contains another interval matrix
+
+                Args:
+                    other (IntervalMatrix): other interval matrix
+
+                Returns:
+                    bool: true if self contains other
             )pbdoc")
         .def("__matmul__", [](const IntervalMatrix& self, const Eigen::Vector<zono_float, -1>& v) -> Box
             { return self*v; },
@@ -1684,6 +1780,39 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     IntervalMatrix: interval hull of self and other
+            )pbdoc")
+        .def("__eq__", &IntervalMatrix::operator==,
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix equality operator
+
+                Args:
+                    other (IntervalMatrix): other interval matrix
+
+                Returns:
+                    bool: flag indicating whether self and other are equal
+            )pbdoc")
+        .def("__le__", &IntervalMatrix::operator<=,
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix subset operator
+
+                Args:
+                    other (IntervalMatrix): other interval matrix
+
+                Returns:
+                    bool: flag indicating whether self is a subset of other
+            )pbdoc")
+        .def("__ge__", &IntervalMatrix::operator>=,
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix superset operator
+
+                Args:
+                    other (IntervalMatrix): other interval matrix
+
+                Returns:
+                    bool: flag indicating whether self is a superset of other
             )pbdoc")
         .def("rows", &IntervalMatrix::rows,
             R"pbdoc(
