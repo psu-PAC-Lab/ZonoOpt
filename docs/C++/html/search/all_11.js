@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['radius_0',['radius',['../classZonoOpt_1_1Interval.html#a907d9727912e1b0f5cb6fdba5e2a75a9',1,'ZonoOpt::Interval::radius()'],['../classZonoOpt_1_1Box.html#abb61f47eea2d464b96989d2defd85aeb',1,'ZonoOpt::Box::radius()'],['../classZonoOpt_1_1IntervalMatrix.html#acd7eeaba47e094b31fda22e7f6e9218f',1,'ZonoOpt::IntervalMatrix::radius()']]],
+  ['radius_0',['radius',['../classZonoOpt_1_1Box.html#abb61f47eea2d464b96989d2defd85aeb',1,'ZonoOpt::Box::radius()'],['../classZonoOpt_1_1Interval.html#a907d9727912e1b0f5cb6fdba5e2a75a9',1,'ZonoOpt::Interval::radius()'],['../classZonoOpt_1_1IntervalMatrix.html#acd7eeaba47e094b31fda22e7f6e9218f',1,'ZonoOpt::IntervalMatrix::radius()']]],
   ['readme_2emd_1',['README.md',['../README_8md.html',1,'']]],
   ['reduce_5forder_2',['reduce_order',['../classZonoOpt_1_1Zono.html#a98480f31374733165d0b0b4c22d82bc9',1,'ZonoOpt::Zono']]],
   ['references_3',['References',['../index.html#autotoc_md6',1,'']]],

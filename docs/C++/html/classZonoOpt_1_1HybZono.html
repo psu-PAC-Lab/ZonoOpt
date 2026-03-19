@@ -230,6 +230,69 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afc25aae8444dc9e30ed64995744bbc1f" id="r_afc25aae8444dc9e30ed64995744bbc1f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classZonoOpt_1_1ConZono.html">ConZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#afc25aae8444dc9e30ed64995744bbc1f">get_leaves</a> (<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">bool</a> <a class="el" href="classZonoOpt_1_1HybZono.html#a6db0f006ddbe7d66d9fb2aaadca67199">remove_redundancy</a>=<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">true</a>, <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="structZonoOpt_1_1OptSettings.html">OptSettings</a> &amp;settings=<a class="el" href="structZonoOpt_1_1OptSettings.html">OptSettings</a>(), std::shared_ptr&lt; <a class="el" href="structZonoOpt_1_1OptSolution.html">OptSolution</a> &gt; *solution=<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">nullptr</a>, <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">int</a> <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">n_leaves</a>=std::numeric_limits&lt; <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">int</a> &gt;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">::max</a>(), <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">int</a> contractor_iter=10) <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a></td></tr>
 <tr class="memdesc:afc25aae8444dc9e30ed64995744bbc1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes individual constrained zonotopes whose union is the hybrid zonotope object.  <br /></td></tr>
 <tr class="separator:afc25aae8444dc9e30ed64995744bbc1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae694bdefbc77aa9f1a59fbd5f0e86bb3" id="r_ae694bdefbc77aa9f1a59fbd5f0e86bb3"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#ae694bdefbc77aa9f1a59fbd5f0e86bb3">operator+</a> (<a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">other</a>) <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a></td></tr>
+<tr class="memdesc:ae694bdefbc77aa9f1a59fbd5f0e86bb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">minkowski sum  <br /></td></tr>
+<tr class="separator:ae694bdefbc77aa9f1a59fbd5f0e86bb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa29ffc9a6024da4d4f7c69fd337cc17b" id="r_aa29ffc9a6024da4d4f7c69fd337cc17b"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#aa29ffc9a6024da4d4f7c69fd337cc17b">operator+</a> (<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">v</a>) <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a></td></tr>
+<tr class="memdesc:aa29ffc9a6024da4d4f7c69fd337cc17b"><td class="mdescLeft">&#160;</td><td class="mdescRight">minkowski sum with point  <br /></td></tr>
+<tr class="separator:aa29ffc9a6024da4d4f7c69fd337cc17b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3b5bd6798d239b053a45b27165311f3" id="r_aa3b5bd6798d239b053a45b27165311f3"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#aa3b5bd6798d239b053a45b27165311f3">operator+</a> (<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">box</a>) <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a></td></tr>
+<tr class="memdesc:aa3b5bd6798d239b053a45b27165311f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">minkowski sum with box  <br /></td></tr>
+<tr class="separator:aa3b5bd6798d239b053a45b27165311f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a3a4b2929abf656c53b575c1752b491" id="r_a8a3a4b2929abf656c53b575c1752b491"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#a8a3a4b2929abf656c53b575c1752b491">operator+=</a> (<a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">other</a>)</td></tr>
+<tr class="memdesc:a8a3a4b2929abf656c53b575c1752b491"><td class="mdescLeft">&#160;</td><td class="mdescRight">in-place minkowski sum  <br /></td></tr>
+<tr class="separator:a8a3a4b2929abf656c53b575c1752b491"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ba81f2e44fedc2b9db0d89b0aefee2c" id="r_a5ba81f2e44fedc2b9db0d89b0aefee2c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#a5ba81f2e44fedc2b9db0d89b0aefee2c">operator+=</a> (<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">v</a>)</td></tr>
+<tr class="memdesc:a5ba81f2e44fedc2b9db0d89b0aefee2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">in-place minkowski sum with point  <br /></td></tr>
+<tr class="separator:a5ba81f2e44fedc2b9db0d89b0aefee2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa72e6dd952cb3b454b1264442c207b43" id="r_aa72e6dd952cb3b454b1264442c207b43"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#aa72e6dd952cb3b454b1264442c207b43">operator+=</a> (<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">box</a>)</td></tr>
+<tr class="memdesc:aa72e6dd952cb3b454b1264442c207b43"><td class="mdescLeft">&#160;</td><td class="mdescRight">in-place minkowski sum with box  <br /></td></tr>
+<tr class="separator:aa72e6dd952cb3b454b1264442c207b43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb3a8d84cd3be0b8ee8741d7dd225fa0" id="r_adb3a8d84cd3be0b8ee8741d7dd225fa0"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#adb3a8d84cd3be0b8ee8741d7dd225fa0">operator*</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">f</a>) <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a></td></tr>
+<tr class="memdesc:adb3a8d84cd3be0b8ee8741d7dd225fa0"><td class="mdescLeft">&#160;</td><td class="mdescRight">scalar multiplication: returns f*Z  <br /></td></tr>
+<tr class="separator:adb3a8d84cd3be0b8ee8741d7dd225fa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae972afdf0d7e9ded5ce8e1d301d4e9a3" id="r_ae972afdf0d7e9ded5ce8e1d301d4e9a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#ae972afdf0d7e9ded5ce8e1d301d4e9a3">operator*=</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">f</a>)</td></tr>
+<tr class="memdesc:ae972afdf0d7e9ded5ce8e1d301d4e9a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">scalar multiplication in place  <br /></td></tr>
+<tr class="separator:ae972afdf0d7e9ded5ce8e1d301d4e9a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb80e6c3508f46d3352542edefde9f07" id="r_acb80e6c3508f46d3352542edefde9f07"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#acb80e6c3508f46d3352542edefde9f07">operator-</a> (<a class="el" href="classZonoOpt_1_1Zono.html">Zono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">other</a>)</td></tr>
+<tr class="memdesc:acb80e6c3508f46d3352542edefde9f07"><td class="mdescLeft">&#160;</td><td class="mdescRight">pontryagin difference  <br /></td></tr>
+<tr class="separator:acb80e6c3508f46d3352542edefde9f07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb798159002948a279a6a84184bb7180" id="r_adb798159002948a279a6a84184bb7180"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#adb798159002948a279a6a84184bb7180">operator-</a> (<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">v</a>)</td></tr>
+<tr class="memdesc:adb798159002948a279a6a84184bb7180"><td class="mdescLeft">&#160;</td><td class="mdescRight">pontryagin difference with point  <br /></td></tr>
+<tr class="separator:adb798159002948a279a6a84184bb7180"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ad670af7631c540b665f297bd647883" id="r_a4ad670af7631c540b665f297bd647883"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#a4ad670af7631c540b665f297bd647883">operator-</a> (<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">box</a>)</td></tr>
+<tr class="memdesc:a4ad670af7631c540b665f297bd647883"><td class="mdescLeft">&#160;</td><td class="mdescRight">pontryagin difference with box  <br /></td></tr>
+<tr class="separator:a4ad670af7631c540b665f297bd647883"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa156d6c09ddb4ea3386f69f3ad3cd043" id="r_aa156d6c09ddb4ea3386f69f3ad3cd043"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#aa156d6c09ddb4ea3386f69f3ad3cd043">operator-=</a> (<a class="el" href="classZonoOpt_1_1Zono.html">Zono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">other</a>)</td></tr>
+<tr class="memdesc:aa156d6c09ddb4ea3386f69f3ad3cd043"><td class="mdescLeft">&#160;</td><td class="mdescRight">in-place pontryagin difference  <br /></td></tr>
+<tr class="separator:aa156d6c09ddb4ea3386f69f3ad3cd043"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d35111444b8768279d12f044567da62" id="r_a7d35111444b8768279d12f044567da62"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#a7d35111444b8768279d12f044567da62">operator-=</a> (<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">v</a>)</td></tr>
+<tr class="memdesc:a7d35111444b8768279d12f044567da62"><td class="mdescLeft">&#160;</td><td class="mdescRight">in-place pontryagin difference with point  <br /></td></tr>
+<tr class="separator:a7d35111444b8768279d12f044567da62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4afc45192a8dfd4adffc9223f0a2ae28" id="r_a4afc45192a8dfd4adffc9223f0a2ae28"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#a4afc45192a8dfd4adffc9223f0a2ae28">operator-=</a> (<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">box</a>)</td></tr>
+<tr class="memdesc:a4afc45192a8dfd4adffc9223f0a2ae28"><td class="mdescLeft">&#160;</td><td class="mdescRight">in-place pontryagin difference with box  <br /></td></tr>
+<tr class="separator:a4afc45192a8dfd4adffc9223f0a2ae28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe2121bf58e4d03f0f85f42017360165" id="r_abe2121bf58e4d03f0f85f42017360165"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#abe2121bf58e4d03f0f85f42017360165">operator*</a> (<a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">other</a>) <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a></td></tr>
+<tr class="memdesc:abe2121bf58e4d03f0f85f42017360165"><td class="mdescLeft">&#160;</td><td class="mdescRight">cartesian product  <br /></td></tr>
+<tr class="separator:abe2121bf58e4d03f0f85f42017360165"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88030f4310cb835f26bddfed9a1827c9" id="r_a88030f4310cb835f26bddfed9a1827c9"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#a88030f4310cb835f26bddfed9a1827c9">operator*</a> (<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">box</a>) <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a></td></tr>
+<tr class="memdesc:a88030f4310cb835f26bddfed9a1827c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">cartesian product with box  <br /></td></tr>
+<tr class="separator:a88030f4310cb835f26bddfed9a1827c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadade43e1d40b364889f0fe201dcdc70" id="r_aadade43e1d40b364889f0fe201dcdc70"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#aadade43e1d40b364889f0fe201dcdc70">operator*=</a> (<a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">other</a>)</td></tr>
+<tr class="memdesc:aadade43e1d40b364889f0fe201dcdc70"><td class="mdescLeft">&#160;</td><td class="mdescRight">in-place cartesian product  <br /></td></tr>
+<tr class="separator:aadade43e1d40b364889f0fe201dcdc70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab77d22fa3988ba322fa03110a22b0ad7" id="r_ab77d22fa3988ba322fa03110a22b0ad7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#ab77d22fa3988ba322fa03110a22b0ad7">operator*=</a> (<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">box</a>)</td></tr>
+<tr class="memdesc:ab77d22fa3988ba322fa03110a22b0ad7"><td class="mdescLeft">&#160;</td><td class="mdescRight">in-place cartesian product with box  <br /></td></tr>
+<tr class="separator:ab77d22fa3988ba322fa03110a22b0ad7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd576a0d73b9eb36969b529824065d62" id="r_afd576a0d73b9eb36969b529824065d62"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#afd576a0d73b9eb36969b529824065d62">operator&amp;</a> (<a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">other</a>) <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a></td></tr>
+<tr class="memdesc:afd576a0d73b9eb36969b529824065d62"><td class="mdescLeft">&#160;</td><td class="mdescRight">intersection  <br /></td></tr>
+<tr class="separator:afd576a0d73b9eb36969b529824065d62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40dc0695568ad5648b34b030548b915c" id="r_a40dc0695568ad5648b34b030548b915c"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#a40dc0695568ad5648b34b030548b915c">operator|</a> (<a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">other</a>) <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a></td></tr>
+<tr class="memdesc:a40dc0695568ad5648b34b030548b915c"><td class="mdescLeft">&#160;</td><td class="mdescRight">union  <br /></td></tr>
+<tr class="separator:a40dc0695568ad5648b34b030548b915c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cf437085c423c8c88ad264bcf3a8c7f" id="r_a4cf437085c423c8c88ad264bcf3a8c7f"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#a4cf437085c423c8c88ad264bcf3a8c7f">operator-</a> () <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a></td></tr>
+<tr class="memdesc:a4cf437085c423c8c88ad264bcf3a8c7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">unary minus: returns -I * this  <br /></td></tr>
+<tr class="separator:a4cf437085c423c8c88ad264bcf3a8c7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -324,9 +387,9 @@ Friends</h2></td></tr>
 <tr class="memitem:a229e84dc0e86777fc1cfd51a28d19fe5" id="r_a229e84dc0e86777fc1cfd51a28d19fe5"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#a229e84dc0e86777fc1cfd51a28d19fe5">minkowski_sum</a> (<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">Z1</a>, <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">Z2</a>)</td></tr>
 <tr class="memdesc:a229e84dc0e86777fc1cfd51a28d19fe5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes Minkowski sum of two sets Z1 and Z2.  <br /></td></tr>
 <tr class="separator:a229e84dc0e86777fc1cfd51a28d19fe5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee3301b59947b68fc93d1d7c3ca48b05" id="r_aee3301b59947b68fc93d1d7c3ca48b05"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#aee3301b59947b68fc93d1d7c3ca48b05">pontry_diff</a> (<a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">Z1</a>, <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">Z2</a>, <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">bool</a> <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">exact</a>)</td></tr>
-<tr class="memdesc:aee3301b59947b68fc93d1d7c3ca48b05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the Pontryagin difference Z1 - Z2.  <br /></td></tr>
-<tr class="separator:aee3301b59947b68fc93d1d7c3ca48b05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19b3a5f966c0067bd9a701501079962c" id="r_a19b3a5f966c0067bd9a701501079962c"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#a19b3a5f966c0067bd9a701501079962c">pontry_diff</a> (<a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">Z1</a>, <a class="el" href="classZonoOpt_1_1Zono.html">Zono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">Z2</a>, <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">bool</a> <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">exact</a>)</td></tr>
+<tr class="memdesc:a19b3a5f966c0067bd9a701501079962c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the Pontryagin difference Z1 - Z2.  <br /></td></tr>
+<tr class="separator:a19b3a5f966c0067bd9a701501079962c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acdc4b4a9dfdea659ee80da0f3d75a0e4" id="r_acdc4b4a9dfdea659ee80da0f3d75a0e4"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#acdc4b4a9dfdea659ee80da0f3d75a0e4">intersection</a> (<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">Z1</a>, <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">Z2</a>, <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;R)</td></tr>
 <tr class="memdesc:acdc4b4a9dfdea659ee80da0f3d75a0e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the generalized intersection of sets Z1 and Z2 over the matrix R.  <br /></td></tr>
 <tr class="separator:acdc4b4a9dfdea659ee80da0f3d75a0e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -356,6 +419,27 @@ Friends</h2></td></tr>
 <tr class="memitem:a7de51eb6b0817d9f0afec85b97e548ed" id="r_a7de51eb6b0817d9f0afec85b97e548ed"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#a7de51eb6b0817d9f0afec85b97e548ed">zono_union_2_hybzono</a> (std::vector&lt; std::shared_ptr&lt; <a class="el" href="classZonoOpt_1_1Zono.html">Zono</a> &gt; &gt; &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">Zs</a>, <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">bool</a> <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">expose_indicators</a>)</td></tr>
 <tr class="memdesc:a7de51eb6b0817d9f0afec85b97e548ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a hybrid zonotope from a union of zonotopes.  <br /></td></tr>
 <tr class="separator:a7de51eb6b0817d9f0afec85b97e548ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc976fae1d92239792cdb2fe9f1cdaec" id="r_afc976fae1d92239792cdb2fe9f1cdaec"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#afc976fae1d92239792cdb2fe9f1cdaec">operator+</a> (<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">v</a>, <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">Z</a>)</td></tr>
+<tr class="memdesc:afc976fae1d92239792cdb2fe9f1cdaec"><td class="mdescLeft">&#160;</td><td class="mdescRight">minkowski sum with point  <br /></td></tr>
+<tr class="separator:afc976fae1d92239792cdb2fe9f1cdaec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e259bc08d00a32c11201ece6564c4b4" id="r_a5e259bc08d00a32c11201ece6564c4b4"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#a5e259bc08d00a32c11201ece6564c4b4">operator+</a> (<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">box</a>, <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">Z</a>)</td></tr>
+<tr class="memdesc:a5e259bc08d00a32c11201ece6564c4b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">minkowski sum with box  <br /></td></tr>
+<tr class="separator:a5e259bc08d00a32c11201ece6564c4b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a320e48ea932f170e690bc8283c64d4cb" id="r_a320e48ea932f170e690bc8283c64d4cb"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#a320e48ea932f170e690bc8283c64d4cb">operator*</a> (<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;R, <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">Z</a>)</td></tr>
+<tr class="memdesc:a320e48ea932f170e690bc8283c64d4cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">affine map with sparse matrix: returns R*Z  <br /></td></tr>
+<tr class="separator:a320e48ea932f170e690bc8283c64d4cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abecd84dff0bd16e52f62ac1343b3c64c" id="r_abecd84dff0bd16e52f62ac1343b3c64c"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#abecd84dff0bd16e52f62ac1343b3c64c">operator*</a> (<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> Eigen::Matrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1, -1 &gt; &amp;R, <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">Z</a>)</td></tr>
+<tr class="memdesc:abecd84dff0bd16e52f62ac1343b3c64c"><td class="mdescLeft">&#160;</td><td class="mdescRight">affine map with dense matrix: returns R*Z  <br /></td></tr>
+<tr class="separator:abecd84dff0bd16e52f62ac1343b3c64c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb72d86bfbaa6a753cd96a2d89f838da" id="r_afb72d86bfbaa6a753cd96a2d89f838da"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#afb72d86bfbaa6a753cd96a2d89f838da">operator*</a> (<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;R, <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">Z</a>)</td></tr>
+<tr class="memdesc:afb72d86bfbaa6a753cd96a2d89f838da"><td class="mdescLeft">&#160;</td><td class="mdescRight">affine inclusion with interval matrix: returns R*Z  <br /></td></tr>
+<tr class="separator:afb72d86bfbaa6a753cd96a2d89f838da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56dfe1063172c29d3691e2505c94380c" id="r_a56dfe1063172c29d3691e2505c94380c"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#a56dfe1063172c29d3691e2505c94380c">operator*</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">f</a>, <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">Z</a>)</td></tr>
+<tr class="memdesc:a56dfe1063172c29d3691e2505c94380c"><td class="mdescLeft">&#160;</td><td class="mdescRight">scalar multiplication: returns f*Z  <br /></td></tr>
+<tr class="separator:a56dfe1063172c29d3691e2505c94380c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad9e9b5a8d8cc3a638a76564f69da891" id="r_aad9e9b5a8d8cc3a638a76564f69da891"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html#aad9e9b5a8d8cc3a638a76564f69da891">operator*</a> (<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">box</a>, <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">Z</a>)</td></tr>
+<tr class="memdesc:aad9e9b5a8d8cc3a638a76564f69da891"><td class="mdescLeft">&#160;</td><td class="mdescRight">cartesian product with box  <br /></td></tr>
+<tr class="separator:aad9e9b5a8d8cc3a638a76564f69da891"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Hybrid zonotope class. </p>
@@ -1940,6 +2024,557 @@ Friends</h2></td></tr>
 
 </div>
 </div>
+<a id="afd576a0d73b9eb36969b529824065d62" name="afd576a0d73b9eb36969b529824065d62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd576a0d73b9eb36969b529824065d62">&#9670;&#160;</a></span>operator&amp;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>&amp; </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>intersection </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="a88030f4310cb835f26bddfed9a1827c9" name="a88030f4310cb835f26bddfed9a1827c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88030f4310cb835f26bddfed9a1827c9">&#9670;&#160;</a></span>operator*() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>* </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>box</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>cartesian product with box </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">box</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="abe2121bf58e4d03f0f85f42017360165" name="abe2121bf58e4d03f0f85f42017360165"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe2121bf58e4d03f0f85f42017360165">&#9670;&#160;</a></span>operator*() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>* </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>cartesian product </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="adb3a8d84cd3be0b8ee8741d7dd225fa0" name="adb3a8d84cd3be0b8ee8741d7dd225fa0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb3a8d84cd3be0b8ee8741d7dd225fa0">&#9670;&#160;</a></span>operator*() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>* </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>scalar multiplication: returns f*Z </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="ab77d22fa3988ba322fa03110a22b0ad7" name="ab77d22fa3988ba322fa03110a22b0ad7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab77d22fa3988ba322fa03110a22b0ad7">&#9670;&#160;</a></span>operator*=() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">void</a> <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>*= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>box</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>in-place cartesian product with box </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">box</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aadade43e1d40b364889f0fe201dcdc70" name="aadade43e1d40b364889f0fe201dcdc70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadade43e1d40b364889f0fe201dcdc70">&#9670;&#160;</a></span>operator*=() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">void</a> <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>*= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>in-place cartesian product </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ae972afdf0d7e9ded5ce8e1d301d4e9a3" name="ae972afdf0d7e9ded5ce8e1d301d4e9a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae972afdf0d7e9ded5ce8e1d301d4e9a3">&#9670;&#160;</a></span>operator*=() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">void</a> <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>*= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>scalar multiplication in place </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa3b5bd6798d239b053a45b27165311f3" name="aa3b5bd6798d239b053a45b27165311f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3b5bd6798d239b053a45b27165311f3">&#9670;&#160;</a></span>operator+() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>+ </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>box</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>minkowski sum with box </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">box</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="aa29ffc9a6024da4d4f7c69fd337cc17b" name="aa29ffc9a6024da4d4f7c69fd337cc17b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa29ffc9a6024da4d4f7c69fd337cc17b">&#9670;&#160;</a></span>operator+() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>+ </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>minkowski sum with point </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">v</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="ae694bdefbc77aa9f1a59fbd5f0e86bb3" name="ae694bdefbc77aa9f1a59fbd5f0e86bb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae694bdefbc77aa9f1a59fbd5f0e86bb3">&#9670;&#160;</a></span>operator+() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>+ </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>minkowski sum </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="aa72e6dd952cb3b454b1264442c207b43" name="aa72e6dd952cb3b454b1264442c207b43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa72e6dd952cb3b454b1264442c207b43">&#9670;&#160;</a></span>operator+=() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">void</a> <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>+= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>box</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>in-place minkowski sum with box </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">box</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a5ba81f2e44fedc2b9db0d89b0aefee2c" name="a5ba81f2e44fedc2b9db0d89b0aefee2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ba81f2e44fedc2b9db0d89b0aefee2c">&#9670;&#160;</a></span>operator+=() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">void</a> <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>+= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>in-place minkowski sum with point </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">v</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a8a3a4b2929abf656c53b575c1752b491" name="a8a3a4b2929abf656c53b575c1752b491"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a3a4b2929abf656c53b575c1752b491">&#9670;&#160;</a></span>operator+=() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">void</a> <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>+= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>in-place minkowski sum </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a4cf437085c423c8c88ad264bcf3a8c7f" name="a4cf437085c423c8c88ad264bcf3a8c7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cf437085c423c8c88ad264bcf3a8c7f">&#9670;&#160;</a></span>operator-() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>- </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>unary minus: returns -I * this </p>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="a4ad670af7631c540b665f297bd647883" name="a4ad670af7631c540b665f297bd647883"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ad670af7631c540b665f297bd647883">&#9670;&#160;</a></span>operator-() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>- </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>box</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>pontryagin difference with box </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">box</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="adb798159002948a279a6a84184bb7180" name="adb798159002948a279a6a84184bb7180"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb798159002948a279a6a84184bb7180">&#9670;&#160;</a></span>operator-() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>- </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>pontryagin difference with point </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">v</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="acb80e6c3508f46d3352542edefde9f07" name="acb80e6c3508f46d3352542edefde9f07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb80e6c3508f46d3352542edefde9f07">&#9670;&#160;</a></span>operator-() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>- </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1Zono.html">Zono</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>pontryagin difference </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="a4afc45192a8dfd4adffc9223f0a2ae28" name="a4afc45192a8dfd4adffc9223f0a2ae28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4afc45192a8dfd4adffc9223f0a2ae28">&#9670;&#160;</a></span>operator-=() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">void</a> <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>-= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>box</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>in-place pontryagin difference with box </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">box</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a7d35111444b8768279d12f044567da62" name="a7d35111444b8768279d12f044567da62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d35111444b8768279d12f044567da62">&#9670;&#160;</a></span>operator-=() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">void</a> <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>-= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>in-place pontryagin difference with point </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">v</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa156d6c09ddb4ea3386f69f3ad3cd043" name="aa156d6c09ddb4ea3386f69f3ad3cd043"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa156d6c09ddb4ea3386f69f3ad3cd043">&#9670;&#160;</a></span>operator-=() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">void</a> <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>-= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1Zono.html">Zono</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>in-place pontryagin difference </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a40dc0695568ad5648b34b030548b915c" name="a40dc0695568ad5648b34b030548b915c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40dc0695568ad5648b34b030548b915c">&#9670;&#160;</a></span>operator|()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">ZonoOpt::HybZono::operator</a>| </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>union </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
 <a id="a17c02d938f1fcc020a0e22c742b8b99b" name="a17c02d938f1fcc020a0e22c742b8b99b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a17c02d938f1fcc020a0e22c742b8b99b">&#9670;&#160;</a></span>optimize_over()</h2>
 
@@ -2779,6 +3414,328 @@ Friends</h2></td></tr>
 
 </div>
 </div>
+<a id="aad9e9b5a8d8cc3a638a76564f69da891" name="aad9e9b5a8d8cc3a638a76564f69da891"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad9e9b5a8d8cc3a638a76564f69da891">&#9670;&#160;</a></span>operator* <span class="overload">[1/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">operator</a>* </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>box</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>Z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>cartesian product with box </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">box</td><td></td></tr>
+    <tr><td class="paramname">Z</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="abecd84dff0bd16e52f62ac1343b3c64c" name="abecd84dff0bd16e52f62ac1343b3c64c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abecd84dff0bd16e52f62ac1343b3c64c">&#9670;&#160;</a></span>operator* <span class="overload">[2/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">operator</a>* </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> Eigen::Matrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1, -1 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>R</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>Z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>affine map with dense matrix: returns R*Z </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">R</td><td></td></tr>
+    <tr><td class="paramname">Z</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="a320e48ea932f170e690bc8283c64d4cb" name="a320e48ea932f170e690bc8283c64d4cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a320e48ea932f170e690bc8283c64d4cb">&#9670;&#160;</a></span>operator* <span class="overload">[3/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">operator</a>* </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>R</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>Z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>affine map with sparse matrix: returns R*Z </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">R</td><td></td></tr>
+    <tr><td class="paramname">Z</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="afb72d86bfbaa6a753cd96a2d89f838da" name="afb72d86bfbaa6a753cd96a2d89f838da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb72d86bfbaa6a753cd96a2d89f838da">&#9670;&#160;</a></span>operator* <span class="overload">[4/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">operator</a>* </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>R</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>Z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>affine inclusion with interval matrix: returns R*Z </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">R</td><td></td></tr>
+    <tr><td class="paramname">Z</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="a56dfe1063172c29d3691e2505c94380c" name="a56dfe1063172c29d3691e2505c94380c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56dfe1063172c29d3691e2505c94380c">&#9670;&#160;</a></span>operator* <span class="overload">[5/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">operator</a>* </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>Z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>scalar multiplication: returns f*Z </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td></td></tr>
+    <tr><td class="paramname">Z</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="a5e259bc08d00a32c11201ece6564c4b4" name="a5e259bc08d00a32c11201ece6564c4b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e259bc08d00a32c11201ece6564c4b4">&#9670;&#160;</a></span>operator+ <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">operator</a>+ </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>box</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>Z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>minkowski sum with box </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">box</td><td></td></tr>
+    <tr><td class="paramname">Z</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="afc976fae1d92239792cdb2fe9f1cdaec" name="afc976fae1d92239792cdb2fe9f1cdaec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc976fae1d92239792cdb2fe9f1cdaec">&#9670;&#160;</a></span>operator+ <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; <a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">operator</a>+ </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">const</a> Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>Z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>minkowski sum with point </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">v</td><td></td></tr>
+    <tr><td class="paramname">Z</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
 <a id="ac90af9880d7b5fb92756f2c4fc31e0a6" name="ac90af9880d7b5fb92756f2c4fc31e0a6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac90af9880d7b5fb92756f2c4fc31e0a6">&#9670;&#160;</a></span>operator&lt;&lt;</h2>
 
@@ -2824,8 +3781,8 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a id="aee3301b59947b68fc93d1d7c3ca48b05" name="aee3301b59947b68fc93d1d7c3ca48b05"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aee3301b59947b68fc93d1d7c3ca48b05">&#9670;&#160;</a></span>pontry_diff</h2>
+<a id="a19b3a5f966c0067bd9a701501079962c" name="a19b3a5f966c0067bd9a701501079962c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19b3a5f966c0067bd9a701501079962c">&#9670;&#160;</a></span>pontry_diff</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2842,14 +3799,14 @@ Friends</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1Zono.html">Zono</a> &amp;&#160;</td>
           <td class="paramname"><em>Z2</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">bool</a>&#160;</td>
-          <td class="paramname"><em>exact</em> = <code><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">false</a></code>&#160;</td>
+          <td class="paramname"><em>exact</em> = <code><a class="el" href="classZonoOpt_1_1HybZono.html#a8ada02a325ae0db542c0d2ae2fa0b1be">true</a></code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -2869,12 +3826,12 @@ Friends</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">Z1</td><td>minuend </td></tr>
     <tr><td class="paramname">Z2</td><td>subtrahend </td></tr>
-    <tr><td class="paramname">exact</td><td>require output to be exact, otherwise inner approximation will be returned </td></tr>
+    <tr><td class="paramname">exact</td><td>require output to be exact, otherwise inner approximation will be returned (default true) </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
-<p>For inner approximations (exact = false), the algorithm from Vinod et. al. 2025 is used. Note that this algorithm is exact when the minuend is a constrained zonotope and the matrix [G;A] is invertible. Exact Pontryagin difference can only be computed when the subtrahend is a zonotope. If subtrahend is a constrained zonotope, it will first be over-approximated as a zonotope. If subtrahend is a hybrid zonotope, a get_leaves operation will first be performed to produce a union of constrained zonotopes. If the minuend is a hybrid zonotope and exact is false, a get_leaves operation will be performed for Z1 to reduce the number of leaves in the resulting set. </p>
+<p>For inner approximations (exact = false), the algorithm from Vinod et. al. 2025 is used. Note that this algorithm is exact when the minuend is a constrained zonotope and the matrix [G;A] is invertible. Exact Pontryagin difference can only be computed when the subtrahend is a zonotope. </p>
 
 </div>
 </div>

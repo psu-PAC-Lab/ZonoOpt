@@ -131,23 +131,26 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="preprocessor">#include &quot;<a class="code" href="GenUtilities_8hpp.html">zonoopt/GenUtilities.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="preprocessor">#include &quot;<a class="code" href="HybZono_8hpp.html">zonoopt/HybZono.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="preprocessor">#include &quot;<a class="code" href="Inequality_8hpp.html">zonoopt/Inequality.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="preprocessor">#include &quot;<a class="code" href="Intervals_8hpp.html">zonoopt/Intervals.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="preprocessor">#include &quot;<a class="code" href="BnbDataStructures_8hpp.html">zonoopt/BnbDataStructures.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="preprocessor">#include &quot;<a class="code" href="BranchAndBound_8hpp.html">zonoopt/BranchAndBound.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="preprocessor">#include &quot;<a class="code" href="Point_8hpp.html">zonoopt/Point.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="preprocessor">#include &quot;<a class="code" href="SolverDataStructures_8hpp.html">zonoopt/SolverDataStructures.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="preprocessor">#include &quot;<a class="code" href="SparseMatrixUtilities_8hpp.html">zonoopt/SparseMatrixUtilities.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="preprocessor">#include &quot;<a class="code" href="Zono_8hpp.html">zonoopt/Zono.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="comment">// typedef</span></div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceZonoOpt.html">ZonoOpt</a></div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>{</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="group__ZonoOpt__Typedefs.html#ga3a3f3cf55efb220d20c4a23c7a34f4d4">   89</a></span>    <span class="keyword">typedef</span> std::unique_ptr&lt;HybZono&gt; <a class="code hl_typedef" href="group__ZonoOpt__Typedefs.html#ga3a3f3cf55efb220d20c4a23c7a34f4d4">ZonoPtr</a>;</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>}</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="preprocessor">#include &quot;<a class="code" href="Interval_8hpp.html">zonoopt/Interval.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="preprocessor">#include &quot;<a class="code" href="Box_8hpp.html">zonoopt/Box.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="preprocessor">#include &quot;<a class="code" href="IntervalMatrix_8hpp.html">zonoopt/IntervalMatrix.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="preprocessor">#include &quot;<a class="code" href="BnbDataStructures_8hpp.html">zonoopt/BnbDataStructures.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="preprocessor">#include &quot;<a class="code" href="BranchAndBound_8hpp.html">zonoopt/BranchAndBound.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="preprocessor">#include &quot;<a class="code" href="Point_8hpp.html">zonoopt/Point.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="preprocessor">#include &quot;<a class="code" href="SolverDataStructures_8hpp.html">zonoopt/SolverDataStructures.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="preprocessor">#include &quot;<a class="code" href="SparseMatrixUtilities_8hpp.html">zonoopt/SparseMatrixUtilities.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="preprocessor">#include &quot;<a class="code" href="Zono_8hpp.html">zonoopt/Zono.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="comment">// typedef</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceZonoOpt.html">ZonoOpt</a></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>{</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="group__ZonoOpt__Typedefs.html#ga3a3f3cf55efb220d20c4a23c7a34f4d4">   91</a></span>    <span class="keyword">typedef</span> std::unique_ptr&lt;HybZono&gt; <a class="code hl_typedef" href="group__ZonoOpt__Typedefs.html#ga3a3f3cf55efb220d20c4a23c7a34f4d4">ZonoPtr</a>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aADMM_8hpp_html"><div class="ttname"><a href="ADMM_8hpp.html">ADMM.hpp</a></div><div class="ttdoc">Convex and mixed-integer ADMM implementations used within ZonoOpt.</div></div>
 <div class="ttc" id="aBnbDataStructures_8hpp_html"><div class="ttname"><a href="BnbDataStructures_8hpp.html">BnbDataStructures.hpp</a></div><div class="ttdoc">Data structures for mixed-integer optimization in ZonoOpt library.</div></div>
+<div class="ttc" id="aBox_8hpp_html"><div class="ttname"><a href="Box_8hpp.html">Box.hpp</a></div><div class="ttdoc">Box and MI_Box classes.</div></div>
 <div class="ttc" id="aBranchAndBound_8hpp_html"><div class="ttname"><a href="BranchAndBound_8hpp.html">BranchAndBound.hpp</a></div><div class="ttdoc">Internal branch-and-bound routines for ZonoOpt library.</div></div>
 <div class="ttc" id="aCholeskyUtilities_8hpp_html"><div class="ttname"><a href="CholeskyUtilities_8hpp.html">CholeskyUtilities.hpp</a></div><div class="ttdoc">Internal utilities for Cholesky factorization using Eigen's LDLT solver.</div></div>
 <div class="ttc" id="aConZono_8hpp_html"><div class="ttname"><a href="ConZono_8hpp.html">ConZono.hpp</a></div><div class="ttdoc">Constrained zonotope class for ZonoOpt library.</div></div>
@@ -155,13 +158,14 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="aGenUtilities_8hpp_html"><div class="ttname"><a href="GenUtilities_8hpp.html">GenUtilities.hpp</a></div><div class="ttdoc">General utility functions for ZonoOpt library.</div></div>
 <div class="ttc" id="aHybZono_8hpp_html"><div class="ttname"><a href="HybZono_8hpp.html">HybZono.hpp</a></div><div class="ttdoc">Hybrid zonotope class for ZonoOpt library.</div></div>
 <div class="ttc" id="aInequality_8hpp_html"><div class="ttname"><a href="Inequality_8hpp.html">Inequality.hpp</a></div><div class="ttdoc">Class definitions for zero-one inequalities.</div></div>
-<div class="ttc" id="aIntervals_8hpp_html"><div class="ttname"><a href="Intervals_8hpp.html">Intervals.hpp</a></div><div class="ttdoc">Intervals and associated classes.</div></div>
+<div class="ttc" id="aIntervalMatrix_8hpp_html"><div class="ttname"><a href="IntervalMatrix_8hpp.html">IntervalMatrix.hpp</a></div><div class="ttdoc">IntervalMatrix class.</div></div>
+<div class="ttc" id="aInterval_8hpp_html"><div class="ttname"><a href="Interval_8hpp.html">Interval.hpp</a></div><div class="ttdoc">Interval class.</div></div>
 <div class="ttc" id="aPoint_8hpp_html"><div class="ttname"><a href="Point_8hpp.html">Point.hpp</a></div><div class="ttdoc">Point class for ZonoOpt library.</div></div>
 <div class="ttc" id="aSolverDataStructures_8hpp_html"><div class="ttname"><a href="SolverDataStructures_8hpp.html">SolverDataStructures.hpp</a></div><div class="ttdoc">Optimization settings and solution data structures for ZonoOpt library.</div></div>
 <div class="ttc" id="aSparseMatrixUtilities_8hpp_html"><div class="ttname"><a href="SparseMatrixUtilities_8hpp.html">SparseMatrixUtilities.hpp</a></div><div class="ttdoc">Utilities for sparse matrix operations in ZonoOpt library.</div></div>
 <div class="ttc" id="aZono_8hpp_html"><div class="ttname"><a href="Zono_8hpp.html">Zono.hpp</a></div><div class="ttdoc">Zonotope class for ZonoOpt library.</div></div>
 <div class="ttc" id="agroup__ZonoOpt__PreprocessorMacros_html_ga10f9d95aa3b7fa4dca1699582aa53598"><div class="ttname"><a href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a></div><div class="ttdeci">#define zono_float</div><div class="ttdoc">Defines the floating-point type used in ZonoOpt.</div><div class="ttdef"><b>Definition</b> ZonoOpt.hpp:45</div></div>
-<div class="ttc" id="agroup__ZonoOpt__Typedefs_html_ga3a3f3cf55efb220d20c4a23c7a34f4d4"><div class="ttname"><a href="group__ZonoOpt__Typedefs.html#ga3a3f3cf55efb220d20c4a23c7a34f4d4">ZonoOpt::ZonoPtr</a></div><div class="ttdeci">std::unique_ptr&lt; HybZono &gt; ZonoPtr</div><div class="ttdoc">Type alias for a unique pointer to a (polymorphic) HybZono object. &lt;&gt;</div><div class="ttdef"><b>Definition</b> ZonoOpt.hpp:89</div></div>
+<div class="ttc" id="agroup__ZonoOpt__Typedefs_html_ga3a3f3cf55efb220d20c4a23c7a34f4d4"><div class="ttname"><a href="group__ZonoOpt__Typedefs.html#ga3a3f3cf55efb220d20c4a23c7a34f4d4">ZonoOpt::ZonoPtr</a></div><div class="ttdeci">std::unique_ptr&lt; HybZono &gt; ZonoPtr</div><div class="ttdoc">Type alias for a unique pointer to a (polymorphic) HybZono object. &lt;&gt;</div><div class="ttdef"><b>Definition</b> ZonoOpt.hpp:91</div></div>
 <div class="ttc" id="anamespaceZonoOpt_html"><div class="ttname"><a href="namespaceZonoOpt.html">ZonoOpt</a></div><div class="ttdef"><b>Definition</b> ZonoOpt.hpp:58</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
