@@ -74,7 +74,7 @@ def get_vertices(Z, t_max=60.0):
             # check if vertices are new and whether direction is thin
             is_vd_pos_new = not any(np.allclose(vd_pos, v) for v in verts)
             is_vd_neg_new = not any(np.allclose(vd_neg, v) for v in verts)
-            is_thin = np.abs((vd_pos-vc).dot(d)) < 1e-6 and np.abs((vd_neg-vc).dot(-d)) < 1e-6 
+            is_thin = np.abs((vd_pos-vc).dot(d)) < 1e-6 and np.abs((vd_neg-vc).dot(-d)) < 1e-6 or np.allclose(vd_pos, vd_neg)
             
             # add new vertices
             if not is_thin:

@@ -845,7 +845,7 @@ namespace ZonoOpt
         }
 
         // check dimensions
-        if (H.rows() != f.size() || H.cols() != Z.n ||  R_ptr->cols() != Z.n) {
+        if (H.rows() != f.size() || H.cols() != R_ptr->rows() ||  R_ptr->cols() != Z.n) {
             throw std::invalid_argument("Halfspace intersection: inconsistent input dimensions.");
         }
 
@@ -855,6 +855,10 @@ namespace ZonoOpt
         // dimension variables
         const int n_cons = H.rows();
         const int n_slack = direction == '=' ? 0 : n_cons;
+
+        // re-used matrices
+        const Eigen::SparseMatrix<zono_float> HRGc = H * (*R_ptr) * Z.Gc;
+        const Eigen::SparseMatrix<zono_float> HRGb = H * (*R_ptr) * Z.Gb;
 
         // compute dm
         Eigen::Vector<zono_float, -1> dm;
@@ -868,20 +872,19 @@ namespace ZonoOpt
 
             for (int k=0; k<Z.Gc.cols(); ++k)
             {
-                Eigen::Vector<zono_float, -1> Gc_k = Z.Gc.col(k);
                 if (direction == '<')
-                    dm += (H * (*R_ptr) * Gc_k).cwiseAbs();
+                    dm += (HRGc.col(k)).cwiseAbs();
                 else
-                    dm -= (H * (*R_ptr) * Gc_k).cwiseAbs();
+                    dm -= (HRGc.col(k)).cwiseAbs();
             }
 
             for (int k=0; k<Z.Gb.cols(); ++k)
             {
                 Eigen::Vector<zono_float, -1> Gb_k = Z.Gb.col(k);
                 if (direction == '<')
-                    dm += (H * (*R_ptr) * Gb_k).cwiseAbs();
+                    dm += (HRGb.col(k)).cwiseAbs();
                 else
-                    dm -= (H * (*R_ptr) * Gb_k).cwiseAbs();
+                    dm -= (HRGb.col(k)).cwiseAbs();
             }
         }
 
@@ -895,7 +898,6 @@ namespace ZonoOpt
         // constraints
         Eigen::SparseMatrix<zono_float> Ac = Z.Ac;
         Ac.conservativeResize(Z.nC, Z.nGc + n_slack); // add zeros
-        const Eigen::SparseMatrix<zono_float> HRGc = H * (*R_ptr) * Z.Gc;
         Eigen::SparseMatrix<zono_float> Ac_cons;
         if (direction == '=')
         {
@@ -918,7 +920,6 @@ namespace ZonoOpt
         }
         Ac = vcat(Ac, Ac_cons);
 
-        const Eigen::SparseMatrix<zono_float> HRGb = H * (*R_ptr) * Z.Gb;
         const Eigen::SparseMatrix<zono_float> Ab = vcat(Z.Ab, HRGb);
 
         Eigen::Vector<zono_float, -1> b = Z.b;

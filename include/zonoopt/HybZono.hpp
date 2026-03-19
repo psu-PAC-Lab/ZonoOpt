@@ -853,6 +853,8 @@ std::unique_ptr<HybZono> intersection_over_dims(const HybZono& Z1, HybZono& Z2,
  * @param R affine map matrix
  * @return zonotopic set
  * @ingroup ZonoOpt_SetOperations
+ *
+ * Calls constrain with '<'
  */
 std::unique_ptr<HybZono> halfspace_intersection(HybZono& Z, const Eigen::SparseMatrix<zono_float>& H,
     const Eigen::Vector<zono_float, -1>& f, const Eigen::SparseMatrix<zono_float>& R=Eigen::SparseMatrix<zono_float>());
@@ -905,7 +907,6 @@ std::unique_ptr<HybZono> cartesian_product(const HybZono& Z1, HybZono& Z2);
  * @return zonotopic set
  * @ingroup ZonoOpt_SetOperations
  *
- * Calls constrain with '<'
  */
 std::unique_ptr<HybZono> constrain(HybZono& Z, const Eigen::SparseMatrix<zono_float>& H,
             const Eigen::Vector<zono_float, -1>& f, char direction, const Eigen::SparseMatrix<zono_float>& R=Eigen::SparseMatrix<zono_float>());
