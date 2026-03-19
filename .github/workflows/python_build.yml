@@ -37,6 +37,9 @@ jobs:
         uses: pypa/cibuildwheel@v3.2.0
         env:
           CIBW_BUILD_VERBOSITY: 3
+          CIBW_ENVIRONMENT_MACOS: >
+            CC=/usr/bin/clang 
+            CXX=/usr/bin/clang++ 
           CIBW_ENVIRONMENT: >
             CMAKE_MESSAGE_LOG_LEVEL=VERBOSE
             SKBUILD_VERBOSE=1

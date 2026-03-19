@@ -57,6 +57,7 @@ def get_vertices(Z, t_max=60.0):
         verts = []
         D = [np.array([1 if i==j else 0 for j in range(Z.get_n())]) for i in range(Z.get_n())] # init directions as standard basis
         B = [] # init basis
+        vc = np.zeros(Z.get_n()) # init vertex candidate as origin
         for _ in range(Z.get_n()):
 
             # support in positive direction
@@ -73,19 +74,22 @@ def get_vertices(Z, t_max=60.0):
             # check if vertices are new and whether direction is thin
             is_vd_pos_new = not any(np.allclose(vd_pos, v) for v in verts)
             is_vd_neg_new = not any(np.allclose(vd_neg, v) for v in verts)
-            is_thin = np.allclose(vd_pos, vd_neg)
-
+            is_thin = np.abs((vd_pos-vc).dot(d)) < 1e-6 and np.abs((vd_neg-vc).dot(-d)) < 1e-6 or np.allclose(vd_pos, vd_neg)
+            
             # add new vertices
-            if is_vd_pos_new:
-                verts.append(vd_pos)
-            if is_vd_neg_new and not is_thin:
-                verts.append(vd_neg)
-
-            # update direction
             if not is_thin:
+
+                # add new vertices
+                if is_vd_pos_new:
+                    verts.append(vd_pos)
+                if is_vd_neg_new:
+                    verts.append(vd_neg)
+
+                # update direction
                 B.append(vd_pos - vd_neg)
                 N = null_space(np.array(B)).transpose()
                 D = [N[j,:].flatten() for j in range(N.shape[0])]
+                vc = (vd_pos + vd_neg) / 2.
 
         # return if set is not full-dimensional
         if len(verts) < Z.get_n()+1:
@@ -98,7 +102,11 @@ def get_vertices(Z, t_max=60.0):
 
             # compute convex hull and centroid
             verts_np_arr = np.array(verts)
-            hull = ConvexHull(verts_np_arr)
+            try:
+                hull = ConvexHull(verts_np_arr)
+            except:
+                warnings.warn('ConvexHull failed, returning current vertices')
+                return np.array(verts)
             centroid = np.mean(verts_np_arr, axis=0)
 
             # get facet normals

@@ -15,7 +15,6 @@
 #include "SparseMatrixUtilities.hpp"
 #include "BranchAndBound.hpp"
 #include "BnbDataStructures.hpp"
-#include "Inequality.hpp"
 #include "IntervalMatrix.hpp"
 
 #include <stdexcept>
@@ -440,7 +439,8 @@ class HybZono
         friend std::unique_ptr<HybZono> union_of_many(const std::vector<std::shared_ptr<HybZono>>& Zs, bool preserve_sharpness, bool expose_indicators);
         friend std::unique_ptr<ConZono> convex_hull(const std::vector<std::shared_ptr<HybZono>>& Zs);
         friend std::unique_ptr<HybZono> cartesian_product(const HybZono& Z1, HybZono& Z2);
-        friend std::unique_ptr<HybZono> constrain(HybZono& Z, const std::vector<Inequality> &ineqs, const Eigen::SparseMatrix<zono_float>& R);
+        friend std::unique_ptr<HybZono> constrain(HybZono& Z, const Eigen::SparseMatrix<zono_float>& H,
+            const Eigen::Vector<zono_float, -1>& f, char direction, const Eigen::SparseMatrix<zono_float>& R);
         friend std::unique_ptr<HybZono> set_diff(const HybZono& Z1, HybZono& Z2, zono_float delta_m, bool remove_redundancy,
             const OptSettings &settings, std::shared_ptr<OptSolution>* solution, const WarmStartParams& warm_start_params, int n_leaves, int contractor_iter);
         friend std::unique_ptr<HybZono> vrep_2_hybzono(const std::vector<Eigen::Matrix<zono_float, -1, -1>> &Vpolys, bool expose_indicators);
@@ -853,6 +853,8 @@ std::unique_ptr<HybZono> intersection_over_dims(const HybZono& Z1, HybZono& Z2,
  * @param R affine map matrix
  * @return zonotopic set
  * @ingroup ZonoOpt_SetOperations
+ *
+ * Calls constrain with '<'
  */
 std::unique_ptr<HybZono> halfspace_intersection(HybZono& Z, const Eigen::SparseMatrix<zono_float>& H,
     const Eigen::Vector<zono_float, -1>& f, const Eigen::SparseMatrix<zono_float>& R=Eigen::SparseMatrix<zono_float>());
@@ -895,20 +897,19 @@ std::unique_ptr<ConZono> convex_hull(const std::vector<std::shared_ptr<HybZono>>
 std::unique_ptr<HybZono> cartesian_product(const HybZono& Z1, HybZono& Z2);
 
 /**
- * @brief Applies inequalities to set.
+ * @brief Computes the generalized intersection of set Z with H*x <= f, H*x >= f, or H*x = f over matrix R.
  *
- * @param Z Set for inequalities to be applied to.
- * @param ineqs Vector of inequalities.
- * @param R For generalized intersection with the inequalities. Defaults to identity.
+ * @param Z zonotopic set
+ * @param H constraint matrix
+ * @param f constraint vector
+ * @param direction '<' for <=, '>' for >=, '=' for =
+ * @param R affine map matrix, defaults to identity
  * @return zonotopic set
  * @ingroup ZonoOpt_SetOperations
  *
- * Constrains set Z by applying the given inequalities to the set.
- * For example, given a set Z with states z0, z1, z2, the constraint z0 + z1 - z2 <= 2 could be added via an inequality object.
- * R is used for generalized intersection-like operations. For instance, when all the inequalities are <= inequalities,
- * this function returns Z int_R (Hx<=f) where H is the halfspace represented by the inequalities.
  */
-std::unique_ptr<HybZono> constrain(HybZono& Z, const std::vector<Inequality> &ineqs, const Eigen::SparseMatrix<zono_float>& R=Eigen::SparseMatrix<zono_float>());
+std::unique_ptr<HybZono> constrain(HybZono& Z, const Eigen::SparseMatrix<zono_float>& H,
+            const Eigen::Vector<zono_float, -1>& f, char direction, const Eigen::SparseMatrix<zono_float>& R=Eigen::SparseMatrix<zono_float>());
 
 /**
  * @brief Set difference Z1 \ Z2
