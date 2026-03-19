@@ -126,9 +126,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga21cab38a1787f36fc586e48204d4e797" id="r_ga21cab38a1787f36fc586e48204d4e797"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#ga21cab38a1787f36fc586e48204d4e797">ZonoOpt::cartesian_product</a> (const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z1, <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z2)</td></tr>
 <tr class="memdesc:ga21cab38a1787f36fc586e48204d4e797"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the Cartesian product of two sets Z1 and Z2.  <br /></td></tr>
 <tr class="separator:ga21cab38a1787f36fc586e48204d4e797"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf9945c4d9544749e91c64bbaf24fab73" id="r_gaf9945c4d9544749e91c64bbaf24fab73"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#gaf9945c4d9544749e91c64bbaf24fab73">ZonoOpt::constrain</a> (<a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z, const std::vector&lt; <a class="el" href="classZonoOpt_1_1Inequality.html">Inequality</a> &gt; &amp;ineqs, const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;R=Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt;())</td></tr>
-<tr class="memdesc:gaf9945c4d9544749e91c64bbaf24fab73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies inequalities to set.  <br /></td></tr>
-<tr class="separator:gaf9945c4d9544749e91c64bbaf24fab73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa0f4fa81908418a80821ebfa5731039f" id="r_gaa0f4fa81908418a80821ebfa5731039f"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#gaa0f4fa81908418a80821ebfa5731039f">ZonoOpt::constrain</a> (<a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z, const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;H, const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;f, char direction, const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;R=Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt;())</td></tr>
+<tr class="memdesc:gaa0f4fa81908418a80821ebfa5731039f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the generalized intersection of set Z with H*x &lt;= f, H*x &gt;= f, or H*x = f over matrix R.  <br /></td></tr>
+<tr class="separator:gaa0f4fa81908418a80821ebfa5731039f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga25a33a1816d85f8173de1242b088e405" id="r_ga25a33a1816d85f8173de1242b088e405"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#ga25a33a1816d85f8173de1242b088e405">ZonoOpt::set_diff</a> (const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z1, <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z2, <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> delta_m=100, bool remove_redundancy=true, const <a class="el" href="structZonoOpt_1_1OptSettings.html">OptSettings</a> &amp;settings=<a class="el" href="structZonoOpt_1_1OptSettings.html">OptSettings</a>(), std::shared_ptr&lt; <a class="el" href="structZonoOpt_1_1OptSolution.html">OptSolution</a> &gt; *solution=nullptr, int n_leaves=std::numeric_limits&lt; int &gt;::max(), int contractor_iter=10)</td></tr>
 <tr class="memdesc:ga25a33a1816d85f8173de1242b088e405"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set difference Z1 \ Z2.  <br /></td></tr>
 <tr class="separator:ga25a33a1816d85f8173de1242b088e405"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -265,8 +265,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="gaf9945c4d9544749e91c64bbaf24fab73" name="gaf9945c4d9544749e91c64bbaf24fab73"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaf9945c4d9544749e91c64bbaf24fab73">&#9670;&#160;</a></span>constrain()</h2>
+<a id="gaa0f4fa81908418a80821ebfa5731039f" name="gaa0f4fa81908418a80821ebfa5731039f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa0f4fa81908418a80821ebfa5731039f">&#9670;&#160;</a></span>constrain()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -280,8 +280,20 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="classZonoOpt_1_1Inequality.html">Inequality</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>ineqs</em>, </td>
+          <td class="paramtype">const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>H</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>direction</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -297,17 +309,19 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Applies inequalities to set. </p>
+<p>Computes the generalized intersection of set Z with H*x &lt;= f, H*x &gt;= f, or H*x = f over matrix R. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">Z</td><td>Set for inequalities to be applied to. </td></tr>
-    <tr><td class="paramname">ineqs</td><td>Vector of inequalities. </td></tr>
-    <tr><td class="paramname">R</td><td>For generalized intersection with the inequalities. Defaults to identity. </td></tr>
+    <tr><td class="paramname">Z</td><td>zonotopic set </td></tr>
+    <tr><td class="paramname">H</td><td>constraint matrix </td></tr>
+    <tr><td class="paramname">f</td><td>constraint vector </td></tr>
+    <tr><td class="paramname">direction</td><td>'&lt;' for &lt;=, '&gt;' for &gt;=, '=' for = </td></tr>
+    <tr><td class="paramname">R</td><td>affine map matrix, defaults to identity </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
-<p>Constrains set Z by applying the given inequalities to the set. For example, given a set Z with states z0, z1, z2, the constraint z0 + z1 - z2 &lt;= 2 could be added via an inequality object. R is used for generalized intersection-like operations. For instance, when all the inequalities are &lt;= inequalities, this function returns Z int_R (Hx&lt;=f) where H is the halfspace represented by the inequalities. </p>
+<p>Calls constrain with '&lt;' </p>
 
 </div>
 </div>
