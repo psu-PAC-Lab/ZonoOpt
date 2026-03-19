@@ -896,18 +896,26 @@ namespace ZonoOpt
         Eigen::SparseMatrix<zono_float> Ac = Z.Ac;
         Ac.conservativeResize(Z.nC, Z.nGc + n_slack); // add zeros
         const Eigen::SparseMatrix<zono_float> HRGc = H * (*R_ptr) * Z.Gc;
-        Eigen::SparseMatrix<zono_float> dm2 (n_slack, n_slack);
-        std::vector<Eigen::Triplet<zono_float>> tripvec;
-        for (int i = 0; i < n_slack; ++i)
+        Eigen::SparseMatrix<zono_float> Ac_cons;
+        if (direction == '=')
         {
-            tripvec.emplace_back(i, i, dm(i)/two);
+            Ac_cons = HRGc;
         }
+        else
+        {
+            Eigen::SparseMatrix<zono_float> dm2 (n_cons, n_cons);
+            std::vector<Eigen::Triplet<zono_float>> tripvec;
+            for (int i = 0; i < n_cons; ++i)
+            {
+                tripvec.emplace_back(i, i, dm(i)/two);
+            }
 #if EIGEN_VERSION_AT_LEAST(5, 0, 0)
-        dm2.setFromSortedTriplets(tripvec.begin(), tripvec.end());
+            dm2.setFromSortedTriplets(tripvec.begin(), tripvec.end());
 #else
-        dm2.setFromTriplets(tripvec.begin(), tripvec.end());
+            dm2.setFromTriplets(tripvec.begin(), tripvec.end());
 #endif
-        Eigen::SparseMatrix<zono_float> Ac_cons = hcat(HRGc, dm2);
+            Ac_cons = hcat(HRGc, dm2);
+        }
         Ac = vcat(Ac, Ac_cons);
 
         const Eigen::SparseMatrix<zono_float> HRGb = H * (*R_ptr) * Z.Gb;
