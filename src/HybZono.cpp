@@ -1075,8 +1075,8 @@ namespace ZonoOpt
     std::unique_ptr<HybZono> HybZono::operator|(HybZono& other) const
     {
         std::vector<std::shared_ptr<HybZono>> hzs;
-        hzs.push_back(std::make_shared<HybZono>(*this));
-        hzs.push_back(std::make_shared<HybZono>(other));
+        hzs.push_back(std::shared_ptr<HybZono>(this->clone()));
+        hzs.push_back(std::shared_ptr<HybZono>(other.clone()));
         return union_of_many(hzs);
     }
 
