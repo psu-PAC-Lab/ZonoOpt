@@ -643,6 +643,35 @@ def test_operator_overloading():
     # finish
     print('Passed: Operator Overloading')
 
+def test_constrain():
+    np.random.seed(9)
+    n = 2
+    nGc = 4
+    nGb = 2
+    nC = 2
+    Gc = np.random.randn(n, nGc)
+    Gb = np.random.randn(n, nGb)
+    c = np.random.randn(n)
+    Ac = np.random.randn(nC, nGc)
+    Ab = np.random.randn(nC, nGb)
+    b = np.random.randn(nC)
+    Zh = zono.HybZono(Gc, Gb, c, Ac, Ab, b, zero_one_form=False, sharp=False)
+
+    h0 = np.random.randn(n)
+    f0 = np.random.rand(1)
+    Zh_halfspace = zono.halfspace_intersection(Zh, h0, f0)
+    Zh_leq = zono.constrain(Zh, h0, f0, '<')
+    Zh_geq = zono.constrain(Zh, h0, f0, '>')
+    Zh_eq = zono.constrain(Zh, h0, f0, '=')
+
+    assert len(Zh_halfspace.get_leaves()) == 4, "Halfspace intersection should return 4 leaves"
+    assert len(Zh_leq.get_leaves()) == 4, "Less than or equal constraint should return 4 leaves"
+    assert len(Zh_geq.get_leaves()) == 3, "Greater than or equal constraint should return 3 leaves"
+    assert len(Zh_eq.get_leaves()) == 3, "Equality constraint should return 3 leaves"
+
+    # finish
+    print('Passed: Constrain')
+
 # run the unit tests
 test_vrep_2_hz()
 test_minkowski_sum()
@@ -655,3 +684,4 @@ test_safety_verification()
 test_interval_arithmetic()
 test_affine_inclusion()
 test_operator_overloading()
+test_constrain()
