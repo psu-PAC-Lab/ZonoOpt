@@ -2749,91 +2749,6 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
     ;
 
-    // inequalities
-    py::class_<IneqTerm>(m, "IneqTerm", "Structure containing term in 0-1 inequality.")
-        .def(py::init<int, zono_float>(), "IneqTerm constructor", py::arg("idx"), py::arg("coeff"))
-        .def_readwrite("idx", &IneqTerm::idx, "index of variable")
-        .def_readwrite("coeff", &IneqTerm::coeff, "coefficient of variable")
-        .def("copy", [](const IneqTerm &self) -> IneqTerm { return self; },
-            "Creates a copy of the IneqTerm object.")
-    ;
-
-    py::enum_<IneqType>(m, "IneqType", "Enumeration to select inequality direction / use equality.")
-        .value("LESS", LESS, "Strictly less than")
-        .value("LESS_OR_EQUAL", LESS_OR_EQUAL, "Less than or equal to")
-        .value("EQUAL", EQUAL, "Equal to")
-        .value("GREATER_OR_EQUAL", GREATER_OR_EQUAL, "Greater than or equal to")
-        .value("GREATER", GREATER, "Strictly greater than")
-        .export_values()
-    ;
-
-    py::class_<Inequality>(m, "Inequality", "Inequality class")
-        .def(py::init<int>(), py::arg("n_dims"),
-            R"pbdoc(
-                Constructs inequality, must specify number of dimensions.
-                
-                Args:
-                    n_dims (int): number of dimensions in the inequality
-            )pbdoc")
-        .def("add_term", &Inequality::add_term, py::arg("idx"), py::arg("coeff"),
-            R"pbdoc(
-                Adds a term to the inequality.
-                
-                Args:
-                    idx (int): index of variable in the inequality
-                    coeff (float): coefficient of the variable
-            )pbdoc")
-        .def("set_rhs", &Inequality::set_rhs, py::arg("rhs"), 
-            R"pbdoc(
-                Sets right-hand side of the inequality.
-                
-                Args:
-                    rhs (float): right-hand side value
-            )pbdoc")
-        .def("set_ineq_type", &Inequality::set_ineq_type, py::arg("type"), 
-            R"pbdoc(
-                Sets the direction of the inequality or sets it to be an equality
-                
-                Args:
-                    type (IneqType): inequality type (e.g., less than or equal, greater than or equal, or equal)
-            )pbdoc")
-        .def("get_terms", &Inequality::get_terms, 
-            R"pbdoc(
-                Get reference to terms in the inequality.
-                
-                Returns:
-                    list[IneqTerm]: reference to terms member
-            )pbdoc")
-        .def("get_rhs", &Inequality::get_rhs, 
-            R"pbdoc(
-                Get right-hand side of the inequality.
-                
-                Returns:
-                    float: right-hand side value (rhs member)
-            )pbdoc")
-        .def("get_ineq_type", &Inequality::get_ineq_type, 
-            R"pbdoc(
-                Get inequality type / direction.
-                
-                Returns:
-                    IneqType: inequality type (type member)
-            )pbdoc")
-        .def("get_n_dims", &Inequality::get_n_dims, 
-            R"pbdoc(
-                Get number of dimensions for inequality.
-                
-                Returns:
-                    int: number of dimensions (n_dims member)
-            )pbdoc")
-        .def("copy", [](const Inequality &self) -> Inequality { return self; },
-            R"pbdoc(
-                Creates a copy of the Inequality object.
-
-                Returns:
-                    Inequality: A copy of the Inequality object.
-            )pbdoc")
-    ;
-
     // set operations
     m.def("affine_map", &affine_map, py::arg("Z"), py::arg("R"), py::arg("s")=Eigen::Vector<zono_float, -1>(),
         R"pbdoc(
@@ -2979,22 +2894,19 @@ PYBIND11_MODULE(_core, m)
             Returns:
                 HybZono: zonotopic set
         )pbdoc");
-    m.def("constrain", &constrain, py::arg("Z"), py::arg("ineqs"), py::arg("R")=Eigen::SparseMatrix<zono_float>(),
+    m.def("constrain", &constrain, py::arg("Z"), py::arg("H"), py::arg("f"), py::arg("direction"), py::arg("R")=Eigen::SparseMatrix<zono_float>(),
         R"pbdoc(
-            Applies inequalities to set.
+            Computes the generalized intersection of set Z with H*x <= f, H*x >= f, or H*x = f over matrix R.
             
             Args:
-                Z (HybZono): Set for inequalities to be applied to
-                ineqs (list[Inequality]): list of inequalities
-                R (scipy.sparse.csc_matrix, optional): For generalized intersection with the inequalities. Defaults to identity.
+                Z (HybZono): zonotopic set
+                H (scipy.sparse.csc_matrix): constraint matrix
+                f (numpy.array): constraint vector
+                direction (str): '<' for <=, '>' for >=, '=' for =
+                R (scipy.sparse.csc_matrix, optional): Affine map matrix. Defaults to identity.
             
             Returns:
                 HybZono: zonotopic set
-
-            Constrains set Z by applying the given inequalities to the set.
-            For example, given a set Z with states z0, z1, z2, the constraint z0 + z1 - z2 <= 2 could be added via an inequality object.
-            R is used for generalized intersection-like operations. For instance, when all the inequalities are <= inequalities,
-            this function returns Z int_R (Hx<=f) where H is the halfspace represented by the inequalities.
         )pbdoc");
     m.def("set_diff", [](const HybZono& Z1, HybZono& Z2, zono_float delta_m,
             bool remove_redundancy, const OptSettings &settings, OptSolution* solution,

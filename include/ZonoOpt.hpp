@@ -70,7 +70,6 @@ namespace ZonoOpt::detail
 #include "zonoopt/EmptySet.hpp"
 #include "zonoopt/GenUtilities.hpp"
 #include "zonoopt/HybZono.hpp"
-#include "zonoopt/Inequality.hpp"
 #include "zonoopt/Interval.hpp"
 #include "zonoopt/Box.hpp"
 #include "zonoopt/IntervalMatrix.hpp"
