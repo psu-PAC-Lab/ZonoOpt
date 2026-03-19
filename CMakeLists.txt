@@ -172,6 +172,9 @@ target_include_directories(${TARGET_VAR} PUBLIC
 target_compile_features(${TARGET_VAR}
         PUBLIC cxx_std_17
 )
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # preprocessor definitions
 target_compile_definitions(${TARGET_VAR} PRIVATE
