@@ -36,7 +36,7 @@ if (ZONOOPT_BUILD_PYTHON_BINDINGS)
     set(TARGET_VAR _core)
 else()
     project(ZonoOpt
-            VERSION 2.0.1
+            VERSION 2.1.1
             LANGUAGES CXX
     )
     set(TARGET_VAR ZonoOpt)
