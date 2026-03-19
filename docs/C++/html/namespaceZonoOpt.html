@@ -85,7 +85,6 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
-<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">ZonoOpt Namespace Reference</div></div>
 </div><!--header-->
@@ -104,12 +103,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hybrid zonotope class.  <a href="classZonoOpt_1_1HybZono.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1IneqTerm.html">IneqTerm</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structure containing term in 0-1 inequality.  <a href="structZonoOpt_1_1IneqTerm.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1Inequality.html">Inequality</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1Inequality.html" title="Inequality class.">Inequality</a> class.  <a href="classZonoOpt_1_1Inequality.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1Interval.html">Interval</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1Interval.html" title="Interval class.">Interval</a> class.  <a href="classZonoOpt_1_1Interval.html#details">More...</a><br /></td></tr>
@@ -141,20 +134,6 @@ Typedefs</h2></td></tr>
 <tr class="memitem:ga3a3f3cf55efb220d20c4a23c7a34f4d4" id="r_ga3a3f3cf55efb220d20c4a23c7a34f4d4"><td class="memItemLeft" align="right" valign="top">typedef std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__Typedefs.html#ga3a3f3cf55efb220d20c4a23c7a34f4d4">ZonoPtr</a></td></tr>
 <tr class="memdesc:ga3a3f3cf55efb220d20c4a23c7a34f4d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type alias for a unique pointer to a (polymorphic) <a class="el" href="classZonoOpt_1_1HybZono.html" title="Hybrid zonotope class.">HybZono</a> object. &lt;&gt;  <br /></td></tr>
 <tr class="separator:ga3a3f3cf55efb220d20c4a23c7a34f4d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
-Enumerations</h2></td></tr>
-<tr class="memitem:aced04faf7b9db5f2f34dd76808bf10ee" id="r_aced04faf7b9db5f2f34dd76808bf10ee"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#aced04faf7b9db5f2f34dd76808bf10ee">IneqType</a> { <br />
-&#160;&#160;<a class="el" href="namespaceZonoOpt.html#aced04faf7b9db5f2f34dd76808bf10eea35c77cb307570eafec02506b514d0252">LESS_OR_EQUAL</a> = -1
-, <a class="el" href="namespaceZonoOpt.html#aced04faf7b9db5f2f34dd76808bf10eea3e08355a7e1f7aec53b14ab126f25842">GREATER_OR_EQUAL</a> = 1
-, <a class="el" href="namespaceZonoOpt.html#aced04faf7b9db5f2f34dd76808bf10eeaa20d036f1c97d9e4b68a5870aed74e05">EQUAL</a> = 0
-, <a class="el" href="namespaceZonoOpt.html#aced04faf7b9db5f2f34dd76808bf10eeac40af675a5bb2d6b062ae9b7fa3d68c1">LESS</a> = -2
-, <br />
-&#160;&#160;<a class="el" href="namespaceZonoOpt.html#aced04faf7b9db5f2f34dd76808bf10eea606393164def96cbdab5c930f863d642">GREATER</a> = 2
-<br />
- }</td></tr>
-<tr class="memdesc:aced04faf7b9db5f2f34dd76808bf10ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration to select inequality direction / use equality.  <a href="namespaceZonoOpt.html#aced04faf7b9db5f2f34dd76808bf10ee">More...</a><br /></td></tr>
-<tr class="separator:aced04faf7b9db5f2f34dd76808bf10ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -194,9 +173,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga21cab38a1787f36fc586e48204d4e797" id="r_ga21cab38a1787f36fc586e48204d4e797"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#ga21cab38a1787f36fc586e48204d4e797">cartesian_product</a> (const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z1, <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z2)</td></tr>
 <tr class="memdesc:ga21cab38a1787f36fc586e48204d4e797"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the Cartesian product of two sets Z1 and Z2.  <br /></td></tr>
 <tr class="separator:ga21cab38a1787f36fc586e48204d4e797"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf9945c4d9544749e91c64bbaf24fab73" id="r_gaf9945c4d9544749e91c64bbaf24fab73"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#gaf9945c4d9544749e91c64bbaf24fab73">constrain</a> (<a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z, const std::vector&lt; <a class="el" href="classZonoOpt_1_1Inequality.html">Inequality</a> &gt; &amp;ineqs, const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;R=Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt;())</td></tr>
-<tr class="memdesc:gaf9945c4d9544749e91c64bbaf24fab73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies inequalities to set.  <br /></td></tr>
-<tr class="separator:gaf9945c4d9544749e91c64bbaf24fab73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa0f4fa81908418a80821ebfa5731039f" id="r_gaa0f4fa81908418a80821ebfa5731039f"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#gaa0f4fa81908418a80821ebfa5731039f">constrain</a> (<a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z, const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;H, const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;f, char direction, const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;R=Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt;())</td></tr>
+<tr class="memdesc:gaa0f4fa81908418a80821ebfa5731039f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the generalized intersection of set Z with H*x &lt;= f, H*x &gt;= f, or H*x = f over matrix R.  <br /></td></tr>
+<tr class="separator:gaa0f4fa81908418a80821ebfa5731039f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga25a33a1816d85f8173de1242b088e405" id="r_ga25a33a1816d85f8173de1242b088e405"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#ga25a33a1816d85f8173de1242b088e405">set_diff</a> (const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z1, <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z2, <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> delta_m=100, bool remove_redundancy=true, const <a class="el" href="structZonoOpt_1_1OptSettings.html">OptSettings</a> &amp;settings=<a class="el" href="structZonoOpt_1_1OptSettings.html">OptSettings</a>(), std::shared_ptr&lt; <a class="el" href="structZonoOpt_1_1OptSolution.html">OptSolution</a> &gt; *solution=nullptr, int n_leaves=std::numeric_limits&lt; int &gt;::max(), int contractor_iter=10)</td></tr>
 <tr class="memdesc:ga25a33a1816d85f8173de1242b088e405"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set difference Z1 \ Z2.  <br /></td></tr>
 <tr class="separator:ga25a33a1816d85f8173de1242b088e405"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -283,30 +262,6 @@ Functions</h2></td></tr>
 <tr class="memitem:adb54084522859805d259e7d67ab1f81a" id="r_adb54084522859805d259e7d67ab1f81a"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#adb54084522859805d259e7d67ab1f81a">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;interval_matrix)</td></tr>
 <tr class="separator:adb54084522859805d259e7d67ab1f81a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Enumeration Type Documentation</h2>
-<a id="aced04faf7b9db5f2f34dd76808bf10ee" name="aced04faf7b9db5f2f34dd76808bf10ee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aced04faf7b9db5f2f34dd76808bf10ee">&#9670;&#160;</a></span>IneqType</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="namespaceZonoOpt.html#aced04faf7b9db5f2f34dd76808bf10ee">ZonoOpt::IneqType</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Enumeration to select inequality direction / use equality. </p>
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aced04faf7b9db5f2f34dd76808bf10eea35c77cb307570eafec02506b514d0252" name="aced04faf7b9db5f2f34dd76808bf10eea35c77cb307570eafec02506b514d0252"></a>LESS_OR_EQUAL&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="aced04faf7b9db5f2f34dd76808bf10eea3e08355a7e1f7aec53b14ab126f25842" name="aced04faf7b9db5f2f34dd76808bf10eea3e08355a7e1f7aec53b14ab126f25842"></a>GREATER_OR_EQUAL&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="aced04faf7b9db5f2f34dd76808bf10eeaa20d036f1c97d9e4b68a5870aed74e05" name="aced04faf7b9db5f2f34dd76808bf10eeaa20d036f1c97d9e4b68a5870aed74e05"></a>EQUAL&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="aced04faf7b9db5f2f34dd76808bf10eeac40af675a5bb2d6b062ae9b7fa3d68c1" name="aced04faf7b9db5f2f34dd76808bf10eeac40af675a5bb2d6b062ae9b7fa3d68c1"></a>LESS&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="aced04faf7b9db5f2f34dd76808bf10eea606393164def96cbdab5c930f863d642" name="aced04faf7b9db5f2f34dd76808bf10eea606393164def96cbdab5c930f863d642"></a>GREATER&#160;</td><td class="fielddoc"></td></tr>
-</table>
-
-</div>
-</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="ae2531d1f4642557d9ffc96a20caf1449" name="ae2531d1f4642557d9ffc96a20caf1449"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae2531d1f4642557d9ffc96a20caf1449">&#9670;&#160;</a></span>operator*() <span class="overload">[1/15]</span></h2>

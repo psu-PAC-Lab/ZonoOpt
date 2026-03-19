@@ -14,7 +14,6 @@ var searchData=
   ['eps_5fprim_11',['eps_prim',['../structZonoOpt_1_1OptSettings.html#a885d94d12ee6018e3e8235849fcd9a41',1,'ZonoOpt::OptSettings']]],
   ['eps_5fprim_5fsearch_12',['eps_prim_search',['../structZonoOpt_1_1OptSettings.html#a6d196b11d54b1635f432b7c70b84dcfb',1,'ZonoOpt::OptSettings']]],
   ['eps_5fr_13',['eps_r',['../structZonoOpt_1_1OptSettings.html#a58306d6af3d56963a746017677ae500e',1,'ZonoOpt::OptSettings']]],
-  ['equal_14',['EQUAL',['../namespaceZonoOpt.html#aced04faf7b9db5f2f34dd76808bf10eeaa20d036f1c97d9e4b68a5870aed74e05',1,'ZonoOpt']]],
-  ['examples_15',['Examples',['../index.html#autotoc_md4',1,'']]],
-  ['exp_16',['exp',['../classZonoOpt_1_1Interval.html#a366fd3da643609ddaa14000cafd47f91',1,'ZonoOpt::Interval']]]
+  ['examples_14',['Examples',['../index.html#autotoc_md4',1,'']]],
+  ['exp_15',['exp',['../classZonoOpt_1_1Interval.html#a366fd3da643609ddaa14000cafd47f91',1,'ZonoOpt::Interval']]]
 ];

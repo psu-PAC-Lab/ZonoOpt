@@ -6,12 +6,6 @@ import scipy.sparse
 import typing
 from typing import Any, ClassVar, overload
 
-EQUAL: IneqType
-GREATER: IneqType
-GREATER_OR_EQUAL: IneqType
-LESS: IneqType
-LESS_OR_EQUAL: IneqType
-
 class Box:
     """Box (i.e., interval vector) class"""
     __array_priority__: ClassVar[float] = ...
@@ -1501,7 +1495,7 @@ class HybZono:
             
         '''
     def bounding_box(self, settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> Box:
-        """bounding_box(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7fdf19d15370>) -> zonoopt._core.Box
+        """bounding_box(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7126496835f0>) -> zonoopt._core.Box
 
 
                         Computes a bounding box of the set object as a Box object.
@@ -1542,7 +1536,7 @@ class HybZono:
             
         '''
     def contains_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7fdf19d0f6f0>) -> bool
+        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7126496833f0>) -> bool
 
 
                         Checks whether the point x is contained in the set object.
@@ -1769,7 +1763,7 @@ class HybZono:
             
         """
     def is_empty(self, settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        """is_empty(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7fdf19d14ef0>) -> bool
+        """is_empty(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7126496880f0>) -> bool
 
 
                         Returns true if the set is provably empty, false otherwise.
@@ -1834,7 +1828,7 @@ class HybZono:
             
         """
     def optimize_over(self, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], c: typing.SupportsFloat | typing.SupportsIndex = ..., settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7fdf19cfc2f0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x71264965b130>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Solves optimization problem with quadratic objective over the current set
@@ -1854,7 +1848,7 @@ class HybZono:
             
         '''
     def project_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7fdf19d14d70>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x712649683270>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Returns the projection of the point x onto the set object.
@@ -1906,7 +1900,7 @@ class HybZono:
             
         '''
     def support(self, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> float:
-        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7fdf19cfcff0>) -> float
+        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x71264965b670>) -> float
 
 
                         Computes support function of the set in the direction d.
@@ -2876,158 +2870,6 @@ class HybZono:
                         HybZono
             
         '''
-
-class IneqTerm:
-    """Structure containing term in 0-1 inequality."""
-    coeff: float
-    idx: int
-    def __init__(self, idx: typing.SupportsInt | typing.SupportsIndex, coeff: typing.SupportsFloat | typing.SupportsIndex) -> None:
-        """__init__(self: zonoopt._core.IneqTerm, idx: typing.SupportsInt | typing.SupportsIndex, coeff: typing.SupportsFloat | typing.SupportsIndex) -> None
-
-        IneqTerm constructor
-        """
-    def copy(self) -> IneqTerm:
-        """copy(self: zonoopt._core.IneqTerm) -> zonoopt._core.IneqTerm
-
-        Creates a copy of the IneqTerm object.
-        """
-
-class IneqType:
-    """Enumeration to select inequality direction / use equality.
-
-    Members:
-
-      LESS : Strictly less than
-
-      LESS_OR_EQUAL : Less than or equal to
-
-      EQUAL : Equal to
-
-      GREATER_OR_EQUAL : Greater than or equal to
-
-      GREATER : Strictly greater than"""
-    __members__: ClassVar[dict] = ...  # read-only
-    EQUAL: ClassVar[IneqType] = ...
-    GREATER: ClassVar[IneqType] = ...
-    GREATER_OR_EQUAL: ClassVar[IneqType] = ...
-    LESS: ClassVar[IneqType] = ...
-    LESS_OR_EQUAL: ClassVar[IneqType] = ...
-    __entries: ClassVar[dict] = ...
-    def __init__(self, value: typing.SupportsInt | typing.SupportsIndex) -> None:
-        """__init__(self: zonoopt._core.IneqType, value: typing.SupportsInt | typing.SupportsIndex) -> None"""
-    def __eq__(self, other: object) -> bool:
-        """__eq__(self: object, other: object, /) -> bool"""
-    def __hash__(self) -> int:
-        """__hash__(self: object, /) -> int"""
-    def __index__(self) -> int:
-        """__index__(self: zonoopt._core.IneqType, /) -> int"""
-    def __int__(self) -> int:
-        """__int__(self: zonoopt._core.IneqType, /) -> int"""
-    def __ne__(self, other: object) -> bool:
-        """__ne__(self: object, other: object, /) -> bool"""
-    @property
-    def name(self) -> str:
-        """name(self: object, /) -> str
-
-        name(self: object, /) -> str
-        """
-    @property
-    def value(self) -> int:
-        """(arg0: zonoopt._core.IneqType) -> int"""
-
-class Inequality:
-    """Inequality class"""
-    def __init__(self, n_dims: typing.SupportsInt | typing.SupportsIndex) -> None:
-        """__init__(self: zonoopt._core.Inequality, n_dims: typing.SupportsInt | typing.SupportsIndex) -> None
-
-
-                        Constructs inequality, must specify number of dimensions.
-                
-                        Args:
-                            n_dims (int): number of dimensions in the inequality
-            
-        """
-    def add_term(self, idx: typing.SupportsInt | typing.SupportsIndex, coeff: typing.SupportsFloat | typing.SupportsIndex) -> None:
-        """add_term(self: zonoopt._core.Inequality, idx: typing.SupportsInt | typing.SupportsIndex, coeff: typing.SupportsFloat | typing.SupportsIndex) -> None
-
-
-                        Adds a term to the inequality.
-                
-                        Args:
-                            idx (int): index of variable in the inequality
-                            coeff (float): coefficient of the variable
-            
-        """
-    def copy(self) -> Inequality:
-        """copy(self: zonoopt._core.Inequality) -> zonoopt._core.Inequality
-
-
-                        Creates a copy of the Inequality object.
-
-                        Returns:
-                            Inequality: A copy of the Inequality object.
-            
-        """
-    def get_ineq_type(self) -> IneqType:
-        """get_ineq_type(self: zonoopt._core.Inequality) -> zonoopt._core.IneqType
-
-
-                        Get inequality type / direction.
-                
-                        Returns:
-                            IneqType: inequality type (type member)
-            
-        """
-    def get_n_dims(self) -> int:
-        """get_n_dims(self: zonoopt._core.Inequality) -> int
-
-
-                        Get number of dimensions for inequality.
-                
-                        Returns:
-                            int: number of dimensions (n_dims member)
-            
-        """
-    def get_rhs(self) -> float:
-        """get_rhs(self: zonoopt._core.Inequality) -> float
-
-
-                        Get right-hand side of the inequality.
-                
-                        Returns:
-                            float: right-hand side value (rhs member)
-            
-        """
-    def get_terms(self) -> list[IneqTerm]:
-        """get_terms(self: zonoopt._core.Inequality) -> list[zonoopt._core.IneqTerm]
-
-
-                        Get reference to terms in the inequality.
-                
-                        Returns:
-                            list[IneqTerm]: reference to terms member
-            
-        """
-    def set_ineq_type(self, type: IneqType) -> None:
-        """set_ineq_type(self: zonoopt._core.Inequality, type: zonoopt._core.IneqType) -> None
-
-
-                        Sets the direction of the inequality or sets it to be an equality
-                
-                        Args:
-                            type (IneqType): inequality type (e.g., less than or equal, greater than or equal, or equal)
-            
-        """
-    def set_rhs(self, rhs: typing.SupportsFloat | typing.SupportsIndex) -> None:
-        """set_rhs(self: zonoopt._core.Inequality, rhs: typing.SupportsFloat | typing.SupportsIndex) -> None
-
-
-                        Sets right-hand side of the inequality.
-                
-                        Args:
-                            rhs (float): right-hand side value
-            
-        """
 
 class Interval:
     """
@@ -6056,26 +5898,23 @@ def cartesian_product(Z1: HybZono, Z2: HybZono) -> HybZono:
                     HybZono: zonotopic set
         
     """
-def constrain(Z: HybZono, ineqs: collections.abc.Sequence[Inequality], R: scipy.sparse.csc_matrix[numpy.float64] = ...) -> HybZono:
-    """constrain(Z: zonoopt._core.HybZono, ineqs: collections.abc.Sequence[zonoopt._core.Inequality], R: scipy.sparse.csc_matrix[numpy.float64] = <Compressed Sparse Column sparse matrix of dtype 'float64' with 0 stored elements and shape (0, 0)>) -> zonoopt._core.HybZono
+def constrain(Z: HybZono, H: scipy.sparse.csc_matrix[numpy.float64], f: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], direction: str, R: scipy.sparse.csc_matrix[numpy.float64] = ...) -> HybZono:
+    '''constrain(Z: zonoopt._core.HybZono, H: scipy.sparse.csc_matrix[numpy.float64], f: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], direction: str, R: scipy.sparse.csc_matrix[numpy.float64] = <Compressed Sparse Column sparse matrix of dtype \'float64\' with 0 stored elements and shape (0, 0)>) -> zonoopt._core.HybZono
 
 
-                Applies inequalities to set.
+                Computes the generalized intersection of set Z with H*x <= f, H*x >= f, or H*x = f over matrix R.
             
                 Args:
-                    Z (HybZono): Set for inequalities to be applied to
-                    ineqs (list[Inequality]): list of inequalities
-                    R (scipy.sparse.csc_matrix, optional): For generalized intersection with the inequalities. Defaults to identity.
+                    Z (HybZono): zonotopic set
+                    H (scipy.sparse.csc_matrix): constraint matrix
+                    f (numpy.array): constraint vector
+                    direction (str): \'<\' for <=, \'>\' for >=, \'=\' for =
+                    R (scipy.sparse.csc_matrix, optional): Affine map matrix. Defaults to identity.
             
                 Returns:
                     HybZono: zonotopic set
-
-                Constrains set Z by applying the given inequalities to the set.
-                For example, given a set Z with states z0, z1, z2, the constraint z0 + z1 - z2 <= 2 could be added via an inequality object.
-                R is used for generalized intersection-like operations. For instance, when all the inequalities are <= inequalities,
-                this function returns Z int_R (Hx<=f) where H is the halfspace represented by the inequalities.
         
-    """
+    '''
 def convex_hull(Zs: collections.abc.Sequence[HybZono]) -> ConZono:
     """convex_hull(Zs: collections.abc.Sequence[zonoopt._core.HybZono]) -> zonoopt._core.ConZono
 
