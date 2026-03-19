@@ -40,7 +40,6 @@ jobs:
           CIBW_ENVIRONMENT_MACOS: >
             CC=/usr/bin/clang 
             CXX=/usr/bin/clang++ 
-            MACOSX_DEPLOYMENT_TARGET=11.0
           CIBW_ENVIRONMENT: >
             CMAKE_MESSAGE_LOG_LEVEL=VERBOSE
             SKBUILD_VERBOSE=1
