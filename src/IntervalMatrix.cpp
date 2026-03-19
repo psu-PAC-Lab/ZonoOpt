@@ -653,6 +653,28 @@ namespace ZonoOpt
         return {this->rows_, this->cols_, triplets};
     }
 
+    bool IntervalMatrix::contains(const Eigen::SparseMatrix<zono_float>& mat) const
+    {
+        // make sure dimensions are consistent
+        if (mat.rows() != static_cast<Eigen::Index>(this->rows_) || mat.cols() != static_cast<Eigen::Index>(this->cols_))
+            throw std::invalid_argument("IntervalMatrix contains with matrix: inconsistent dimensions");
+
+        // convert to dense
+        const auto arr_this = this->to_array();
+        const Eigen::Matrix<zono_float, -1, -1> mat_dense = Eigen::Matrix<zono_float, -1, -1>(mat);
+
+        // loop through and check if each element is contained
+        for (int i=0; i<static_cast<int>(this->rows_); ++i)
+        {
+            for (int j=0; j<static_cast<int>(this->cols_); ++j)
+            {
+                if (!arr_this[i][j].contains(mat_dense(i, j)))
+                    return false;
+            }
+        }
+        return true;
+    }
+
     std::string IntervalMatrix::print() const
     {
         std::stringstream ss;

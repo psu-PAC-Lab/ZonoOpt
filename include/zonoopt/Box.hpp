@@ -173,6 +173,14 @@ namespace ZonoOpt
          */
         Box interval_hull(const Box& other) const;
 
+        /**
+         * @brief Check vector continment
+         * 
+         * @param v vector
+         * @return true if v is contained in box, false otherwise
+         */
+        bool contains(const Eigen::Vector<zono_float, -1>& v);
+
         // operator overloading
 
         /**

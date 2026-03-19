@@ -119,6 +119,14 @@ namespace ZonoOpt
         IntervalMatrix interval_hull(const IntervalMatrix& other) const;
 
         /**
+         * @brief Check whether the interval matrix contains a given sparse matrix
+         * 
+         * @param mat matrix
+         * @return true if mat is contained in the interval matrix, false otherwise
+         */
+        bool contains(const Eigen::SparseMatrix<zono_float>& mat) const;
+
+        /**
          * @brief IntervalMatrix multiplication with vector
          * @param v rhs vector
          * @return resulting box

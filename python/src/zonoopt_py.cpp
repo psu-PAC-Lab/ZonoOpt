@@ -722,6 +722,16 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     numpy.array: center of box
             )pbdoc")
+        .def("contains", &Box::contains, py::arg("v"),
+            R"pbdoc(
+                Checks whether box contains a vector
+
+                Args:
+                    v (numpy.array): vector
+
+                Returns:
+                    bool: flag indicating whether box contains v
+            )pbdoc")
         .def("contract", &Box::contract, py::arg("A"), py::arg("b"), py::arg("iter"),
             R"pbdoc(
                 Interval contractor.
@@ -1260,6 +1270,16 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     IntervalMatrix: interval hull of self and other
+            )pbdoc")
+        .def("contains", &IntervalMatrix::contains, py::arg("A"),
+            R"pbdoc(
+                Checks whether interval matrix contains a dense matrix
+
+                Args:
+                    A (scipy.sparse.csc_matrix): matrix
+
+                Returns:
+                    bool: true if self contains A
             )pbdoc")
         .def("__matmul__", [](const IntervalMatrix& self, const Eigen::Vector<zono_float, -1>& v) -> Box
             { return self*v; },

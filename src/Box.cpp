@@ -151,6 +151,17 @@ namespace ZonoOpt {
         return out;
     }
 
+    bool Box::contains(const Eigen::Vector<zono_float, -1>& v)
+    {
+        if (v.size() != static_cast<Eigen::Index>(this->size()))
+            throw std::invalid_argument("Box contains: inconsistent dimensions");
+        for (int i = 0; i < static_cast<int>(this->size()); ++i)
+        {
+            if (!get_element(i).contains(v(i)))
+                return false;
+        }
+        return true;
+    }
 
     Box Box::operator+(const Box& other) const
     {
