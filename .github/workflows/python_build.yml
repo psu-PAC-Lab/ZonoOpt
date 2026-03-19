@@ -38,8 +38,8 @@ jobs:
         env:
           CIBW_BUILD_VERBOSITY: 3
           CIBW_ENVIRONMENT_MACOS: >
-            CC=clang 
-            CXX=clang++ 
+            CC=/usr/bin/clang 
+            CXX=/usr/bin/clang++ 
             MACOSX_DEPLOYMENT_TARGET=11.0
           CIBW_ENVIRONMENT: >
             CMAKE_MESSAGE_LOG_LEVEL=VERBOSE
