@@ -1,7 +1,6 @@
 #include "ZonoOpt.hpp"
 #include "unit_test_utilities.hpp"
 #include <cstdlib>
-#include <iostream>
 
 using namespace ZonoOpt;
 

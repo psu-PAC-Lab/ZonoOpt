@@ -16,7 +16,7 @@
 #include "BranchAndBound.hpp"
 #include "BnbDataStructures.hpp"
 #include "Inequality.hpp"
-#include "Intervals.hpp"
+#include "IntervalMatrix.hpp"
 
 #include <stdexcept>
 #include <limits>
@@ -430,7 +430,7 @@ class HybZono
         friend std::unique_ptr<HybZono> affine_inclusion(const HybZono& Z, const IntervalMatrix& R, const Eigen::Vector<zono_float, -1>& s);
         friend std::unique_ptr<HybZono> project_onto_dims(const HybZono& Z, const std::vector<int>& dims);
         friend std::unique_ptr<HybZono> minkowski_sum(const HybZono& Z1, HybZono& Z2);
-        friend std::unique_ptr<HybZono> pontry_diff(HybZono& Z1, HybZono& Z2, bool exact);
+        friend std::unique_ptr<HybZono> pontry_diff(HybZono& Z1, Zono& Z2, bool exact);
         friend std::unique_ptr<HybZono> intersection(const HybZono& Z1, HybZono& Z2, 
             const Eigen::SparseMatrix<zono_float>& R);
         friend std::unique_ptr<HybZono> intersection_over_dims(const HybZono& Z1, HybZono& Z2, 
@@ -445,6 +445,223 @@ class HybZono
             const OptSettings &settings, std::shared_ptr<OptSolution>* solution, const WarmStartParams& warm_start_params, int n_leaves, int contractor_iter);
         friend std::unique_ptr<HybZono> vrep_2_hybzono(const std::vector<Eigen::Matrix<zono_float, -1, -1>> &Vpolys, bool expose_indicators);
         friend std::unique_ptr<HybZono> zono_union_2_hybzono(std::vector<std::shared_ptr<Zono>> &Zs, bool expose_indicators);
+
+        // operator overloading
+
+        /**
+         * @brief minkowski sum
+         * 
+         * @param other
+         * @return std::unique_ptr<HybZono> 
+         */
+        std::unique_ptr<HybZono> operator+(HybZono& other) const;
+
+        /**
+         * @brief minkowski sum with point
+         * 
+         * @param v
+         * @return std::unique_ptr<HybZono> 
+         */
+        std::unique_ptr<HybZono> operator+(const Eigen::Vector<zono_float, -1>& v) const;
+
+        /**
+         * @brief minkowski sum with point
+         *
+         * @param v
+         * @param Z
+         * @return std::unique_ptr<HybZono>
+         */
+        friend std::unique_ptr<HybZono> operator+(const Eigen::Vector<zono_float, -1>& v, HybZono& Z);
+
+        /**
+         * @brief minkowski sum with box
+         *
+         * @param box
+         * @return std::unique_ptr<HybZono>
+         */
+        std::unique_ptr<HybZono> operator+(const Box& box) const;
+
+        /**
+         * @brief minkowski sum with box
+         *
+         * @param box
+         * @param Z
+         * @return std::unique_ptr<HybZono>
+         */
+        friend std::unique_ptr<HybZono> operator+(const Box& box, HybZono& Z);
+
+        /**
+         * @brief in-place minkowski sum
+         * 
+         * @param other 
+         */
+        void operator+=(HybZono& other);
+
+        /**
+         * @brief in-place minkowski sum with point
+         * 
+         * @param v
+         */
+        void operator+=(const Eigen::Vector<zono_float, -1>& v);
+
+        /**
+         * @brief in-place minkowski sum with box
+         *
+         * @param box
+         */
+        void operator+=(const Box& box);
+
+        /**
+         * @brief affine map with sparse matrix: returns R*Z
+         * 
+         * @param R 
+         * @param Z 
+         * @return std::unique_ptr<HybZono> 
+         */
+        friend std::unique_ptr<HybZono> operator*(const Eigen::SparseMatrix<zono_float>& R, const HybZono& Z);
+
+        /**
+         * @brief affine map with dense matrix: returns R*Z
+         * 
+         * @param R 
+         * @param Z 
+         * @return std::unique_ptr<HybZono> 
+         */
+        friend std::unique_ptr<HybZono> operator*(const Eigen::Matrix<zono_float, -1, -1>& R, const HybZono& Z);
+
+        /**
+         * @brief affine inclusion with interval matrix: returns R*Z
+         * @param R
+         * @param Z
+         * @return std::unique_ptr<HybZono>
+         */
+        friend std::unique_ptr<HybZono> operator*(const IntervalMatrix& R, const HybZono& Z);
+
+        /**
+         * @brief scalar multiplication: returns f*Z
+         * 
+         * @param f 
+         * @return std::unique_ptr<HybZono> 
+         */
+        std::unique_ptr<HybZono> operator*(zono_float f) const;
+
+        /**
+         * @brief scalar multiplication: returns f*Z
+         * 
+         * @param f 
+         * @param Z 
+         * @return std::unique_ptr<HybZono> 
+         */
+        friend std::unique_ptr<HybZono> operator*(zono_float f, const HybZono& Z);
+
+        /**
+         * @brief scalar multiplication in place
+         * 
+         * @param f 
+         */
+        void operator*=(zono_float f);
+
+        /**
+         * @brief pontryagin difference
+         * 
+         * @param other 
+         * @return std::unique_ptr<HybZono> 
+         */
+        std::unique_ptr<HybZono> operator-(Zono& other);
+
+        /**
+         * @brief pontryagin difference with point
+         * 
+         * @param v 
+         * @return std::unique_ptr<HybZono> 
+         */
+        std::unique_ptr<HybZono> operator-(const Eigen::Vector<zono_float, -1>& v);
+
+        /**
+         * @brief pontryagin difference with box
+         * @param box
+         * @return std::unique_ptr<HybZono>
+         */
+        std::unique_ptr<HybZono> operator-(const Box& box);
+
+        /**
+         * @brief in-place pontryagin difference
+         * 
+         * @param other 
+         */
+        void operator-=(Zono& other);
+
+        /**
+         * @brief in-place pontryagin difference with point
+         * 
+         * @param v 
+         */
+        void operator-=(const Eigen::Vector<zono_float, -1>& v);
+
+        /**
+         * @brief in-place pontryagin difference with box
+         * @param box
+         */
+        void operator-=(const Box& box);
+
+        /**
+         * @brief cartesian product
+         * 
+         * @param other 
+         * @return std::unique_ptr<HybZono> 
+         */
+        std::unique_ptr<HybZono> operator*(HybZono& other) const;
+
+        /**
+         * @brief cartesian product with box
+         * @param box
+         * @return std::unique_ptr<HybZono>
+         */
+        std::unique_ptr<HybZono> operator*(const Box& box) const;
+
+        /**
+         * @brief cartesian product with box
+         * @param box
+         * @param Z
+         * @return std::unique_ptr<HybZono>
+         */
+        friend std::unique_ptr<HybZono> operator*(const Box& box, HybZono& Z);
+
+        /**
+         * @brief in-place cartesian product
+         * 
+         * @param other 
+         */
+        void operator*=(HybZono& other);
+
+        /**
+         * @brief in-place cartesian product with box
+         * @param box
+         */
+        void operator*=(const Box& box);
+
+        /**
+         * @brief intersection
+         * 
+         * @param other 
+         * @return std::unique_ptr<HybZono> 
+         */
+        std::unique_ptr<HybZono> operator&(HybZono& other) const;
+
+        /**
+         * @brief union
+         * 
+         * @param other 
+         * @return std::unique_ptr<HybZono> 
+         */
+        std::unique_ptr<HybZono> operator|(HybZono& other) const;
+
+        /**
+         * @brief unary minus: returns -I * this
+         * 
+         * @return std::unique_ptr<HybZono> 
+         */
+        std::unique_ptr<HybZono> operator-() const; // unary minus
 
     protected:
 
@@ -593,20 +810,15 @@ std::unique_ptr<HybZono> minkowski_sum(const HybZono& Z1, HybZono& Z2);
  *
  * @param Z1 minuend
  * @param Z2 subtrahend
- * @param exact require output to be exact, otherwise inner approximation will be returned
+ * @param exact require output to be exact, otherwise inner approximation will be returned (default true)
  * @return zonotopic set
  * @ingroup ZonoOpt_SetOperations
  *
  * For inner approximations (exact = false), the algorithm from Vinod et. al. 2025 is used.
  * Note that this algorithm is exact when the minuend is a constrained zonotope and the matrix [G;A] is invertible.
  * Exact Pontryagin difference can only be computed when the subtrahend is a zonotope.
- * If subtrahend is a constrained zonotope, it will first be over-approximated as a zonotope.
- * If subtrahend is a hybrid zonotope, a get_leaves operation will first be performed to produce
- * a union of constrained zonotopes.
- * If the minuend is a hybrid zonotope and exact is false, a get_leaves operation will be performed for 
- * Z1 to reduce the number of leaves in the resulting set.
  */
-std::unique_ptr<HybZono> pontry_diff(HybZono& Z1, HybZono& Z2, bool exact=false);
+std::unique_ptr<HybZono> pontry_diff(HybZono& Z1, Zono& Z2, bool exact=true);
 
 /**
  * @brief Computes the generalized intersection of sets Z1 and Z2 over the matrix R.

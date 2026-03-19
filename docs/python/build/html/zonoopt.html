@@ -52,15 +52,20 @@
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.__sub__"><code class="docutils literal notranslate"><span class="pre">Box.__sub__()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.__truediv__"><code class="docutils literal notranslate"><span class="pre">Box.__truediv__()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.center"><code class="docutils literal notranslate"><span class="pre">Box.center()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.contains"><code class="docutils literal notranslate"><span class="pre">Box.contains()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.contains_set"><code class="docutils literal notranslate"><span class="pre">Box.contains_set()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.contract"><code class="docutils literal notranslate"><span class="pre">Box.contract()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.copy"><code class="docutils literal notranslate"><span class="pre">Box.copy()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.dot"><code class="docutils literal notranslate"><span class="pre">Box.dot()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.from_array"><code class="docutils literal notranslate"><span class="pre">Box.from_array()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.intersect"><code class="docutils literal notranslate"><span class="pre">Box.intersect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.interval_hull"><code class="docutils literal notranslate"><span class="pre">Box.interval_hull()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.linear_map"><code class="docutils literal notranslate"><span class="pre">Box.linear_map()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.lower"><code class="docutils literal notranslate"><span class="pre">Box.lower()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.project"><code class="docutils literal notranslate"><span class="pre">Box.project()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.radius"><code class="docutils literal notranslate"><span class="pre">Box.radius()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.size"><code class="docutils literal notranslate"><span class="pre">Box.size()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.to_array"><code class="docutils literal notranslate"><span class="pre">Box.to_array()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.upper"><code class="docutils literal notranslate"><span class="pre">Box.upper()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.width"><code class="docutils literal notranslate"><span class="pre">Box.width()</span></code></a></li>
 </ul>
@@ -73,6 +78,9 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#zonoopt.EmptySet"><code class="docutils literal notranslate"><span class="pre">EmptySet</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#zonoopt.HybZono"><code class="docutils literal notranslate"><span class="pre">HybZono</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.HybZono.__add__"><code class="docutils literal notranslate"><span class="pre">HybZono.__add__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.HybZono.__mul__"><code class="docutils literal notranslate"><span class="pre">HybZono.__mul__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.HybZono.__sub__"><code class="docutils literal notranslate"><span class="pre">HybZono.__sub__()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.HybZono.bounding_box"><code class="docutils literal notranslate"><span class="pre">HybZono.bounding_box()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.HybZono.complement"><code class="docutils literal notranslate"><span class="pre">HybZono.complement()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.HybZono.contains_point"><code class="docutils literal notranslate"><span class="pre">HybZono.contains_point()</span></code></a></li>
@@ -150,16 +158,18 @@
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.arctanh"><code class="docutils literal notranslate"><span class="pre">Interval.arctanh()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.center"><code class="docutils literal notranslate"><span class="pre">Interval.center()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.contains"><code class="docutils literal notranslate"><span class="pre">Interval.contains()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.contains_set"><code class="docutils literal notranslate"><span class="pre">Interval.contains_set()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.copy"><code class="docutils literal notranslate"><span class="pre">Interval.copy()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.cos"><code class="docutils literal notranslate"><span class="pre">Interval.cos()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.cosh"><code class="docutils literal notranslate"><span class="pre">Interval.cosh()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.exp"><code class="docutils literal notranslate"><span class="pre">Interval.exp()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.intersect"><code class="docutils literal notranslate"><span class="pre">Interval.intersect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.interval_hull"><code class="docutils literal notranslate"><span class="pre">Interval.interval_hull()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.inv"><code class="docutils literal notranslate"><span class="pre">Interval.inv()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.is_empty"><code class="docutils literal notranslate"><span class="pre">Interval.is_empty()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.is_single_valued"><code class="docutils literal notranslate"><span class="pre">Interval.is_single_valued()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.lb"><code class="docutils literal notranslate"><span class="pre">Interval.lb()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.log"><code class="docutils literal notranslate"><span class="pre">Interval.log()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.lower"><code class="docutils literal notranslate"><span class="pre">Interval.lower()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.nth_root"><code class="docutils literal notranslate"><span class="pre">Interval.nth_root()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.radius"><code class="docutils literal notranslate"><span class="pre">Interval.radius()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.sin"><code class="docutils literal notranslate"><span class="pre">Interval.sin()</span></code></a></li>
@@ -167,7 +177,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.sqrt"><code class="docutils literal notranslate"><span class="pre">Interval.sqrt()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.tan"><code class="docutils literal notranslate"><span class="pre">Interval.tan()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.tanh"><code class="docutils literal notranslate"><span class="pre">Interval.tanh()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.ub"><code class="docutils literal notranslate"><span class="pre">Interval.ub()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.upper"><code class="docutils literal notranslate"><span class="pre">Interval.upper()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Interval.width"><code class="docutils literal notranslate"><span class="pre">Interval.width()</span></code></a></li>
 </ul>
 </li>
@@ -175,13 +185,20 @@
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.IntervalMatrix.__add__"><code class="docutils literal notranslate"><span class="pre">IntervalMatrix.__add__()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.IntervalMatrix.__mul__"><code class="docutils literal notranslate"><span class="pre">IntervalMatrix.__mul__()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.IntervalMatrix.__sub__"><code class="docutils literal notranslate"><span class="pre">IntervalMatrix.__sub__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.IntervalMatrix.__truediv__"><code class="docutils literal notranslate"><span class="pre">IntervalMatrix.__truediv__()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.IntervalMatrix.center"><code class="docutils literal notranslate"><span class="pre">IntervalMatrix.center()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.IntervalMatrix.cols"><code class="docutils literal notranslate"><span class="pre">IntervalMatrix.cols()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.IntervalMatrix.contains"><code class="docutils literal notranslate"><span class="pre">IntervalMatrix.contains()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.IntervalMatrix.contains_set"><code class="docutils literal notranslate"><span class="pre">IntervalMatrix.contains_set()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.IntervalMatrix.diam"><code class="docutils literal notranslate"><span class="pre">IntervalMatrix.diam()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.IntervalMatrix.from_array"><code class="docutils literal notranslate"><span class="pre">IntervalMatrix.from_array()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.IntervalMatrix.from_triplets"><code class="docutils literal notranslate"><span class="pre">IntervalMatrix.from_triplets()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.IntervalMatrix.intersect"><code class="docutils literal notranslate"><span class="pre">IntervalMatrix.intersect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.IntervalMatrix.interval_hull"><code class="docutils literal notranslate"><span class="pre">IntervalMatrix.interval_hull()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.IntervalMatrix.radius"><code class="docutils literal notranslate"><span class="pre">IntervalMatrix.radius()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.IntervalMatrix.rows"><code class="docutils literal notranslate"><span class="pre">IntervalMatrix.rows()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.IntervalMatrix.to_array"><code class="docutils literal notranslate"><span class="pre">IntervalMatrix.to_array()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.IntervalMatrix.to_triplets"><code class="docutils literal notranslate"><span class="pre">IntervalMatrix.to_triplets()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.IntervalMatrix.width"><code class="docutils literal notranslate"><span class="pre">IntervalMatrix.width()</span></code></a></li>
 </ul>
 </li>
@@ -326,19 +343,32 @@ Robbins, J.A., Siefert, J.A., and Pangborn, H.C., “Sparsity-Promoting Reachabi
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.Box.__add__">
-<span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></span><a class="headerlink" href="#zonoopt.Box.__add__" title="Link to this definition"></a></dt>
-<dd><p>Elementwise addition</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box"><em>Box</em></a>) – rhs box</p>
+<span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.Box.__add__" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>__add__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -&gt; zonoopt._core.Box</p>
+<blockquote>
+<div><p>Elementwise addition</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>other (Box): rhs box</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>self + other (elementwise)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box">Box</a></p>
+<dt>Returns:</dt><dd><p>Box: self + other (elementwise)</p>
 </dd>
 </dl>
+</div></blockquote>
+</li>
+<li><p>__add__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, “[m, 1]”]) -&gt; zonoopt._core.Box</p>
+<blockquote>
+<div><p>Elementwise addition</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>v (np.array): vector</p>
+</dd>
+<dt>Returns:</dt><dd><p>Box: self + v (elementwise)</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
 </dd></dl>
 
 <dl class="py method">
@@ -363,7 +393,7 @@ Robbins, J.A., Siefert, J.A., and Pangborn, H.C., “Sparsity-Promoting Reachabi
 <span class="sig-name descname"><span class="pre">__mul__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.Box.__mul__" title="Link to this definition"></a></dt>
 <dd><p>Overloaded function.</p>
 <ol class="arabic">
-<li><p>__mul__(self: zonoopt._core.Box, other: zonoopt._core.Box) -&gt; zonoopt._core.Box</p>
+<li><p>__mul__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -&gt; zonoopt._core.Box</p>
 <blockquote>
 <div><p>Elementwise multiplication</p>
 <dl class="simple">
@@ -374,13 +404,35 @@ Robbins, J.A., Siefert, J.A., and Pangborn, H.C., “Sparsity-Promoting Reachabi
 </dl>
 </div></blockquote>
 </li>
-<li><p>__mul__(self: zonoopt._core.Box, alpha: typing.SupportsFloat | typing.SupportsIndex) -&gt; zonoopt._core.Box</p>
+<li><p>__mul__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -&gt; zonoopt._core.Box</p>
 <blockquote>
 <div><p>Elementwise multiplication with scalar</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>alpha (float): scalar multiplier</p>
 </dd>
 <dt>Returns:</dt><dd><p>Box: enclosure of alpha * self (elementwise)</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>__mul__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -&gt; zonoopt._core.Box</p>
+<blockquote>
+<div><p>Elementwise multiplication with interval</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>interval (Interval): interval multiplier</p>
+</dd>
+<dt>Returns:</dt><dd><p>Box: enclosure of self * interval (elementwise)</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>__mul__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, “[m, 1]”]) -&gt; zonoopt._core.Box</p>
+<blockquote>
+<div><p>Elementwise multiplication with vector</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>v (np.array): vector multiplier</p>
+</dd>
+<dt>Returns:</dt><dd><p>Box: enclosure of self * v (elementwise)</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -404,36 +456,73 @@ Robbins, J.A., Siefert, J.A., and Pangborn, H.C., “Sparsity-Promoting Reachabi
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.Box.__sub__">
-<span class="sig-name descname"><span class="pre">__sub__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></span><a class="headerlink" href="#zonoopt.Box.__sub__" title="Link to this definition"></a></dt>
-<dd><p>Elementwise subtraction</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box"><em>Box</em></a>) – rhs box</p>
+<span class="sig-name descname"><span class="pre">__sub__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.Box.__sub__" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>__sub__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -&gt; zonoopt._core.Box</p>
+<blockquote>
+<div><p>Elementwise subtraction</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>other (Box): other box</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>enclosure of self - other (elementwise)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box">Box</a></p>
+<dt>Returns:</dt><dd><p>Box: enclosure of self - other (elementwise)</p>
 </dd>
 </dl>
+</div></blockquote>
+</li>
+<li><p>__sub__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, “[m, 1]”]) -&gt; zonoopt._core.Box</p>
+<blockquote>
+<div><p>Elementwise subtraction</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>v (np.array): vector</p>
+</dd>
+<dt>Returns:</dt><dd><p>Box: enclosure of self - v (elementwise)</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.Box.__truediv__">
-<span class="sig-name descname"><span class="pre">__truediv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></span><a class="headerlink" href="#zonoopt.Box.__truediv__" title="Link to this definition"></a></dt>
-<dd><p>Elementwise division</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box"><em>Box</em></a>) – rhs box</p>
+<span class="sig-name descname"><span class="pre">__truediv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.Box.__truediv__" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>__truediv__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -&gt; zonoopt._core.Box</p>
+<blockquote>
+<div><p>Elementwise division</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>other (Box): rhs box</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>enclosure of self / other (elementwise)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box">Box</a></p>
+<dt>Returns:</dt><dd><p>Box: enclosure of self / other (elementwise)</p>
 </dd>
 </dl>
+</div></blockquote>
+</li>
+<li><p>__truediv__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -&gt; zonoopt._core.Box</p>
+<blockquote>
+<div><p>Elementwise division with scalar</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>alpha (float): scalar divisor</p>
+</dd>
+<dt>Returns:</dt><dd><p>Box: enclosure of self / alpha (elementwise)</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>__truediv__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -&gt; zonoopt._core.Box</p>
+<blockquote>
+<div><p>Elementwise division with interval</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>interval (Interval): interval dividend</p>
+</dd>
+<dt>Returns:</dt><dd><p>Box: enclosure of self / interval (elementwise)</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
 </dd></dl>
 
 <dl class="py method">
@@ -446,6 +535,40 @@ Robbins, J.A., Siefert, J.A., and Pangborn, H.C., “Sparsity-Promoting Reachabi
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.Box.contains">
+<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.ArrayLike</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.float64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'[m,</span> <span class="pre">1]'</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#zonoopt.Box.contains" title="Link to this definition"></a></dt>
+<dd><p>Checks whether box contains a vector</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>v</strong> (<em>numpy.array</em>) – vector</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>flag indicating whether box contains v</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.Box.contains_set">
+<span class="sig-name descname"><span class="pre">contains_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#zonoopt.Box.contains_set" title="Link to this definition"></a></dt>
+<dd><p>Checks whether box contains another box</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box"><em>Box</em></a>) – other box</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>flag indicating whether self contains other</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -517,6 +640,40 @@ If the contractor detects that the box does not intersect A*x=b, then this funct
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.Box.intersect">
+<span class="sig-name descname"><span class="pre">intersect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></span><a class="headerlink" href="#zonoopt.Box.intersect" title="Link to this definition"></a></dt>
+<dd><p>Intersection of two boxes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box"><em>Box</em></a>) – other box</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>intersection of self and other</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box">Box</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.Box.interval_hull">
+<span class="sig-name descname"><span class="pre">interval_hull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></span><a class="headerlink" href="#zonoopt.Box.interval_hull" title="Link to this definition"></a></dt>
+<dd><p>Interval hull of two boxes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box"><em>Box</em></a>) – other box</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>interval hull of self and other</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box">Box</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.Box.linear_map">
 <span class="sig-name descname"><span class="pre">linear_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">scipy.sparse.csr_matrix</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></span><a class="headerlink" href="#zonoopt.Box.linear_map" title="Link to this definition"></a></dt>
 <dd><p>Linear map of box based on interval arithmetic</p>
@@ -583,6 +740,20 @@ If the contractor detects that the box does not intersect A*x=b, then this funct
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.Box.to_array">
+<span class="sig-name descname"><span class="pre">to_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#zonoopt.Box.to_array" title="Link to this definition"></a></dt>
+<dd><p>Convert to array of intervals</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>box as list of intervals</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of <a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -721,8 +892,131 @@ The set dimension is n, and the number of equality constraints is nC.</p>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.HybZono.__add__">
+<span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.HybZono.__add__" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>__add__(self: zonoopt._core.HybZono, arg0: zonoopt._core.HybZono) -&gt; zonoopt._core.HybZono</p>
+<blockquote>
+<div><p>Minkowski sum</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>other (HybZono)</p>
+</dd>
+<dt>Returns:</dt><dd><p>HybZono</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>__add__(self: zonoopt._core.HybZono, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, “[m, 1]”]) -&gt; zonoopt._core.HybZono</p>
+<blockquote>
+<div><p>Minkowski sum with point</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>v (numpy.array)</p>
+</dd>
+<dt>Returns:</dt><dd><p>HybZono</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>__add__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -&gt; zonoopt._core.HybZono</p>
+<blockquote>
+<div><p>Minkowski sum with box</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>box (Box)</p>
+</dd>
+<dt>Returns:</dt><dd><p>HybZono</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.HybZono.__mul__">
+<span class="sig-name descname"><span class="pre">__mul__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.HybZono.__mul__" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>__mul__(self: zonoopt._core.HybZono, arg0: typing.SupportsFloat | typing.SupportsIndex) -&gt; zonoopt._core.HybZono</p>
+<blockquote>
+<div><p>Scalar multiplication</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>f (float)</p>
+</dd>
+<dt>Returns:</dt><dd><p>HybZono: self*f</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>__mul__(self: zonoopt._core.HybZono, arg0: zonoopt._core.HybZono) -&gt; zonoopt._core.HybZono</p>
+<blockquote>
+<div><p>Cartesian product</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>other (HybZono)</p>
+</dd>
+<dt>Returns:</dt><dd><p>HybZono</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>__mul__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -&gt; zonoopt._core.HybZono</p>
+<blockquote>
+<div><p>Cartesian product with box</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>box (Box)</p>
+</dd>
+<dt>Returns:</dt><dd><p>HybZono</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.HybZono.__sub__">
+<span class="sig-name descname"><span class="pre">__sub__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.HybZono.__sub__" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>__sub__(self: zonoopt._core.HybZono, arg0: ZonoOpt::Zono) -&gt; zonoopt._core.HybZono</p>
+<blockquote>
+<div><p>Pontryagin difference</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>other (Zono)</p>
+</dd>
+<dt>Returns:</dt><dd><p>HybZono</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>__sub__(self: zonoopt._core.HybZono, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, “[m, 1]”]) -&gt; zonoopt._core.HybZono</p>
+<blockquote>
+<div><p>Pontryagin difference with point</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>v (numpy.array)</p>
+</dd>
+<dt>Returns:</dt><dd><p>HybZono</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>__sub__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -&gt; zonoopt._core.HybZono</p>
+<blockquote>
+<div><p>Pontryagin difference with box</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>box (Box)</p>
+</dd>
+<dt>Returns:</dt><dd><p>HybZono</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.HybZono.bounding_box">
-<span class="sig-name descname"><span class="pre">bounding_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x76edd2e66cf0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></span><a class="headerlink" href="#zonoopt.HybZono.bounding_box" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">bounding_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7c235953ec70&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></span><a class="headerlink" href="#zonoopt.HybZono.bounding_box" title="Link to this definition"></a></dt>
 <dd><p>Computes a bounding box of the set object as a Box object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -773,7 +1067,7 @@ X = {G xi + c | A xi = b, xi in [-1-delta_m, 1+delta+m]^{nG}}.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.HybZono.contains_point">
-<span class="sig-name descname"><span class="pre">contains_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">x:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x76edd2e66ab0&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#zonoopt.HybZono.contains_point" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">contains_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">x:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7c2359553db0&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#zonoopt.HybZono.contains_point" title="Link to this definition"></a></dt>
 <dd><p>Checks whether the point x is contained in the set object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1078,7 +1372,7 @@ for ADMM-FP, these will instead be used for branch and bound search.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.HybZono.is_empty">
-<span class="sig-name descname"><span class="pre">is_empty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x76edd2e665b0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#zonoopt.HybZono.is_empty" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">is_empty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7c2359685eb0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#zonoopt.HybZono.is_empty" title="Link to this definition"></a></dt>
 <dd><p>Returns true if the set is provably empty, false otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1169,7 +1463,7 @@ for ADMM-FP, these will instead be used for branch and bound search.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.HybZono.optimize_over">
-<span class="sig-name descname"><span class="pre">optimize_over</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">P:</span> <span class="pre">scipy.sparse.csc_matrix[numpy.float64],</span> <span class="pre">q:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">c:</span> <span class="pre">typing.SupportsFloat</span> <span class="pre">|</span> <span class="pre">typing.SupportsIndex</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x76edd2e635f0&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'[m,</span> <span class="pre">1]'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#zonoopt.HybZono.optimize_over" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">optimize_over</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">P:</span> <span class="pre">scipy.sparse.csc_matrix[numpy.float64],</span> <span class="pre">q:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">c:</span> <span class="pre">typing.SupportsFloat</span> <span class="pre">|</span> <span class="pre">typing.SupportsIndex</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7c23595465f0&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'[m,</span> <span class="pre">1]'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#zonoopt.HybZono.optimize_over" title="Link to this definition"></a></dt>
 <dd><p>Solves optimization problem with quadratic objective over the current set</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1194,7 +1488,7 @@ for ADMM-FP, these will instead be used for branch and bound search.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.HybZono.project_point">
-<span class="sig-name descname"><span class="pre">project_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">x:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x76edd2e663b0&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'[m,</span> <span class="pre">1]'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#zonoopt.HybZono.project_point" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">project_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">x:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7c2359556730&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'[m,</span> <span class="pre">1]'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#zonoopt.HybZono.project_point" title="Link to this definition"></a></dt>
 <dd><p>Returns the projection of the point x onto the set object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1258,7 +1552,7 @@ Unused factors are also removed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.HybZono.support">
-<span class="sig-name descname"><span class="pre">support</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">d:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x76edd2e66830&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#zonoopt.HybZono.support" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">support</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">d:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">settings:</span> <span class="pre">zonoopt._core.OptSettings</span> <span class="pre">=</span> <span class="pre">OptSettings</span> <span class="pre">structure:</span> <span class="pre">verbose:</span> <span class="pre">false</span> <span class="pre">verbosity_interval:</span> <span class="pre">100</span> <span class="pre">t_max:</span> <span class="pre">1.79769e+308</span> <span class="pre">k_max_admm:</span> <span class="pre">5000</span> <span class="pre">rho:</span> <span class="pre">10</span> <span class="pre">eps_dual:</span> <span class="pre">0.01</span> <span class="pre">eps_prim:</span> <span class="pre">0.001</span> <span class="pre">k_inf_check:</span> <span class="pre">10</span> <span class="pre">inf_norm_conv:</span> <span class="pre">true</span> <span class="pre">use_interval_contractor:</span> <span class="pre">true</span> <span class="pre">contractor_iter:</span> <span class="pre">1</span> <span class="pre">search_mode:</span> <span class="pre">0</span> <span class="pre">polish:</span> <span class="pre">1</span> <span class="pre">eps_dual_search:</span> <span class="pre">0.1</span> <span class="pre">eps_prim_search:</span> <span class="pre">0.01</span> <span class="pre">eps_r:</span> <span class="pre">0.01</span> <span class="pre">eps_a:</span> <span class="pre">0.1</span> <span class="pre">k_max_bnb:</span> <span class="pre">100000</span> <span class="pre">n_threads_bnb:</span> <span class="pre">4</span> <span class="pre">n_threads_admm_fp:</span> <span class="pre">3</span> <span class="pre">single_threaded_admm_fp:</span> <span class="pre">false</span> <span class="pre">max_nodes:</span> <span class="pre">100000</span> <span class="pre">contractor_tree_search_depth:</span> <span class="pre">10</span> <span class="pre">enable_perturb_admm_fp:</span> <span class="pre">true</span> <span class="pre">k_max_admm_fp_ph1:</span> <span class="pre">10000</span> <span class="pre">k_max_admm_fp_ph2:</span> <span class="pre">90000</span> <span class="pre">cycle_detection_buffer_size:</span> <span class="pre">20</span> <span class="pre">eps_perturb:</span> <span class="pre">0.001</span> <span class="pre">k_restart:</span> <span class="pre">5000</span> <span class="pre">enable_rng_seed:</span> <span class="pre">false</span> <span class="pre">rng_seed:</span> <span class="pre">0</span> <span class="pre">enable_restart_admm_fp:</span> <span class="pre">true,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7c2359546df0&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#zonoopt.HybZono.support" title="Link to this definition"></a></dt>
 <dd><p>Computes support function of the set in the direction d.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1496,7 +1790,7 @@ Unused factors are also removed.</p>
 <span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.Interval.__add__" title="Link to this definition"></a></dt>
 <dd><p>Overloaded function.</p>
 <ol class="arabic">
-<li><p>__add__(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -&gt; zonoopt._core.Interval</p>
+<li><p>__add__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -&gt; zonoopt._core.Interval</p>
 <blockquote>
 <div><p>Interval addition</p>
 <dl class="simple">
@@ -1507,7 +1801,7 @@ Unused factors are also removed.</p>
 </dl>
 </div></blockquote>
 </li>
-<li><p>__add__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -&gt; zonoopt._core.Interval</p>
+<li><p>__add__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -&gt; zonoopt._core.Interval</p>
 <blockquote>
 <div><p>Interval addition with scalar</p>
 <dl class="simple">
@@ -1526,7 +1820,7 @@ Unused factors are also removed.</p>
 <span class="sig-name descname"><span class="pre">__mul__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.Interval.__mul__" title="Link to this definition"></a></dt>
 <dd><p>Overloaded function.</p>
 <ol class="arabic">
-<li><p>__mul__(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -&gt; zonoopt._core.Interval</p>
+<li><p>__mul__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -&gt; zonoopt._core.Interval</p>
 <blockquote>
 <div><p>Interval multiplication</p>
 <dl class="simple">
@@ -1537,7 +1831,7 @@ Unused factors are also removed.</p>
 </dl>
 </div></blockquote>
 </li>
-<li><p>__mul__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -&gt; zonoopt._core.Interval</p>
+<li><p>__mul__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -&gt; zonoopt._core.Interval</p>
 <blockquote>
 <div><p>Interval multiplication with scalar</p>
 <dl class="simple">
@@ -1553,19 +1847,32 @@ Unused factors are also removed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.Interval.__pow__">
-<span class="sig-name descname"><span class="pre">__pow__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsInt</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsIndex</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a></span></span><a class="headerlink" href="#zonoopt.Interval.__pow__" title="Link to this definition"></a></dt>
-<dd><p>Interval power</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n</strong> (<em>int</em>) – exponent</p>
+<span class="sig-name descname"><span class="pre">__pow__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.Interval.__pow__" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>__pow__(self: zonoopt._core.Interval, arg0: typing.SupportsInt | typing.SupportsIndex) -&gt; zonoopt._core.Interval</p>
+<blockquote>
+<div><p>Interval power</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>n (int): exponent</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>enclosure of self^n</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
+<dt>Returns:</dt><dd><p>Interval: enclosure of self^n</p>
 </dd>
 </dl>
+</div></blockquote>
+</li>
+<li><p>__pow__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -&gt; zonoopt._core.Interval</p>
+<blockquote>
+<div><p>Interval power with fractional exponent</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>alpha (float): fractional exponent</p>
+</dd>
+<dt>Returns:</dt><dd><p>Interval: enclosure of self^alpha</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
 </dd></dl>
 
 <dl class="py method">
@@ -1573,7 +1880,7 @@ Unused factors are also removed.</p>
 <span class="sig-name descname"><span class="pre">__sub__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.Interval.__sub__" title="Link to this definition"></a></dt>
 <dd><p>Overloaded function.</p>
 <ol class="arabic">
-<li><p>__sub__(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -&gt; zonoopt._core.Interval</p>
+<li><p>__sub__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -&gt; zonoopt._core.Interval</p>
 <blockquote>
 <div><p>Interval subtraction</p>
 <dl class="simple">
@@ -1584,7 +1891,7 @@ Unused factors are also removed.</p>
 </dl>
 </div></blockquote>
 </li>
-<li><p>__sub__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -&gt; zonoopt._core.Interval</p>
+<li><p>__sub__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -&gt; zonoopt._core.Interval</p>
 <blockquote>
 <div><p>Interval subtraction with scalar</p>
 <dl class="simple">
@@ -1603,7 +1910,7 @@ Unused factors are also removed.</p>
 <span class="sig-name descname"><span class="pre">__truediv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.Interval.__truediv__" title="Link to this definition"></a></dt>
 <dd><p>Overloaded function.</p>
 <ol class="arabic">
-<li><p>__truediv__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -&gt; zonoopt._core.Interval</p>
+<li><p>__truediv__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -&gt; zonoopt._core.Interval</p>
 <blockquote>
 <div><p>Interval division with scalar</p>
 <dl class="simple">
@@ -1614,11 +1921,11 @@ Unused factors are also removed.</p>
 </dl>
 </div></blockquote>
 </li>
-<li><p>__truediv__(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -&gt; zonoopt._core.Interval</p>
+<li><p>__truediv__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -&gt; zonoopt._core.Interval</p>
 <blockquote>
 <div><p>Interval division</p>
 <dl class="simple">
-<dt>Args:</dt><dd><p>other (Interval): rhs interval</p>
+<dt>Args:</dt><dd><p>other (Interval): interval to divide</p>
 </dd>
 <dt>Returns:</dt><dd><p>Interval: enclosure of self / other</p>
 </dd>
@@ -1758,6 +2065,23 @@ Unused factors are also removed.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.Interval.contains_set">
+<span class="sig-name descname"><span class="pre">contains_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#zonoopt.Interval.contains_set" title="Link to this definition"></a></dt>
+<dd><p>Checks whether interval contains another interval</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval"><em>Interval</em></a>) – other interval</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>flag indicating whether self contains other</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.Interval.copy">
 <span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a></span></span><a class="headerlink" href="#zonoopt.Interval.copy" title="Link to this definition"></a></dt>
 <dd><p>Copy interval object</p>
@@ -1831,6 +2155,23 @@ Unused factors are also removed.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.Interval.interval_hull">
+<span class="sig-name descname"><span class="pre">interval_hull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a></span></span><a class="headerlink" href="#zonoopt.Interval.interval_hull" title="Link to this definition"></a></dt>
+<dd><p>Interval hull</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval"><em>Interval</em></a>) – other interval</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>interval hull of self and other</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.Interval.inv">
 <span class="sig-name descname"><span class="pre">inv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a></span></span><a class="headerlink" href="#zonoopt.Interval.inv" title="Link to this definition"></a></dt>
 <dd><p>Interval inverse</p>
@@ -1873,20 +2214,6 @@ Unused factors are also removed.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="zonoopt.Interval.lb">
-<span class="sig-name descname"><span class="pre">lb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#zonoopt.Interval.lb" title="Link to this definition"></a></dt>
-<dd><p>Get lower bound</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>lower bound</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.Interval.log">
 <span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a></span></span><a class="headerlink" href="#zonoopt.Interval.log" title="Link to this definition"></a></dt>
 <dd><p>Compute interval containing log(x) (base e) for all x in interval</p>
@@ -1896,6 +2223,20 @@ Unused factors are also removed.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.Interval.lower">
+<span class="sig-name descname"><span class="pre">lower</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#zonoopt.Interval.lower" title="Link to this definition"></a></dt>
+<dd><p>Get lower bound</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>lower bound</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2003,8 +2344,8 @@ Unused factors are also removed.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="zonoopt.Interval.ub">
-<span class="sig-name descname"><span class="pre">ub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#zonoopt.Interval.ub" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="zonoopt.Interval.upper">
+<span class="sig-name descname"><span class="pre">upper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#zonoopt.Interval.upper" title="Link to this definition"></a></dt>
 <dd><p>Get upper bound</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2048,19 +2389,43 @@ Unused factors are also removed.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.IntervalMatrix.__add__">
-<span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt._core.IntervalMatrix"><span class="pre">zonoopt._core.IntervalMatrix</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt._core.IntervalMatrix"><span class="pre">zonoopt._core.IntervalMatrix</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt._core.IntervalMatrix"><span class="pre">zonoopt._core.IntervalMatrix</span></a></span></span><a class="headerlink" href="#zonoopt.IntervalMatrix.__add__" title="Link to this definition"></a></dt>
-<dd><p>IntervalMatrix addition</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt.IntervalMatrix"><em>IntervalMatrix</em></a>) – rhs interval matrix</p>
+<span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.IntervalMatrix.__add__" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>__add__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -&gt; zonoopt._core.IntervalMatrix</p>
+<blockquote>
+<div><p>IntervalMatrix addition</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>other (IntervalMatrix): rhs interval matrix</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>resulting interval matrix</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt.IntervalMatrix">IntervalMatrix</a></p>
+<dt>Returns:</dt><dd><p>IntervalMatrix: resulting interval matrix</p>
 </dd>
 </dl>
+</div></blockquote>
+</li>
+<li><p>__add__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -&gt; zonoopt._core.IntervalMatrix</p>
+<blockquote>
+<div><p>IntervalMatrix elementwise addition with interval</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>interval (Interval): interval to add</p>
+</dd>
+<dt>Returns:</dt><dd><p>IntervalMatrix: resulting interval matrix</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>__add__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -&gt; zonoopt._core.IntervalMatrix</p>
+<blockquote>
+<div><p>IntervalMatrix elementwise addition with scalar</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>alpha (float): interval to add</p>
+</dd>
+<dt>Returns:</dt><dd><p>IntervalMatrix: resulting interval matrix</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
 </dd></dl>
 
 <dl class="py method">
@@ -2068,44 +2433,22 @@ Unused factors are also removed.</p>
 <span class="sig-name descname"><span class="pre">__mul__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.IntervalMatrix.__mul__" title="Link to this definition"></a></dt>
 <dd><p>Overloaded function.</p>
 <ol class="arabic">
-<li><p>__mul__(self: zonoopt._core.IntervalMatrix, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, “[m, 1]”]) -&gt; zonoopt._core.Box</p>
+<li><p>__mul__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -&gt; zonoopt._core.IntervalMatrix</p>
 <blockquote>
-<div><p>IntervalMatrix multiplication with vector</p>
+<div><p>IntervalMatrix multiplication with scalar</p>
 <dl class="simple">
-<dt>Args:</dt><dd><p>v (numpy.array): rhs vector</p>
-</dd>
-<dt>Returns:</dt><dd><p>Box: resulting box</p>
-</dd>
-</dl>
-</div></blockquote>
-</li>
-<li><p>__mul__(self: zonoopt._core.IntervalMatrix, box: zonoopt._core.Box) -&gt; zonoopt._core.Box</p>
-<blockquote>
-<div><p>IntervalMatrix multiplication with Box</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>box (Box): rhs box</p>
-</dd>
-<dt>Returns:</dt><dd><p>Box: resulting box</p>
-</dd>
-</dl>
-</div></blockquote>
-</li>
-<li><p>__mul__(self: zonoopt._core.IntervalMatrix, A: scipy.sparse.csr_matrix[numpy.float64]) -&gt; zonoopt._core.IntervalMatrix</p>
-<blockquote>
-<div><p>IntervalMatrix multiplication with matrix</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>A (scipy.sparse.csr_matrix): rhs matrix</p>
+<dt>Args:</dt><dd><p>alpha (float): scalar multiplier</p>
 </dd>
 <dt>Returns:</dt><dd><p>IntervalMatrix: resulting interval matrix</p>
 </dd>
 </dl>
 </div></blockquote>
 </li>
-<li><p>__mul__(self: zonoopt._core.IntervalMatrix, other: zonoopt._core.IntervalMatrix) -&gt; zonoopt._core.IntervalMatrix</p>
+<li><p>__mul__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -&gt; zonoopt._core.IntervalMatrix</p>
 <blockquote>
-<div><p>IntervalMatrix multiplication with another IntervalMatrix</p>
+<div><p>IntervalMatrix elementwise multiplication with interval</p>
 <dl class="simple">
-<dt>Args:</dt><dd><p>other (IntervalMatrix): rhs interval matrix</p>
+<dt>Args:</dt><dd><p>interval (Interval): interval multiplier</p>
 </dd>
 <dt>Returns:</dt><dd><p>IntervalMatrix: resulting interval matrix</p>
 </dd>
@@ -2117,19 +2460,73 @@ Unused factors are also removed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.IntervalMatrix.__sub__">
-<span class="sig-name descname"><span class="pre">__sub__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt._core.IntervalMatrix"><span class="pre">zonoopt._core.IntervalMatrix</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt._core.IntervalMatrix"><span class="pre">zonoopt._core.IntervalMatrix</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt._core.IntervalMatrix"><span class="pre">zonoopt._core.IntervalMatrix</span></a></span></span><a class="headerlink" href="#zonoopt.IntervalMatrix.__sub__" title="Link to this definition"></a></dt>
-<dd><p>IntervalMatrix subtraction</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt.IntervalMatrix"><em>IntervalMatrix</em></a>) – rhs interval matrix</p>
+<span class="sig-name descname"><span class="pre">__sub__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.IntervalMatrix.__sub__" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>__sub__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -&gt; zonoopt._core.IntervalMatrix</p>
+<blockquote>
+<div><p>IntervalMatrix subtraction</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>other (IntervalMatrix): rhs interval matrix</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>resulting interval matrix</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt.IntervalMatrix">IntervalMatrix</a></p>
+<dt>Returns:</dt><dd><p>IntervalMatrix: resulting interval matrix</p>
 </dd>
 </dl>
+</div></blockquote>
+</li>
+<li><p>__sub__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -&gt; zonoopt._core.IntervalMatrix</p>
+<blockquote>
+<div><p>IntervalMatrix elementwise interval subtraction</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>interval (Interval): interval to subtract</p>
+</dd>
+<dt>Returns:</dt><dd><p>IntervalMatrix: resulting interval matrix (self - interval)</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>__sub__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -&gt; zonoopt._core.IntervalMatrix</p>
+<blockquote>
+<div><p>IntervalMatrix elementwise scalar subtraction</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>alpha (float): scalar to subtract</p>
+</dd>
+<dt>Returns:</dt><dd><p>IntervalMatrix: resulting interval matrix (self - alpha)</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.IntervalMatrix.__truediv__">
+<span class="sig-name descname"><span class="pre">__truediv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.IntervalMatrix.__truediv__" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>__truediv__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -&gt; zonoopt._core.IntervalMatrix</p>
+<blockquote>
+<div><p>IntervalMatrix elementwise division by scalar</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>alpha (float): scalar to divide</p>
+</dd>
+<dt>Returns:</dt><dd><p>IntervalMatrix: resulting interval matrix (self / alpha)</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>__truediv__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -&gt; zonoopt._core.IntervalMatrix</p>
+<blockquote>
+<div><p>IntervalMatrix elementwise division by interval</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>interval (Interval): interval to divide</p>
+</dd>
+<dt>Returns:</dt><dd><p>IntervalMatrix: resulting interval matrix (self / interval)</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
 </dd></dl>
 
 <dl class="py method">
@@ -2157,6 +2554,40 @@ Unused factors are also removed.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.IntervalMatrix.contains">
+<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt._core.IntervalMatrix"><span class="pre">zonoopt._core.IntervalMatrix</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">scipy.sparse.csc_matrix</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#zonoopt.IntervalMatrix.contains" title="Link to this definition"></a></dt>
+<dd><p>Checks whether interval matrix contains a dense matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>A</strong> (<em>scipy.sparse.csc_matrix</em>) – matrix</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>true if self contains A</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.IntervalMatrix.contains_set">
+<span class="sig-name descname"><span class="pre">contains_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt._core.IntervalMatrix"><span class="pre">zonoopt._core.IntervalMatrix</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt._core.IntervalMatrix"><span class="pre">zonoopt._core.IntervalMatrix</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#zonoopt.IntervalMatrix.contains_set" title="Link to this definition"></a></dt>
+<dd><p>Checks whether interval matrix contains another interval matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt.IntervalMatrix"><em>IntervalMatrix</em></a>) – other interval matrix</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>true if self contains other</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2203,6 +2634,40 @@ Unused factors are also removed.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.IntervalMatrix.intersect">
+<span class="sig-name descname"><span class="pre">intersect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt._core.IntervalMatrix"><span class="pre">zonoopt._core.IntervalMatrix</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt._core.IntervalMatrix"><span class="pre">zonoopt._core.IntervalMatrix</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt._core.IntervalMatrix"><span class="pre">zonoopt._core.IntervalMatrix</span></a></span></span><a class="headerlink" href="#zonoopt.IntervalMatrix.intersect" title="Link to this definition"></a></dt>
+<dd><p>Intersection of two interval matrices</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt.IntervalMatrix"><em>IntervalMatrix</em></a>) – other interval matrix</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>intersection of self and other</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt.IntervalMatrix">IntervalMatrix</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.IntervalMatrix.interval_hull">
+<span class="sig-name descname"><span class="pre">interval_hull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt._core.IntervalMatrix"><span class="pre">zonoopt._core.IntervalMatrix</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt._core.IntervalMatrix"><span class="pre">zonoopt._core.IntervalMatrix</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt._core.IntervalMatrix"><span class="pre">zonoopt._core.IntervalMatrix</span></a></span></span><a class="headerlink" href="#zonoopt.IntervalMatrix.interval_hull" title="Link to this definition"></a></dt>
+<dd><p>Interval hull of two interval matrices</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt.IntervalMatrix"><em>IntervalMatrix</em></a>) – other interval matrix</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>interval hull of self and other</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt.IntervalMatrix">IntervalMatrix</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.IntervalMatrix.radius">
 <span class="sig-name descname"><span class="pre">radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt._core.IntervalMatrix"><span class="pre">zonoopt._core.IntervalMatrix</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt._core.IntervalMatrix"><span class="pre">zonoopt._core.IntervalMatrix</span></a></span></span><a class="headerlink" href="#zonoopt.IntervalMatrix.radius" title="Link to this definition"></a></dt>
 <dd><p>Get radius of interval matrix</p>
@@ -2227,6 +2692,34 @@ Unused factors are also removed.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.IntervalMatrix.to_array">
+<span class="sig-name descname"><span class="pre">to_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt._core.IntervalMatrix"><span class="pre">zonoopt._core.IntervalMatrix</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#zonoopt.IntervalMatrix.to_array" title="Link to this definition"></a></dt>
+<dd><p>Convert interval matrix to 2D array of intervals</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>2D array of intervals corresponding to interval matrix</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of list of <a class="reference internal" href="#zonoopt.Interval" title="zonoopt.Interval">Interval</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.IntervalMatrix.to_triplets">
+<span class="sig-name descname"><span class="pre">to_triplets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.IntervalMatrix" title="zonoopt._core.IntervalMatrix"><span class="pre">zonoopt._core.IntervalMatrix</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#zonoopt.Interval" title="zonoopt._core.Interval"><span class="pre">zonoopt._core.Interval</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#zonoopt.IntervalMatrix.to_triplets" title="Link to this definition"></a></dt>
+<dd><p>Convert interval matrix to triplet format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(rows, cols, triplets), where rows and cols are the number of rows and columns in the interval matrix, and triplets is a list of (row, col, value) tuples corresponding to the non-empty intervals in the interval matrix</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2989,22 +3482,17 @@ If Zi is a hybrid zonotope, it must be sharp or this function will throw an erro
 
 <dl class="py function">
 <dt class="sig sig-object py" id="zonoopt.pontry_diff">
-<span class="sig-prename descclassname"><span class="pre">zonoopt.</span></span><span class="sig-name descname"><span class="pre">pontry_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Z1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt._core.HybZono"><span class="pre">zonoopt._core.HybZono</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt._core.HybZono"><span class="pre">zonoopt._core.HybZono</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt._core.HybZono"><span class="pre">zonoopt._core.HybZono</span></a></span></span><a class="headerlink" href="#zonoopt.pontry_diff" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">zonoopt.</span></span><span class="sig-name descname"><span class="pre">pontry_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Z1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt._core.HybZono"><span class="pre">zonoopt._core.HybZono</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Zono" title="zonoopt._core.Zono"><span class="pre">zonoopt._core.Zono</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt._core.HybZono"><span class="pre">zonoopt._core.HybZono</span></a></span></span><a class="headerlink" href="#zonoopt.pontry_diff" title="Link to this definition"></a></dt>
 <dd><p>Computes the Pontryagin difference Z1 - Z2.</p>
-<p>For inner approximations (exact=false), the algorithm from Vinod et. al. 2025 is used.
+<p>For inner approximations (exact = false), the algorithm from Vinod et. al. 2025 is used.
 Note that this algorithm is exact when the minuend is a constrained zonotope and the matrix [G;A] is invertible.
-Exact Pontryagin difference can only be computed when the subtrahend is a zonotope.
-If subtrahend is a constrained zonotope, it will first be over-approximated as a zonotope.
-If subtrahend is a hybrid zonotope, a get_leaves operation will first be performed to produce
-a union of constrained zonotopes.
-If the minuend is a hybrid zonotope and exact is false, a get_leaves operation will be performed for
-Z1 to reduce the number of leaves in the resulting set.</p>
+Exact Pontryagin difference can only be computed when the subtrahend is a zonotope.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Z1</strong> (<a class="reference internal" href="#zonoopt.HybZono" title="zonoopt.HybZono"><em>HybZono</em></a>) – minuend</p></li>
-<li><p><strong>Z2</strong> (<a class="reference internal" href="#zonoopt.ConZono" title="zonoopt.ConZono"><em>ConZono</em></a>) – subtrahend</p></li>
-<li><p><strong>exact</strong> (<em>bool</em><em>, </em><em>optional</em>) – require output to be exact, otherwise inner approximation will be returned</p></li>
+<li><p><strong>Z2</strong> (<a class="reference internal" href="#zonoopt.Zono" title="zonoopt.Zono"><em>Zono</em></a>) – subtrahend</p></li>
+<li><p><strong>exact</strong> (<em>bool</em><em>, </em><em>optional</em>) – require output to be exact, otherwise inner approximation will be returned (default true)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

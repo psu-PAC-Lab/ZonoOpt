@@ -339,7 +339,7 @@ def test_interval_arithmetic():
     f = lambda x: 2*np.tan(x[0])**(-2) + np.cos(x[1]/x[0])/3. + np.sin(x[0] + np.arctan(x[2]))*np.sinh(x[0]) + np.exp(np.arccosh(np.abs(x[1]) + 1)) - np.arccos(x[0])*np.arcsin(x[1])/np.log(x[2]**2)
 
     # interval expression
-    f_int = lambda x: (x[0].tan()**(-2))*2. + (x[1]/x[0]).cos()/3. + (x[0] + x[2].arctan()).sin()*x[0].sinh() + (x[1].abs() + 1).arccosh().exp() - (x[0].arccos()*x[1].arcsin())/(x[2]**2).log()
+    f_int = lambda x: 2*(x[0].tan()**(-2)) + (x[1]/x[0]).cos()/3. + (x[0] + x[2].arctan()).sin()*x[0].sinh() + (1 + x[1].abs()).arccosh().exp() - (x[0].arccos()*x[1].arcsin())/(x[2]**2).log()
 
     def _run_interval_test(x_min, x_max):
         x = zono.Box(x_min*np.ones(n_dims), x_max*np.ones(n_dims)) # box
@@ -420,7 +420,228 @@ def test_affine_inclusion():
 
     print('Passed: Affine Inclusion')
 
+def test_operator_overloading():
 
+    def check_matrix_equal(A, B):
+        if A.shape != B.shape:
+            return False
+        
+        for i in range(A.shape[0]):
+            for j in range(A.shape[1]):
+                if np.abs(A[i,j]-B[i,j]) > 1e-12:
+                    return False
+                
+        return True
+
+    def check_vector_equal(a, b):
+        if a.shape != b.shape:
+            return False
+
+        for i in range(a.shape[0]):
+            if np.abs(a[i]-b[i]) > 1e-12:
+                return False
+
+        return True
+    
+    def check_equal(Z1, Z2):
+        if Z2.is_0_1_form() != Z1.is_0_1_form():
+            Z2.convert_form()
+
+        # make sure dimensions are the same
+        if Z1.get_n() != Z2.get_n() or Z1.get_nGc() != Z2.get_nGc() or Z1.get_nGb() != Z2.get_nGb() or Z1.get_nC() != Z2.get_nC():
+            return False
+        
+        # make sure matrices and vectors are the same
+        G_equal = check_matrix_equal(Z1.get_G().toarray(), Z2.get_G().toarray())
+        c_equal = check_vector_equal(Z1.get_c(), Z2.get_c())
+        A_equal = check_matrix_equal(Z1.get_A().toarray(), Z2.get_A().toarray())
+        b_equal = check_vector_equal(Z1.get_b(), Z2.get_b())
+
+        return G_equal and c_equal and A_equal and b_equal
+    
+
+    # make 2 zonotopes and a point
+    c1 = np.array([1., 2.])
+    Z1 = zono.make_regular_zono_2D(radius=1., n_sides=8, c=c1)
+
+    c2 = np.array([-3., 1.])
+    Z2 = zono.make_regular_zono_2D(radius=0.1, n_sides=6, c=c2)
+
+    c3 = np.array([3., -2.])
+    P3 = zono.Point(c3)
+
+    # matrix
+    M = np.array([[32., 1.2]])
+    M_sp = sp.csc_matrix(M)
+
+    M_upper = np.array([[33., 1.4]])
+    M_int = zono.IntervalMatrix(M, M_upper)
+
+    # box
+    box = zono.Box([0., 1.], [0.1, 1.04])
+
+    # check operators are consistent with set operations
+
+    # minkowski sum
+    Z_set = zono.minkowski_sum(Z1, Z2)
+    Z_op = Z1 + Z2
+    assert check_equal(Z_set, Z_op), "Minkowski sum failed"
+
+    # +=
+    Z_set = Z1.copy()
+    Z_op = Z1.copy()
+    Z_set = zono.minkowski_sum(Z_set, Z2)
+    Z_op += Z2
+    assert check_equal(Z_set, Z_op), "Minkowski sum += failed"
+
+    # minkowski sum with point
+    Z_set = zono.minkowski_sum(Z1, P3)
+    Z_op = Z1 + c3
+    assert check_equal(Z_set, Z_op), "Minkowski sum with point failed"
+
+    # left sum
+    Z_set = zono.minkowski_sum(P3, Z1)
+    Z_op = c3 + Z1
+    assert check_equal(Z_set, Z_op), "Left Minkowski sum with point failed"
+
+    # +=
+    Z_set = Z1.copy()
+    Z_op = Z1.copy()
+    Z_set = zono.minkowski_sum(Z_set, P3)
+    Z_op += c3
+    assert check_equal(Z_set, Z_op), "Minkowski sum with point += failed"
+
+    # minkowski sum with box
+    Z_set = zono.minkowski_sum(Z1, zono.interval_2_zono(box))
+    Z_op = Z1 + box
+    assert check_equal(Z_set, Z_op), "Minkowski sum with box failed"
+
+    # left sum
+    Z_set = zono.minkowski_sum(zono.interval_2_zono(box), Z1)
+    Z_op = box + Z1
+    assert check_equal(Z_set, Z_op), "Left Minkowski sum with box failed"
+
+    # +=
+    Z_set = Z1.copy()
+    Z_op = Z1.copy()
+    Z_set = zono.minkowski_sum(Z_set, zono.interval_2_zono(box))
+    Z_op += box
+    assert check_equal(Z_set, Z_op), "Minkowski sum with box += failed"
+
+    # pontry diff
+    Z_set = zono.pontry_diff(Z1, Z2, exact=True)
+    Z_op = Z1 - Z2
+    assert check_equal(Z_set, Z_op), "Pontryagin difference failed"
+
+    # -=
+    Z_set = Z1.copy()
+    Z_op = Z1.copy()
+    Z_set = zono.pontry_diff(Z_set, Z2, exact=True)
+    Z_op -= Z2
+    assert check_equal(Z_set, Z_op), "Pontryagin difference -= failed"
+
+    # pontry diff with point
+    Z_set = zono.pontry_diff(Z1, P3, exact=True)
+    Z_op = Z1 - c3
+    assert check_equal(Z_set, Z_op), "Pontryagin difference with point failed"
+
+    # -=
+    Z_set = Z1.copy()
+    Z_op = Z1.copy()
+    Z_set = zono.pontry_diff(Z_set, P3, exact=True)
+    Z_op -= c3
+    assert check_equal(Z_set, Z_op), "Pontryagin difference with point -= failed"
+
+    # pontry diff with box
+    Z_set = zono.pontry_diff(Z1, zono.interval_2_zono(box), exact=True)
+    Z_op = Z1 - box
+    assert check_equal(Z_set, Z_op), "Pontryagin difference with box failed"
+
+    # -=
+    Z_set = Z1.copy()
+    Z_op = Z1.copy()
+    Z_set = zono.pontry_diff(Z_set, zono.interval_2_zono(box), exact=True)
+    Z_op -= box
+    assert check_equal(Z_set, Z_op), "Pontryagin difference with box -= failed"
+
+    # affine map - sparse
+    Z_set = zono.affine_map(Z1, M_sp)
+    Z_op = M_sp @ Z1
+    assert check_equal(Z_set, Z_op), "Affine map with sparse matrix failed"
+
+    # affine map - dense
+    Z_set = zono.affine_map(Z1, M)
+    Z_op = M @ Z1
+    assert check_equal(Z_set, Z_op), "Affine map with dense matrix failed"
+
+    # affine inclusion
+    Z_set = zono.affine_inclusion(Z1, M_int)
+    Z_op = M_int @ Z1
+    assert check_equal(Z_set, Z_op), "Affine inclusion failed"
+
+    # scalar multiplication - left
+    f = 3.2
+    Z_set = zono.affine_map(Z1, f*np.eye(Z1.get_n()))
+    Z_op = f * Z1
+    assert check_equal(Z_set, Z_op), "Scalar multiplication (left) failed"
+
+    # scalar multiplication - right
+    Z_op = Z1 * f
+    assert check_equal(Z_set, Z_op), "Scalar multiplication (right) failed"
+
+    # *=
+    Z_set = Z1.copy()
+    Z_op = Z1.copy()
+    Z_set = zono.affine_map(Z_set, f*np.eye(Z_set.get_n()))
+    Z_op *= f
+    assert check_equal(Z_set, Z_op), "Scalar multiplication *= failed"
+
+    # cartesian product
+    Z_set = zono.cartesian_product(Z1, Z2)
+    Z_op = Z1 * Z2
+    assert check_equal(Z_set, Z_op), "Cartesian product failed"
+
+    # *=
+    Z_set = Z1.copy()
+    Z_op = Z1.copy()
+    Z_set = zono.cartesian_product(Z_set, Z2)
+    Z_op *= Z2
+    assert check_equal(Z_set, Z_op), "Cartesian product *= failed"
+
+    # cartesian product with box
+    Z_set = zono.cartesian_product(Z1, zono.interval_2_zono(box))
+    Z_op = Z1 * box
+    assert check_equal(Z_set, Z_op), "Cartesian product with box failed"
+
+    # cartesian product with box on left
+    Z_set = zono.cartesian_product(zono.interval_2_zono(box), Z1)
+    Z_op = box * Z1
+    assert check_equal(Z_set, Z_op), "Cartesian product with box on left failed"
+
+    # *=
+    Z_set = Z1.copy()
+    Z_op = Z1.copy()
+    Z_set = zono.cartesian_product(Z_set, zono.interval_2_zono(box))
+    Z_op *= box
+    assert check_equal(Z_set, Z_op), "Cartesian product with box *= failed"
+
+    # intersection
+    Z_set = zono.intersection(Z1, Z2)
+    Z_op = Z1 & Z2
+    assert check_equal(Z_set, Z_op), "Intersection failed"
+
+    # union
+    Z_set = zono.union_of_many((Z1, Z2))
+    Z_op = Z1 | Z2
+    assert check_equal(Z_set, Z_op), "Union failed"
+
+    # unary minus
+    Z_set = zono.affine_map(Z1, -np.eye(Z1.get_n()))
+    Z_op = -Z1
+    assert check_equal(Z_set, Z_op), "Unary minus failed"
+
+    # finish
+    print('Passed: Operator Overloading')
 
 # run the unit tests
 test_vrep_2_hz()
@@ -433,3 +654,4 @@ test_get_leaves()
 test_safety_verification()
 test_interval_arithmetic()
 test_affine_inclusion()
+test_operator_overloading()

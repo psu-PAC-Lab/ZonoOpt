@@ -128,7 +128,9 @@ set(SOURCE_FILES
     src/Zono.cpp
     src/Point.cpp
     src/EmptySet.cpp
-    src/Intervals.cpp
+    src/Interval.cpp
+    src/Box.cpp
+    src/IntervalMatrix.cpp
     src/BranchAndBound.cpp
 )
 

@@ -27,7 +27,7 @@
 #include "Eigen/Dense"
 #include "Eigen/Sparse"
 #include "CholeskyUtilities.hpp"
-#include "Intervals.hpp"
+#include "Box.hpp"
 #include "SparseMatrixUtilities.hpp"
 #include "SolverDataStructures.hpp"
 

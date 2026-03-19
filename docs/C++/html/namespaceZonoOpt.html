@@ -173,9 +173,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga2b0dff8af8367ac206cf800412838ce7" id="r_ga2b0dff8af8367ac206cf800412838ce7"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#ga2b0dff8af8367ac206cf800412838ce7">minkowski_sum</a> (const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z1, <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z2)</td></tr>
 <tr class="memdesc:ga2b0dff8af8367ac206cf800412838ce7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes Minkowski sum of two sets Z1 and Z2.  <br /></td></tr>
 <tr class="separator:ga2b0dff8af8367ac206cf800412838ce7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae6dea2d327c10e1d32380c0f28c2ec2f" id="r_gae6dea2d327c10e1d32380c0f28c2ec2f"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#gae6dea2d327c10e1d32380c0f28c2ec2f">pontry_diff</a> (<a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z1, <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z2, bool exact=false)</td></tr>
-<tr class="memdesc:gae6dea2d327c10e1d32380c0f28c2ec2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the Pontryagin difference Z1 - Z2.  <br /></td></tr>
-<tr class="separator:gae6dea2d327c10e1d32380c0f28c2ec2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga14a8af77b0a22fb4b496a40f20e581f1" id="r_ga14a8af77b0a22fb4b496a40f20e581f1"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#ga14a8af77b0a22fb4b496a40f20e581f1">pontry_diff</a> (<a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z1, <a class="el" href="classZonoOpt_1_1Zono.html">Zono</a> &amp;Z2, bool exact=true)</td></tr>
+<tr class="memdesc:ga14a8af77b0a22fb4b496a40f20e581f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the Pontryagin difference Z1 - Z2.  <br /></td></tr>
+<tr class="separator:ga14a8af77b0a22fb4b496a40f20e581f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga791d82941cf98f5440cb2d361376992d" id="r_ga791d82941cf98f5440cb2d361376992d"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#ga791d82941cf98f5440cb2d361376992d">intersection</a> (const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z1, <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z2, const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;R=Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt;())</td></tr>
 <tr class="memdesc:ga791d82941cf98f5440cb2d361376992d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the generalized intersection of sets Z1 and Z2 over the matrix R.  <br /></td></tr>
 <tr class="separator:ga791d82941cf98f5440cb2d361376992d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -214,10 +214,72 @@ Functions</h2></td></tr>
 <tr class="separator:ga5e33e41bf5f1cf8e1f32e1de45dba939"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d071c860a0200fc223527285f2df4f2" id="r_a6d071c860a0200fc223527285f2df4f2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a6d071c860a0200fc223527285f2df4f2">perturb_binaries</a> (const <a class="el" href="classZonoOpt_1_1MI__Box.html">MI_Box</a> &amp;x_box, const Eigen::Ref&lt; const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &gt; xk, Eigen::Ref&lt; Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &gt; zk, const bool restart, std::mt19937 &amp;rand_gen)</td></tr>
 <tr class="separator:a6d071c860a0200fc223527285f2df4f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ba4e649a4e49d93fa7e8719602a046f" id="r_a6ba4e649a4e49d93fa7e8719602a046f"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a6ba4e649a4e49d93fa7e8719602a046f">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z)</td></tr>
-<tr class="separator:a6ba4e649a4e49d93fa7e8719602a046f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e62a8ab6586a18146e3466b56eb8d72" id="r_a5e62a8ab6586a18146e3466b56eb8d72"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a5e62a8ab6586a18146e3466b56eb8d72">operator+</a> (const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;v, const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;box)</td></tr>
+<tr class="separator:a5e62a8ab6586a18146e3466b56eb8d72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a5b98b9830a456b60f5e95b67e7af1d" id="r_a7a5b98b9830a456b60f5e95b67e7af1d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a7a5b98b9830a456b60f5e95b67e7af1d">operator-</a> (const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;v, const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;box)</td></tr>
+<tr class="separator:a7a5b98b9830a456b60f5e95b67e7af1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af70cdd3f966d35d72154c0b85dad4fb4" id="r_af70cdd3f966d35d72154c0b85dad4fb4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#af70cdd3f966d35d72154c0b85dad4fb4">operator*</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha, const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;box)</td></tr>
+<tr class="separator:af70cdd3f966d35d72154c0b85dad4fb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7aeb109a6a59946bf415940525691320" id="r_a7aeb109a6a59946bf415940525691320"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a7aeb109a6a59946bf415940525691320">operator*</a> (const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;v, const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;box)</td></tr>
+<tr class="separator:a7aeb109a6a59946bf415940525691320"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5742410bf4a2b874440ce28e698a97a0" id="r_a5742410bf4a2b874440ce28e698a97a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a5742410bf4a2b874440ce28e698a97a0">operator*</a> (const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval, const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;box)</td></tr>
+<tr class="separator:a5742410bf4a2b874440ce28e698a97a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5afb2b3b6d0044b068219f02b53324de" id="r_a5afb2b3b6d0044b068219f02b53324de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a5afb2b3b6d0044b068219f02b53324de">operator*</a> (const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, Eigen::RowMajor &gt; &amp;A, const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;box)</td></tr>
+<tr class="separator:a5afb2b3b6d0044b068219f02b53324de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1825297354fe3335e60e3e82caec326" id="r_ad1825297354fe3335e60e3e82caec326"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#ad1825297354fe3335e60e3e82caec326">operator*</a> (const Eigen::Matrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1, -1 &gt; &amp;A, const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;box)</td></tr>
+<tr class="separator:ad1825297354fe3335e60e3e82caec326"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a362cb5a252b3a1ed746471d4e3b0a335" id="r_a362cb5a252b3a1ed746471d4e3b0a335"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a362cb5a252b3a1ed746471d4e3b0a335">operator/</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha, const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;box)</td></tr>
+<tr class="separator:a362cb5a252b3a1ed746471d4e3b0a335"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad43ce1af26519dd17fbebfd25831577f" id="r_ad43ce1af26519dd17fbebfd25831577f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#ad43ce1af26519dd17fbebfd25831577f">operator/</a> (const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval, const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;box)</td></tr>
+<tr class="separator:ad43ce1af26519dd17fbebfd25831577f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a45ad3a9324fc28c762f361f2d9bb378e" id="r_a45ad3a9324fc28c762f361f2d9bb378e"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a45ad3a9324fc28c762f361f2d9bb378e">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;box)</td></tr>
 <tr class="separator:a45ad3a9324fc28c762f361f2d9bb378e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ba4e649a4e49d93fa7e8719602a046f" id="r_a6ba4e649a4e49d93fa7e8719602a046f"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a6ba4e649a4e49d93fa7e8719602a046f">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z)</td></tr>
+<tr class="separator:a6ba4e649a4e49d93fa7e8719602a046f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3405e04c3844639281440403b9cbc7e0" id="r_a3405e04c3844639281440403b9cbc7e0"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a3405e04c3844639281440403b9cbc7e0">operator+</a> (const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;v, <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z)</td></tr>
+<tr class="separator:a3405e04c3844639281440403b9cbc7e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21e97d6fe80c4b0eec34be6ebfaf6cfa" id="r_a21e97d6fe80c4b0eec34be6ebfaf6cfa"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a21e97d6fe80c4b0eec34be6ebfaf6cfa">operator+</a> (const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;box, <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z)</td></tr>
+<tr class="separator:a21e97d6fe80c4b0eec34be6ebfaf6cfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5ff1a4605b072fc5731e70f02af92de" id="r_ad5ff1a4605b072fc5731e70f02af92de"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#ad5ff1a4605b072fc5731e70f02af92de">operator*</a> (const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;R, const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z)</td></tr>
+<tr class="separator:ad5ff1a4605b072fc5731e70f02af92de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a493f9f7f7ec83876699542220a9c5da5" id="r_a493f9f7f7ec83876699542220a9c5da5"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a493f9f7f7ec83876699542220a9c5da5">operator*</a> (const Eigen::Matrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1, -1 &gt; &amp;R, const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z)</td></tr>
+<tr class="separator:a493f9f7f7ec83876699542220a9c5da5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9984826a4b3a59d2e70881268fdd6513" id="r_a9984826a4b3a59d2e70881268fdd6513"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a9984826a4b3a59d2e70881268fdd6513">operator*</a> (const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;R, const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z)</td></tr>
+<tr class="separator:a9984826a4b3a59d2e70881268fdd6513"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a084c8afcc2f370b11b67b5e528f79952" id="r_a084c8afcc2f370b11b67b5e528f79952"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a084c8afcc2f370b11b67b5e528f79952">operator*</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> f, const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z)</td></tr>
+<tr class="separator:a084c8afcc2f370b11b67b5e528f79952"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2531d1f4642557d9ffc96a20caf1449" id="r_ae2531d1f4642557d9ffc96a20caf1449"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#ae2531d1f4642557d9ffc96a20caf1449">operator*</a> (const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;box, <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z)</td></tr>
+<tr class="separator:ae2531d1f4642557d9ffc96a20caf1449"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab405740ef3271ebe9e320d2d746d4631" id="r_ab405740ef3271ebe9e320d2d746d4631"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Interval.html">Interval</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#ab405740ef3271ebe9e320d2d746d4631">operator+</a> (const <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha, const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval)</td></tr>
+<tr class="separator:ab405740ef3271ebe9e320d2d746d4631"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ea9f7ee72f389706dce566e05e1f7c8" id="r_a2ea9f7ee72f389706dce566e05e1f7c8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Interval.html">Interval</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a2ea9f7ee72f389706dce566e05e1f7c8">operator-</a> (const <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha, const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval)</td></tr>
+<tr class="separator:a2ea9f7ee72f389706dce566e05e1f7c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb90dc327a9194d31587846014d0d445" id="r_acb90dc327a9194d31587846014d0d445"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Interval.html">Interval</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#acb90dc327a9194d31587846014d0d445">operator*</a> (const <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha, const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval)</td></tr>
+<tr class="separator:acb90dc327a9194d31587846014d0d445"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a785b77e581b5b4b5097106d0682e5bc6" id="r_a785b77e581b5b4b5097106d0682e5bc6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Interval.html">Interval</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a785b77e581b5b4b5097106d0682e5bc6">operator/</a> (const <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha, const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval)</td></tr>
+<tr class="separator:a785b77e581b5b4b5097106d0682e5bc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a840e14a40354bc22e54daf07f6e0832f" id="r_a840e14a40354bc22e54daf07f6e0832f"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a840e14a40354bc22e54daf07f6e0832f">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval)</td></tr>
+<tr class="separator:a840e14a40354bc22e54daf07f6e0832f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ad01e83ff90b99f7043f3e423ba158d" id="r_a9ad01e83ff90b99f7043f3e423ba158d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a9ad01e83ff90b99f7043f3e423ba158d">operator+</a> (const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;mat)</td></tr>
+<tr class="separator:a9ad01e83ff90b99f7043f3e423ba158d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f24dc6c1b3bddbd995cfcdcfed110d8" id="r_a2f24dc6c1b3bddbd995cfcdcfed110d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a2f24dc6c1b3bddbd995cfcdcfed110d8">operator*</a> (const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;A)</td></tr>
+<tr class="separator:a2f24dc6c1b3bddbd995cfcdcfed110d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92c2c02ac89d1aee3a5c1760f4f0ccae" id="r_a92c2c02ac89d1aee3a5c1760f4f0ccae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a92c2c02ac89d1aee3a5c1760f4f0ccae">operator*</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;A)</td></tr>
+<tr class="separator:a92c2c02ac89d1aee3a5c1760f4f0ccae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e0165fc189a7f4195068e28fae3d208" id="r_a0e0165fc189a7f4195068e28fae3d208"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a0e0165fc189a7f4195068e28fae3d208">operator*</a> (const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, Eigen::RowMajor &gt; &amp;A, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;B)</td></tr>
+<tr class="separator:a0e0165fc189a7f4195068e28fae3d208"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abddcf2e14bb3ab96b6cf93337891d797" id="r_abddcf2e14bb3ab96b6cf93337891d797"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#abddcf2e14bb3ab96b6cf93337891d797">operator*</a> (const Eigen::Matrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1, -1 &gt; &amp;A, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;B)</td></tr>
+<tr class="separator:abddcf2e14bb3ab96b6cf93337891d797"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaba1b5401efd179f8fbe26bd2a01553f" id="r_aaba1b5401efd179f8fbe26bd2a01553f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#aaba1b5401efd179f8fbe26bd2a01553f">operator+</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;A)</td></tr>
+<tr class="separator:aaba1b5401efd179f8fbe26bd2a01553f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81c9cecda47d99b3c054fa70411e9b57" id="r_a81c9cecda47d99b3c054fa70411e9b57"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a81c9cecda47d99b3c054fa70411e9b57">operator-</a> (const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;mat)</td></tr>
+<tr class="separator:a81c9cecda47d99b3c054fa70411e9b57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa92e6cdf8f5612ff52289ea032e7f56b" id="r_aa92e6cdf8f5612ff52289ea032e7f56b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#aa92e6cdf8f5612ff52289ea032e7f56b">operator-</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;A)</td></tr>
+<tr class="separator:aa92e6cdf8f5612ff52289ea032e7f56b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a171f667801e39bc2a90fa3d45ed13e55" id="r_a171f667801e39bc2a90fa3d45ed13e55"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a171f667801e39bc2a90fa3d45ed13e55">operator/</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;A)</td></tr>
+<tr class="separator:a171f667801e39bc2a90fa3d45ed13e55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a095372b560ff8ba738572541d435e871" id="r_a095372b560ff8ba738572541d435e871"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a095372b560ff8ba738572541d435e871">operator/</a> (const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;A)</td></tr>
+<tr class="separator:a095372b560ff8ba738572541d435e871"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb54084522859805d259e7d67ab1f81a" id="r_adb54084522859805d259e7d67ab1f81a"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#adb54084522859805d259e7d67ab1f81a">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;interval_matrix)</td></tr>
 <tr class="separator:adb54084522859805d259e7d67ab1f81a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -246,8 +308,1086 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="ae2531d1f4642557d9ffc96a20caf1449" name="ae2531d1f4642557d9ffc96a20caf1449"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2531d1f4642557d9ffc96a20caf1449">&#9670;&#160;</a></span>operator*() <span class="overload">[1/15]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; ZonoOpt::operator* </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>box</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>Z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">box</td><td></td></tr>
+    <tr><td class="paramname">Z</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="ad1825297354fe3335e60e3e82caec326" name="ad1825297354fe3335e60e3e82caec326"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1825297354fe3335e60e3e82caec326">&#9670;&#160;</a></span>operator*() <span class="overload">[2/15]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1Box.html">Box</a> ZonoOpt::operator* </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Matrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1, -1 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>box</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>matrix to multiply </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>enclosure of A * this </dd></dl>
+
+</div>
+</div>
+<a id="abddcf2e14bb3ab96b6cf93337891d797" name="abddcf2e14bb3ab96b6cf93337891d797"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abddcf2e14bb3ab96b6cf93337891d797">&#9670;&#160;</a></span>operator*() <span class="overload">[3/15]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::operator* </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Matrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1, -1 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>B</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>lhs matrix </td></tr>
+    <tr><td class="paramname">B</td><td>rhs interval matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="a493f9f7f7ec83876699542220a9c5da5" name="a493f9f7f7ec83876699542220a9c5da5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a493f9f7f7ec83876699542220a9c5da5">&#9670;&#160;</a></span>operator*() <span class="overload">[4/15]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; ZonoOpt::operator* </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Matrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1, -1 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>R</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>Z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">R</td><td></td></tr>
+    <tr><td class="paramname">Z</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="ad5ff1a4605b072fc5731e70f02af92de" name="ad5ff1a4605b072fc5731e70f02af92de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5ff1a4605b072fc5731e70f02af92de">&#9670;&#160;</a></span>operator*() <span class="overload">[5/15]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; ZonoOpt::operator* </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>R</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>Z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">R</td><td></td></tr>
+    <tr><td class="paramname">Z</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="a5afb2b3b6d0044b068219f02b53324de" name="a5afb2b3b6d0044b068219f02b53324de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5afb2b3b6d0044b068219f02b53324de">&#9670;&#160;</a></span>operator*() <span class="overload">[6/15]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1Box.html">Box</a> ZonoOpt::operator* </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, Eigen::RowMajor &gt; &amp;&#160;</td>
+          <td class="paramname"><em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>box</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>matrix to multiply </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>enclosure of A * this </dd></dl>
+
+</div>
+</div>
+<a id="a0e0165fc189a7f4195068e28fae3d208" name="a0e0165fc189a7f4195068e28fae3d208"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e0165fc189a7f4195068e28fae3d208">&#9670;&#160;</a></span>operator*() <span class="overload">[7/15]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::operator* </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, Eigen::RowMajor &gt; &amp;&#160;</td>
+          <td class="paramname"><em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>B</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>lhs matrix </td></tr>
+    <tr><td class="paramname">B</td><td>rhs interval matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="a7aeb109a6a59946bf415940525691320" name="a7aeb109a6a59946bf415940525691320"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7aeb109a6a59946bf415940525691320">&#9670;&#160;</a></span>operator*() <span class="overload">[8/15]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1Box.html">Box</a> ZonoOpt::operator* </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>box</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">v</td><td>vector to multiply </td></tr>
+    <tr><td class="paramname">box</td><td>box to multiply </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>enclosure of v * box (elementwise) </dd></dl>
+
+</div>
+</div>
+<a id="a5742410bf4a2b874440ce28e698a97a0" name="a5742410bf4a2b874440ce28e698a97a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5742410bf4a2b874440ce28e698a97a0">&#9670;&#160;</a></span>operator*() <span class="overload">[9/15]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1Box.html">Box</a> ZonoOpt::operator* </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>box</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">interval</td><td>interval to multiply </td></tr>
+    <tr><td class="paramname">box</td><td>box to multiply </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>enclosure of interval * box (elementwise) </dd></dl>
+
+</div>
+</div>
+<a id="a2f24dc6c1b3bddbd995cfcdcfed110d8" name="a2f24dc6c1b3bddbd995cfcdcfed110d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f24dc6c1b3bddbd995cfcdcfed110d8">&#9670;&#160;</a></span>operator*() <span class="overload">[10/15]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::operator* </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>A</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">interval</td><td>interval to multiply </td></tr>
+    <tr><td class="paramname">A</td><td>interval matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="a9984826a4b3a59d2e70881268fdd6513" name="a9984826a4b3a59d2e70881268fdd6513"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9984826a4b3a59d2e70881268fdd6513">&#9670;&#160;</a></span>operator*() <span class="overload">[11/15]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; ZonoOpt::operator* </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>R</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>Z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">R</td><td></td></tr>
+    <tr><td class="paramname">Z</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="acb90dc327a9194d31587846014d0d445" name="acb90dc327a9194d31587846014d0d445"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb90dc327a9194d31587846014d0d445">&#9670;&#160;</a></span>operator*() <span class="overload">[12/15]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> ZonoOpt::operator* </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar </td></tr>
+    <tr><td class="paramname">interval</td><td>interval </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>enclosure of alpha * interval </dd></dl>
+
+</div>
+</div>
+<a id="af70cdd3f966d35d72154c0b85dad4fb4" name="af70cdd3f966d35d72154c0b85dad4fb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af70cdd3f966d35d72154c0b85dad4fb4">&#9670;&#160;</a></span>operator*() <span class="overload">[13/15]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1Box.html">Box</a> ZonoOpt::operator* </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>box</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar multiplier </td></tr>
+    <tr><td class="paramname">box</td><td>box to multiply </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>enclosure of alpha * box (elementwise) </dd></dl>
+
+</div>
+</div>
+<a id="a92c2c02ac89d1aee3a5c1760f4f0ccae" name="a92c2c02ac89d1aee3a5c1760f4f0ccae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92c2c02ac89d1aee3a5c1760f4f0ccae">&#9670;&#160;</a></span>operator*() <span class="overload">[14/15]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::operator* </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>A</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar multiplier </td></tr>
+    <tr><td class="paramname">A</td><td>interval matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="a084c8afcc2f370b11b67b5e528f79952" name="a084c8afcc2f370b11b67b5e528f79952"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a084c8afcc2f370b11b67b5e528f79952">&#9670;&#160;</a></span>operator*() <span class="overload">[15/15]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; ZonoOpt::operator* </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>Z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td></td></tr>
+    <tr><td class="paramname">Z</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="a21e97d6fe80c4b0eec34be6ebfaf6cfa" name="a21e97d6fe80c4b0eec34be6ebfaf6cfa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21e97d6fe80c4b0eec34be6ebfaf6cfa">&#9670;&#160;</a></span>operator+() <span class="overload">[1/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; ZonoOpt::operator+ </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>box</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>Z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">box</td><td></td></tr>
+    <tr><td class="paramname">Z</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="a5e62a8ab6586a18146e3466b56eb8d72" name="a5e62a8ab6586a18146e3466b56eb8d72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e62a8ab6586a18146e3466b56eb8d72">&#9670;&#160;</a></span>operator+() <span class="overload">[2/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1Box.html">Box</a> ZonoOpt::operator+ </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>box</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">v</td><td>vector to add </td></tr>
+    <tr><td class="paramname">box</td><td>box to add </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>enclosure of v + box (elementwise) </dd></dl>
+
+</div>
+</div>
+<a id="a3405e04c3844639281440403b9cbc7e0" name="a3405e04c3844639281440403b9cbc7e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3405e04c3844639281440403b9cbc7e0">&#9670;&#160;</a></span>operator+() <span class="overload">[3/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; ZonoOpt::operator+ </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>Z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">v</td><td></td></tr>
+    <tr><td class="paramname">Z</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+
+</div>
+</div>
+<a id="a9ad01e83ff90b99f7043f3e423ba158d" name="a9ad01e83ff90b99f7043f3e423ba158d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ad01e83ff90b99f7043f3e423ba158d">&#9670;&#160;</a></span>operator+() <span class="overload">[4/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::operator+ </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>mat</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">interval</td><td>interval to add </td></tr>
+    <tr><td class="paramname">mat</td><td>interval matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="ab405740ef3271ebe9e320d2d746d4631" name="ab405740ef3271ebe9e320d2d746d4631"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab405740ef3271ebe9e320d2d746d4631">&#9670;&#160;</a></span>operator+() <span class="overload">[5/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> ZonoOpt::operator+ </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar </td></tr>
+    <tr><td class="paramname">interval</td><td>interval </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>enclosure of alpha + interval </dd></dl>
+
+</div>
+</div>
+<a id="aaba1b5401efd179f8fbe26bd2a01553f" name="aaba1b5401efd179f8fbe26bd2a01553f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaba1b5401efd179f8fbe26bd2a01553f">&#9670;&#160;</a></span>operator+() <span class="overload">[6/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::operator+ </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>A</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar to add </td></tr>
+    <tr><td class="paramname">A</td><td>interval matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="a7a5b98b9830a456b60f5e95b67e7af1d" name="a7a5b98b9830a456b60f5e95b67e7af1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a5b98b9830a456b60f5e95b67e7af1d">&#9670;&#160;</a></span>operator-() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1Box.html">Box</a> ZonoOpt::operator- </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>box</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">v</td><td>vector </td></tr>
+    <tr><td class="paramname">box</td><td>box to subtract </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>enclosure of v - box (elementwise) </dd></dl>
+
+</div>
+</div>
+<a id="a81c9cecda47d99b3c054fa70411e9b57" name="a81c9cecda47d99b3c054fa70411e9b57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81c9cecda47d99b3c054fa70411e9b57">&#9670;&#160;</a></span>operator-() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::operator- </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>mat</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">interval</td><td>interval </td></tr>
+    <tr><td class="paramname">mat</td><td>interval matrix to subtract </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="a2ea9f7ee72f389706dce566e05e1f7c8" name="a2ea9f7ee72f389706dce566e05e1f7c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ea9f7ee72f389706dce566e05e1f7c8">&#9670;&#160;</a></span>operator-() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> ZonoOpt::operator- </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar </td></tr>
+    <tr><td class="paramname">interval</td><td>interval </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>enclosure of alpha - interval </dd></dl>
+
+</div>
+</div>
+<a id="aa92e6cdf8f5612ff52289ea032e7f56b" name="aa92e6cdf8f5612ff52289ea032e7f56b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa92e6cdf8f5612ff52289ea032e7f56b">&#9670;&#160;</a></span>operator-() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::operator- </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>A</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar </td></tr>
+    <tr><td class="paramname">A</td><td>interval matrix to subtract </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="ad43ce1af26519dd17fbebfd25831577f" name="ad43ce1af26519dd17fbebfd25831577f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad43ce1af26519dd17fbebfd25831577f">&#9670;&#160;</a></span>operator/() <span class="overload">[1/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1Box.html">Box</a> ZonoOpt::operator/ </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>box</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">interval</td><td>interval </td></tr>
+    <tr><td class="paramname">box</td><td>box to divide </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>enclosure of interval / box (elementwise) </dd></dl>
+
+</div>
+</div>
+<a id="a095372b560ff8ba738572541d435e871" name="a095372b560ff8ba738572541d435e871"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a095372b560ff8ba738572541d435e871">&#9670;&#160;</a></span>operator/() <span class="overload">[2/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::operator/ </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>A</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">interval</td><td>interval </td></tr>
+    <tr><td class="paramname">A</td><td>matrix to divide </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix (interval / this) </dd></dl>
+
+</div>
+</div>
+<a id="a785b77e581b5b4b5097106d0682e5bc6" name="a785b77e581b5b4b5097106d0682e5bc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a785b77e581b5b4b5097106d0682e5bc6">&#9670;&#160;</a></span>operator/() <span class="overload">[3/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> ZonoOpt::operator/ </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar </td></tr>
+    <tr><td class="paramname">interval</td><td>interval </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>enclosure of alpha / interval </dd></dl>
+
+</div>
+</div>
+<a id="a362cb5a252b3a1ed746471d4e3b0a335" name="a362cb5a252b3a1ed746471d4e3b0a335"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a362cb5a252b3a1ed746471d4e3b0a335">&#9670;&#160;</a></span>operator/() <span class="overload">[4/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1Box.html">Box</a> ZonoOpt::operator/ </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>box</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar divisor </td></tr>
+    <tr><td class="paramname">box</td><td>box to divide </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>enclosure of alpha / box (elementwise) </dd></dl>
+
+</div>
+</div>
+<a id="a171f667801e39bc2a90fa3d45ed13e55" name="a171f667801e39bc2a90fa3d45ed13e55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a171f667801e39bc2a90fa3d45ed13e55">&#9670;&#160;</a></span>operator/() <span class="overload">[5/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::operator/ </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>A</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar </td></tr>
+    <tr><td class="paramname">A</td><td>matrix to divide </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix (alpha / this) </dd></dl>
+
+</div>
+</div>
 <a id="a45ad3a9324fc28c762f361f2d9bb378e" name="a45ad3a9324fc28c762f361f2d9bb378e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a45ad3a9324fc28c762f361f2d9bb378e">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[1/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a45ad3a9324fc28c762f361f2d9bb378e">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -283,7 +1423,7 @@ Functions</h2></td></tr>
 </div>
 </div>
 <a id="a6ba4e649a4e49d93fa7e8719602a046f" name="a6ba4e649a4e49d93fa7e8719602a046f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6ba4e649a4e49d93fa7e8719602a046f">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[2/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ba4e649a4e49d93fa7e8719602a046f">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -317,8 +1457,44 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a840e14a40354bc22e54daf07f6e0832f" name="a840e14a40354bc22e54daf07f6e0832f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a840e14a40354bc22e54daf07f6e0832f">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ostream &amp; ZonoOpt::operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>os</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">os</td><td></td></tr>
+    <tr><td class="paramname">interval</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>ostream reference </dd></dl>
+
+</div>
+</div>
 <a id="adb54084522859805d259e7d67ab1f81a" name="adb54084522859805d259e7d67ab1f81a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adb54084522859805d259e7d67ab1f81a">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[3/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#adb54084522859805d259e7d67ab1f81a">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">

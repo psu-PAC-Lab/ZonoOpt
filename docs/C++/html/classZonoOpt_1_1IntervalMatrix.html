@@ -97,7 +97,7 @@ $(function() {
 <p>Class for interval matrices (i.e., every element of the matrix is an interval)  
  <a href="classZonoOpt_1_1IntervalMatrix.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="Intervals_8hpp_source.html">Intervals.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="IntervalMatrix_8hpp_source.html">IntervalMatrix.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -113,6 +113,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a819b19de1c19e8bfcbdad26dbba64206" id="r_a819b19de1c19e8bfcbdad26dbba64206"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a819b19de1c19e8bfcbdad26dbba64206">IntervalMatrix</a> (const Eigen::Matrix&lt; <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a>, -1, -1 &gt; &amp;mat)</td></tr>
 <tr class="memdesc:a819b19de1c19e8bfcbdad26dbba64206"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> constructor from Eigen matrix of intervals.  <br /></td></tr>
 <tr class="separator:a819b19de1c19e8bfcbdad26dbba64206"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d7f75ae07e0f5fb428b34eded66c3f4" id="r_a6d7f75ae07e0f5fb428b34eded66c3f4"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a6d7f75ae07e0f5fb428b34eded66c3f4">to_array</a> () const</td></tr>
+<tr class="memdesc:a6d7f75ae07e0f5fb428b34eded66c3f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert to a vector of vectors of Intervals (row-major)  <br /></td></tr>
+<tr class="separator:a6d7f75ae07e0f5fb428b34eded66c3f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac11c4b1edafbc1104fd30b03bc576134" id="r_ac11c4b1edafbc1104fd30b03bc576134"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; int, int, std::vector&lt; Eigen::Triplet&lt; <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#ac11c4b1edafbc1104fd30b03bc576134">to_triplets</a> () const</td></tr>
+<tr class="memdesc:ac11c4b1edafbc1104fd30b03bc576134"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert to triplets.  <br /></td></tr>
+<tr class="separator:ac11c4b1edafbc1104fd30b03bc576134"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5863319daa8fe1b989debbbdf148a3a3" id="r_a5863319daa8fe1b989debbbdf148a3a3"><td class="memItemLeft" align="right" valign="top">Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a5863319daa8fe1b989debbbdf148a3a3">center</a> () const</td></tr>
 <tr class="memdesc:a5863319daa8fe1b989debbbdf148a3a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get center matrix.  <br /></td></tr>
 <tr class="separator:a5863319daa8fe1b989debbbdf148a3a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -125,24 +131,114 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2edbbd3e86b4c2b046bec42e8857b999" id="r_a2edbbd3e86b4c2b046bec42e8857b999"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a2edbbd3e86b4c2b046bec42e8857b999">width</a> () const</td></tr>
 <tr class="memdesc:a2edbbd3e86b4c2b046bec42e8857b999"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get width of interval matrix.  <br /></td></tr>
 <tr class="separator:a2edbbd3e86b4c2b046bec42e8857b999"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49f25eb80a1498dc6660787d8a148bec" id="r_a49f25eb80a1498dc6660787d8a148bec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a49f25eb80a1498dc6660787d8a148bec">intersect</a> (const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;other) const</td></tr>
+<tr class="memdesc:a49f25eb80a1498dc6660787d8a148bec"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1Interval.html" title="Interval class.">Interval</a> matrix intersection.  <br /></td></tr>
+<tr class="separator:a49f25eb80a1498dc6660787d8a148bec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a051aa7a3ca26e773b463488a9c32bec2" id="r_a051aa7a3ca26e773b463488a9c32bec2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a051aa7a3ca26e773b463488a9c32bec2">interval_hull</a> (const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;other) const</td></tr>
+<tr class="memdesc:a051aa7a3ca26e773b463488a9c32bec2"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1Interval.html" title="Interval class.">Interval</a> matrix interval hull.  <br /></td></tr>
+<tr class="separator:a051aa7a3ca26e773b463488a9c32bec2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fe7ecec042247ecec5cc4a32db034cf" id="r_a3fe7ecec042247ecec5cc4a32db034cf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a3fe7ecec042247ecec5cc4a32db034cf">contains</a> (const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;mat) const</td></tr>
+<tr class="memdesc:a3fe7ecec042247ecec5cc4a32db034cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether the interval matrix contains a given sparse matrix.  <br /></td></tr>
+<tr class="separator:a3fe7ecec042247ecec5cc4a32db034cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9965a41cf485f77262a484ce2be28dc" id="r_ab9965a41cf485f77262a484ce2be28dc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#ab9965a41cf485f77262a484ce2be28dc">contains_set</a> (const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;other) const</td></tr>
+<tr class="memdesc:ab9965a41cf485f77262a484ce2be28dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether the interval matrix contains another interval matrix.  <br /></td></tr>
+<tr class="separator:ab9965a41cf485f77262a484ce2be28dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5bbc5da1725b81f3e6eef17bac068652" id="r_a5bbc5da1725b81f3e6eef17bac068652"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a5bbc5da1725b81f3e6eef17bac068652">operator*</a> (const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;v) const</td></tr>
 <tr class="memdesc:a5bbc5da1725b81f3e6eef17bac068652"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> multiplication with vector.  <br /></td></tr>
 <tr class="separator:a5bbc5da1725b81f3e6eef17bac068652"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa36632511cf7a91fc552049e10a48829" id="r_aa36632511cf7a91fc552049e10a48829"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#aa36632511cf7a91fc552049e10a48829">operator*</a> (const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;box) const</td></tr>
 <tr class="memdesc:aa36632511cf7a91fc552049e10a48829"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> multiplication with <a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a>.  <br /></td></tr>
 <tr class="separator:aa36632511cf7a91fc552049e10a48829"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af44a6e356ac5088dda62dcd9158c310e" id="r_af44a6e356ac5088dda62dcd9158c310e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#af44a6e356ac5088dda62dcd9158c310e">operator*</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha) const</td></tr>
+<tr class="memdesc:af44a6e356ac5088dda62dcd9158c310e"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> scalar multiplication.  <br /></td></tr>
+<tr class="separator:af44a6e356ac5088dda62dcd9158c310e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa11f02d499c05486565a37ae36f43851" id="r_aa11f02d499c05486565a37ae36f43851"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#aa11f02d499c05486565a37ae36f43851">operator*=</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha)</td></tr>
+<tr class="memdesc:aa11f02d499c05486565a37ae36f43851"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> scalar multiplication in-place.  <br /></td></tr>
+<tr class="separator:aa11f02d499c05486565a37ae36f43851"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a662a4aa40c2343ccd2d8143b6bffe0c3" id="r_a662a4aa40c2343ccd2d8143b6bffe0c3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a662a4aa40c2343ccd2d8143b6bffe0c3">operator*</a> (const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval) const</td></tr>
+<tr class="memdesc:a662a4aa40c2343ccd2d8143b6bffe0c3"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise multiplication by interval.  <br /></td></tr>
+<tr class="separator:a662a4aa40c2343ccd2d8143b6bffe0c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac916b17db62c039e3d214a06a75ceca7" id="r_ac916b17db62c039e3d214a06a75ceca7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#ac916b17db62c039e3d214a06a75ceca7">operator*=</a> (const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval)</td></tr>
+<tr class="memdesc:ac916b17db62c039e3d214a06a75ceca7"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise multiplication by interval in-place.  <br /></td></tr>
+<tr class="separator:ac916b17db62c039e3d214a06a75ceca7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa11dc828385d0e38e195cf83fb1fa4e" id="r_aaa11dc828385d0e38e195cf83fb1fa4e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#aaa11dc828385d0e38e195cf83fb1fa4e">operator/</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha) const</td></tr>
+<tr class="memdesc:aaa11dc828385d0e38e195cf83fb1fa4e"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise division by scalar.  <br /></td></tr>
+<tr class="separator:aaa11dc828385d0e38e195cf83fb1fa4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44ec3d39b0678443d738c101ae6ba969" id="r_a44ec3d39b0678443d738c101ae6ba969"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a44ec3d39b0678443d738c101ae6ba969">operator/=</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha)</td></tr>
+<tr class="memdesc:a44ec3d39b0678443d738c101ae6ba969"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise division by scalar.  <br /></td></tr>
+<tr class="separator:a44ec3d39b0678443d738c101ae6ba969"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af665f4b27faa626d3112ec775f61958b" id="r_af665f4b27faa626d3112ec775f61958b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#af665f4b27faa626d3112ec775f61958b">operator/</a> (const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval) const</td></tr>
+<tr class="memdesc:af665f4b27faa626d3112ec775f61958b"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise division by interval.  <br /></td></tr>
+<tr class="separator:af665f4b27faa626d3112ec775f61958b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3681174f861ec5e4c427cc89873d2e17" id="r_a3681174f861ec5e4c427cc89873d2e17"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a3681174f861ec5e4c427cc89873d2e17">operator/=</a> (const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval)</td></tr>
+<tr class="memdesc:a3681174f861ec5e4c427cc89873d2e17"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise division by interval in-place.  <br /></td></tr>
+<tr class="separator:a3681174f861ec5e4c427cc89873d2e17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a943b6835b762fe23eb17a3887afaf38c" id="r_a943b6835b762fe23eb17a3887afaf38c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a943b6835b762fe23eb17a3887afaf38c">operator*</a> (const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, Eigen::RowMajor &gt; &amp;A) const</td></tr>
-<tr class="memdesc:a943b6835b762fe23eb17a3887afaf38c"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> multiplication with matrix.  <br /></td></tr>
+<tr class="memdesc:a943b6835b762fe23eb17a3887afaf38c"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> multiplication with sparse matrix.  <br /></td></tr>
 <tr class="separator:a943b6835b762fe23eb17a3887afaf38c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d9e1f9e39f2999db768ed19c3a360bf" id="r_a5d9e1f9e39f2999db768ed19c3a360bf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a5d9e1f9e39f2999db768ed19c3a360bf">operator*</a> (const Eigen::Matrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1, -1 &gt; &amp;A) const</td></tr>
+<tr class="memdesc:a5d9e1f9e39f2999db768ed19c3a360bf"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> multiplication with dense matrix.  <br /></td></tr>
+<tr class="separator:a5d9e1f9e39f2999db768ed19c3a360bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac17340b4cfacee6de0132e4b35613075" id="r_ac17340b4cfacee6de0132e4b35613075"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#ac17340b4cfacee6de0132e4b35613075">operator*</a> (const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;other) const</td></tr>
 <tr class="memdesc:ac17340b4cfacee6de0132e4b35613075"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> multiplication with another <a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a>.  <br /></td></tr>
 <tr class="separator:ac17340b4cfacee6de0132e4b35613075"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a89a7299b6cb805440d33111c9a1382" id="r_a1a89a7299b6cb805440d33111c9a1382"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a1a89a7299b6cb805440d33111c9a1382">operator*=</a> (const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;other)</td></tr>
+<tr class="memdesc:a1a89a7299b6cb805440d33111c9a1382"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> multiplication with another <a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> in-place.  <br /></td></tr>
+<tr class="separator:a1a89a7299b6cb805440d33111c9a1382"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4549b601ca616d8c06136c841c68b7b6" id="r_a4549b601ca616d8c06136c841c68b7b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a4549b601ca616d8c06136c841c68b7b6">operator+</a> (const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;other) const</td></tr>
 <tr class="memdesc:a4549b601ca616d8c06136c841c68b7b6"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> addition.  <br /></td></tr>
 <tr class="separator:a4549b601ca616d8c06136c841c68b7b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8ecaf5e73c785c129bbc469655972ed" id="r_ad8ecaf5e73c785c129bbc469655972ed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#ad8ecaf5e73c785c129bbc469655972ed">operator+=</a> (const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;other)</td></tr>
+<tr class="memdesc:ad8ecaf5e73c785c129bbc469655972ed"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> addition in-place.  <br /></td></tr>
+<tr class="separator:ad8ecaf5e73c785c129bbc469655972ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e2ebe9b06dbe7680b8fbba5a0ce9978" id="r_a6e2ebe9b06dbe7680b8fbba5a0ce9978"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a6e2ebe9b06dbe7680b8fbba5a0ce9978">operator+</a> (const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval) const</td></tr>
+<tr class="memdesc:a6e2ebe9b06dbe7680b8fbba5a0ce9978"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> element-wise addition with interval.  <br /></td></tr>
+<tr class="separator:a6e2ebe9b06dbe7680b8fbba5a0ce9978"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e823ac1fcad3b9690fd0e2b71aafa96" id="r_a5e823ac1fcad3b9690fd0e2b71aafa96"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a5e823ac1fcad3b9690fd0e2b71aafa96">operator+=</a> (const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval)</td></tr>
+<tr class="memdesc:a5e823ac1fcad3b9690fd0e2b71aafa96"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> element-wise addition with interval in-place.  <br /></td></tr>
+<tr class="separator:a5e823ac1fcad3b9690fd0e2b71aafa96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a3d8678bb811847110168083061f2fb" id="r_a3a3d8678bb811847110168083061f2fb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a3a3d8678bb811847110168083061f2fb">operator+</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha) const</td></tr>
+<tr class="memdesc:a3a3d8678bb811847110168083061f2fb"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> element-wise addition with scalar.  <br /></td></tr>
+<tr class="separator:a3a3d8678bb811847110168083061f2fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9d1259d425437a76f18f9aa44792981" id="r_ab9d1259d425437a76f18f9aa44792981"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#ab9d1259d425437a76f18f9aa44792981">operator+=</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha)</td></tr>
+<tr class="memdesc:ab9d1259d425437a76f18f9aa44792981"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> element-wise addition with scalar in-place.  <br /></td></tr>
+<tr class="separator:ab9d1259d425437a76f18f9aa44792981"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96154553aea906347305835e9248f13f" id="r_a96154553aea906347305835e9248f13f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a96154553aea906347305835e9248f13f">operator-</a> (const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;other) const</td></tr>
 <tr class="memdesc:a96154553aea906347305835e9248f13f"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> subtraction.  <br /></td></tr>
 <tr class="separator:a96154553aea906347305835e9248f13f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8765648e87a77de7a47e0a4dc93c5475" id="r_a8765648e87a77de7a47e0a4dc93c5475"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a8765648e87a77de7a47e0a4dc93c5475">operator-=</a> (const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;other)</td></tr>
+<tr class="memdesc:a8765648e87a77de7a47e0a4dc93c5475"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> subtraction in-place.  <br /></td></tr>
+<tr class="separator:a8765648e87a77de7a47e0a4dc93c5475"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad160a3eb11400914b652fc32c9772a2f" id="r_ad160a3eb11400914b652fc32c9772a2f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#ad160a3eb11400914b652fc32c9772a2f">operator-</a> (const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval) const</td></tr>
+<tr class="memdesc:ad160a3eb11400914b652fc32c9772a2f"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise interval subtraction.  <br /></td></tr>
+<tr class="separator:ad160a3eb11400914b652fc32c9772a2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3f90bbe1759272a262dc1b87c27ce72" id="r_ab3f90bbe1759272a262dc1b87c27ce72"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#ab3f90bbe1759272a262dc1b87c27ce72">operator-=</a> (const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval)</td></tr>
+<tr class="memdesc:ab3f90bbe1759272a262dc1b87c27ce72"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise interval subtraction in-place.  <br /></td></tr>
+<tr class="separator:ab3f90bbe1759272a262dc1b87c27ce72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad427d869d53dbeb58de30c23811e5cac" id="r_ad427d869d53dbeb58de30c23811e5cac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#ad427d869d53dbeb58de30c23811e5cac">operator-</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha) const</td></tr>
+<tr class="memdesc:ad427d869d53dbeb58de30c23811e5cac"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise scalar subtraction.  <br /></td></tr>
+<tr class="separator:ad427d869d53dbeb58de30c23811e5cac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a577963d447434554b2060b77de16a7dd" id="r_a577963d447434554b2060b77de16a7dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a577963d447434554b2060b77de16a7dd">operator-=</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha)</td></tr>
+<tr class="memdesc:a577963d447434554b2060b77de16a7dd"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise scalar subtraction in-place.  <br /></td></tr>
+<tr class="separator:a577963d447434554b2060b77de16a7dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaafadaf0793fe0b87c04cbe4de441b2f" id="r_aaafadaf0793fe0b87c04cbe4de441b2f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#aaafadaf0793fe0b87c04cbe4de441b2f">operator-</a> () const</td></tr>
+<tr class="memdesc:aaafadaf0793fe0b87c04cbe4de441b2f"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> negation.  <br /></td></tr>
+<tr class="separator:aaafadaf0793fe0b87c04cbe4de441b2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18800eac84fe386610e8e2efeb4ebc89" id="r_a18800eac84fe386610e8e2efeb4ebc89"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a18800eac84fe386610e8e2efeb4ebc89">operator&amp;</a> (const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;other) const</td></tr>
+<tr class="memdesc:a18800eac84fe386610e8e2efeb4ebc89"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1Interval.html" title="Interval class.">Interval</a> matrix intersection oeprator.  <br /></td></tr>
+<tr class="separator:a18800eac84fe386610e8e2efeb4ebc89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf5baf5975ec91f6e4cc8271474c095f" id="r_abf5baf5975ec91f6e4cc8271474c095f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#abf5baf5975ec91f6e4cc8271474c095f">operator|</a> (const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;other) const</td></tr>
+<tr class="memdesc:abf5baf5975ec91f6e4cc8271474c095f"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1Interval.html" title="Interval class.">Interval</a> matrix interval hull operator.  <br /></td></tr>
+<tr class="separator:abf5baf5975ec91f6e4cc8271474c095f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50467da07fc306a749e0c390427d273b" id="r_a50467da07fc306a749e0c390427d273b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a50467da07fc306a749e0c390427d273b">operator&lt;=</a> (const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;other) const</td></tr>
+<tr class="memdesc:a50467da07fc306a749e0c390427d273b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set containment operator.  <br /></td></tr>
+<tr class="separator:a50467da07fc306a749e0c390427d273b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25ea9c313c11b19081c1638ce52e5f85" id="r_a25ea9c313c11b19081c1638ce52e5f85"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a25ea9c313c11b19081c1638ce52e5f85">operator&gt;=</a> (const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;other) const</td></tr>
+<tr class="memdesc:a25ea9c313c11b19081c1638ce52e5f85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set containment operator.  <br /></td></tr>
+<tr class="separator:a25ea9c313c11b19081c1638ce52e5f85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a740a82d9a09cd519e067ced1a7ef63b2" id="r_a740a82d9a09cd519e067ced1a7ef63b2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a740a82d9a09cd519e067ced1a7ef63b2">operator==</a> (const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;other) const</td></tr>
+<tr class="memdesc:a740a82d9a09cd519e067ced1a7ef63b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set equality operator.  <br /></td></tr>
+<tr class="separator:a740a82d9a09cd519e067ced1a7ef63b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0bc12d80aa6560a114c9a0560aaf99d8" id="r_a0bc12d80aa6560a114c9a0560aaf99d8"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a0bc12d80aa6560a114c9a0560aaf99d8">rows</a> () const</td></tr>
 <tr class="memdesc:a0bc12d80aa6560a114c9a0560aaf99d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get number of rows.  <br /></td></tr>
 <tr class="separator:a0bc12d80aa6560a114c9a0560aaf99d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -155,6 +251,36 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
+<tr class="memitem:a79d1122a00945e7900ff17cfea31b423" id="r_a79d1122a00945e7900ff17cfea31b423"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a79d1122a00945e7900ff17cfea31b423">operator*</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;A)</td></tr>
+<tr class="memdesc:a79d1122a00945e7900ff17cfea31b423"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> scalar multiplication.  <br /></td></tr>
+<tr class="separator:a79d1122a00945e7900ff17cfea31b423"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c4ccb4d60151133510be08d46da9563" id="r_a6c4ccb4d60151133510be08d46da9563"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a6c4ccb4d60151133510be08d46da9563">operator*</a> (const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;A)</td></tr>
+<tr class="memdesc:a6c4ccb4d60151133510be08d46da9563"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise multiplication by interval.  <br /></td></tr>
+<tr class="separator:a6c4ccb4d60151133510be08d46da9563"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab90c30acca737ae9708e36a3232ab4d7" id="r_ab90c30acca737ae9708e36a3232ab4d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#ab90c30acca737ae9708e36a3232ab4d7">operator/</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;A)</td></tr>
+<tr class="memdesc:ab90c30acca737ae9708e36a3232ab4d7"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise scalar division.  <br /></td></tr>
+<tr class="separator:ab90c30acca737ae9708e36a3232ab4d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac30bdc52e30ffced9a376f746c22a3ef" id="r_ac30bdc52e30ffced9a376f746c22a3ef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#ac30bdc52e30ffced9a376f746c22a3ef">operator/</a> (const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;A)</td></tr>
+<tr class="memdesc:ac30bdc52e30ffced9a376f746c22a3ef"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise interval division.  <br /></td></tr>
+<tr class="separator:ac30bdc52e30ffced9a376f746c22a3ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab95743682599bf89fc33c54f0b16ca23" id="r_ab95743682599bf89fc33c54f0b16ca23"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#ab95743682599bf89fc33c54f0b16ca23">operator*</a> (const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, Eigen::RowMajor &gt; &amp;A, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;B)</td></tr>
+<tr class="memdesc:ab95743682599bf89fc33c54f0b16ca23"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> multiplication with sparse matrix.  <br /></td></tr>
+<tr class="separator:ab95743682599bf89fc33c54f0b16ca23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06334d5d1d8dfc15d794a1884d9b19a4" id="r_a06334d5d1d8dfc15d794a1884d9b19a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a06334d5d1d8dfc15d794a1884d9b19a4">operator*</a> (const Eigen::Matrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1, -1 &gt; &amp;A, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;B)</td></tr>
+<tr class="memdesc:a06334d5d1d8dfc15d794a1884d9b19a4"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> multiplication with dense matrix.  <br /></td></tr>
+<tr class="separator:a06334d5d1d8dfc15d794a1884d9b19a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f4718b22e46b567072574420dd3386c" id="r_a3f4718b22e46b567072574420dd3386c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a3f4718b22e46b567072574420dd3386c">operator+</a> (const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;mat)</td></tr>
+<tr class="memdesc:a3f4718b22e46b567072574420dd3386c"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> element-wise addition with interval.  <br /></td></tr>
+<tr class="separator:a3f4718b22e46b567072574420dd3386c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03698f08dba82a123de638feba3e73da" id="r_a03698f08dba82a123de638feba3e73da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a03698f08dba82a123de638feba3e73da">operator+</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;A)</td></tr>
+<tr class="memdesc:a03698f08dba82a123de638feba3e73da"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> element-wise addition with scalar.  <br /></td></tr>
+<tr class="separator:a03698f08dba82a123de638feba3e73da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6edb46f31095b8ea4230147494b11a50" id="r_a6edb46f31095b8ea4230147494b11a50"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a6edb46f31095b8ea4230147494b11a50">operator-</a> (const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;interval, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;mat)</td></tr>
+<tr class="memdesc:a6edb46f31095b8ea4230147494b11a50"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise interval subtraction.  <br /></td></tr>
+<tr class="separator:a6edb46f31095b8ea4230147494b11a50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad143616aa3e4f46447ca337c7049c378" id="r_ad143616aa3e4f46447ca337c7049c378"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#ad143616aa3e4f46447ca337c7049c378">operator-</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> alpha, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;A)</td></tr>
+<tr class="memdesc:ad143616aa3e4f46447ca337c7049c378"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise scalar subtraction.  <br /></td></tr>
+<tr class="separator:ad143616aa3e4f46447ca337c7049c378"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59b89a1d89be7775225f977f1154d250" id="r_a59b89a1d89be7775225f977f1154d250"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a59b89a1d89be7775225f977f1154d250">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;interval_matrix)</td></tr>
 <tr class="memdesc:a59b89a1d89be7775225f977f1154d250"><td class="mdescLeft">&#160;</td><td class="mdescRight">print to ostream  <br /></td></tr>
 <tr class="separator:a59b89a1d89be7775225f977f1154d250"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -275,6 +401,9 @@ Friends</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">ZonoOpt::IntervalMatrix::IntervalMatrix </td>
@@ -284,6 +413,11 @@ Friends</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> constructor from Eigen matrix of intervals. </p>
@@ -346,6 +480,60 @@ Friends</h2></td></tr>
 
 </div>
 </div>
+<a id="a3fe7ecec042247ecec5cc4a32db034cf" name="a3fe7ecec042247ecec5cc4a32db034cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fe7ecec042247ecec5cc4a32db034cf">&#9670;&#160;</a></span>contains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ZonoOpt::IntervalMatrix::contains </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>mat</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check whether the interval matrix contains a given sparse matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mat</td><td>matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if mat is contained in the interval matrix, false otherwise </dd></dl>
+
+</div>
+</div>
+<a id="ab9965a41cf485f77262a484ce2be28dc" name="ab9965a41cf485f77262a484ce2be28dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9965a41cf485f77262a484ce2be28dc">&#9670;&#160;</a></span>contains_set()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ZonoOpt::IntervalMatrix::contains_set </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check whether the interval matrix contains another interval matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>interval matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if other is contained in this, false otherwise </dd></dl>
+
+</div>
+</div>
 <a id="a136625a998082906ad1c4ac6219e3255" name="a136625a998082906ad1c4ac6219e3255"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a136625a998082906ad1c4ac6219e3255">&#9670;&#160;</a></span>diam()</h2>
 
@@ -367,8 +555,89 @@ Friends</h2></td></tr>
 
 </div>
 </div>
+<a id="a49f25eb80a1498dc6660787d8a148bec" name="a49f25eb80a1498dc6660787d8a148bec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49f25eb80a1498dc6660787d8a148bec">&#9670;&#160;</a></span>intersect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::IntervalMatrix::intersect </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1Interval.html" title="Interval class.">Interval</a> matrix intersection. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>interval matrix to intersect with </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> </dd></dl>
+
+</div>
+</div>
+<a id="a051aa7a3ca26e773b463488a9c32bec2" name="a051aa7a3ca26e773b463488a9c32bec2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a051aa7a3ca26e773b463488a9c32bec2">&#9670;&#160;</a></span>interval_hull()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::IntervalMatrix::interval_hull </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1Interval.html" title="Interval class.">Interval</a> matrix interval hull. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>interval matrix to compute hull with </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> </dd></dl>
+
+</div>
+</div>
+<a id="a18800eac84fe386610e8e2efeb4ebc89" name="a18800eac84fe386610e8e2efeb4ebc89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18800eac84fe386610e8e2efeb4ebc89">&#9670;&#160;</a></span>operator&amp;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::IntervalMatrix::operator&amp; </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1Interval.html" title="Interval class.">Interval</a> matrix intersection oeprator. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>interval matrix to intersect with </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> </dd></dl>
+
+</div>
+</div>
 <a id="aa36632511cf7a91fc552049e10a48829" name="aa36632511cf7a91fc552049e10a48829"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa36632511cf7a91fc552049e10a48829">&#9670;&#160;</a></span>operator*() <span class="overload">[1/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aa36632511cf7a91fc552049e10a48829">&#9670;&#160;</a></span>operator*() <span class="overload">[1/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -394,8 +663,35 @@ Friends</h2></td></tr>
 
 </div>
 </div>
+<a id="a5d9e1f9e39f2999db768ed19c3a360bf" name="a5d9e1f9e39f2999db768ed19c3a360bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d9e1f9e39f2999db768ed19c3a360bf">&#9670;&#160;</a></span>operator*() <span class="overload">[2/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::IntervalMatrix::operator* </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Matrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1, -1 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>A</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> multiplication with dense matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>rhs matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
 <a id="a943b6835b762fe23eb17a3887afaf38c" name="a943b6835b762fe23eb17a3887afaf38c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a943b6835b762fe23eb17a3887afaf38c">&#9670;&#160;</a></span>operator*() <span class="overload">[2/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a943b6835b762fe23eb17a3887afaf38c">&#9670;&#160;</a></span>operator*() <span class="overload">[3/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -410,7 +706,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> multiplication with matrix. </p>
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> multiplication with sparse matrix. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">A</td><td>rhs matrix </td></tr>
@@ -422,7 +718,7 @@ Friends</h2></td></tr>
 </div>
 </div>
 <a id="a5bbc5da1725b81f3e6eef17bac068652" name="a5bbc5da1725b81f3e6eef17bac068652"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5bbc5da1725b81f3e6eef17bac068652">&#9670;&#160;</a></span>operator*() <span class="overload">[3/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bbc5da1725b81f3e6eef17bac068652">&#9670;&#160;</a></span>operator*() <span class="overload">[4/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -448,8 +744,35 @@ Friends</h2></td></tr>
 
 </div>
 </div>
+<a id="a662a4aa40c2343ccd2d8143b6bffe0c3" name="a662a4aa40c2343ccd2d8143b6bffe0c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a662a4aa40c2343ccd2d8143b6bffe0c3">&#9670;&#160;</a></span>operator*() <span class="overload">[5/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::IntervalMatrix::operator* </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise multiplication by interval. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">interval</td><td>interval to multiply </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
 <a id="ac17340b4cfacee6de0132e4b35613075" name="ac17340b4cfacee6de0132e4b35613075"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac17340b4cfacee6de0132e4b35613075">&#9670;&#160;</a></span>operator*() <span class="overload">[4/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ac17340b4cfacee6de0132e4b35613075">&#9670;&#160;</a></span>operator*() <span class="overload">[6/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -475,8 +798,140 @@ Friends</h2></td></tr>
 
 </div>
 </div>
+<a id="af44a6e356ac5088dda62dcd9158c310e" name="af44a6e356ac5088dda62dcd9158c310e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af44a6e356ac5088dda62dcd9158c310e">&#9670;&#160;</a></span>operator*() <span class="overload">[7/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::IntervalMatrix::operator* </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> scalar multiplication. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar multiplier </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="ac916b17db62c039e3d214a06a75ceca7" name="ac916b17db62c039e3d214a06a75ceca7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac916b17db62c039e3d214a06a75ceca7">&#9670;&#160;</a></span>operator*=() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ZonoOpt::IntervalMatrix::operator*= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise multiplication by interval in-place. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">interval</td><td>interval to multiply </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a1a89a7299b6cb805440d33111c9a1382" name="a1a89a7299b6cb805440d33111c9a1382"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a89a7299b6cb805440d33111c9a1382">&#9670;&#160;</a></span>operator*=() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ZonoOpt::IntervalMatrix::operator*= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> multiplication with another <a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> in-place. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>rhs interval matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa11f02d499c05486565a37ae36f43851" name="aa11f02d499c05486565a37ae36f43851"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa11f02d499c05486565a37ae36f43851">&#9670;&#160;</a></span>operator*=() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ZonoOpt::IntervalMatrix::operator*= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> scalar multiplication in-place. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar multiplier </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a6e2ebe9b06dbe7680b8fbba5a0ce9978" name="a6e2ebe9b06dbe7680b8fbba5a0ce9978"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e2ebe9b06dbe7680b8fbba5a0ce9978">&#9670;&#160;</a></span>operator+() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::IntervalMatrix::operator+ </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> element-wise addition with interval. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">interval</td><td>interval to add </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
 <a id="a4549b601ca616d8c06136c841c68b7b6" name="a4549b601ca616d8c06136c841c68b7b6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4549b601ca616d8c06136c841c68b7b6">&#9670;&#160;</a></span>operator+()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a4549b601ca616d8c06136c841c68b7b6">&#9670;&#160;</a></span>operator+() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -502,8 +957,160 @@ Friends</h2></td></tr>
 
 </div>
 </div>
+<a id="a3a3d8678bb811847110168083061f2fb" name="a3a3d8678bb811847110168083061f2fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a3d8678bb811847110168083061f2fb">&#9670;&#160;</a></span>operator+() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::IntervalMatrix::operator+ </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> element-wise addition with scalar. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar to add </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="a5e823ac1fcad3b9690fd0e2b71aafa96" name="a5e823ac1fcad3b9690fd0e2b71aafa96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e823ac1fcad3b9690fd0e2b71aafa96">&#9670;&#160;</a></span>operator+=() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ZonoOpt::IntervalMatrix::operator+= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> element-wise addition with interval in-place. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">interval</td><td>interval to add </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ad8ecaf5e73c785c129bbc469655972ed" name="ad8ecaf5e73c785c129bbc469655972ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8ecaf5e73c785c129bbc469655972ed">&#9670;&#160;</a></span>operator+=() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ZonoOpt::IntervalMatrix::operator+= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> addition in-place. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>rhs interval matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ab9d1259d425437a76f18f9aa44792981" name="ab9d1259d425437a76f18f9aa44792981"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9d1259d425437a76f18f9aa44792981">&#9670;&#160;</a></span>operator+=() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ZonoOpt::IntervalMatrix::operator+= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> element-wise addition with scalar in-place. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar to add </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aaafadaf0793fe0b87c04cbe4de441b2f" name="aaafadaf0793fe0b87c04cbe4de441b2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaafadaf0793fe0b87c04cbe4de441b2f">&#9670;&#160;</a></span>operator-() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::IntervalMatrix::operator- </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> negation. </p>
+<dl class="section return"><dt>Returns</dt><dd>negated interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="ad160a3eb11400914b652fc32c9772a2f" name="ad160a3eb11400914b652fc32c9772a2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad160a3eb11400914b652fc32c9772a2f">&#9670;&#160;</a></span>operator-() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::IntervalMatrix::operator- </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise interval subtraction. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">interval</td><td>interval to subtract </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
 <a id="a96154553aea906347305835e9248f13f" name="a96154553aea906347305835e9248f13f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a96154553aea906347305835e9248f13f">&#9670;&#160;</a></span>operator-()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a96154553aea906347305835e9248f13f">&#9670;&#160;</a></span>operator-() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -526,6 +1133,325 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="ad427d869d53dbeb58de30c23811e5cac" name="ad427d869d53dbeb58de30c23811e5cac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad427d869d53dbeb58de30c23811e5cac">&#9670;&#160;</a></span>operator-() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::IntervalMatrix::operator- </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise scalar subtraction. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar to subtract </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="ab3f90bbe1759272a262dc1b87c27ce72" name="ab3f90bbe1759272a262dc1b87c27ce72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3f90bbe1759272a262dc1b87c27ce72">&#9670;&#160;</a></span>operator-=() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ZonoOpt::IntervalMatrix::operator-= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise interval subtraction in-place. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">interval</td><td>interval </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a8765648e87a77de7a47e0a4dc93c5475" name="a8765648e87a77de7a47e0a4dc93c5475"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8765648e87a77de7a47e0a4dc93c5475">&#9670;&#160;</a></span>operator-=() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ZonoOpt::IntervalMatrix::operator-= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> subtraction in-place. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>rhs interval matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a577963d447434554b2060b77de16a7dd" name="a577963d447434554b2060b77de16a7dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a577963d447434554b2060b77de16a7dd">&#9670;&#160;</a></span>operator-=() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ZonoOpt::IntervalMatrix::operator-= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise scalar subtraction in-place. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar to subtract </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="af665f4b27faa626d3112ec775f61958b" name="af665f4b27faa626d3112ec775f61958b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af665f4b27faa626d3112ec775f61958b">&#9670;&#160;</a></span>operator/() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::IntervalMatrix::operator/ </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise division by interval. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">interval</td><td>interval to divide </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix (this / interval) </dd></dl>
+
+</div>
+</div>
+<a id="aaa11dc828385d0e38e195cf83fb1fa4e" name="aaa11dc828385d0e38e195cf83fb1fa4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa11dc828385d0e38e195cf83fb1fa4e">&#9670;&#160;</a></span>operator/() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::IntervalMatrix::operator/ </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise division by scalar. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar to divide </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix (this / alpha) </dd></dl>
+
+</div>
+</div>
+<a id="a3681174f861ec5e4c427cc89873d2e17" name="a3681174f861ec5e4c427cc89873d2e17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3681174f861ec5e4c427cc89873d2e17">&#9670;&#160;</a></span>operator/=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ZonoOpt::IntervalMatrix::operator/= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise division by interval in-place. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">interval</td><td>interval to divide </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a44ec3d39b0678443d738c101ae6ba969" name="a44ec3d39b0678443d738c101ae6ba969"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44ec3d39b0678443d738c101ae6ba969">&#9670;&#160;</a></span>operator/=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ZonoOpt::IntervalMatrix::operator/= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise division by scalar. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar to divide </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a50467da07fc306a749e0c390427d273b" name="a50467da07fc306a749e0c390427d273b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50467da07fc306a749e0c390427d273b">&#9670;&#160;</a></span>operator&lt;=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ZonoOpt::IntervalMatrix::operator&lt;= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set containment operator. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if this is subset of other </dd></dl>
+
+</div>
+</div>
+<a id="a740a82d9a09cd519e067ced1a7ef63b2" name="a740a82d9a09cd519e067ced1a7ef63b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a740a82d9a09cd519e067ced1a7ef63b2">&#9670;&#160;</a></span>operator==()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ZonoOpt::IntervalMatrix::operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set equality operator. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if this and other are equal </dd></dl>
+
+</div>
+</div>
+<a id="a25ea9c313c11b19081c1638ce52e5f85" name="a25ea9c313c11b19081c1638ce52e5f85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25ea9c313c11b19081c1638ce52e5f85">&#9670;&#160;</a></span>operator&gt;=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ZonoOpt::IntervalMatrix::operator&gt;= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set containment operator. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if this is superset of other </dd></dl>
+
+</div>
+</div>
+<a id="abf5baf5975ec91f6e4cc8271474c095f" name="abf5baf5975ec91f6e4cc8271474c095f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf5baf5975ec91f6e4cc8271474c095f">&#9670;&#160;</a></span>operator|()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> ZonoOpt::IntervalMatrix::operator| </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1Interval.html" title="Interval class.">Interval</a> matrix interval hull operator. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>interval matrix to compute hull with </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> </dd></dl>
 
 </div>
 </div>
@@ -598,6 +1524,46 @@ Friends</h2></td></tr>
 
 </div>
 </div>
+<a id="a6d7f75ae07e0f5fb428b34eded66c3f4" name="a6d7f75ae07e0f5fb428b34eded66c3f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d7f75ae07e0f5fb428b34eded66c3f4">&#9670;&#160;</a></span>to_array()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::vector&lt; <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &gt; &gt; ZonoOpt::IntervalMatrix::to_array </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert to a vector of vectors of Intervals (row-major) </p>
+<dl class="section return"><dt>Returns</dt><dd>vector of vectors of Intervals </dd></dl>
+
+</div>
+</div>
+<a id="ac11c4b1edafbc1104fd30b03bc576134" name="ac11c4b1edafbc1104fd30b03bc576134"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac11c4b1edafbc1104fd30b03bc576134">&#9670;&#160;</a></span>to_triplets()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::tuple&lt; int, int, std::vector&lt; Eigen::Triplet&lt; <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &gt; &gt; &gt; ZonoOpt::IntervalMatrix::to_triplets </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert to triplets. </p>
+<dl class="section return"><dt>Returns</dt><dd>std::tuple&lt;int, int, std::vector&lt;Eigen::Triplet&lt;Interval&gt;&gt;&gt; </dd></dl>
+
+</div>
+</div>
 <a id="a2edbbd3e86b4c2b046bec42e8857b999" name="a2edbbd3e86b4c2b046bec42e8857b999"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2edbbd3e86b4c2b046bec42e8857b999">&#9670;&#160;</a></span>width()</h2>
 
@@ -620,6 +1586,466 @@ Friends</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Friends And Related Symbol Documentation</h2>
+<a id="a06334d5d1d8dfc15d794a1884d9b19a4" name="a06334d5d1d8dfc15d794a1884d9b19a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06334d5d1d8dfc15d794a1884d9b19a4">&#9670;&#160;</a></span>operator* <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> operator* </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Matrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1, -1 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>B</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> multiplication with dense matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>lhs matrix </td></tr>
+    <tr><td class="paramname">B</td><td>rhs interval matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="ab95743682599bf89fc33c54f0b16ca23" name="ab95743682599bf89fc33c54f0b16ca23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab95743682599bf89fc33c54f0b16ca23">&#9670;&#160;</a></span>operator* <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> operator* </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, Eigen::RowMajor &gt; &amp;&#160;</td>
+          <td class="paramname"><em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>B</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> multiplication with sparse matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>lhs matrix </td></tr>
+    <tr><td class="paramname">B</td><td>rhs interval matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="a6c4ccb4d60151133510be08d46da9563" name="a6c4ccb4d60151133510be08d46da9563"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c4ccb4d60151133510be08d46da9563">&#9670;&#160;</a></span>operator* <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> operator* </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>A</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise multiplication by interval. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">interval</td><td>interval to multiply </td></tr>
+    <tr><td class="paramname">A</td><td>interval matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="a79d1122a00945e7900ff17cfea31b423" name="a79d1122a00945e7900ff17cfea31b423"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79d1122a00945e7900ff17cfea31b423">&#9670;&#160;</a></span>operator* <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> operator* </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>A</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> scalar multiplication. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar multiplier </td></tr>
+    <tr><td class="paramname">A</td><td>interval matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="a3f4718b22e46b567072574420dd3386c" name="a3f4718b22e46b567072574420dd3386c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f4718b22e46b567072574420dd3386c">&#9670;&#160;</a></span>operator+ <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> operator+ </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>mat</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> element-wise addition with interval. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">interval</td><td>interval to add </td></tr>
+    <tr><td class="paramname">mat</td><td>interval matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="a03698f08dba82a123de638feba3e73da" name="a03698f08dba82a123de638feba3e73da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03698f08dba82a123de638feba3e73da">&#9670;&#160;</a></span>operator+ <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> operator+ </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>A</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> element-wise addition with scalar. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar to add </td></tr>
+    <tr><td class="paramname">A</td><td>interval matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="a6edb46f31095b8ea4230147494b11a50" name="a6edb46f31095b8ea4230147494b11a50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6edb46f31095b8ea4230147494b11a50">&#9670;&#160;</a></span>operator- <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> operator- </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>mat</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise interval subtraction. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">interval</td><td>interval </td></tr>
+    <tr><td class="paramname">mat</td><td>interval matrix to subtract </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="ad143616aa3e4f46447ca337c7049c378" name="ad143616aa3e4f46447ca337c7049c378"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad143616aa3e4f46447ca337c7049c378">&#9670;&#160;</a></span>operator- <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> operator- </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>A</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise scalar subtraction. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar </td></tr>
+    <tr><td class="paramname">A</td><td>interval matrix to subtract </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+
+</div>
+</div>
+<a id="ac30bdc52e30ffced9a376f746c22a3ef" name="ac30bdc52e30ffced9a376f746c22a3ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac30bdc52e30ffced9a376f746c22a3ef">&#9670;&#160;</a></span>operator/ <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> operator/ </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Interval.html">Interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>interval</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>A</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise interval division. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">interval</td><td>interval </td></tr>
+    <tr><td class="paramname">A</td><td>matrix to divide </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix (interval / this) </dd></dl>
+
+</div>
+</div>
+<a id="ab90c30acca737ae9708e36a3232ab4d7" name="ab90c30acca737ae9708e36a3232ab4d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab90c30acca737ae9708e36a3232ab4d7">&#9670;&#160;</a></span>operator/ <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> operator/ </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>A</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> elementwise scalar division. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>scalar </td></tr>
+    <tr><td class="paramname">A</td><td>matrix to divide </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>resulting interval matrix (alpha / this) </dd></dl>
+
+</div>
+</div>
 <a id="a59b89a1d89be7775225f977f1154d250" name="a59b89a1d89be7775225f977f1154d250"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a59b89a1d89be7775225f977f1154d250">&#9670;&#160;</a></span>operator&lt;&lt;</h2>
 
@@ -667,8 +2093,8 @@ Friends</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/home/joshr/Documents/Projects/ZonoOpt/include/zonoopt/<a class="el" href="Intervals_8hpp_source.html">Intervals.hpp</a></li>
-<li>/home/joshr/Documents/Projects/ZonoOpt/src/<a class="el" href="Intervals_8cpp.html">Intervals.cpp</a></li>
+<li>/home/joshr/Documents/Projects/ZonoOpt/include/zonoopt/<a class="el" href="IntervalMatrix_8hpp_source.html">IntervalMatrix.hpp</a></li>
+<li>/home/joshr/Documents/Projects/ZonoOpt/src/<a class="el" href="IntervalMatrix_8cpp.html">IntervalMatrix.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

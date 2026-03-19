@@ -29,7 +29,7 @@ namespace ZonoOpt
 
         if (R.cols() != Z.n || R.rows() != s_ptr->size())
         {
-            throw std::invalid_argument("Linear_map: invalid input dimensions.");
+            throw std::invalid_argument("affine_map: invalid input dimensions.");
         }
 
         // early exit
@@ -76,7 +76,7 @@ namespace ZonoOpt
 
         if (R_cols != Z.n || s_ptr->size() != R_rows)
         {
-            throw std::invalid_argument("Affine inclusion: invalid input dimensions.");
+            throw std::invalid_argument("affine_inclusion: invalid input dimensions.");
         }
 
 
@@ -348,7 +348,7 @@ namespace ZonoOpt
     }
 
     // pontryagin difference
-    std::unique_ptr<HybZono> pontry_diff(HybZono& Z1, HybZono& Z2, bool exact)
+    std::unique_ptr<HybZono> pontry_diff(HybZono& Z1, Zono& Z2, bool exact)
     {
         // check dimensions
         if (Z1.n != Z2.n)
@@ -365,11 +365,6 @@ namespace ZonoOpt
             return std::make_unique<EmptySet>(Z1.n);
         if (Z2.nG == 0)
             exact = true; // easy to compute exactly
-
-        // check no exact pontry diff with conzono subtrahend
-        if (exact && (Z2.is_conzono() || Z2.is_hybzono()))
-            throw std::invalid_argument(
-                "Pontryagin difference: cannot compute exact set when subtrahend is a ConZono or HybZono");
 
         // require Z1 and Z2 to be in [-1,1] form
         if (Z1.zero_one_form) Z1.convert_form();
@@ -395,91 +390,16 @@ namespace ZonoOpt
 
             return Z_out;
         }
-
-        // inexact case
-
-        // logic to handle hybrid zonotope cases. Avoiding recursion to prevent redundant get_leaves calculations.
-        if (Z1.is_hybzono() && Z2.is_hybzono())
-        {
-            // get leaves and convert to zonos
-            auto Z1_leaves = Z1.get_leaves();
-            auto Z2_CZ_leaves = Z2.get_leaves();
-            std::vector<Zono> Z2_leaves;
-            for (auto& CZ : Z2_CZ_leaves)
-            {
-                Z2_leaves.push_back(*CZ.to_zono_approx());
-            }
-
-            // take union of pontry diffs for inner approx
-            std::vector<std::shared_ptr<HybZono>> leaf_diffs; // init
-            for (auto& Z1_leaf : Z1_leaves)
-            {
-                std::unique_ptr<HybZono> Z_out; // declare
-                for (auto& Z2_leaf : Z2_leaves)
-                {
-                    if (!Z_out)
-                    {
-                        Z_out = pontry_diff(Z1_leaf, Z2_leaf, false);
-                    }
-                    else
-                    {
-                        Z_out = intersection(*Z_out, *pontry_diff(Z1_leaf, Z2_leaf, false));
-                    }
-                }
-                leaf_diffs.push_back(std::move(Z_out));
-            }
-            return union_of_many(leaf_diffs);
-        }
         else if (Z1.is_hybzono())
         {
-            // get leaves and convert to zonos
-            auto Z1_leaves = Z1.get_leaves();
-            auto Z2_CZ = dynamic_cast<const ConZono*>(&Z2);
-            Zono Z2_zono = *Z2_CZ->to_zono_approx();
-
-            // take union of pontry diffs for inner approx
-            std::vector<std::shared_ptr<HybZono>> leaf_diffs; // init
-            for (auto& Z1_leaf : Z1_leaves)
-            {
-                leaf_diffs.push_back(pontry_diff(Z1_leaf, Z2_zono, false));
-            }
-            return union_of_many(leaf_diffs);
-        }
-        else if (Z2.is_hybzono())
-        {
-            // get leaves and convert to zonos
-            auto Z2_CZ_leaves = Z2.get_leaves();
-            std::vector<Zono> Z2_leaves;
-            for (auto& CZ : Z2_CZ_leaves)
-            {
-                Z2_leaves.push_back(*CZ.to_zono_approx());
-            }
-
-            // take intersection of pontry diffs
-            std::unique_ptr<HybZono> Z_out; // declare
-            for (auto& Z2_leaf : Z2_leaves)
-            {
-                if (!Z_out)
-                {
-                    Z_out = pontry_diff(Z1, Z2_leaf, false);
-                }
-                else
-                {
-                    Z_out = intersection(*Z_out, *pontry_diff(Z1, Z2_leaf, false));
-                }
-            }
-            return Z_out;
+            throw std::invalid_argument("Cannot compute inexact Pontryagin difference when minuend is a hybrid zonotope");
         }
         else
         {
-            // convert to zono subtrahend (do nothing if already zono)
-            auto Z2_CZ = dynamic_cast<const ConZono*>(&Z2);
-            Zono Z2_zono = *Z2_CZ->to_zono_approx();
-
             // get [G; A] matrices
             const Eigen::SparseMatrix<zono_float> GA1 = vcat<zono_float>(Z1.G, Z1.A);
-            Eigen::SparseMatrix<zono_float> GA2 = Z2_zono.G;
-            GA2.conservativeResize(Z2_zono.n + Z1.nC, Z2_zono.nG);
+            Eigen::SparseMatrix<zono_float> GA2 = Z2.G;
+            GA2.conservativeResize(Z2.n + Z1.nC, Z2.nG);
 
             Eigen::SparseMatrix<zono_float> M;
             if (Z1.n + Z1.nC == Z1.nG)
@@ -527,7 +447,23 @@ namespace ZonoOpt
             D.setFromTriplets(triplets.begin(), triplets.end());
 #endif
 
-            return std::make_unique<ConZono>(Z1.G * D, Z1.c - Z2_zono.c, Z1.A * D, Z1.b, false);
+            // return type
+            if (Z1.is_conzono())
+            {
+                return std::make_unique<ConZono>(Z1.G * D, Z1.c - Z2.c, Z1.A * D, Z1.b, false);
+            }
+            else if (Z1.is_zono())
+            {
+                return std::make_unique<Zono>(Z1.G * D, Z1.c - Z2.c, false);
+            }
+            else if (Z1.is_point())
+            {
+                return std::make_unique<Point>(Z1.c - Z2.c);
+            }
+            else
+            {
+                return std::make_unique<EmptySet>(Z1.n);
+            }
         }
     }
 

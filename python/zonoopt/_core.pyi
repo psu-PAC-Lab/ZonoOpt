@@ -14,6 +14,7 @@ LESS_OR_EQUAL: IneqType
 
 class Box:
     """Box (i.e., interval vector) class"""
+    __array_priority__: ClassVar[float] = ...
     def __init__(self, x_lb: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], x_ub: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> None:
         '''__init__(self: zonoopt._core.Box, x_lb: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], x_ub: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> None
 
@@ -35,6 +36,32 @@ class Box:
                             numpy.array: center of box
             
         '''
+    def contains(self, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> bool:
+        '''contains(self: zonoopt._core.Box, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> bool
+
+
+                        Checks whether box contains a vector
+
+                        Args:
+                            v (numpy.array): vector
+
+                        Returns:
+                            bool: flag indicating whether box contains v
+            
+        '''
+    def contains_set(self, other: Box) -> bool:
+        """contains_set(self: zonoopt._core.Box, other: zonoopt._core.Box) -> bool
+
+
+                        Checks whether box contains another box
+
+                        Args:
+                            other (Box): other box
+
+                        Returns:
+                            bool: flag indicating whether self contains other
+            
+        """
     def contract(self, A: scipy.sparse.csr_matrix[numpy.float64], b: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], iter: typing.SupportsInt | typing.SupportsIndex) -> bool:
         '''contract(self: zonoopt._core.Box, A: scipy.sparse.csr_matrix[numpy.float64], b: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], iter: typing.SupportsInt | typing.SupportsIndex) -> bool
 
@@ -86,6 +113,32 @@ class Box:
 
                         Args:
                             vals (list of Interval): list of intervals to construct box from
+            
+        """
+    def intersect(self, other: Box) -> Box:
+        """intersect(self: zonoopt._core.Box, other: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Intersection of two boxes
+
+                        Args:
+                            other (Box): other box
+
+                        Returns:
+                            Box: intersection of self and other
+            
+        """
+    def interval_hull(self, other: Box) -> Box:
+        """interval_hull(self: zonoopt._core.Box, other: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Interval hull of two boxes
+
+                        Args:
+                            other (Box): other box
+
+                        Returns:
+                            Box: interval hull of self and other
             
         """
     def linear_map(self, A: scipy.sparse.csr_matrix[numpy.float64]) -> Box:
@@ -143,6 +196,16 @@ class Box:
                             int: size of box
             
         """
+    def to_array(self) -> list[Interval]:
+        """to_array(self: zonoopt._core.Box) -> list[zonoopt._core.Interval]
+
+
+                        Convert to array of intervals
+
+                        Returns:
+                            list of Interval: box as list of intervals
+            
+        """
     def upper(self) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
         '''upper(self: zonoopt._core.Box) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
@@ -165,8 +228,12 @@ class Box:
                             float: width of box
             
         """
-    def __add__(self, other: Box) -> Box:
-        """__add__(self: zonoopt._core.Box, other: zonoopt._core.Box) -> zonoopt._core.Box
+    @overload
+    def __add__(self, arg0: Box) -> Box:
+        '''__add__(*args, **kwargs)
+        Overloaded function.
+
+        1. __add__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
 
 
                         Elementwise addition
@@ -176,6 +243,86 @@ class Box:
 
                         Returns:
                             Box: self + other (elementwise)
+            
+
+        2. __add__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        Elementwise addition
+
+                        Args:
+                            v (np.array): vector
+
+                        Returns:
+                            Box: self + v (elementwise)
+            
+        '''
+    @overload
+    def __add__(self, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> Box:
+        '''__add__(*args, **kwargs)
+        Overloaded function.
+
+        1. __add__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Elementwise addition
+
+                        Args:
+                            other (Box): rhs box
+
+                        Returns:
+                            Box: self + other (elementwise)
+            
+
+        2. __add__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        Elementwise addition
+
+                        Args:
+                            v (np.array): vector
+
+                        Returns:
+                            Box: self + v (elementwise)
+            
+        '''
+    def __and__(self, arg0: Box) -> Box:
+        """__and__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Intersection operator
+
+                        Args:
+                            other (Box): other box
+
+                        Returns:
+                            Box: intersection of self and other
+            
+        """
+    def __eq__(self, arg0: Box) -> bool:
+        """__eq__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> bool
+
+
+                        Box equality
+
+                        Args:
+                            other (Box): other box
+
+                        Returns:
+                            bool: flag indicating whether boxes are equal
+            
+        """
+    def __ge__(self, arg0: Box) -> bool:
+        """__ge__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> bool
+
+
+                        Box superset operator
+
+                        Args:
+                            other (Box): other box
+
+                        Returns:
+                            bool: flag indicating whether self is a superset of other
             
         """
     def __getitem__(self, i: typing.SupportsInt | typing.SupportsIndex) -> Interval:
@@ -192,40 +339,376 @@ class Box:
             
         """
     @overload
-    def __mul__(self, other: Box) -> Box:
-        """__mul__(*args, **kwargs)
+    def __iadd__(self, arg0: Box) -> Box:
+        '''__iadd__(*args, **kwargs)
         Overloaded function.
 
-        1. __mul__(self: zonoopt._core.Box, other: zonoopt._core.Box) -> zonoopt._core.Box
+        1. __iadd__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
 
 
-                        Elementwise multiplication
+                        Elementwise addition in-place
 
                         Args:
                             other (Box): rhs box
-
-                        Returns:
-                            Box: enclosure of self * other (elementwise)
             
 
-        2. __mul__(self: zonoopt._core.Box, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
+        2. __iadd__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
 
 
-                        Elementwise multiplication with scalar
+                        Elementwise addition with vector in-place
+
+                        Args:
+                            v (np.array): vector
+            
+        '''
+    @overload
+    def __iadd__(self, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> Box:
+        '''__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Elementwise addition in-place
+
+                        Args:
+                            other (Box): rhs box
+            
+
+        2. __iadd__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        Elementwise addition with vector in-place
+
+                        Args:
+                            v (np.array): vector
+            
+        '''
+    @overload
+    def __imul__(self, arg0: Box) -> Box:
+        '''__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication in-place
+
+                        Args:
+                            other (Box): rhs box
+            
+
+        2. __imul__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with scalar in-place
 
                         Args:
                             alpha (float): scalar multiplier
+            
 
-                        Returns:
-                            Box: enclosure of alpha * self (elementwise)
+        3. __imul__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with interval in-place
+
+                        Args:
+                            interval (Interval): interval multiplier
+            
+
+        4. __imul__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with vector in-place
+
+                        Args:
+                            v (np.array): vector multiplier
+            
+        '''
+    @overload
+    def __imul__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> Box:
+        '''__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication in-place
+
+                        Args:
+                            other (Box): rhs box
+            
+
+        2. __imul__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with scalar in-place
+
+                        Args:
+                            alpha (float): scalar multiplier
+            
+
+        3. __imul__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with interval in-place
+
+                        Args:
+                            interval (Interval): interval multiplier
+            
+
+        4. __imul__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with vector in-place
+
+                        Args:
+                            v (np.array): vector multiplier
+            
+        '''
+    @overload
+    def __imul__(self, arg0: Interval) -> Box:
+        '''__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication in-place
+
+                        Args:
+                            other (Box): rhs box
+            
+
+        2. __imul__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with scalar in-place
+
+                        Args:
+                            alpha (float): scalar multiplier
+            
+
+        3. __imul__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with interval in-place
+
+                        Args:
+                            interval (Interval): interval multiplier
+            
+
+        4. __imul__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with vector in-place
+
+                        Args:
+                            v (np.array): vector multiplier
+            
+        '''
+    @overload
+    def __imul__(self, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> Box:
+        '''__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication in-place
+
+                        Args:
+                            other (Box): rhs box
+            
+
+        2. __imul__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with scalar in-place
+
+                        Args:
+                            alpha (float): scalar multiplier
+            
+
+        3. __imul__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with interval in-place
+
+                        Args:
+                            interval (Interval): interval multiplier
+            
+
+        4. __imul__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with vector in-place
+
+                        Args:
+                            v (np.array): vector multiplier
+            
+        '''
+    @overload
+    def __isub__(self, arg0: Box) -> Box:
+        '''__isub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __isub__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Elementwise subtraction in-place
+
+                        Args:
+                            other (Box): other box
+            
+
+        2. __isub__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        Elementwise subtraction with vector in-place
+
+                        Args:
+                            v (np.array): vector
+            
+        '''
+    @overload
+    def __isub__(self, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> Box:
+        '''__isub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __isub__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Elementwise subtraction in-place
+
+                        Args:
+                            other (Box): other box
+            
+
+        2. __isub__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        Elementwise subtraction with vector in-place
+
+                        Args:
+                            v (np.array): vector
+            
+        '''
+    @overload
+    def __itruediv__(self, arg0: Box) -> Box:
+        """__itruediv__(*args, **kwargs)
+        Overloaded function.
+
+        1. __itruediv__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Elementwise division in-place
+
+                        Args:
+                            other (Box): rhs box
+            
+
+        2. __itruediv__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
+
+
+                        Elementwise division with scalar in-place
+
+                        Args:
+                            alpha (float): scalar divisor
+            
+
+        3. __itruediv__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -> zonoopt._core.Box
+
+
+                        Elementwise division with interval in-place
+
+                        Args:
+                            interval (Interval): interval dividend
             
         """
     @overload
-    def __mul__(self, alpha: typing.SupportsFloat | typing.SupportsIndex) -> Box:
-        """__mul__(*args, **kwargs)
+    def __itruediv__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> Box:
+        """__itruediv__(*args, **kwargs)
         Overloaded function.
 
-        1. __mul__(self: zonoopt._core.Box, other: zonoopt._core.Box) -> zonoopt._core.Box
+        1. __itruediv__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Elementwise division in-place
+
+                        Args:
+                            other (Box): rhs box
+            
+
+        2. __itruediv__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
+
+
+                        Elementwise division with scalar in-place
+
+                        Args:
+                            alpha (float): scalar divisor
+            
+
+        3. __itruediv__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -> zonoopt._core.Box
+
+
+                        Elementwise division with interval in-place
+
+                        Args:
+                            interval (Interval): interval dividend
+            
+        """
+    @overload
+    def __itruediv__(self, arg0: Interval) -> Box:
+        """__itruediv__(*args, **kwargs)
+        Overloaded function.
+
+        1. __itruediv__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Elementwise division in-place
+
+                        Args:
+                            other (Box): rhs box
+            
+
+        2. __itruediv__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
+
+
+                        Elementwise division with scalar in-place
+
+                        Args:
+                            alpha (float): scalar divisor
+            
+
+        3. __itruediv__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -> zonoopt._core.Box
+
+
+                        Elementwise division with interval in-place
+
+                        Args:
+                            interval (Interval): interval dividend
+            
+        """
+    def __le__(self, arg0: Box) -> bool:
+        """__le__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> bool
+
+
+                        Box subset operator
+
+                        Args:
+                            other (Box): other box
+
+                        Returns:
+                            bool: flag indicating whether self is a subset of other
+            
+        """
+    @overload
+    def __mul__(self, arg0: Box) -> Box:
+        '''__mul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __mul__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
 
 
                         Elementwise multiplication
@@ -237,7 +720,7 @@ class Box:
                             Box: enclosure of self * other (elementwise)
             
 
-        2. __mul__(self: zonoopt._core.Box, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
+        2. __mul__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
 
 
                         Elementwise multiplication with scalar
@@ -247,6 +730,477 @@ class Box:
 
                         Returns:
                             Box: enclosure of alpha * self (elementwise)
+            
+
+        3. __mul__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with interval
+
+                        Args:
+                            interval (Interval): interval multiplier
+
+                        Returns:
+                            Box: enclosure of self * interval (elementwise)
+            
+
+        4. __mul__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with vector
+
+                        Args:
+                            v (np.array): vector multiplier
+
+                        Returns:
+                            Box: enclosure of self * v (elementwise)
+            
+        '''
+    @overload
+    def __mul__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> Box:
+        '''__mul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __mul__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication
+
+                        Args:
+                            other (Box): rhs box
+
+                        Returns:
+                            Box: enclosure of self * other (elementwise)
+            
+
+        2. __mul__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with scalar
+
+                        Args:
+                            alpha (float): scalar multiplier
+
+                        Returns:
+                            Box: enclosure of alpha * self (elementwise)
+            
+
+        3. __mul__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with interval
+
+                        Args:
+                            interval (Interval): interval multiplier
+
+                        Returns:
+                            Box: enclosure of self * interval (elementwise)
+            
+
+        4. __mul__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with vector
+
+                        Args:
+                            v (np.array): vector multiplier
+
+                        Returns:
+                            Box: enclosure of self * v (elementwise)
+            
+        '''
+    @overload
+    def __mul__(self, arg0: Interval) -> Box:
+        '''__mul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __mul__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication
+
+                        Args:
+                            other (Box): rhs box
+
+                        Returns:
+                            Box: enclosure of self * other (elementwise)
+            
+
+        2. __mul__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with scalar
+
+                        Args:
+                            alpha (float): scalar multiplier
+
+                        Returns:
+                            Box: enclosure of alpha * self (elementwise)
+            
+
+        3. __mul__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with interval
+
+                        Args:
+                            interval (Interval): interval multiplier
+
+                        Returns:
+                            Box: enclosure of self * interval (elementwise)
+            
+
+        4. __mul__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with vector
+
+                        Args:
+                            v (np.array): vector multiplier
+
+                        Returns:
+                            Box: enclosure of self * v (elementwise)
+            
+        '''
+    @overload
+    def __mul__(self, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> Box:
+        '''__mul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __mul__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication
+
+                        Args:
+                            other (Box): rhs box
+
+                        Returns:
+                            Box: enclosure of self * other (elementwise)
+            
+
+        2. __mul__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with scalar
+
+                        Args:
+                            alpha (float): scalar multiplier
+
+                        Returns:
+                            Box: enclosure of alpha * self (elementwise)
+            
+
+        3. __mul__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with interval
+
+                        Args:
+                            interval (Interval): interval multiplier
+
+                        Returns:
+                            Box: enclosure of self * interval (elementwise)
+            
+
+        4. __mul__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with vector
+
+                        Args:
+                            v (np.array): vector multiplier
+
+                        Returns:
+                            Box: enclosure of self * v (elementwise)
+            
+        '''
+    def __neg__(self) -> Box:
+        """__neg__(self: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Unary minus for box
+
+                        Returns:
+                            Box: enclosure of -self
+            
+        """
+    def __or__(self, arg0: Box) -> Box:
+        """__or__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Interval hull operator
+
+                        Args:
+                            other (Box): other box
+
+                        Returns:
+                            Box: interval hull of self and other
+            
+        """
+    def __radd__(self, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> Box:
+        '''__radd__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        Elementwise addition
+
+                        Args:
+                            v (np.array): vector
+
+                        Returns:
+                            Box: self + v (elementwise)
+            
+        '''
+    @overload
+    def __rmatmul__(self, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, n]']) -> Box:
+        '''__rmatmul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __rmatmul__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"]) -> zonoopt._core.Box
+
+
+                        Right matrix multiplication with dense matrix, corresponds to linear map of box with matrix
+
+                        Args:
+                            A (numpy.array): linear map matrix
+
+                        Returns:
+                            Box: linear mapped box
+            
+
+        2. __rmatmul__(self: zonoopt._core.Box, arg0: scipy.sparse.csr_matrix[numpy.float64]) -> zonoopt._core.Box
+
+
+                        Right matrix multiplication with sparse matrix, corresponds to linear map of box with matrix
+
+                        Args:
+                            A (scipy.sparse.csr_matrix): linear map matrix
+
+                        Returns:
+                            Box: linear mapped box
+            
+        '''
+    @overload
+    def __rmatmul__(self, arg0: scipy.sparse.csr_matrix[numpy.float64]) -> Box:
+        '''__rmatmul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __rmatmul__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"]) -> zonoopt._core.Box
+
+
+                        Right matrix multiplication with dense matrix, corresponds to linear map of box with matrix
+
+                        Args:
+                            A (numpy.array): linear map matrix
+
+                        Returns:
+                            Box: linear mapped box
+            
+
+        2. __rmatmul__(self: zonoopt._core.Box, arg0: scipy.sparse.csr_matrix[numpy.float64]) -> zonoopt._core.Box
+
+
+                        Right matrix multiplication with sparse matrix, corresponds to linear map of box with matrix
+
+                        Args:
+                            A (scipy.sparse.csr_matrix): linear map matrix
+
+                        Returns:
+                            Box: linear mapped box
+            
+        '''
+    @overload
+    def __rmul__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> Box:
+        '''__rmul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __rmul__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with scalar
+
+                        Args:
+                            alpha (float): scalar multiplier
+
+                        Returns:
+                            Box: enclosure of alpha * self (elementwise)
+            
+
+        2. __rmul__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with interval
+
+                        Args:
+                            interval (Interval): interval multiplier
+
+                        Returns:
+                            Box: enclosure of interval * self (elementwise)
+            
+
+        3. __rmul__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with vector
+
+                        Args:
+                            v (np.array): vector multiplier
+
+                        Returns:
+                            Box: enclosure of v * self (elementwise)
+            
+        '''
+    @overload
+    def __rmul__(self, arg0: Interval) -> Box:
+        '''__rmul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __rmul__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with scalar
+
+                        Args:
+                            alpha (float): scalar multiplier
+
+                        Returns:
+                            Box: enclosure of alpha * self (elementwise)
+            
+
+        2. __rmul__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with interval
+
+                        Args:
+                            interval (Interval): interval multiplier
+
+                        Returns:
+                            Box: enclosure of interval * self (elementwise)
+            
+
+        3. __rmul__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with vector
+
+                        Args:
+                            v (np.array): vector multiplier
+
+                        Returns:
+                            Box: enclosure of v * self (elementwise)
+            
+        '''
+    @overload
+    def __rmul__(self, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> Box:
+        '''__rmul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __rmul__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with scalar
+
+                        Args:
+                            alpha (float): scalar multiplier
+
+                        Returns:
+                            Box: enclosure of alpha * self (elementwise)
+            
+
+        2. __rmul__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with interval
+
+                        Args:
+                            interval (Interval): interval multiplier
+
+                        Returns:
+                            Box: enclosure of interval * self (elementwise)
+            
+
+        3. __rmul__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        Elementwise multiplication with vector
+
+                        Args:
+                            v (np.array): vector multiplier
+
+                        Returns:
+                            Box: enclosure of v * self (elementwise)
+            
+        '''
+    def __rsub__(self, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> Box:
+        '''__rsub__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        Elementwise subtraction
+
+                        Args:
+                            v (np.array): vector
+
+                        Returns:
+                            Box: enclosure of v - self (elementwise)
+            
+        '''
+    @overload
+    def __rtruediv__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> Box:
+        """__rtruediv__(*args, **kwargs)
+        Overloaded function.
+
+        1. __rtruediv__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
+
+
+                        Elementwise division with scalar
+
+                        Args:
+                            alpha (float): scalar dividend
+
+                        Returns:
+                            Box: enclosure of alpha / self (elementwise)
+            
+
+        2. __rtruediv__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -> zonoopt._core.Box
+
+
+                        Elementwise division with interval
+
+                        Args:
+                            interval (Interval): interval
+
+                        Returns:
+                            Box: enclosure of interval / self (elementwise)
+            
+        """
+    @overload
+    def __rtruediv__(self, arg0: Interval) -> Box:
+        """__rtruediv__(*args, **kwargs)
+        Overloaded function.
+
+        1. __rtruediv__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
+
+
+                        Elementwise division with scalar
+
+                        Args:
+                            alpha (float): scalar dividend
+
+                        Returns:
+                            Box: enclosure of alpha / self (elementwise)
+            
+
+        2. __rtruediv__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -> zonoopt._core.Box
+
+
+                        Elementwise division with interval
+
+                        Args:
+                            interval (Interval): interval
+
+                        Returns:
+                            Box: enclosure of interval / self (elementwise)
             
         """
     def __setitem__(self, i: typing.SupportsInt | typing.SupportsIndex, val: Interval) -> None:
@@ -260,21 +1214,70 @@ class Box:
                             val (Interval): new interval for index i in Box
             
         """
-    def __sub__(self, other: Box) -> Box:
-        """__sub__(self: zonoopt._core.Box, other: zonoopt._core.Box) -> zonoopt._core.Box
+    @overload
+    def __sub__(self, arg0: Box) -> Box:
+        '''__sub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __sub__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
 
 
                         Elementwise subtraction
 
                         Args:
-                            other (Box): rhs box
+                            other (Box): other box
 
                         Returns:
                             Box: enclosure of self - other (elementwise)
             
-        """
-    def __truediv__(self, other: Box) -> Box:
-        """__truediv__(self: zonoopt._core.Box, other: zonoopt._core.Box) -> zonoopt._core.Box
+
+        2. __sub__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        Elementwise subtraction
+
+                        Args:
+                            v (np.array): vector
+
+                        Returns:
+                            Box: enclosure of self - v (elementwise)
+            
+        '''
+    @overload
+    def __sub__(self, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> Box:
+        '''__sub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __sub__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Elementwise subtraction
+
+                        Args:
+                            other (Box): other box
+
+                        Returns:
+                            Box: enclosure of self - other (elementwise)
+            
+
+        2. __sub__(self: zonoopt._core.Box, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        Elementwise subtraction
+
+                        Args:
+                            v (np.array): vector
+
+                        Returns:
+                            Box: enclosure of self - v (elementwise)
+            
+        '''
+    @overload
+    def __truediv__(self, arg0: Box) -> Box:
+        """__truediv__(*args, **kwargs)
+        Overloaded function.
+
+        1. __truediv__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
 
 
                         Elementwise division
@@ -284,6 +1287,112 @@ class Box:
 
                         Returns:
                             Box: enclosure of self / other (elementwise)
+            
+
+        2. __truediv__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
+
+
+                        Elementwise division with scalar
+
+                        Args:
+                            alpha (float): scalar divisor
+
+                        Returns:
+                            Box: enclosure of self / alpha (elementwise)
+            
+
+        3. __truediv__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -> zonoopt._core.Box
+
+
+                        Elementwise division with interval
+
+                        Args:
+                            interval (Interval): interval dividend
+
+                        Returns:
+                            Box: enclosure of self / interval (elementwise)
+            
+        """
+    @overload
+    def __truediv__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> Box:
+        """__truediv__(*args, **kwargs)
+        Overloaded function.
+
+        1. __truediv__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Elementwise division
+
+                        Args:
+                            other (Box): rhs box
+
+                        Returns:
+                            Box: enclosure of self / other (elementwise)
+            
+
+        2. __truediv__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
+
+
+                        Elementwise division with scalar
+
+                        Args:
+                            alpha (float): scalar divisor
+
+                        Returns:
+                            Box: enclosure of self / alpha (elementwise)
+            
+
+        3. __truediv__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -> zonoopt._core.Box
+
+
+                        Elementwise division with interval
+
+                        Args:
+                            interval (Interval): interval dividend
+
+                        Returns:
+                            Box: enclosure of self / interval (elementwise)
+            
+        """
+    @overload
+    def __truediv__(self, arg0: Interval) -> Box:
+        """__truediv__(*args, **kwargs)
+        Overloaded function.
+
+        1. __truediv__(self: zonoopt._core.Box, arg0: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Elementwise division
+
+                        Args:
+                            other (Box): rhs box
+
+                        Returns:
+                            Box: enclosure of self / other (elementwise)
+            
+
+        2. __truediv__(self: zonoopt._core.Box, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Box
+
+
+                        Elementwise division with scalar
+
+                        Args:
+                            alpha (float): scalar divisor
+
+                        Returns:
+                            Box: enclosure of self / alpha (elementwise)
+            
+
+        3. __truediv__(self: zonoopt._core.Box, arg0: zonoopt._core.Interval) -> zonoopt._core.Box
+
+
+                        Elementwise division with interval
+
+                        Args:
+                            interval (Interval): interval dividend
+
+                        Returns:
+                            Box: enclosure of self / interval (elementwise)
             
         """
 
@@ -373,6 +1482,7 @@ class HybZono:
             Optionally, in 0-1 form, the factors are xi_c in [0, 1]^nGc, xi_b in {0, 1}^nGb. 
             The set dimension is n, and the number of equality constraints is nC.
         """
+    __array_priority__: ClassVar[float] = ...
     def __init__(self, Gc: scipy.sparse.csc_matrix[numpy.float64], Gb: scipy.sparse.csc_matrix[numpy.float64], c: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], Ac: scipy.sparse.csc_matrix[numpy.float64], Ab: scipy.sparse.csc_matrix[numpy.float64], b: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], zero_one_form: bool = ..., sharp: bool = ...) -> None:
         '''__init__(self: zonoopt._core.HybZono, Gc: scipy.sparse.csc_matrix[numpy.float64], Gb: scipy.sparse.csc_matrix[numpy.float64], c: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], Ac: scipy.sparse.csc_matrix[numpy.float64], Ab: scipy.sparse.csc_matrix[numpy.float64], b: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], zero_one_form: bool = False, sharp: bool = False) -> None
 
@@ -391,7 +1501,7 @@ class HybZono:
             
         '''
     def bounding_box(self, settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> Box:
-        """bounding_box(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x73a3d829a970>) -> zonoopt._core.Box
+        """bounding_box(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7fdf19d15370>) -> zonoopt._core.Box
 
 
                         Computes a bounding box of the set object as a Box object.
@@ -432,7 +1542,7 @@ class HybZono:
             
         '''
     def contains_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x73a3d78c21b0>) -> bool
+        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7fdf19d0f6f0>) -> bool
 
 
                         Checks whether the point x is contained in the set object.
@@ -659,7 +1769,7 @@ class HybZono:
             
         """
     def is_empty(self, settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        """is_empty(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x73a3d78c1d30>) -> bool
+        """is_empty(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7fdf19d14ef0>) -> bool
 
 
                         Returns true if the set is provably empty, false otherwise.
@@ -724,7 +1834,7 @@ class HybZono:
             
         """
     def optimize_over(self, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], c: typing.SupportsFloat | typing.SupportsIndex = ..., settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x73a3d78c18f0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7fdf19cfc2f0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Solves optimization problem with quadratic objective over the current set
@@ -744,7 +1854,7 @@ class HybZono:
             
         '''
     def project_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x73a3d78c1ab0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7fdf19d14d70>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Returns the projection of the point x onto the set object.
@@ -796,7 +1906,7 @@ class HybZono:
             
         '''
     def support(self, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> float:
-        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x73a3d78c1fb0>) -> float
+        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7fdf19cfcff0>) -> float
 
 
                         Computes support function of the set in the direction d.
@@ -811,6 +1921,959 @@ class HybZono:
                             float: support value
 
                         Solves max_{z in Z} <z, d> where <., .> is the inner product
+            
+        '''
+    @overload
+    def __add__(self, arg0: HybZono) -> HybZono:
+        '''__add__(*args, **kwargs)
+        Overloaded function.
+
+        1. __add__(self: zonoopt._core.HybZono, arg0: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+
+                    Minkowski sum
+
+                    Args:
+                        other (HybZono)
+
+                    Returns:
+                        HybZono
+            
+
+        2. __add__(self: zonoopt._core.HybZono, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.HybZono
+
+
+                    Minkowski sum with point
+
+                    Args:
+                        v (numpy.array)
+
+                    Returns:
+                        HybZono
+            
+
+        3. __add__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                    Minkowski sum with box
+
+                    Args:
+                        box (Box)
+
+                    Returns:
+                        HybZono
+            
+        '''
+    @overload
+    def __add__(self, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> HybZono:
+        '''__add__(*args, **kwargs)
+        Overloaded function.
+
+        1. __add__(self: zonoopt._core.HybZono, arg0: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+
+                    Minkowski sum
+
+                    Args:
+                        other (HybZono)
+
+                    Returns:
+                        HybZono
+            
+
+        2. __add__(self: zonoopt._core.HybZono, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.HybZono
+
+
+                    Minkowski sum with point
+
+                    Args:
+                        v (numpy.array)
+
+                    Returns:
+                        HybZono
+            
+
+        3. __add__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                    Minkowski sum with box
+
+                    Args:
+                        box (Box)
+
+                    Returns:
+                        HybZono
+            
+        '''
+    @overload
+    def __add__(self, arg0: Box) -> HybZono:
+        '''__add__(*args, **kwargs)
+        Overloaded function.
+
+        1. __add__(self: zonoopt._core.HybZono, arg0: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+
+                    Minkowski sum
+
+                    Args:
+                        other (HybZono)
+
+                    Returns:
+                        HybZono
+            
+
+        2. __add__(self: zonoopt._core.HybZono, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.HybZono
+
+
+                    Minkowski sum with point
+
+                    Args:
+                        v (numpy.array)
+
+                    Returns:
+                        HybZono
+            
+
+        3. __add__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                    Minkowski sum with box
+
+                    Args:
+                        box (Box)
+
+                    Returns:
+                        HybZono
+            
+        '''
+    def __and__(self, arg0: HybZono) -> HybZono:
+        """__and__(self: zonoopt._core.HybZono, arg0: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+
+                    Intersection
+
+                    Args:
+                        other (HybZono)
+
+                    Returns:
+                        HybZono
+            
+        """
+    @overload
+    def __iadd__(self, arg0: HybZono) -> HybZono:
+        '''__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.HybZono, arg0: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+
+                    In-place Minkowski sum
+
+                    Args:
+                        other (HybZono)
+            
+
+        2. __iadd__(self: zonoopt._core.HybZono, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.HybZono
+
+
+                    In-place Minkowski sum with point
+
+                    Args:
+                        v (numpy.array)
+            
+
+        3. __iadd__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                    In-place Minkowski sum with box
+
+                    Args:
+                        box (Box)
+            
+        '''
+    @overload
+    def __iadd__(self, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> HybZono:
+        '''__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.HybZono, arg0: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+
+                    In-place Minkowski sum
+
+                    Args:
+                        other (HybZono)
+            
+
+        2. __iadd__(self: zonoopt._core.HybZono, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.HybZono
+
+
+                    In-place Minkowski sum with point
+
+                    Args:
+                        v (numpy.array)
+            
+
+        3. __iadd__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                    In-place Minkowski sum with box
+
+                    Args:
+                        box (Box)
+            
+        '''
+    @overload
+    def __iadd__(self, arg0: Box) -> HybZono:
+        '''__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.HybZono, arg0: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+
+                    In-place Minkowski sum
+
+                    Args:
+                        other (HybZono)
+            
+
+        2. __iadd__(self: zonoopt._core.HybZono, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.HybZono
+
+
+                    In-place Minkowski sum with point
+
+                    Args:
+                        v (numpy.array)
+            
+
+        3. __iadd__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                    In-place Minkowski sum with box
+
+                    Args:
+                        box (Box)
+            
+        '''
+    @overload
+    def __imul__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> HybZono:
+        """__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.HybZono, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.HybZono
+
+
+                    In-place scalar multiplication
+
+                    Args:
+                        f (float)
+
+                    Returns:
+                        HybZono: self*f
+            
+
+        2. __imul__(self: zonoopt._core.HybZono, arg0: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+
+                    In-place Cartesian product
+
+                    Args:
+                        other (HybZono)
+            
+
+        3. __imul__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                    In-place Cartesian product with box
+
+                    Args:
+                        box (Box)
+
+                    Returns:
+                        HybZono
+            
+        """
+    @overload
+    def __imul__(self, arg0: HybZono) -> HybZono:
+        """__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.HybZono, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.HybZono
+
+
+                    In-place scalar multiplication
+
+                    Args:
+                        f (float)
+
+                    Returns:
+                        HybZono: self*f
+            
+
+        2. __imul__(self: zonoopt._core.HybZono, arg0: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+
+                    In-place Cartesian product
+
+                    Args:
+                        other (HybZono)
+            
+
+        3. __imul__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                    In-place Cartesian product with box
+
+                    Args:
+                        box (Box)
+
+                    Returns:
+                        HybZono
+            
+        """
+    @overload
+    def __imul__(self, arg0: Box) -> HybZono:
+        """__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.HybZono, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.HybZono
+
+
+                    In-place scalar multiplication
+
+                    Args:
+                        f (float)
+
+                    Returns:
+                        HybZono: self*f
+            
+
+        2. __imul__(self: zonoopt._core.HybZono, arg0: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+
+                    In-place Cartesian product
+
+                    Args:
+                        other (HybZono)
+            
+
+        3. __imul__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                    In-place Cartesian product with box
+
+                    Args:
+                        box (Box)
+
+                    Returns:
+                        HybZono
+            
+        """
+    @overload
+    def __isub__(self, arg0) -> HybZono:
+        '''__isub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __isub__(self: zonoopt._core.HybZono, arg0: ZonoOpt::Zono) -> zonoopt._core.HybZono
+
+
+                    In-place Pontryagin difference
+
+                    Args:
+                        other (Zono)
+            
+
+        2. __isub__(self: zonoopt._core.HybZono, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.HybZono
+
+
+                    In-place Pontryagin difference with point
+
+                    Args:
+                        v (numpy.array)
+            
+
+        3. __isub__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                        In-place pontryagin difference with box
+
+                        Args:
+                            box (Box)
+                
+        '''
+    @overload
+    def __isub__(self, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> HybZono:
+        '''__isub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __isub__(self: zonoopt._core.HybZono, arg0: ZonoOpt::Zono) -> zonoopt._core.HybZono
+
+
+                    In-place Pontryagin difference
+
+                    Args:
+                        other (Zono)
+            
+
+        2. __isub__(self: zonoopt._core.HybZono, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.HybZono
+
+
+                    In-place Pontryagin difference with point
+
+                    Args:
+                        v (numpy.array)
+            
+
+        3. __isub__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                        In-place pontryagin difference with box
+
+                        Args:
+                            box (Box)
+                
+        '''
+    @overload
+    def __isub__(self, arg0: Box) -> HybZono:
+        '''__isub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __isub__(self: zonoopt._core.HybZono, arg0: ZonoOpt::Zono) -> zonoopt._core.HybZono
+
+
+                    In-place Pontryagin difference
+
+                    Args:
+                        other (Zono)
+            
+
+        2. __isub__(self: zonoopt._core.HybZono, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.HybZono
+
+
+                    In-place Pontryagin difference with point
+
+                    Args:
+                        v (numpy.array)
+            
+
+        3. __isub__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                        In-place pontryagin difference with box
+
+                        Args:
+                            box (Box)
+                
+        '''
+    @overload
+    def __mul__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> HybZono:
+        """__mul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __mul__(self: zonoopt._core.HybZono, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.HybZono
+
+
+                    Scalar multiplication
+
+                    Args:
+                        f (float)
+
+                    Returns:
+                        HybZono: self*f
+            
+
+        2. __mul__(self: zonoopt._core.HybZono, arg0: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+
+                    Cartesian product
+
+                    Args:
+                        other (HybZono)
+
+                    Returns:
+                        HybZono
+            
+
+        3. __mul__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                    Cartesian product with box
+
+                    Args:
+                        box (Box)
+
+                    Returns:
+                        HybZono
+            
+        """
+    @overload
+    def __mul__(self, arg0: HybZono) -> HybZono:
+        """__mul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __mul__(self: zonoopt._core.HybZono, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.HybZono
+
+
+                    Scalar multiplication
+
+                    Args:
+                        f (float)
+
+                    Returns:
+                        HybZono: self*f
+            
+
+        2. __mul__(self: zonoopt._core.HybZono, arg0: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+
+                    Cartesian product
+
+                    Args:
+                        other (HybZono)
+
+                    Returns:
+                        HybZono
+            
+
+        3. __mul__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                    Cartesian product with box
+
+                    Args:
+                        box (Box)
+
+                    Returns:
+                        HybZono
+            
+        """
+    @overload
+    def __mul__(self, arg0: Box) -> HybZono:
+        """__mul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __mul__(self: zonoopt._core.HybZono, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.HybZono
+
+
+                    Scalar multiplication
+
+                    Args:
+                        f (float)
+
+                    Returns:
+                        HybZono: self*f
+            
+
+        2. __mul__(self: zonoopt._core.HybZono, arg0: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+
+                    Cartesian product
+
+                    Args:
+                        other (HybZono)
+
+                    Returns:
+                        HybZono
+            
+
+        3. __mul__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                    Cartesian product with box
+
+                    Args:
+                        box (Box)
+
+                    Returns:
+                        HybZono
+            
+        """
+    def __neg__(self) -> HybZono:
+        """__neg__(self: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+
+                    Unary minus
+
+                    Args:
+                        other (HybZono)
+
+                    Returns:
+                        HybZono: -I * self
+            
+        """
+    def __or__(self, arg0: HybZono) -> HybZono:
+        """__or__(self: zonoopt._core.HybZono, arg0: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+
+                    Union
+
+                    Args:
+                        other (HybZono)
+
+                    Returns:
+                        HybZono
+            
+        """
+    @overload
+    def __radd__(self, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> HybZono:
+        '''__radd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __radd__(self: zonoopt._core.HybZono, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.HybZono
+
+
+                    Minkowski sum with point
+
+                    Args:
+                        v (numpy.array)
+
+                    Returns:
+                        HybZono
+            
+
+        2. __radd__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                    Minkowski sum with box
+
+                    Args:
+                        box (Box)
+
+                    Returns:
+                        HybZono
+            
+        '''
+    @overload
+    def __radd__(self, arg0: Box) -> HybZono:
+        '''__radd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __radd__(self: zonoopt._core.HybZono, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.HybZono
+
+
+                    Minkowski sum with point
+
+                    Args:
+                        v (numpy.array)
+
+                    Returns:
+                        HybZono
+            
+
+        2. __radd__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                    Minkowski sum with box
+
+                    Args:
+                        box (Box)
+
+                    Returns:
+                        HybZono
+            
+        '''
+    @overload
+    def __rmatmul__(self, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, n]']) -> HybZono:
+        '''__rmatmul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __rmatmul__(self: zonoopt._core.HybZono, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"]) -> zonoopt._core.HybZono
+
+
+                    Affine map with dense matrix
+
+                    Args:
+                        R (numpy.array)
+
+                    Returns:
+                        HybZono: R*self
+            
+
+        2. __rmatmul__(self: zonoopt._core.HybZono, arg0: scipy.sparse.csc_matrix[numpy.float64]) -> zonoopt._core.HybZono
+
+
+                    Affine map with sparse matrix
+
+                    Args:
+                        R (scipy.csc_matrix)
+
+                    Returns:
+                        HybZono: R*self
+            
+
+        3. __rmatmul__(self: zonoopt._core.HybZono, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.HybZono
+
+
+                    Affine inclusion with interval matrix
+
+                    Args:
+                        R (IntervalMatrix)
+
+                    Returns:
+                        HybZono: R*self
+            
+        '''
+    @overload
+    def __rmatmul__(self, arg0: scipy.sparse.csc_matrix[numpy.float64]) -> HybZono:
+        '''__rmatmul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __rmatmul__(self: zonoopt._core.HybZono, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"]) -> zonoopt._core.HybZono
+
+
+                    Affine map with dense matrix
+
+                    Args:
+                        R (numpy.array)
+
+                    Returns:
+                        HybZono: R*self
+            
+
+        2. __rmatmul__(self: zonoopt._core.HybZono, arg0: scipy.sparse.csc_matrix[numpy.float64]) -> zonoopt._core.HybZono
+
+
+                    Affine map with sparse matrix
+
+                    Args:
+                        R (scipy.csc_matrix)
+
+                    Returns:
+                        HybZono: R*self
+            
+
+        3. __rmatmul__(self: zonoopt._core.HybZono, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.HybZono
+
+
+                    Affine inclusion with interval matrix
+
+                    Args:
+                        R (IntervalMatrix)
+
+                    Returns:
+                        HybZono: R*self
+            
+        '''
+    @overload
+    def __rmatmul__(self, arg0: IntervalMatrix) -> HybZono:
+        '''__rmatmul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __rmatmul__(self: zonoopt._core.HybZono, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"]) -> zonoopt._core.HybZono
+
+
+                    Affine map with dense matrix
+
+                    Args:
+                        R (numpy.array)
+
+                    Returns:
+                        HybZono: R*self
+            
+
+        2. __rmatmul__(self: zonoopt._core.HybZono, arg0: scipy.sparse.csc_matrix[numpy.float64]) -> zonoopt._core.HybZono
+
+
+                    Affine map with sparse matrix
+
+                    Args:
+                        R (scipy.csc_matrix)
+
+                    Returns:
+                        HybZono: R*self
+            
+
+        3. __rmatmul__(self: zonoopt._core.HybZono, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.HybZono
+
+
+                    Affine inclusion with interval matrix
+
+                    Args:
+                        R (IntervalMatrix)
+
+                    Returns:
+                        HybZono: R*self
+            
+        '''
+    @overload
+    def __rmul__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> HybZono:
+        """__rmul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __rmul__(self: zonoopt._core.HybZono, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.HybZono
+
+
+                    Scalar multiplication
+
+                    Args:
+                        f (float)
+
+                    Returns:
+                        HybZono: self*f
+            
+
+        2. __rmul__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                    Cartesian product with box
+
+                    Args:
+                        box (Box)
+
+                    Returns:
+                        HybZono
+            
+        """
+    @overload
+    def __rmul__(self, arg0: Box) -> HybZono:
+        """__rmul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __rmul__(self: zonoopt._core.HybZono, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.HybZono
+
+
+                    Scalar multiplication
+
+                    Args:
+                        f (float)
+
+                    Returns:
+                        HybZono: self*f
+            
+
+        2. __rmul__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                    Cartesian product with box
+
+                    Args:
+                        box (Box)
+
+                    Returns:
+                        HybZono
+            
+        """
+    @overload
+    def __sub__(self, arg0) -> HybZono:
+        '''__sub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __sub__(self: zonoopt._core.HybZono, arg0: ZonoOpt::Zono) -> zonoopt._core.HybZono
+
+
+                    Pontryagin difference
+
+                    Args:
+                        other (Zono)
+
+                    Returns:
+                        HybZono
+            
+
+        2. __sub__(self: zonoopt._core.HybZono, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.HybZono
+
+
+                    Pontryagin difference with point
+
+                    Args:
+                        v (numpy.array)
+
+                    Returns:
+                        HybZono
+            
+
+        3. __sub__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                    Pontryagin difference with box
+
+                    Args:
+                        box (Box)
+
+                    Returns:
+                        HybZono
+            
+        '''
+    @overload
+    def __sub__(self, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> HybZono:
+        '''__sub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __sub__(self: zonoopt._core.HybZono, arg0: ZonoOpt::Zono) -> zonoopt._core.HybZono
+
+
+                    Pontryagin difference
+
+                    Args:
+                        other (Zono)
+
+                    Returns:
+                        HybZono
+            
+
+        2. __sub__(self: zonoopt._core.HybZono, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.HybZono
+
+
+                    Pontryagin difference with point
+
+                    Args:
+                        v (numpy.array)
+
+                    Returns:
+                        HybZono
+            
+
+        3. __sub__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                    Pontryagin difference with box
+
+                    Args:
+                        box (Box)
+
+                    Returns:
+                        HybZono
+            
+        '''
+    @overload
+    def __sub__(self, arg0: Box) -> HybZono:
+        '''__sub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __sub__(self: zonoopt._core.HybZono, arg0: ZonoOpt::Zono) -> zonoopt._core.HybZono
+
+
+                    Pontryagin difference
+
+                    Args:
+                        other (Zono)
+
+                    Returns:
+                        HybZono
+            
+
+        2. __sub__(self: zonoopt._core.HybZono, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.HybZono
+
+
+                    Pontryagin difference with point
+
+                    Args:
+                        v (numpy.array)
+
+                    Returns:
+                        HybZono
+            
+
+        3. __sub__(self: zonoopt._core.HybZono, arg0: zonoopt._core.Box) -> zonoopt._core.HybZono
+
+
+                    Pontryagin difference with box
+
+                    Args:
+                        box (Box)
+
+                    Returns:
+                        HybZono
             
         '''
 
@@ -1226,6 +3289,19 @@ class Interval:
                             bool: flag indicating if interval contains y
             
         """
+    def contains_set(self, other: Interval) -> bool:
+        """contains_set(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -> bool
+
+
+                        Checks whether interval contains another interval
+
+                        Args:
+                            other (Interval): other interval
+
+                        Returns:
+                            bool: flag indicating whether self contains other
+            
+        """
     def copy(self) -> Interval:
         """copy(self: zonoopt._core.Interval) -> zonoopt._core.Interval
 
@@ -1348,6 +3424,19 @@ class Interval:
                             Interval: intersection of self and other
             
         """
+    def interval_hull(self, other: Interval) -> Interval:
+        """interval_hull(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -> zonoopt._core.Interval
+
+
+                        Interval hull
+
+                        Args:
+                            other (Interval): other interval
+
+                        Returns:
+                            Interval: interval hull of self and other
+            
+        """
     def inv(self) -> Interval:
         """inv(self: zonoopt._core.Interval) -> zonoopt._core.Interval
 
@@ -1376,16 +3465,6 @@ class Interval:
 
                         Returns:
                             bool: flag indicating if interval is single-valued
-            
-        """
-    def lb(self) -> float:
-        """lb(self: zonoopt._core.Interval) -> float
-
-
-                        Get lower bound
-
-                        Returns:
-                            float: lower bound
             
         """
     @overload
@@ -1419,6 +3498,16 @@ class Interval:
 
                         Returns:
                             Interval: enclosure of interval containing log(x)
+            
+        """
+    def lower(self) -> float:
+        """lower(self: zonoopt._core.Interval) -> float
+
+
+                        Get lower bound
+
+                        Returns:
+                            float: lower bound
             
         """
     def nth_root(self, n: typing.SupportsInt | typing.SupportsIndex) -> Interval:
@@ -1600,8 +3689,8 @@ class Interval:
                             Interval: enclosure of interval containing tanh(x)
             
         """
-    def ub(self) -> float:
-        """ub(self: zonoopt._core.Interval) -> float
+    def upper(self) -> float:
+        """upper(self: zonoopt._core.Interval) -> float
 
 
                         Get upper bound
@@ -1621,11 +3710,11 @@ class Interval:
             
         """
     @overload
-    def __add__(self, other: Interval) -> Interval:
+    def __add__(self, arg0: Interval) -> Interval:
         """__add__(*args, **kwargs)
         Overloaded function.
 
-        1. __add__(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -> zonoopt._core.Interval
+        1. __add__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -> zonoopt._core.Interval
 
 
                         Interval addition
@@ -1637,7 +3726,7 @@ class Interval:
                             Interval: enclosure of self + other
             
 
-        2. __add__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+        2. __add__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
 
 
                         Interval addition with scalar
@@ -1650,11 +3739,11 @@ class Interval:
             
         """
     @overload
-    def __add__(self, alpha: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
+    def __add__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
         """__add__(*args, **kwargs)
         Overloaded function.
 
-        1. __add__(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -> zonoopt._core.Interval
+        1. __add__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -> zonoopt._core.Interval
 
 
                         Interval addition
@@ -1666,7 +3755,7 @@ class Interval:
                             Interval: enclosure of self + other
             
 
-        2. __add__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+        2. __add__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
 
 
                         Interval addition with scalar
@@ -1678,12 +3767,235 @@ class Interval:
                             Interval: enclosure of self + alpha
             
         """
+    def __eq__(self, arg0: Interval) -> bool:
+        """__eq__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -> bool
+
+
+                        Interval equality
+
+                        Args:
+                            other (Interval): other interval
+
+                        Returns:
+                            bool: flag indicating whether intervals are equal
+            
+        """
+    def __ge__(self, arg0: Interval) -> bool:
+        """__ge__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -> bool
+
+
+                        Interval superset operator
+
+                        Args:
+                            other (Interval): other interval
+
+                        Returns:
+                            bool: flag indicating whether self is a superset of other
+            
+        """
     @overload
-    def __mul__(self, other: Interval) -> Interval:
+    def __iadd__(self, arg0: Interval) -> Interval:
+        """__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -> zonoopt._core.Interval
+
+
+                        Interval addition in-place
+
+                        Args:
+                            other (Interval): rhs interval
+            
+
+        2. __iadd__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+
+
+                        Interval addition with scalar in-place
+
+                        Args:
+                            alpha (float): scalar to add
+            
+        """
+    @overload
+    def __iadd__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
+        """__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -> zonoopt._core.Interval
+
+
+                        Interval addition in-place
+
+                        Args:
+                            other (Interval): rhs interval
+            
+
+        2. __iadd__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+
+
+                        Interval addition with scalar in-place
+
+                        Args:
+                            alpha (float): scalar to add
+            
+        """
+    @overload
+    def __imul__(self, arg0: Interval) -> Interval:
+        """__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -> zonoopt._core.Interval
+
+
+                        Interval multiplication in-place
+
+                        Args:
+                            other (Interval): rhs interval
+            
+
+        2. __imul__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+
+
+                        Interval multiplication with scalar in-place
+
+                        Args:
+                            alpha (float): scalar multiplier
+            
+        """
+    @overload
+    def __imul__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
+        """__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -> zonoopt._core.Interval
+
+
+                        Interval multiplication in-place
+
+                        Args:
+                            other (Interval): rhs interval
+            
+
+        2. __imul__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+
+
+                        Interval multiplication with scalar in-place
+
+                        Args:
+                            alpha (float): scalar multiplier
+            
+        """
+    @overload
+    def __isub__(self, arg0: Interval) -> Interval:
+        """__isub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __isub__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -> zonoopt._core.Interval
+
+
+                        Interval subtraction in-place
+
+                        Args:
+                            other (Interval): rhs interval
+            
+
+        2. __isub__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+
+
+                        Interval subtraction with scalar in-place
+
+                        Args:
+                            alpha (float): scalar to subtract
+            
+        """
+    @overload
+    def __isub__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
+        """__isub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __isub__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -> zonoopt._core.Interval
+
+
+                        Interval subtraction in-place
+
+                        Args:
+                            other (Interval): rhs interval
+            
+
+        2. __isub__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+
+
+                        Interval subtraction with scalar in-place
+
+                        Args:
+                            alpha (float): scalar to subtract
+            
+        """
+    @overload
+    def __itruediv__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
+        """__itruediv__(*args, **kwargs)
+        Overloaded function.
+
+        1. __itruediv__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+
+
+                            Interval division with scalar in-place
+
+                            Args:
+                                alpha (float): scalar divisor
+                
+
+        2. __itruediv__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -> zonoopt._core.Interval
+
+
+                        Interval division in-place
+
+                        Args:
+                            other (Interval): interval to divide
+            
+        """
+    @overload
+    def __itruediv__(self, arg0: Interval) -> Interval:
+        """__itruediv__(*args, **kwargs)
+        Overloaded function.
+
+        1. __itruediv__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+
+
+                            Interval division with scalar in-place
+
+                            Args:
+                                alpha (float): scalar divisor
+                
+
+        2. __itruediv__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -> zonoopt._core.Interval
+
+
+                        Interval division in-place
+
+                        Args:
+                            other (Interval): interval to divide
+            
+        """
+    def __le__(self, arg0: Interval) -> bool:
+        """__le__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -> bool
+
+
+                        Interval subset operator
+
+                        Args:
+                            other (Interval): other interval
+
+                        Returns:
+                            bool: flag indicating whether self is a subset of other
+            
+        """
+    @overload
+    def __mul__(self, arg0: Interval) -> Interval:
         """__mul__(*args, **kwargs)
         Overloaded function.
 
-        1. __mul__(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -> zonoopt._core.Interval
+        1. __mul__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -> zonoopt._core.Interval
 
 
                         Interval multiplication
@@ -1695,7 +4007,7 @@ class Interval:
                             Interval: enclosure of self * other
             
 
-        2. __mul__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+        2. __mul__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
 
 
                         Interval multiplication with scalar
@@ -1708,11 +4020,11 @@ class Interval:
             
         """
     @overload
-    def __mul__(self, alpha: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
+    def __mul__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
         """__mul__(*args, **kwargs)
         Overloaded function.
 
-        1. __mul__(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -> zonoopt._core.Interval
+        1. __mul__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -> zonoopt._core.Interval
 
 
                         Interval multiplication
@@ -1724,7 +4036,7 @@ class Interval:
                             Interval: enclosure of self * other
             
 
-        2. __mul__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+        2. __mul__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
 
 
                         Interval multiplication with scalar
@@ -1736,8 +4048,22 @@ class Interval:
                             Interval: enclosure of alpha * self
             
         """
-    def __pow__(self, n: typing.SupportsInt | typing.SupportsIndex) -> Interval:
-        """__pow__(self: zonoopt._core.Interval, n: typing.SupportsInt | typing.SupportsIndex) -> zonoopt._core.Interval
+    def __neg__(self) -> Interval:
+        """__neg__(self: zonoopt._core.Interval) -> zonoopt._core.Interval
+
+
+                        Unary minus for interval
+
+                        Returns:
+                            Interval: enclosure of -self
+            
+        """
+    @overload
+    def __pow__(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> Interval:
+        """__pow__(*args, **kwargs)
+        Overloaded function.
+
+        1. __pow__(self: zonoopt._core.Interval, arg0: typing.SupportsInt | typing.SupportsIndex) -> zonoopt._core.Interval
 
 
                         Interval power
@@ -1748,13 +4074,106 @@ class Interval:
                         Returns:
                             Interval: enclosure of self^n
             
+
+        2. __pow__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+
+
+                        Interval power with fractional exponent
+
+                        Args:
+                            alpha (float): fractional exponent
+
+                        Returns:
+                            Interval: enclosure of self^alpha
+            
         """
     @overload
-    def __sub__(self, other: Interval) -> Interval:
+    def __pow__(self, alpha: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
+        """__pow__(*args, **kwargs)
+        Overloaded function.
+
+        1. __pow__(self: zonoopt._core.Interval, arg0: typing.SupportsInt | typing.SupportsIndex) -> zonoopt._core.Interval
+
+
+                        Interval power
+
+                        Args:
+                            n (int): exponent
+
+                        Returns:
+                            Interval: enclosure of self^n
+            
+
+        2. __pow__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+
+
+                        Interval power with fractional exponent
+
+                        Args:
+                            alpha (float): fractional exponent
+
+                        Returns:
+                            Interval: enclosure of self^alpha
+            
+        """
+    def __radd__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
+        """__radd__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+
+
+                        Interval right addition with scalar
+
+                        Args:
+                            alpha (float): scalar to add
+
+                        Returns:
+                            Interval: enclosure of alpha + self
+            
+        """
+    def __rmul__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
+        """__rmul__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+
+
+                        Interval right multiplication with scalar
+
+                        Args:
+                            alpha (float): scalar multiplier
+
+                        Returns:
+                            Interval: enclosure of alpha * self
+            
+        """
+    def __rsub__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
+        """__rsub__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+
+
+                        Interval right subtraction with scalar
+
+                        Args:
+                            alpha (float): scalar to subtract
+
+                        Returns:
+                            Interval: enclosure of alpha - self
+            
+        """
+    def __rtruediv__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
+        """__rtruediv__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+
+
+                        Interval right division with scalar
+
+                        Args:
+                            alpha (float): scalar dividend
+
+                        Returns:
+                            Interval: enclosure of alpha / self
+            
+        """
+    @overload
+    def __sub__(self, arg0: Interval) -> Interval:
         """__sub__(*args, **kwargs)
         Overloaded function.
 
-        1. __sub__(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -> zonoopt._core.Interval
+        1. __sub__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -> zonoopt._core.Interval
 
 
                         Interval subtraction
@@ -1766,7 +4185,7 @@ class Interval:
                             Interval: enclosure of self - other
             
 
-        2. __sub__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+        2. __sub__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
 
 
                         Interval subtraction with scalar
@@ -1779,11 +4198,11 @@ class Interval:
             
         """
     @overload
-    def __sub__(self, alpha: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
+    def __sub__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
         """__sub__(*args, **kwargs)
         Overloaded function.
 
-        1. __sub__(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -> zonoopt._core.Interval
+        1. __sub__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -> zonoopt._core.Interval
 
 
                         Interval subtraction
@@ -1795,7 +4214,7 @@ class Interval:
                             Interval: enclosure of self - other
             
 
-        2. __sub__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+        2. __sub__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
 
 
                         Interval subtraction with scalar
@@ -1808,11 +4227,11 @@ class Interval:
             
         """
     @overload
-    def __truediv__(self, alpha: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
+    def __truediv__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> Interval:
         """__truediv__(*args, **kwargs)
         Overloaded function.
 
-        1. __truediv__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+        1. __truediv__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
 
 
                         Interval division with scalar
@@ -1824,24 +4243,24 @@ class Interval:
                             Interval: enclosure of self / alpha
             
 
-        2. __truediv__(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -> zonoopt._core.Interval
+        2. __truediv__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -> zonoopt._core.Interval
 
 
                         Interval division
 
                         Args:
-                            other (Interval): rhs interval
+                            other (Interval): interval to divide
 
                         Returns:
                             Interval: enclosure of self / other
             
         """
     @overload
-    def __truediv__(self, other: Interval) -> Interval:
+    def __truediv__(self, arg0: Interval) -> Interval:
         """__truediv__(*args, **kwargs)
         Overloaded function.
 
-        1. __truediv__(self: zonoopt._core.Interval, alpha: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
+        1. __truediv__(self: zonoopt._core.Interval, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Interval
 
 
                         Interval division with scalar
@@ -1853,13 +4272,13 @@ class Interval:
                             Interval: enclosure of self / alpha
             
 
-        2. __truediv__(self: zonoopt._core.Interval, other: zonoopt._core.Interval) -> zonoopt._core.Interval
+        2. __truediv__(self: zonoopt._core.Interval, arg0: zonoopt._core.Interval) -> zonoopt._core.Interval
 
 
                         Interval division
 
                         Args:
-                            other (Interval): rhs interval
+                            other (Interval): interval to divide
 
                         Returns:
                             Interval: enclosure of self / other
@@ -1868,6 +4287,7 @@ class Interval:
 
 class IntervalMatrix:
     """Interval matrix class"""
+    __array_priority__: ClassVar[float] = ...
     def __init__(self, mat_lb: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, n]'], mat_ub: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, n]']) -> None:
         '''__init__(self: zonoopt._core.IntervalMatrix, mat_lb: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"], mat_ub: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"]) -> None
 
@@ -1899,6 +4319,32 @@ class IntervalMatrix:
 
                         Returns:
                             int: number of cols
+            
+        """
+    def contains(self, A: scipy.sparse.csc_matrix[numpy.float64]) -> bool:
+        """contains(self: zonoopt._core.IntervalMatrix, A: scipy.sparse.csc_matrix[numpy.float64]) -> bool
+
+
+                        Checks whether interval matrix contains a dense matrix
+
+                        Args:
+                            A (scipy.sparse.csc_matrix): matrix
+
+                        Returns:
+                            bool: true if self contains A
+            
+        """
+    def contains_set(self, other: IntervalMatrix) -> bool:
+        """contains_set(self: zonoopt._core.IntervalMatrix, other: zonoopt._core.IntervalMatrix) -> bool
+
+
+                        Checks whether interval matrix contains another interval matrix
+
+                        Args:
+                            other (IntervalMatrix): other interval matrix
+
+                        Returns:
+                            bool: true if self contains other
             
         """
     def diam(self) -> scipy.sparse.csc_matrix[numpy.float64]:
@@ -1937,6 +4383,32 @@ class IntervalMatrix:
                             triplets (list of tuple of (int, int, Interval)): list of triplets, where each triplet is (row, col, value)
             
         """
+    def intersect(self, arg0: IntervalMatrix) -> IntervalMatrix:
+        """intersect(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        Intersection of two interval matrices
+
+                        Args:
+                            other (IntervalMatrix): other interval matrix
+
+                        Returns:
+                            IntervalMatrix: intersection of self and other
+            
+        """
+    def interval_hull(self, arg0: IntervalMatrix) -> IntervalMatrix:
+        """interval_hull(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        Interval hull of two interval matrices
+
+                        Args:
+                            other (IntervalMatrix): other interval matrix
+
+                        Returns:
+                            IntervalMatrix: interval hull of self and other
+            
+        """
     def radius(self) -> IntervalMatrix:
         """radius(self: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
 
@@ -1959,6 +4431,26 @@ class IntervalMatrix:
                             int: number of rows
             
         """
+    def to_array(self) -> list[list[Interval]]:
+        """to_array(self: zonoopt._core.IntervalMatrix) -> list[list[zonoopt._core.Interval]]
+
+
+                        Convert interval matrix to 2D array of intervals
+
+                        Returns:
+                            list of list of Interval: 2D array of intervals corresponding to interval matrix
+            
+        """
+    def to_triplets(self) -> tuple[int, int, list[tuple[int, int, Interval]]]:
+        """to_triplets(self: zonoopt._core.IntervalMatrix) -> tuple[int, int, list[tuple[int, int, zonoopt._core.Interval]]]
+
+
+                        Convert interval matrix to triplet format
+
+                        Returns:
+                            tuple: (rows, cols, triplets), where rows and cols are the number of rows and columns in the interval matrix, and triplets is a list of (row, col, value) tuples corresponding to the non-empty intervals in the interval matrix
+            
+        """
     def width(self) -> float:
         """width(self: zonoopt._core.IntervalMatrix) -> float
 
@@ -1971,8 +4463,12 @@ class IntervalMatrix:
                             float: width of interval matrix
             
         """
-    def __add__(self, other: IntervalMatrix) -> IntervalMatrix:
-        """__add__(self: zonoopt._core.IntervalMatrix, other: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+    @overload
+    def __add__(self, arg0: IntervalMatrix) -> IntervalMatrix:
+        """__add__(*args, **kwargs)
+        Overloaded function.
+
+        1. __add__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
 
 
                         IntervalMatrix addition
@@ -1983,13 +4479,465 @@ class IntervalMatrix:
                         Returns:
                             IntervalMatrix: resulting interval matrix
             
+
+        2. __add__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise addition with interval
+
+                        Args:
+                            interval (Interval): interval to add
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        3. __add__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise addition with scalar
+
+                        Args:
+                            alpha (float): interval to add
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
         """
     @overload
-    def __mul__(self, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> Box:
-        '''__mul__(*args, **kwargs)
+    def __add__(self, arg0: Interval) -> IntervalMatrix:
+        """__add__(*args, **kwargs)
         Overloaded function.
 
-        1. __mul__(self: zonoopt._core.IntervalMatrix, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+        1. __add__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix addition
+
+                        Args:
+                            other (IntervalMatrix): rhs interval matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        2. __add__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise addition with interval
+
+                        Args:
+                            interval (Interval): interval to add
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        3. __add__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise addition with scalar
+
+                        Args:
+                            alpha (float): interval to add
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+        """
+    @overload
+    def __add__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> IntervalMatrix:
+        """__add__(*args, **kwargs)
+        Overloaded function.
+
+        1. __add__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix addition
+
+                        Args:
+                            other (IntervalMatrix): rhs interval matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        2. __add__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise addition with interval
+
+                        Args:
+                            interval (Interval): interval to add
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        3. __add__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise addition with scalar
+
+                        Args:
+                            alpha (float): interval to add
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+        """
+    def __and__(self, arg0: IntervalMatrix) -> IntervalMatrix:
+        """__and__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix intersection operator
+
+                        Args:
+                            other (IntervalMatrix): other interval matrix
+
+                        Returns:
+                            IntervalMatrix: intersection of self and other
+            
+        """
+    def __eq__(self, arg0: IntervalMatrix) -> bool:
+        """__eq__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> bool
+
+
+                        IntervalMatrix equality operator
+
+                        Args:
+                            other (IntervalMatrix): other interval matrix
+
+                        Returns:
+                            bool: flag indicating whether self and other are equal
+            
+        """
+    def __ge__(self, arg0: IntervalMatrix) -> bool:
+        """__ge__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> bool
+
+
+                        IntervalMatrix superset operator
+
+                        Args:
+                            other (IntervalMatrix): other interval matrix
+
+                        Returns:
+                            bool: flag indicating whether self is a superset of other
+            
+        """
+    @overload
+    def __iadd__(self, arg0: IntervalMatrix) -> IntervalMatrix:
+        """__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix addition in-place
+
+                        Args:
+                            other (IntervalMatrix): rhs interval matrix
+            
+
+        2. __iadd__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise addition with interval in-place
+
+                        Args:
+                            interval (Interval): interval to add
+            
+
+        3. __iadd__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise addition with scalar in-place
+
+                        Args:
+                            alpha (float): interval to add
+            
+        """
+    @overload
+    def __iadd__(self, arg0: Interval) -> IntervalMatrix:
+        """__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix addition in-place
+
+                        Args:
+                            other (IntervalMatrix): rhs interval matrix
+            
+
+        2. __iadd__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise addition with interval in-place
+
+                        Args:
+                            interval (Interval): interval to add
+            
+
+        3. __iadd__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise addition with scalar in-place
+
+                        Args:
+                            alpha (float): interval to add
+            
+        """
+    @overload
+    def __iadd__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> IntervalMatrix:
+        """__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix addition in-place
+
+                        Args:
+                            other (IntervalMatrix): rhs interval matrix
+            
+
+        2. __iadd__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise addition with interval in-place
+
+                        Args:
+                            interval (Interval): interval to add
+            
+
+        3. __iadd__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise addition with scalar in-place
+
+                        Args:
+                            alpha (float): interval to add
+            
+        """
+    def __imatmul__(self, arg0: IntervalMatrix) -> IntervalMatrix:
+        """__imatmul__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with another IntervalMatrix in-place
+
+                        Args:
+                            other (IntervalMatrix): rhs interval matrix
+            
+        """
+    @overload
+    def __imul__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> IntervalMatrix:
+        """__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                            IntervalMatrix multiplication with scalar in-place
+
+                            Args:
+                                alpha (float): scalar multiplier
+                
+
+        2. __imul__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise multiplication with interval in-place
+
+                        Args:
+                            interval (Interval): interval multiplier
+            
+        """
+    @overload
+    def __imul__(self, arg0: Interval) -> IntervalMatrix:
+        """__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                            IntervalMatrix multiplication with scalar in-place
+
+                            Args:
+                                alpha (float): scalar multiplier
+                
+
+        2. __imul__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise multiplication with interval in-place
+
+                        Args:
+                            interval (Interval): interval multiplier
+            
+        """
+    @overload
+    def __isub__(self, arg0: IntervalMatrix) -> IntervalMatrix:
+        """__isub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __isub__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix subtraction in-place
+
+                        Args:
+                            other (IntervalMatrix): rhs interval matrix
+            
+
+        2. __isub__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise interval subtraction in-place
+
+                        Args:
+                            interval (Interval): interval to subtract
+            
+
+        3. __isub__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise scalar subtraction in-place
+
+                        Args:
+                            alpha (float): scalar to subtract
+            
+        """
+    @overload
+    def __isub__(self, arg0: Interval) -> IntervalMatrix:
+        """__isub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __isub__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix subtraction in-place
+
+                        Args:
+                            other (IntervalMatrix): rhs interval matrix
+            
+
+        2. __isub__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise interval subtraction in-place
+
+                        Args:
+                            interval (Interval): interval to subtract
+            
+
+        3. __isub__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise scalar subtraction in-place
+
+                        Args:
+                            alpha (float): scalar to subtract
+            
+        """
+    @overload
+    def __isub__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> IntervalMatrix:
+        """__isub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __isub__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix subtraction in-place
+
+                        Args:
+                            other (IntervalMatrix): rhs interval matrix
+            
+
+        2. __isub__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise interval subtraction in-place
+
+                        Args:
+                            interval (Interval): interval to subtract
+            
+
+        3. __isub__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise scalar subtraction in-place
+
+                        Args:
+                            alpha (float): scalar to subtract
+            
+        """
+    @overload
+    def __itruediv__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> IntervalMatrix:
+        """__itruediv__(*args, **kwargs)
+        Overloaded function.
+
+        1. __itruediv__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise division by scalar in-place
+
+                        Args:
+                            alpha (float): scalar to divide
+            
+
+        2. __itruediv__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise division by interval in-place
+
+                        Args:
+                            interval (Interval): interval to divide
+            
+        """
+    @overload
+    def __itruediv__(self, arg0: Interval) -> IntervalMatrix:
+        """__itruediv__(*args, **kwargs)
+        Overloaded function.
+
+        1. __itruediv__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise division by scalar in-place
+
+                        Args:
+                            alpha (float): scalar to divide
+            
+
+        2. __itruediv__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise division by interval in-place
+
+                        Args:
+                            interval (Interval): interval to divide
+            
+        """
+    def __le__(self, arg0: IntervalMatrix) -> bool:
+        """__le__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> bool
+
+
+                        IntervalMatrix subset operator
+
+                        Args:
+                            other (IntervalMatrix): other interval matrix
+
+                        Returns:
+                            bool: flag indicating whether self is a subset of other
+            
+        """
+    @overload
+    def __matmul__(self, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> Box:
+        '''__matmul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
 
 
                         IntervalMatrix multiplication with vector
@@ -2001,7 +4949,7 @@ class IntervalMatrix:
                             Box: resulting box
             
 
-        2. __mul__(self: zonoopt._core.IntervalMatrix, box: zonoopt._core.Box) -> zonoopt._core.Box
+        2. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Box) -> zonoopt._core.Box
 
 
                         IntervalMatrix multiplication with Box
@@ -2013,10 +4961,10 @@ class IntervalMatrix:
                             Box: resulting box
             
 
-        3. __mul__(self: zonoopt._core.IntervalMatrix, A: scipy.sparse.csr_matrix[numpy.float64]) -> zonoopt._core.IntervalMatrix
+        3. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"]) -> zonoopt._core.IntervalMatrix
 
 
-                        IntervalMatrix multiplication with matrix
+                        IntervalMatrix multiplication with dense matrix
 
                         Args:
                             A (scipy.sparse.csr_matrix): rhs matrix
@@ -2025,7 +4973,19 @@ class IntervalMatrix:
                             IntervalMatrix: resulting interval matrix
             
 
-        4. __mul__(self: zonoopt._core.IntervalMatrix, other: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+        4. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: scipy.sparse.csr_matrix[numpy.float64]) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with sparse matrix
+
+                        Args:
+                            A (scipy.sparse.csr_matrix): rhs matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        5. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
 
 
                         IntervalMatrix multiplication with another IntervalMatrix
@@ -2038,11 +4998,11 @@ class IntervalMatrix:
             
         '''
     @overload
-    def __mul__(self, box: Box) -> Box:
-        '''__mul__(*args, **kwargs)
+    def __matmul__(self, arg0: Box) -> Box:
+        '''__matmul__(*args, **kwargs)
         Overloaded function.
 
-        1. __mul__(self: zonoopt._core.IntervalMatrix, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+        1. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
 
 
                         IntervalMatrix multiplication with vector
@@ -2054,7 +5014,7 @@ class IntervalMatrix:
                             Box: resulting box
             
 
-        2. __mul__(self: zonoopt._core.IntervalMatrix, box: zonoopt._core.Box) -> zonoopt._core.Box
+        2. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Box) -> zonoopt._core.Box
 
 
                         IntervalMatrix multiplication with Box
@@ -2066,10 +5026,10 @@ class IntervalMatrix:
                             Box: resulting box
             
 
-        3. __mul__(self: zonoopt._core.IntervalMatrix, A: scipy.sparse.csr_matrix[numpy.float64]) -> zonoopt._core.IntervalMatrix
+        3. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"]) -> zonoopt._core.IntervalMatrix
 
 
-                        IntervalMatrix multiplication with matrix
+                        IntervalMatrix multiplication with dense matrix
 
                         Args:
                             A (scipy.sparse.csr_matrix): rhs matrix
@@ -2078,7 +5038,19 @@ class IntervalMatrix:
                             IntervalMatrix: resulting interval matrix
             
 
-        4. __mul__(self: zonoopt._core.IntervalMatrix, other: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+        4. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: scipy.sparse.csr_matrix[numpy.float64]) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with sparse matrix
+
+                        Args:
+                            A (scipy.sparse.csr_matrix): rhs matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        5. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
 
 
                         IntervalMatrix multiplication with another IntervalMatrix
@@ -2091,11 +5063,11 @@ class IntervalMatrix:
             
         '''
     @overload
-    def __mul__(self, A: scipy.sparse.csr_matrix[numpy.float64]) -> IntervalMatrix:
-        '''__mul__(*args, **kwargs)
+    def __matmul__(self, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, n]']) -> IntervalMatrix:
+        '''__matmul__(*args, **kwargs)
         Overloaded function.
 
-        1. __mul__(self: zonoopt._core.IntervalMatrix, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+        1. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
 
 
                         IntervalMatrix multiplication with vector
@@ -2107,7 +5079,7 @@ class IntervalMatrix:
                             Box: resulting box
             
 
-        2. __mul__(self: zonoopt._core.IntervalMatrix, box: zonoopt._core.Box) -> zonoopt._core.Box
+        2. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Box) -> zonoopt._core.Box
 
 
                         IntervalMatrix multiplication with Box
@@ -2119,10 +5091,10 @@ class IntervalMatrix:
                             Box: resulting box
             
 
-        3. __mul__(self: zonoopt._core.IntervalMatrix, A: scipy.sparse.csr_matrix[numpy.float64]) -> zonoopt._core.IntervalMatrix
+        3. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"]) -> zonoopt._core.IntervalMatrix
 
 
-                        IntervalMatrix multiplication with matrix
+                        IntervalMatrix multiplication with dense matrix
 
                         Args:
                             A (scipy.sparse.csr_matrix): rhs matrix
@@ -2131,7 +5103,19 @@ class IntervalMatrix:
                             IntervalMatrix: resulting interval matrix
             
 
-        4. __mul__(self: zonoopt._core.IntervalMatrix, other: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+        4. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: scipy.sparse.csr_matrix[numpy.float64]) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with sparse matrix
+
+                        Args:
+                            A (scipy.sparse.csr_matrix): rhs matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        5. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
 
 
                         IntervalMatrix multiplication with another IntervalMatrix
@@ -2144,11 +5128,11 @@ class IntervalMatrix:
             
         '''
     @overload
-    def __mul__(self, other: IntervalMatrix) -> IntervalMatrix:
-        '''__mul__(*args, **kwargs)
+    def __matmul__(self, arg0: scipy.sparse.csr_matrix[numpy.float64]) -> IntervalMatrix:
+        '''__matmul__(*args, **kwargs)
         Overloaded function.
 
-        1. __mul__(self: zonoopt._core.IntervalMatrix, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+        1. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
 
 
                         IntervalMatrix multiplication with vector
@@ -2160,7 +5144,7 @@ class IntervalMatrix:
                             Box: resulting box
             
 
-        2. __mul__(self: zonoopt._core.IntervalMatrix, box: zonoopt._core.Box) -> zonoopt._core.Box
+        2. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Box) -> zonoopt._core.Box
 
 
                         IntervalMatrix multiplication with Box
@@ -2172,10 +5156,10 @@ class IntervalMatrix:
                             Box: resulting box
             
 
-        3. __mul__(self: zonoopt._core.IntervalMatrix, A: scipy.sparse.csr_matrix[numpy.float64]) -> zonoopt._core.IntervalMatrix
+        3. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"]) -> zonoopt._core.IntervalMatrix
 
 
-                        IntervalMatrix multiplication with matrix
+                        IntervalMatrix multiplication with dense matrix
 
                         Args:
                             A (scipy.sparse.csr_matrix): rhs matrix
@@ -2184,7 +5168,19 @@ class IntervalMatrix:
                             IntervalMatrix: resulting interval matrix
             
 
-        4. __mul__(self: zonoopt._core.IntervalMatrix, other: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+        4. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: scipy.sparse.csr_matrix[numpy.float64]) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with sparse matrix
+
+                        Args:
+                            A (scipy.sparse.csr_matrix): rhs matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        5. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
 
 
                         IntervalMatrix multiplication with another IntervalMatrix
@@ -2196,8 +5192,448 @@ class IntervalMatrix:
                             IntervalMatrix: resulting interval matrix
             
         '''
-    def __sub__(self, other: IntervalMatrix) -> IntervalMatrix:
-        """__sub__(self: zonoopt._core.IntervalMatrix, other: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+    @overload
+    def __matmul__(self, arg0: IntervalMatrix) -> IntervalMatrix:
+        '''__matmul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Box
+
+
+                        IntervalMatrix multiplication with vector
+
+                        Args:
+                            v (numpy.array): rhs vector
+
+                        Returns:
+                            Box: resulting box
+            
+
+        2. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        IntervalMatrix multiplication with Box
+
+                        Args:
+                            box (Box): rhs box
+
+                        Returns:
+                            Box: resulting box
+            
+
+        3. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"]) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with dense matrix
+
+                        Args:
+                            A (scipy.sparse.csr_matrix): rhs matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        4. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: scipy.sparse.csr_matrix[numpy.float64]) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with sparse matrix
+
+                        Args:
+                            A (scipy.sparse.csr_matrix): rhs matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        5. __matmul__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with another IntervalMatrix
+
+                        Args:
+                            other (IntervalMatrix): rhs interval matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+        '''
+    @overload
+    def __mul__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> IntervalMatrix:
+        """__mul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __mul__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with scalar
+
+                        Args:
+                            alpha (float): scalar multiplier
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        2. __mul__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise multiplication with interval
+
+                        Args:
+                            interval (Interval): interval multiplier
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+        """
+    @overload
+    def __mul__(self, arg0: Interval) -> IntervalMatrix:
+        """__mul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __mul__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with scalar
+
+                        Args:
+                            alpha (float): scalar multiplier
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        2. __mul__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise multiplication with interval
+
+                        Args:
+                            interval (Interval): interval multiplier
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+        """
+    def __neg__(self) -> IntervalMatrix:
+        """__neg__(self: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix negation
+
+                        Returns:
+                            IntervalMatrix: negated interval matrix
+            
+        """
+    def __or__(self, arg0: IntervalMatrix) -> IntervalMatrix:
+        """__or__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix interval hull operator
+
+                        Args:
+                            other (IntervalMatrix): other interval matrix
+
+                        Returns:
+                            IntervalMatrix: interval hull of self and other
+            
+        """
+    @overload
+    def __radd__(self, arg0: Interval) -> IntervalMatrix:
+        """__radd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __radd__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise addition with interval
+
+                        Args:
+                            interval (Interval): interval to add
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        2. __radd__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise addition with scalar
+
+                        Args:
+                            alpha (float): interval to add
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+        """
+    @overload
+    def __radd__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> IntervalMatrix:
+        """__radd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __radd__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise addition with interval
+
+                        Args:
+                            interval (Interval): interval to add
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        2. __radd__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise addition with scalar
+
+                        Args:
+                            alpha (float): interval to add
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+        """
+    @overload
+    def __rmatmul__(self, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, n]']) -> IntervalMatrix:
+        '''__rmatmul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __rmatmul__(self: zonoopt._core.IntervalMatrix, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"]) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with dense matrix
+
+                        Args:
+                            A (scipy.sparse.csr_matrix): lhs matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        2. __rmatmul__(self: zonoopt._core.IntervalMatrix, arg0: scipy.sparse.csr_matrix[numpy.float64]) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with sparse matrix
+
+                        Args:
+                            A (scipy.sparse.csr_matrix): rhs matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+        '''
+    @overload
+    def __rmatmul__(self, arg0: scipy.sparse.csr_matrix[numpy.float64]) -> IntervalMatrix:
+        '''__rmatmul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __rmatmul__(self: zonoopt._core.IntervalMatrix, arg0: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"]) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with dense matrix
+
+                        Args:
+                            A (scipy.sparse.csr_matrix): lhs matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        2. __rmatmul__(self: zonoopt._core.IntervalMatrix, arg0: scipy.sparse.csr_matrix[numpy.float64]) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with sparse matrix
+
+                        Args:
+                            A (scipy.sparse.csr_matrix): rhs matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+        '''
+    @overload
+    def __rmul__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> IntervalMatrix:
+        """__rmul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __rmul__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with scalar
+
+                        Args:
+                            alpha (float): scalar multiplier
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        2. __rmul__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise multiplication with interval
+
+                        Args:
+                            interval (Interval): interval multiplier
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+        """
+    @overload
+    def __rmul__(self, arg0: Interval) -> IntervalMatrix:
+        """__rmul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __rmul__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix multiplication with scalar
+
+                        Args:
+                            alpha (float): scalar multiplier
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        2. __rmul__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise multiplication with interval
+
+                        Args:
+                            interval (Interval): interval multiplier
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+        """
+    @overload
+    def __rsub__(self, arg0: Interval) -> IntervalMatrix:
+        """__rsub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __rsub__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise interval subtraction
+
+                        Args:
+                            interval (Interval): interval from which to subtract
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix (interval - self)
+            
+
+        2. __rsub__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise scalar subtraction
+
+                        Args:
+                            alpha (float): scalar from which to subtract
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix (alpha - self)
+            
+        """
+    @overload
+    def __rsub__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> IntervalMatrix:
+        """__rsub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __rsub__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise interval subtraction
+
+                        Args:
+                            interval (Interval): interval from which to subtract
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix (interval - self)
+            
+
+        2. __rsub__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise scalar subtraction
+
+                        Args:
+                            alpha (float): scalar from which to subtract
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix (alpha - self)
+            
+        """
+    @overload
+    def __rtruediv__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> IntervalMatrix:
+        """__rtruediv__(*args, **kwargs)
+        Overloaded function.
+
+        1. __rtruediv__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise scalar division
+
+                        Args:
+                            alpha (float): scalar
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix (alpha / self)
+            
+
+        2. __rtruediv__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise interval division
+
+                        Args:
+                            interval (Interval): interval
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix (interval / self)
+            
+        """
+    @overload
+    def __rtruediv__(self, arg0: Interval) -> IntervalMatrix:
+        """__rtruediv__(*args, **kwargs)
+        Overloaded function.
+
+        1. __rtruediv__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise scalar division
+
+                        Args:
+                            alpha (float): scalar
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix (alpha / self)
+            
+
+        2. __rtruediv__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise interval division
+
+                        Args:
+                            interval (Interval): interval
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix (interval / self)
+            
+        """
+    @overload
+    def __sub__(self, arg0: IntervalMatrix) -> IntervalMatrix:
+        """__sub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __sub__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
 
 
                         IntervalMatrix subtraction
@@ -2207,6 +5643,170 @@ class IntervalMatrix:
 
                         Returns:
                             IntervalMatrix: resulting interval matrix
+            
+
+        2. __sub__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise interval subtraction
+
+                        Args:
+                            interval (Interval): interval to subtract
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix (self - interval)
+            
+
+        3. __sub__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise scalar subtraction
+
+                        Args:
+                            alpha (float): scalar to subtract
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix (self - alpha)
+            
+        """
+    @overload
+    def __sub__(self, arg0: Interval) -> IntervalMatrix:
+        """__sub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __sub__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix subtraction
+
+                        Args:
+                            other (IntervalMatrix): rhs interval matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        2. __sub__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise interval subtraction
+
+                        Args:
+                            interval (Interval): interval to subtract
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix (self - interval)
+            
+
+        3. __sub__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise scalar subtraction
+
+                        Args:
+                            alpha (float): scalar to subtract
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix (self - alpha)
+            
+        """
+    @overload
+    def __sub__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> IntervalMatrix:
+        """__sub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __sub__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.IntervalMatrix) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix subtraction
+
+                        Args:
+                            other (IntervalMatrix): rhs interval matrix
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix
+            
+
+        2. __sub__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise interval subtraction
+
+                        Args:
+                            interval (Interval): interval to subtract
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix (self - interval)
+            
+
+        3. __sub__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise scalar subtraction
+
+                        Args:
+                            alpha (float): scalar to subtract
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix (self - alpha)
+            
+        """
+    @overload
+    def __truediv__(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> IntervalMatrix:
+        """__truediv__(*args, **kwargs)
+        Overloaded function.
+
+        1. __truediv__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise division by scalar
+
+                        Args:
+                            alpha (float): scalar to divide
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix (self / alpha)
+            
+
+        2. __truediv__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise division by interval
+
+                        Args:
+                            interval (Interval): interval to divide
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix (self / interval)
+            
+        """
+    @overload
+    def __truediv__(self, arg0: Interval) -> IntervalMatrix:
+        """__truediv__(*args, **kwargs)
+        Overloaded function.
+
+        1. __truediv__(self: zonoopt._core.IntervalMatrix, arg0: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise division by scalar
+
+                        Args:
+                            alpha (float): scalar to divide
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix (self / alpha)
+            
+
+        2. __truediv__(self: zonoopt._core.IntervalMatrix, arg0: zonoopt._core.Interval) -> zonoopt._core.IntervalMatrix
+
+
+                        IntervalMatrix elementwise division by interval
+
+                        Args:
+                            interval (Interval): interval to divide
+
+                        Returns:
+                            IntervalMatrix: resulting interval matrix (self / interval)
             
         """
 
@@ -2581,25 +6181,20 @@ def minkowski_sum(Z1: HybZono, Z2: HybZono) -> HybZono:
                     HybZono: zonotopic set
         
     """
-def pontry_diff(Z1: HybZono, Z2: HybZono, exact: bool = ...) -> HybZono:
-    """pontry_diff(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono, exact: bool = False) -> zonoopt._core.HybZono
+def pontry_diff(Z1: HybZono, Z2: Zono, exact: bool = ...) -> HybZono:
+    """pontry_diff(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.Zono, exact: bool = True) -> zonoopt._core.HybZono
 
 
                 Computes the Pontryagin difference Z1 - Z2.
             
-                For inner approximations (exact=false), the algorithm from Vinod et. al. 2025 is used.
+                For inner approximations (exact = false), the algorithm from Vinod et. al. 2025 is used.
                 Note that this algorithm is exact when the minuend is a constrained zonotope and the matrix [G;A] is invertible.
                 Exact Pontryagin difference can only be computed when the subtrahend is a zonotope.
-                If subtrahend is a constrained zonotope, it will first be over-approximated as a zonotope.
-                If subtrahend is a hybrid zonotope, a get_leaves operation will first be performed to produce
-                a union of constrained zonotopes.
-                If the minuend is a hybrid zonotope and exact is false, a get_leaves operation will be performed for 
-                Z1 to reduce the number of leaves in the resulting set.
             
                 Args:
                     Z1 (HybZono): minuend
-                    Z2 (ConZono): subtrahend
-                    exact (bool, optional): require output to be exact, otherwise inner approximation will be returned
+                    Z2 (Zono): subtrahend
+                    exact (bool, optional): require output to be exact, otherwise inner approximation will be returned (default true)
             
                 Returns:
                     HybZono: zonotopic set

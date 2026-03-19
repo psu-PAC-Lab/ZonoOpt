@@ -129,7 +129,7 @@ namespace ZonoOpt
         {
             if (box.get_element(i).is_single_valued())
             {
-                fixed_vars.emplace_back(i, box.get_element(i).ub());
+                fixed_vars.emplace_back(i, box.get_element(i).upper());
                 if (i < this->nGc)
                 {
                     idx_c_to_remove.insert(i);
@@ -903,6 +903,181 @@ namespace ZonoOpt
     {
         const auto EmptySetCast = dynamic_cast<const EmptySet*>(this);
         return EmptySetCast != nullptr;
+    }
+
+    // operator overloading
+    std::unique_ptr<HybZono> HybZono::operator+(HybZono& other) const
+    {
+        return minkowski_sum(*this, other);
+    }
+
+    std::unique_ptr<HybZono> HybZono::operator+(const Eigen::Vector<zono_float, -1>& v) const
+    {
+        Point p(v);
+        return minkowski_sum(*this, p);
+    }
+
+    std::unique_ptr<HybZono> operator+(const Eigen::Vector<zono_float, -1>& v, HybZono& Z)
+    {
+        const Point p(v);
+        return minkowski_sum(p, Z);
+    }
+
+    std::unique_ptr<HybZono> HybZono::operator+(const Box& box) const
+    {
+        const auto Z_box = interval_2_zono(box);
+        return minkowski_sum(*this, *Z_box);
+    }
+
+    std::unique_ptr<HybZono> operator+(const Box& box, HybZono& Z)
+    {
+        const auto Z_box = interval_2_zono(box);
+        return minkowski_sum(*Z_box, Z);
+    }
+
+    void HybZono::operator+=(HybZono& other)
+    {
+        *this = *(*this + other);
+    }
+
+    void HybZono::operator+=(const Eigen::Vector<zono_float, -1>& v)
+    {
+        *this = *(*this + v);
+    }
+
+    void HybZono::operator+=(const Box& box)
+    {
+        *this = *(*this + box);
+    }
+
+    std::unique_ptr<HybZono> operator*(const Eigen::SparseMatrix<zono_float>& R, const HybZono& Z)
+    {
+        return affine_map(Z, R);
+    }
+
+    std::unique_ptr<HybZono> operator*(const Eigen::Matrix<zono_float, -1, -1>& R, const HybZono& Z)
+    {
+        return affine_map(Z, R.sparseView());
+    }
+
+    std::unique_ptr<HybZono> operator*(const IntervalMatrix& R, const HybZono& Z)
+    {
+        return affine_inclusion(Z, R);
+    }
+
+    std::unique_ptr<HybZono> HybZono::operator*(zono_float f) const
+    {
+        Eigen::SparseMatrix<zono_float> fI(this->n, this->n);
+        std::vector<Eigen::Triplet<zono_float>> triplets;
+        for (int i = 0; i < this->n; ++i)
+        {
+            triplets.emplace_back(i, i, f);
+        }
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
+        fI.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
+        fI.setFromTriplets(triplets.begin(), triplets.end());
+#endif
+        return affine_map(*this, fI);
+    }
+
+    std::unique_ptr<HybZono> operator*(zono_float f, const HybZono& Z)
+    {
+        return Z * f;
+    }
+
+    void HybZono::operator*=(zono_float f)
+    {
+        *this = *(*this * f);
+    }
+
+    std::unique_ptr<HybZono> HybZono::operator-() const
+    {
+        // make identity matrix
+        Eigen::SparseMatrix<zono_float> mI(this->n, this->n);
+        std::vector<Eigen::Triplet<zono_float>> triplets;
+        for (int i = 0; i < this->n; ++i)
+        {
+            triplets.emplace_back(i, i, -one);
+        }
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
+        mI.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
+        mI.setFromTriplets(triplets.begin(), triplets.end());
+#endif
+        return affine_map(*this, mI);
+    }
+
+    std::unique_ptr<HybZono> HybZono::operator-(Zono& other)
+    {
+        return pontry_diff(*this, other);
+    }
+
+    std::unique_ptr<HybZono> HybZono::operator-(const Eigen::Vector<zono_float, -1>& v)
+    {
+        Point p(v);
+        return pontry_diff(*this, p);
+    }
+
+    std::unique_ptr<HybZono> HybZono::operator-(const Box& box)
+    {
+        const auto Z_box = interval_2_zono(box);
+        return pontry_diff(*this, *Z_box);
+    }
+
+    void HybZono::operator-=(Zono& other)
+    {
+        *this = *(*this - other);
+    }
+
+    void HybZono::operator-=(const Eigen::Vector<zono_float, -1>& v)
+    {
+        *this = *(*this - v);
+    }
+
+    void HybZono::operator-=(const Box& box)
+    {
+        *this = *(*this - box);
+    }
+
+    std::unique_ptr<HybZono> HybZono::operator*(HybZono& other) const
+    {
+        return cartesian_product(*this, other);
+    }
+
+    void HybZono::operator*=(HybZono& other)
+    {
+        *this = *(*this * other);
+    }
+
+    std::unique_ptr<HybZono> HybZono::operator*(const Box& box) const
+    {
+        const auto Z_box = interval_2_zono(box);
+        return cartesian_product(*this, *Z_box);
+    }
+
+    std::unique_ptr<HybZono> operator*(const Box& box, HybZono& Z)
+    {
+        const auto Z_box = interval_2_zono(box);
+        return cartesian_product(*Z_box, Z);
+    }
+
+    void HybZono::operator*=(const Box& box)
+    {
+        *this = *(*this * box);
+    }
+
+    std::unique_ptr<HybZono> HybZono::operator&(HybZono& other) const
+    {
+        return intersection(*this, other);
+    }
+
+    std::unique_ptr<HybZono> HybZono::operator|(HybZono& other) const
+    {
+        std::vector<std::shared_ptr<HybZono>> hzs;
+        hzs.push_back(std::shared_ptr<HybZono>(this->clone()));
+        hzs.push_back(std::shared_ptr<HybZono>(other.clone()));
+        return union_of_many(hzs);
     }
 
 }
