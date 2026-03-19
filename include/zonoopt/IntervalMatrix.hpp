@@ -64,6 +64,13 @@ namespace ZonoOpt
         std::vector<std::vector<Interval>> to_array() const;
 
         /**
+         * @brief Convert to triplets
+         * 
+         * @return std::tuple<int, int, std::vector<Eigen::Triplet<Interval>>> 
+         */
+        std::tuple<int, int, std::vector<Eigen::Triplet<Interval>>> to_triplets() const;
+
+        /**
          * @brief Get center matrix
          * @return center matrix
          *

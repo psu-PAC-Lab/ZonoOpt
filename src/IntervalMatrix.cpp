@@ -108,6 +108,20 @@ namespace ZonoOpt
         return mat;
     }
 
+    std::tuple<int, int, std::vector<Eigen::Triplet<Interval>>> IntervalMatrix::to_triplets() const
+    {
+        std::vector<Eigen::Triplet<Interval>> triplets;
+        for (int i = 0; i < static_cast<int>(this->rows_); ++i)
+        {
+            for (const auto& [j, val] : this->mat_[i])
+            {
+                triplets.emplace_back(i, static_cast<int>(j), val);
+            }
+        }
+        return {static_cast<int>(this->rows_), static_cast<int>(this->cols_), triplets};
+    }
+
+
     Box IntervalMatrix::operator*(const Eigen::Vector<zono_float, -1>& v) const
     {
         // input handling

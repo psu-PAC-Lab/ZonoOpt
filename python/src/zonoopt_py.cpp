@@ -1187,6 +1187,24 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     list of list of Interval: 2D array of intervals corresponding to interval matrix
             )pbdoc")
+        .def("to_triplets", [](const IntervalMatrix& self)
+            {
+                const auto& [rows, cols, triplets] = self.to_triplets();
+                std::vector<std::tuple<int, int, Interval>> py_triplets;
+                py_triplets.reserve(triplets.size());
+                for (size_t i = 0; i < triplets.size(); ++i)
+                {
+                    py_triplets.emplace_back(triplets[i].row(), triplets[i].col(), triplets[i].value());
+                }
+                return std::make_tuple(rows, cols, py_triplets);
+            },
+            R"pbdoc(
+                Convert interval matrix to triplet format
+
+                Returns:
+                    tuple: (rows, cols, triplets), where rows and cols are the number of rows and columns in the interval matrix, and triplets is a list of (row, col, value) tuples corresponding to the non-empty intervals in the interval matrix
+            )pbdoc"
+        )
         .def("center", &IntervalMatrix::center,
             R"pbdoc(
                 Get center matrix
