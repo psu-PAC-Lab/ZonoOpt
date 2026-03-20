@@ -70,7 +70,12 @@ namespace ZonoOpt::detail
             bool operator()(const std::unique_ptr<Node, NodeDeleter>& n1,
                             const std::unique_ptr<Node, NodeDeleter>& n2) const
             {
-                return n1->solution.J > n2->solution.J;
+                if (n2->is_priority() && !n1->is_priority())
+                    return true;
+                else if (!n2->is_priority() && n1->is_priority())
+                    return false;
+                else
+                    return n1->solution.J > n2->solution.J;
             }
         };
 

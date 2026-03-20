@@ -377,10 +377,6 @@ namespace ZonoOpt::detail
         // clean up
         pq_cv_bnb.notify_all(); // notify all threads to stop waiting
         pq_cv_admm_fp.notify_all();
-        {
-            std::lock_guard<std::mutex> lock(pq_mtx);
-            this->node_queue.clear();
-        }
         this->J_threads.clear();
 
         for (auto& thread : bnb_threads)
@@ -446,10 +442,6 @@ namespace ZonoOpt::detail
         // objective prior to solving
         const zono_float J_min_prior = node->solution.J;
 
-        // solve node
-        node->solve(&this->done);
-        if (this->done) return;
-
         // cleanup function
         auto cleanup = [&, this]()
         {
@@ -462,6 +454,14 @@ namespace ZonoOpt::detail
             this->total_run_time += node->solution.run_time;
             this->total_startup_time += node->solution.startup_time;
         };
+
+        // solve node
+        node->solve(&this->done);
+        if (this->done) 
+        {
+            cleanup();
+            return;
+        }
 
         // return if infeasible or no optimal solution exists in branch
         if (!(node->solution.infeasible || (node->solution.J > this->J_max && !this->
@@ -648,16 +648,6 @@ namespace ZonoOpt::detail
         left->warmstart(node->solution.z, node->solution.u);
         right->warmstart(node->solution.z, node->solution.u);
 
-        // lambda to update J_threads vector with node objective before pushing to queue
-        auto dive_solve = [this](std::unique_ptr<Node, NodeDeleter>& node)
-        {
-            // add node objective to J_threads vector
-            this->J_threads.add(node->solution.J);
-
-            // solve and branch on node
-            this->solve_and_branch(node);
-        };
-
         switch (this->data.admm_data->settings.search_mode)
         {
         case (0):
@@ -676,24 +666,28 @@ namespace ZonoOpt::detail
                 }
                 else if (left_inf)
                 {
-                    dive_solve(right);
+                    right->set_priority(true);
+                    this->push_node(std::move(right));
                 }
                 else if (right_inf)
                 {
-                    dive_solve(left);
+                    left->set_priority(true);
+                    this->push_node(std::move(left));
                 }
                 else // both branches feasible
                 {
                     if (left->get_box().width() > right->get_box().width()) // right is greater depth
                     {
-                        this->push_node(std::move(left));
-                        dive_solve(right);
+                        left->set_priority(false);
+                        right->set_priority(true);
                     }
                     else // left is greater depth
                     {
-                        this->push_node(std::move(right));
-                        dive_solve(left);
+                        left->set_priority(true);
+                        right->set_priority(false);
                     }
+                    this->push_node(std::move(left));
+                    this->push_node(std::move(right));
                 }
                 break;
             }

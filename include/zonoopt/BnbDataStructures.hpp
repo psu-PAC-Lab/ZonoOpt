@@ -252,9 +252,20 @@ namespace ZonoOpt::detail
             return x_box;
         }
 
+        bool is_priority() const
+        {
+            return priority;
+        }
+
+        void set_priority(bool priority)
+        {
+            this->priority = priority;
+        }
+
     private:
         // members
         Box x_box;
+        bool priority = false;
     };
 
     template <typename T, typename Compare=std::less<T>>

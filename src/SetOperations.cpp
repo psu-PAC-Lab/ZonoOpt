@@ -853,7 +853,7 @@ namespace ZonoOpt
         if (Z.zero_one_form) Z.convert_form();
 
         // dimension variables
-        const int n_cons = H.rows();
+        const int n_cons = static_cast<int>(H.rows());
         const int n_slack = direction == '=' ? 0 : n_cons;
 
         // re-used matrices

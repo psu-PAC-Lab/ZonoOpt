@@ -120,6 +120,10 @@ settings = zono.OptSettings()
 settings.single_threaded_admm_fp = True
 settings.rng_seed = 0
 settings.enable_rng_seed = True
+
+settings.verbose = True
+settings.verbosity_interval = 1000
+
 z_sol = Z.optimize_over(P, q, settings=settings)
 
 ### plot ###

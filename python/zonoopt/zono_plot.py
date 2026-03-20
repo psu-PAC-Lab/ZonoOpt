@@ -258,6 +258,8 @@ def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
             obj = ax.scatter([], [], [])
         elif Z.is_point():
             obj = ax.scatter(V[0,0], V[0,1], V[0,2], **kwargs)
+        elif len(V) < Z.get_n()+1:
+            obj = ax.add_collection3d(Poly3DCollection([V], **kwargs))
         else:
             hull = ConvexHull(V)
             obj = ax.add_collection3d(Poly3DCollection([[V[vertex] for vertex in face] for face in hull.simplices], **kwargs))
