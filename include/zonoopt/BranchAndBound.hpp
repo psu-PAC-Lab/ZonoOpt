@@ -70,7 +70,39 @@ namespace ZonoOpt::detail
             bool operator()(const std::unique_ptr<Node, NodeDeleter>& n1,
                             const std::unique_ptr<Node, NodeDeleter>& n2) const
             {
-                return n1->solution.J > n2->solution.J;
+                if (n2->is_priority() && !n1->is_priority())
+                    return true;
+                else if (!n2->is_priority() && n1->is_priority())
+                    return false;
+                else
+                    return n1->solution.J > n2->solution.J;
+            }
+        };
+
+        struct JThreadGuard
+        {
+            ThreadSafeMultiset& J_threads;
+            zono_float J = zero;
+            bool specified = false;
+
+            explicit JThreadGuard(ThreadSafeMultiset& J_threads): J_threads(J_threads)
+            {
+            }
+
+            void specify_J(zono_float J)
+            {
+                if (!specified)
+                {
+                    this->J = J;
+                    this->specified = true;
+                    this->J_threads.add(J);
+                }
+            }
+
+            ~JThreadGuard()
+            {
+                if (specified)
+                    this->J_threads.remove(J);
             }
         };
 

@@ -372,16 +372,15 @@ namespace ZonoOpt::detail
                 print_str(ss);
                 print_iter += this->data.admm_data->settings.verbosity_interval;
             }
+
+            // small sleep
+            std::this_thread::sleep_for(std::chrono::microseconds(100));
         }
 
         // clean up
+        this->done = true;
         pq_cv_bnb.notify_all(); // notify all threads to stop waiting
         pq_cv_admm_fp.notify_all();
-        {
-            std::lock_guard<std::mutex> lock(pq_mtx);
-            this->node_queue.clear();
-        }
-        this->J_threads.clear();
 
         for (auto& thread : bnb_threads)
         {
@@ -392,7 +391,11 @@ namespace ZonoOpt::detail
             if (thread.joinable()) thread.join();
         }
 
-        this->node_queue.clear(); // nodes need to be freed before pool goes out of scope to avoid race condition
+        {
+            std::lock_guard<std::mutex> lock(pq_mtx);
+            this->node_queue.clear(); // nodes need to be freed before pool goes out of scope to avoid race condition
+        }
+        this->J_threads.clear();
 
         // assemble solution
         OptSolution solution;
@@ -443,25 +446,23 @@ namespace ZonoOpt::detail
 
     void BranchAndBound::solve_and_branch(const std::unique_ptr<Node, NodeDeleter>& node)
     {
-        // objective prior to solving
-        const zono_float J_min_prior = node->solution.J;
-
-        // solve node
-        node->solve(&this->done);
-        if (this->done) return;
-
         // cleanup function
         auto cleanup = [&, this]()
         {
-            // remove J from J_threads vector
-            this->J_threads.remove(J_min_prior);
-
             // increment nodes evaluated and logging info
             ++this->iter;
             this->qp_iter += node->solution.iter;
             this->total_run_time += node->solution.run_time;
             this->total_startup_time += node->solution.startup_time;
         };
+
+        // solve node
+        node->solve(&this->done);
+        if (this->done) 
+        {
+            cleanup();
+            return;
+        }
 
         // return if infeasible or no optimal solution exists in branch
         if (!(node->solution.infeasible || (node->solution.J > this->J_max && !this->
@@ -648,16 +649,6 @@ namespace ZonoOpt::detail
         left->warmstart(node->solution.z, node->solution.u);
         right->warmstart(node->solution.z, node->solution.u);
 
-        // lambda to update J_threads vector with node objective before pushing to queue
-        auto dive_solve = [this](std::unique_ptr<Node, NodeDeleter>& node)
-        {
-            // add node objective to J_threads vector
-            this->J_threads.add(node->solution.J);
-
-            // solve and branch on node
-            this->solve_and_branch(node);
-        };
-
         switch (this->data.admm_data->settings.search_mode)
         {
         case (0):
@@ -676,24 +667,28 @@ namespace ZonoOpt::detail
                 }
                 else if (left_inf)
                 {
-                    dive_solve(right);
+                    right->set_priority(true);
+                    this->push_node(std::move(right));
                 }
                 else if (right_inf)
                 {
-                    dive_solve(left);
+                    left->set_priority(true);
+                    this->push_node(std::move(left));
                 }
                 else // both branches feasible
                 {
                     if (left->get_box().width() > right->get_box().width()) // right is greater depth
                     {
-                        this->push_node(std::move(left));
-                        dive_solve(right);
+                        left->set_priority(false);
+                        right->set_priority(true);
                     }
                     else // left is greater depth
                     {
-                        this->push_node(std::move(right));
-                        dive_solve(left);
+                        left->set_priority(true);
+                        right->set_priority(false);
                     }
+                    this->push_node(std::move(left));
+                    this->push_node(std::move(right));
                 }
                 break;
             }
@@ -710,16 +705,20 @@ namespace ZonoOpt::detail
     {
         while (!this->done)
         {
-            std::unique_ptr<Node, NodeDeleter> node = make_node(this->bnb_data);
+            std::unique_ptr<Node, NodeDeleter> node(nullptr, NodeDeleter(&pool));
+            JThreadGuard guard(this->J_threads);
             {
                 std::unique_lock<std::mutex> lock(pq_mtx);
                 pq_cv_bnb.wait(lock, [this]() { return this->done || !this->node_queue.empty(); });
                 if (this->done) return;
                 node = this->node_queue.pop_top();
-                this->J_threads.add(node->solution.J);
+                guard.specify_J(node->solution.J);
                 // add J to J_threads vector, need to do this before releasing lock
             }
-            solve_and_branch(node);
+            if (node) 
+            {
+                solve_and_branch(node);
+            }    
         }
     }
 
@@ -742,8 +741,8 @@ namespace ZonoOpt::detail
     {
         std::unique_lock<std::mutex> lock(pq_mtx);
         this->node_queue.push(std::move(node));
-        pq_cv_bnb.notify_one();
-        pq_cv_admm_fp.notify_one();
+        pq_cv_bnb.notify_all();
+        pq_cv_admm_fp.notify_all();
     }
 
     void BranchAndBound::prune(const zono_float J_prune)
