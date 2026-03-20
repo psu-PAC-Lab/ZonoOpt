@@ -79,6 +79,22 @@ namespace ZonoOpt::detail
             }
         };
 
+        struct JThreadGuard
+        {
+            ThreadSafeMultiset& J_threads;
+            zono_float J;
+
+            JThreadGuard(ThreadSafeMultiset& J_threads, zono_float J) : J_threads(J_threads), J(J)
+            {
+                this->J_threads.add(J);
+            }
+
+            ~JThreadGuard()
+            {
+                this->J_threads.remove(J);
+            }
+        };
+
         const MI_data data;
         std::pmr::synchronized_pool_resource pool;
         NodeCompare comp;
