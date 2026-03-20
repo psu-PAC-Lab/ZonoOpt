@@ -82,16 +82,27 @@ namespace ZonoOpt::detail
         struct JThreadGuard
         {
             ThreadSafeMultiset& J_threads;
-            zono_float J;
+            zono_float J = zero;
+            bool specified = false;
 
-            JThreadGuard(ThreadSafeMultiset& J_threads, zono_float J) : J_threads(J_threads), J(J)
+            explicit JThreadGuard(ThreadSafeMultiset& J_threads): J_threads(J_threads)
             {
-                this->J_threads.add(J);
+            }
+
+            void specify_J(zono_float J)
+            {
+                if (!specified)
+                {
+                    this->J = J;
+                    this->specified = true;
+                    this->J_threads.add(J);
+                }
             }
 
             ~JThreadGuard()
             {
-                this->J_threads.remove(J);
+                if (specified)
+                    this->J_threads.remove(J);
             }
         };
 

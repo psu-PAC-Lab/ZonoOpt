@@ -706,16 +706,17 @@ namespace ZonoOpt::detail
         while (!this->done)
         {
             std::unique_ptr<Node, NodeDeleter> node(nullptr, NodeDeleter(&pool));
+            JThreadGuard guard(this->J_threads);
             {
                 std::unique_lock<std::mutex> lock(pq_mtx);
                 pq_cv_bnb.wait(lock, [this]() { return this->done || !this->node_queue.empty(); });
                 if (this->done) return;
                 node = this->node_queue.pop_top();
+                guard.specify_J(node->solution.J);
                 // add J to J_threads vector, need to do this before releasing lock
             }
             if (node) 
             {
-                JThreadGuard guard(this->J_threads, node->solution.J);
                 solve_and_branch(node);
             }    
         }

@@ -237,7 +237,7 @@ def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
         # plot
         if V is None or len(V) == 0:
             return ax.plot([], [])
-        elif Z.is_point() or len(V) < Z.get_n()+1:
+        elif len(V) <= 2: # line or point
             try:
                 return ax.plot(V[:,0], V[:,1], **kwargs)
             except Exception as e:
@@ -256,14 +256,21 @@ def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
         # plot
         if V is None or len(V) == 0:
             obj = ax.scatter([], [], [])
-        elif Z.is_point():
-            obj = ax.scatter(V[0,0], V[0,1], V[0,2], **kwargs)
-        elif len(V) < Z.get_n()+1:
+        elif len(V) == 1: # point
+            obj = ax.scatter(V[:,0], V[:,1], V[:,2], **kwargs)
+        elif len(V) == 2: # line
+            obj = ax.plot(V[:,0], V[:,1], V[:,2], **kwargs)
+        elif len(V) == 3: # plane
             obj = ax.add_collection3d(Poly3DCollection([V], **kwargs))
         else:
-            hull = ConvexHull(V)
-            obj = ax.add_collection3d(Poly3DCollection([[V[vertex] for vertex in face] for face in hull.simplices], **kwargs))
-            ax.autoscale_view()
+            try:
+                hull = ConvexHull(V)
+                obj = ax.add_collection3d(Poly3DCollection([[V[vertex] for vertex in face] for face in hull.simplices], **kwargs))
+            except Exception as e:
+                print(V)
+                warnings.warn(f"Error plotting 3D zonotope: {e}")
+                obj = ax.scatter([], [], [])
+        ax.autoscale_view()
 
         # adjust scaling
         return obj
