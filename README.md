@@ -96,7 +96,7 @@ target_link_libraries(your_project PRIVATE ZonoOpt)
 
 ## Examples
 Consider the case that we wish to compute the robust forward reachable set of a discrete time double integrator system and verify that it does not intersect an unsafe set.
-We may do this in Python as follows:
+We may do this in Python using operator overloading as follows:
 ```python
 import zonoopt as zono
 import numpy as np
@@ -116,15 +116,12 @@ X0 = zono.interval_2_zono(zono.Box([-1., -0.1], [1., 0.1]))
 U = zono.interval_2_zono(zono.Box([-0.2], [0.2]))
 
 # Disturbance set: affine map of octagon
-W = zono.make_regular_zono_2D(radius=1., n_sides=8)
-W = zono.affine_map(W, np.diag([0.01, 0.05]))
+W = np.diag([0.01, 0.05]) @ zono.make_regular_zono_2D(radius=1., n_sides=8)
 
 # Compute reachable set over 10 time steps
 X = X0
 for k in range(10):
-    X = zono.affine_map(X, A)
-    X = zono.minkowski_sum(X, zono.affine_map(U, B))
-    X = zono.minkowski_sum(X, W)
+    X = A @ X + B @ U + W
 
 # Unsafe set
 O = zono.vrep_2_conzono(np.array([[1.3, 0.],
@@ -133,7 +130,7 @@ O = zono.vrep_2_conzono(np.array([[1.3, 0.],
                                   [2.3, 0.6]]))
 
 # Check for intersection with unsafe set
-print(f'10-step reachable set intersects unsafe set: {not zono.intersection(X, O).is_empty()}')
+print(f'10-step reachable set intersects unsafe set: {not (X & O).is_empty()}')
 
 # Plot the final reachable set
 fig, ax = plt.subplots(figsize=(4, 3), layout='tight')

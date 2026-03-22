@@ -189,6 +189,7 @@ PYBIND11_MODULE(_core, m)
                     Interval: interval hull of self and other
             )pbdoc")
         .def("__add__", [](const Interval& self, const Interval& other) -> Interval { return self + other; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Interval addition
@@ -200,6 +201,7 @@ PYBIND11_MODULE(_core, m)
                     Interval: enclosure of self + other
             )pbdoc")
         .def("__iadd__", [](Interval& self, const Interval& other) { self += other; return &self; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Interval addition in-place
@@ -208,6 +210,7 @@ PYBIND11_MODULE(_core, m)
                     other (Interval): rhs interval
             )pbdoc")
         .def("__add__", [](const Interval& self, const zono_float alpha) -> Interval { return self + alpha; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Interval addition with scalar
@@ -219,6 +222,7 @@ PYBIND11_MODULE(_core, m)
                     Interval: enclosure of self + alpha
             )pbdoc")
         .def("__iadd__", [](Interval& self, const zono_float alpha) { self += alpha; return &self; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Interval addition with scalar in-place
@@ -227,6 +231,7 @@ PYBIND11_MODULE(_core, m)
                     alpha (float): scalar to add
             )pbdoc")
         .def("__radd__", [](const Interval& self, const zono_float alpha) -> Interval { return alpha + self; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Interval right addition with scalar
@@ -239,6 +244,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__sub__", [](const Interval& self, const Interval& other) -> Interval { return self - other; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Interval subtraction
@@ -250,6 +256,7 @@ PYBIND11_MODULE(_core, m)
                     Interval: enclosure of self - other
             )pbdoc")
         .def("__isub__", [](Interval& self, const Interval& other) { self -= other; return &self; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Interval subtraction in-place
@@ -258,6 +265,7 @@ PYBIND11_MODULE(_core, m)
                     other (Interval): rhs interval
             )pbdoc")
         .def("__sub__", [](const Interval& self, const zono_float alpha) -> Interval { return self - alpha; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Interval subtraction with scalar
@@ -269,6 +277,7 @@ PYBIND11_MODULE(_core, m)
                     Interval: enclosure of self - alpha
             )pbdoc")
         .def("__isub__", [](Interval& self, const zono_float alpha) { self -= alpha; return &self; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Interval subtraction with scalar in-place
@@ -277,6 +286,7 @@ PYBIND11_MODULE(_core, m)
                     alpha (float): scalar to subtract
             )pbdoc")
         .def("__rsub__", [](const Interval& self, const zono_float alpha) -> Interval { return alpha - self; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Interval right subtraction with scalar
@@ -289,6 +299,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__mul__", [](const Interval& self, const Interval& other) -> Interval { return self*other; } ,
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Interval multiplication
@@ -300,6 +311,7 @@ PYBIND11_MODULE(_core, m)
                     Interval: enclosure of self * other
             )pbdoc")
         .def("__imul__", [](Interval& self, const Interval& other) { self*=other; return &self; } ,
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Interval multiplication in-place
@@ -308,6 +320,7 @@ PYBIND11_MODULE(_core, m)
                     other (Interval): rhs interval
             )pbdoc")
         .def("__mul__", [](const Interval& self, const zono_float alpha) -> Interval { return self*alpha; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Interval multiplication with scalar
@@ -319,6 +332,7 @@ PYBIND11_MODULE(_core, m)
                     Interval: enclosure of alpha * self
             )pbdoc")
         .def("__imul__", [](Interval& self, const zono_float alpha) { self*=alpha; return &self; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Interval multiplication with scalar in-place
@@ -327,6 +341,7 @@ PYBIND11_MODULE(_core, m)
                     alpha (float): scalar multiplier
             )pbdoc")
         .def("__rmul__", [](const Interval& self, const zono_float alpha) -> Interval { return alpha*self; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Interval right multiplication with scalar
@@ -339,6 +354,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__truediv__", [](const Interval& self, const zono_float alpha) -> Interval { return self/alpha; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Interval division with scalar
@@ -351,6 +367,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__itruediv__", [](Interval& self, const zono_float alpha) { self/=alpha; return &self; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                     Interval division with scalar in-place
@@ -360,6 +377,7 @@ PYBIND11_MODULE(_core, m)
                 )pbdoc"
         )
         .def("__rtruediv__", [](const Interval& self, const zono_float alpha) -> Interval { return alpha/self; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Interval right division with scalar
@@ -372,6 +390,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__truediv__", [](const Interval& self, const Interval& other) -> Interval { return self/other; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Interval division
@@ -383,6 +402,7 @@ PYBIND11_MODULE(_core, m)
                     Interval: enclosure of self / other
             )pbdoc")
         .def("__itruediv__", [](Interval& self, const Interval& other) { self/=other; return &self; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Interval division in-place
@@ -391,6 +411,7 @@ PYBIND11_MODULE(_core, m)
                     other (Interval): interval to divide
             )pbdoc")
         .def("__pow__", [](const Interval& self, const int n) -> Interval { return self.pow(n); },
+            py::arg("n"),
             py::is_operator(),
             R"pbdoc(
                 Interval power
@@ -401,7 +422,8 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Interval: enclosure of self^n
             )pbdoc")
-        .def("__pow__", [](const Interval& self, const zono_float alpha) -> Interval { return self.pow(alpha); }, py::arg("alpha"),
+        .def("__pow__", [](const Interval& self, const zono_float alpha) -> Interval { return self.pow(alpha); },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Interval power with fractional exponent
@@ -422,6 +444,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__eq__", &Interval::operator==,
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Interval equality
@@ -433,6 +456,7 @@ PYBIND11_MODULE(_core, m)
                     bool: flag indicating whether intervals are equal
             )pbdoc")
         .def("__le__", &Interval::operator<=,
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Interval subset operator
@@ -444,6 +468,7 @@ PYBIND11_MODULE(_core, m)
                     bool: flag indicating whether self is a subset of other
             )pbdoc")
         .def("__ge__", &Interval::operator>=,
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Interval superset operator
@@ -843,6 +868,7 @@ PYBIND11_MODULE(_core, m)
                     Box: intersection of self and other
             )pbdoc")
         .def("__add__", [](const Box& self, const Box& other) -> Box { return self + other; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise addition
@@ -854,6 +880,7 @@ PYBIND11_MODULE(_core, m)
                     Box: self + other (elementwise)
             )pbdoc")
         .def("__iadd__", [](Box& self, const Box& other) { self += other; return &self; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise addition in-place
@@ -862,6 +889,7 @@ PYBIND11_MODULE(_core, m)
                     other (Box): rhs box
             )pbdoc")
         .def("__add__", [](const Box& self, const Eigen::Vector<zono_float, -1>& v) -> Box { return self + v; },
+            py::arg("v"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise addition
@@ -873,6 +901,7 @@ PYBIND11_MODULE(_core, m)
                     Box: self + v (elementwise)
             )pbdoc")
         .def("__iadd__", [](Box& self, const Eigen::Vector<zono_float, -1>& v) { self += v; return &self; },
+            py::arg("v"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise addition with vector in-place
@@ -881,6 +910,7 @@ PYBIND11_MODULE(_core, m)
                     v (np.array): vector
             )pbdoc")
         .def("__radd__", [](const Box& self, const Eigen::Vector<zono_float, -1>& v) -> Box { return v + self; },
+            py::arg("v"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise addition
@@ -892,6 +922,7 @@ PYBIND11_MODULE(_core, m)
                     Box: self + v (elementwise)
             )pbdoc")
         .def("__sub__", [](const Box& self, const Box& other) -> Box { return self - other; }, 
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise subtraction
@@ -903,6 +934,7 @@ PYBIND11_MODULE(_core, m)
                     Box: enclosure of self - other (elementwise)
             )pbdoc")
         .def("__isub__", [](Box& self, const Box& other) { self -= other; return &self; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise subtraction in-place
@@ -911,6 +943,7 @@ PYBIND11_MODULE(_core, m)
                     other (Box): other box
             )pbdoc")
         .def("__sub__", [](const Box& self, const Eigen::Vector<zono_float, -1>& v) -> Box { return self - v; }, 
+            py::arg("v"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise subtraction
@@ -922,6 +955,7 @@ PYBIND11_MODULE(_core, m)
                     Box: enclosure of self - v (elementwise)
             )pbdoc")
         .def("__isub__", [](Box& self, const Eigen::Vector<zono_float, -1>& v) { self -= v; return &self; },
+            py::arg("v"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise subtraction with vector in-place
@@ -930,6 +964,7 @@ PYBIND11_MODULE(_core, m)
                     v (np.array): vector
             )pbdoc")
         .def("__rsub__", [](const Box& self, const Eigen::Vector<zono_float, -1>& v) -> Box { return v - self; }, 
+            py::arg("v"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise subtraction
@@ -941,6 +976,7 @@ PYBIND11_MODULE(_core, m)
                     Box: enclosure of v - self (elementwise)
             )pbdoc")
         .def("__mul__", [](const Box& self, const Box& other) -> Box { return self*other; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise multiplication
@@ -952,6 +988,7 @@ PYBIND11_MODULE(_core, m)
                     Box: enclosure of self * other (elementwise)
             )pbdoc")
         .def("__imul__", [](Box& self, const Box& other) { self*=other; return &self; } ,
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise multiplication in-place
@@ -960,6 +997,7 @@ PYBIND11_MODULE(_core, m)
                     other (Box): rhs box
             )pbdoc")
         .def("__mul__", [](const Box& self, const zono_float alpha) -> Box { return self*alpha; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise multiplication with scalar
@@ -971,6 +1009,7 @@ PYBIND11_MODULE(_core, m)
                     Box: enclosure of alpha * self (elementwise)
             )pbdoc")
         .def("__imul__", [](Box& self, const zono_float alpha) {  self*=alpha; return &self; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise multiplication with scalar in-place
@@ -979,6 +1018,7 @@ PYBIND11_MODULE(_core, m)
                     alpha (float): scalar multiplier
             )pbdoc")
         .def("__rmul__", [](const Box& self, const zono_float alpha) -> Box { return alpha*self; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise multiplication with scalar
@@ -990,6 +1030,7 @@ PYBIND11_MODULE(_core, m)
                     Box: enclosure of alpha * self (elementwise)
             )pbdoc")
         .def("__mul__", [](const Box& self, const Interval& interval){ return self * interval; },
+            py::arg("interval"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise multiplication with interval
@@ -1001,6 +1042,7 @@ PYBIND11_MODULE(_core, m)
                     Box: enclosure of self * interval (elementwise)
             )pbdoc")
         .def("__imul__", [](Box& self, const Interval& interval){ self *= interval; return &self; },
+            py::arg("interval"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise multiplication with interval in-place
@@ -1009,6 +1051,7 @@ PYBIND11_MODULE(_core, m)
                     interval (Interval): interval multiplier
             )pbdoc")
         .def("__rmul__", [](const Box& self, const Interval& interval){ return interval * self; },
+            py::arg("interval"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise multiplication with interval
@@ -1020,6 +1063,7 @@ PYBIND11_MODULE(_core, m)
                     Box: enclosure of interval * self (elementwise)
             )pbdoc")
         .def("__mul__", [](const Box& self, const Eigen::Vector<zono_float, -1>& v) -> Box { return self*v; },
+            py::arg("v"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise multiplication with vector
@@ -1031,6 +1075,7 @@ PYBIND11_MODULE(_core, m)
                     Box: enclosure of self * v (elementwise)
             )pbdoc")
         .def("__imul__", [](Box& self, const Eigen::Vector<zono_float, -1>& v) { self*=v; return &self; },
+            py::arg("v"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise multiplication with vector in-place
@@ -1039,6 +1084,7 @@ PYBIND11_MODULE(_core, m)
                     v (np.array): vector multiplier
             )pbdoc")
         .def("__rmul__", [](const Box& self, const Eigen::Vector<zono_float, -1>& v) -> Box { return v*self; },
+            py::arg("v"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise multiplication with vector
@@ -1050,6 +1096,7 @@ PYBIND11_MODULE(_core, m)
                     Box: enclosure of v * self (elementwise)
             )pbdoc")   
         .def("__rmatmul__", [](const Box& self, const Eigen::Matrix<zono_float, -1, -1>& A) -> Box { return self.linear_map(A); },
+            py::arg("A"),
             py::is_operator(),
             R"pbdoc(
                 Right matrix multiplication with dense matrix, corresponds to linear map of box with matrix
@@ -1061,6 +1108,7 @@ PYBIND11_MODULE(_core, m)
                     Box: linear mapped box
             )pbdoc")
         .def("__rmatmul__", [](const Box& self, const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A) -> Box { return self.linear_map(A); },
+            py::arg("A"),
             py::is_operator(),
             R"pbdoc(
                 Right matrix multiplication with sparse matrix, corresponds to linear map of box with matrix
@@ -1072,6 +1120,7 @@ PYBIND11_MODULE(_core, m)
                     Box: linear mapped box
             )pbdoc")
         .def("__truediv__", [](const Box& self, const Box& other) -> Box { return self/other; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise division
@@ -1083,6 +1132,7 @@ PYBIND11_MODULE(_core, m)
                     Box: enclosure of self / other (elementwise)
             )pbdoc")
         .def("__itruediv__", [](Box& self, const Box& other) { self/=other; return &self; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise division in-place
@@ -1091,6 +1141,7 @@ PYBIND11_MODULE(_core, m)
                     other (Box): rhs box
             )pbdoc")
         .def("__truediv__", [](const Box& self, const zono_float alpha) -> Box { return self/alpha; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise division with scalar
@@ -1102,6 +1153,7 @@ PYBIND11_MODULE(_core, m)
                     Box: enclosure of self / alpha (elementwise)
             )pbdoc")
         .def("__itruediv__", [](Box& self, const zono_float alpha) { self/=alpha; return &self; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise division with scalar in-place
@@ -1110,6 +1162,7 @@ PYBIND11_MODULE(_core, m)
                     alpha (float): scalar divisor
             )pbdoc")
         .def("__rtruediv__", [](const Box& self, const zono_float alpha) -> Box { return alpha/self; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise division with scalar
@@ -1121,6 +1174,7 @@ PYBIND11_MODULE(_core, m)
                     Box: enclosure of alpha / self (elementwise)
             )pbdoc")
         .def("__truediv__", [](const Box& self, const Interval& interval){ return self/interval; },
+            py::arg("interval"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise division with interval
@@ -1132,6 +1186,7 @@ PYBIND11_MODULE(_core, m)
                     Box: enclosure of self / interval (elementwise)
             )pbdoc")
         .def("__rtruediv__", [](const Box& self, const Interval& interval){ return interval/self; },
+            py::arg("interval"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise division with interval
@@ -1143,6 +1198,7 @@ PYBIND11_MODULE(_core, m)
                     Box: enclosure of interval / self (elementwise)
             )pbdoc")
         .def("__itruediv__", [](Box& self, const Interval& interval){ self/=interval; return &self; },
+            py::arg("interval"),
             py::is_operator(),
             R"pbdoc(
                 Elementwise division with interval in-place
@@ -1160,6 +1216,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__and__", &Box::operator&,
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Intersection operator
@@ -1171,6 +1228,7 @@ PYBIND11_MODULE(_core, m)
                     Box: intersection of self and other
             )pbdoc")
         .def("__or__", &Box::operator|,
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Interval hull operator
@@ -1182,6 +1240,7 @@ PYBIND11_MODULE(_core, m)
                     Box: interval hull of self and other
             )pbdoc")
         .def("__eq__", &Box::operator==,
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Box equality
@@ -1193,6 +1252,7 @@ PYBIND11_MODULE(_core, m)
                     bool: flag indicating whether boxes are equal
             )pbdoc")
         .def("__le__", &Box::operator<=,
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Box subset operator
@@ -1204,6 +1264,7 @@ PYBIND11_MODULE(_core, m)
                     bool: flag indicating whether self is a subset of other
             )pbdoc")
         .def("__ge__", &Box::operator>=,
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 Box superset operator
@@ -1379,6 +1440,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
         .def("__matmul__", [](const IntervalMatrix& self, const Eigen::Vector<zono_float, -1>& v) -> Box
             { return self*v; },
+            py::arg("v"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix multiplication with vector
@@ -1391,6 +1453,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
         .def("__matmul__", [](const IntervalMatrix& self, const Box& box) -> Box
             { return self*box; },
+            py::arg("box"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix multiplication with Box
@@ -1403,6 +1466,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
         .def("__mul__", [](const IntervalMatrix& self, zono_float alpha)
             { return self*alpha; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix multiplication with scalar
@@ -1415,6 +1479,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
         .def("__rmul__", [](const IntervalMatrix& self, zono_float alpha)
             { return alpha*self; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix multiplication with scalar
@@ -1427,14 +1492,16 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
         .def("__imul__", [](IntervalMatrix& self, zono_float alpha)
                 { self*=alpha; return &self; },
-                py::is_operator(),
-                R"pbdoc(
-                    IntervalMatrix multiplication with scalar in-place
+            py::arg("alpha"),
+            py::is_operator(),
+            R"pbdoc(
+                IntervalMatrix multiplication with scalar in-place
 
-                    Args:
-                        alpha (float): scalar multiplier
-                )pbdoc")
+                Args:
+                    alpha (float): scalar multiplier
+            )pbdoc")
         .def("__mul__", [](const IntervalMatrix& self, const Interval& interval){ return self*interval; },
+            py::arg("interval"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix elementwise multiplication with interval
@@ -1446,6 +1513,7 @@ PYBIND11_MODULE(_core, m)
                     IntervalMatrix: resulting interval matrix
             )pbdoc")
         .def("__rmul__", [](const IntervalMatrix& self, const Interval& interval){ return interval*self; },
+            py::arg("interval"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix elementwise multiplication with interval
@@ -1457,6 +1525,7 @@ PYBIND11_MODULE(_core, m)
                     IntervalMatrix: resulting interval matrix
             )pbdoc")
         .def("__imul__", [](IntervalMatrix& self, const Interval& interval){ self*=interval; return &self; },
+            py::arg("interval"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix elementwise multiplication with interval in-place
@@ -1465,6 +1534,7 @@ PYBIND11_MODULE(_core, m)
                     interval (Interval): interval multiplier
             )pbdoc")
         .def("__truediv__", [](const IntervalMatrix& self, zono_float alpha){ return self / alpha; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix elementwise division by scalar
@@ -1476,6 +1546,7 @@ PYBIND11_MODULE(_core, m)
                     IntervalMatrix: resulting interval matrix (self / alpha)
             )pbdoc")
         .def("__rtruediv__", [](const IntervalMatrix& self, zono_float alpha){ return alpha / self; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix elementwise scalar division
@@ -1487,6 +1558,7 @@ PYBIND11_MODULE(_core, m)
                     IntervalMatrix: resulting interval matrix (alpha / self)
             )pbdoc")
         .def("__itruediv__", [](IntervalMatrix& self, zono_float alpha){ self /= alpha; return &self; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix elementwise division by scalar in-place
@@ -1495,6 +1567,7 @@ PYBIND11_MODULE(_core, m)
                     alpha (float): scalar to divide
             )pbdoc")
         .def("__truediv__", [](const IntervalMatrix& self, const Interval& interval){ return self / interval; },
+            py::arg("interval"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix elementwise division by interval
@@ -1506,6 +1579,7 @@ PYBIND11_MODULE(_core, m)
                     IntervalMatrix: resulting interval matrix (self / interval)
             )pbdoc")
         .def("__rtruediv__", [](const IntervalMatrix& self, const Interval& interval){ return interval / self; },
+            py::arg("interval"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix elementwise interval division
@@ -1517,6 +1591,7 @@ PYBIND11_MODULE(_core, m)
                     IntervalMatrix: resulting interval matrix (interval / self)
             )pbdoc")
         .def("__itruediv__", [](IntervalMatrix& self, const Interval& interval){ self /= interval; return &self; },
+            py::arg("interval"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix elementwise division by interval in-place
@@ -1526,6 +1601,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
         .def("__matmul__", [](const IntervalMatrix& self, const Eigen::Matrix<zono_float, -1, -1>& A) -> IntervalMatrix
             { return self*A; },
+            py::arg("A"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix multiplication with dense matrix
@@ -1538,6 +1614,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
         .def("__matmul__", [](const IntervalMatrix& self, const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A) -> IntervalMatrix
             { return self*A; },
+            py::arg("A"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix multiplication with sparse matrix
@@ -1550,6 +1627,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
         .def("__rmatmul__", [](const IntervalMatrix& self, const Eigen::Matrix<zono_float, -1, -1>& A) -> IntervalMatrix
             { return A*self; },
+            py::arg("A"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix multiplication with dense matrix
@@ -1562,6 +1640,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
         .def("__rmatmul__", [](const IntervalMatrix& self, const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A) -> IntervalMatrix
             { return A*self; },
+            py::arg("A"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix multiplication with sparse matrix
@@ -1574,6 +1653,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
         .def("__matmul__", [](const IntervalMatrix& self, const IntervalMatrix& other) -> IntervalMatrix
             { return self*other; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix multiplication with another IntervalMatrix
@@ -1586,6 +1666,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
         .def("__imatmul__", [](IntervalMatrix& self, const IntervalMatrix& other)
             { self*=other; return &self; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix multiplication with another IntervalMatrix in-place
@@ -1594,6 +1675,7 @@ PYBIND11_MODULE(_core, m)
                     other (IntervalMatrix): rhs interval matrix
             )pbdoc")
         .def("__add__", [](const IntervalMatrix& self, const IntervalMatrix& other){ return self+other; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix addition
@@ -1605,6 +1687,7 @@ PYBIND11_MODULE(_core, m)
                     IntervalMatrix: resulting interval matrix
             )pbdoc")
         .def("__iadd__", [](IntervalMatrix& self, const IntervalMatrix& other) { self+=other; return &self; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix addition in-place
@@ -1613,6 +1696,7 @@ PYBIND11_MODULE(_core, m)
                     other (IntervalMatrix): rhs interval matrix
             )pbdoc")
         .def("__add__", [](const IntervalMatrix& self, const Interval& interval){ return self+interval; },
+            py::arg("interval"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix elementwise addition with interval
@@ -1624,7 +1708,8 @@ PYBIND11_MODULE(_core, m)
                     IntervalMatrix: resulting interval matrix
             )pbdoc")
         .def("__radd__", [](const IntervalMatrix& self, const Interval& interval){ return interval+self; },
-                py::is_operator(),
+            py::arg("interval"),
+            py::is_operator(),
             R"pbdoc(
                 IntervalMatrix elementwise addition with interval
 
@@ -1635,14 +1720,16 @@ PYBIND11_MODULE(_core, m)
                     IntervalMatrix: resulting interval matrix
             )pbdoc")
         .def("__iadd__", [](IntervalMatrix& self, const Interval& interval){ self+=interval; return &self; },
-                py::is_operator(),
-                R"pbdoc(
-                IntervalMatrix elementwise addition with interval in-place
+            py::arg("interval"),
+            py::is_operator(),
+            R"pbdoc(
+            IntervalMatrix elementwise addition with interval in-place
 
-                Args:
-                    interval (Interval): interval to add
+            Args:
+                interval (Interval): interval to add
             )pbdoc")
         .def("__add__", [](const IntervalMatrix& self, zono_float alpha){ return self+alpha; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix elementwise addition with scalar
@@ -1654,6 +1741,7 @@ PYBIND11_MODULE(_core, m)
                     IntervalMatrix: resulting interval matrix
             )pbdoc")
         .def("__radd__", [](const IntervalMatrix& self, zono_float alpha){ return alpha+self; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix elementwise addition with scalar
@@ -1665,6 +1753,7 @@ PYBIND11_MODULE(_core, m)
                     IntervalMatrix: resulting interval matrix
             )pbdoc")
         .def("__iadd__", [](IntervalMatrix& self, zono_float alpha){ self+=alpha; return &self; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix elementwise addition with scalar in-place
@@ -1673,6 +1762,7 @@ PYBIND11_MODULE(_core, m)
                     alpha (float): interval to add
             )pbdoc")
         .def("__sub__", [](const IntervalMatrix& self, const IntervalMatrix& other){ return self-other; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix subtraction
@@ -1684,6 +1774,7 @@ PYBIND11_MODULE(_core, m)
                     IntervalMatrix: resulting interval matrix
             )pbdoc")
         .def("__isub__", [](IntervalMatrix& self, const IntervalMatrix& other){ self-=other; return &self; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix subtraction in-place
@@ -1692,6 +1783,7 @@ PYBIND11_MODULE(_core, m)
                     other (IntervalMatrix): rhs interval matrix
             )pbdoc")
         .def("__sub__", [](const IntervalMatrix& self, const Interval& interval){ return self-interval; },
+            py::arg("interval"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix elementwise interval subtraction
@@ -1703,6 +1795,7 @@ PYBIND11_MODULE(_core, m)
                     IntervalMatrix: resulting interval matrix (self - interval)
             )pbdoc")
         .def("__rsub__", [](const IntervalMatrix& self, const Interval& interval){ return interval-self; },
+            py::arg("interval"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix elementwise interval subtraction
@@ -1714,6 +1807,7 @@ PYBIND11_MODULE(_core, m)
                     IntervalMatrix: resulting interval matrix (interval - self)
             )pbdoc")
         .def("__isub__", [](IntervalMatrix& self, const Interval& interval){ self-=interval; return &self; },
+            py::arg("interval"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix elementwise interval subtraction in-place
@@ -1722,6 +1816,7 @@ PYBIND11_MODULE(_core, m)
                     interval (Interval): interval to subtract
             )pbdoc")
         .def("__sub__", [](const IntervalMatrix& self, zono_float alpha){ return self-alpha; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix elementwise scalar subtraction
@@ -1733,6 +1828,7 @@ PYBIND11_MODULE(_core, m)
                     IntervalMatrix: resulting interval matrix (self - alpha)
             )pbdoc")
         .def("__rsub__", [](const IntervalMatrix& self, zono_float alpha){ return alpha-self; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix elementwise scalar subtraction
@@ -1744,6 +1840,7 @@ PYBIND11_MODULE(_core, m)
                     IntervalMatrix: resulting interval matrix (alpha - self)
             )pbdoc")
         .def("__isub__", [](IntervalMatrix& self, zono_float alpha){ self-=alpha; return &self; },
+            py::arg("alpha"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix elementwise scalar subtraction in-place
@@ -1760,6 +1857,7 @@ PYBIND11_MODULE(_core, m)
                     IntervalMatrix: negated interval matrix
             )pbdoc")
         .def("__and__", &IntervalMatrix::operator&,
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix intersection operator
@@ -1771,6 +1869,7 @@ PYBIND11_MODULE(_core, m)
                     IntervalMatrix: intersection of self and other
             )pbdoc")
         .def("__or__", &IntervalMatrix::operator|,
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix interval hull operator
@@ -1782,6 +1881,7 @@ PYBIND11_MODULE(_core, m)
                     IntervalMatrix: interval hull of self and other
             )pbdoc")
         .def("__eq__", &IntervalMatrix::operator==,
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix equality operator
@@ -1793,6 +1893,7 @@ PYBIND11_MODULE(_core, m)
                     bool: flag indicating whether self and other are equal
             )pbdoc")
         .def("__le__", &IntervalMatrix::operator<=,
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix subset operator
@@ -1804,6 +1905,7 @@ PYBIND11_MODULE(_core, m)
                     bool: flag indicating whether self is a subset of other
             )pbdoc")
         .def("__ge__", &IntervalMatrix::operator>=,
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
                 IntervalMatrix superset operator
@@ -2289,6 +2391,7 @@ PYBIND11_MODULE(_core, m)
                 HybZono: A copy of the hybrid zonotope object.
             )pbdoc")
         .def("__add__", [](const HybZono& self, HybZono& other) { return self + other; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
             Minkowski sum
@@ -2300,6 +2403,7 @@ PYBIND11_MODULE(_core, m)
                 HybZono
             )pbdoc")
         .def("__add__", [](const HybZono& self, const Eigen::Vector<zono_float, -1>& v){ return self + v; },
+            py::arg("v"),
             py::is_operator(),
             R"pbdoc(
             Minkowski sum with point
@@ -2311,6 +2415,7 @@ PYBIND11_MODULE(_core, m)
                 HybZono
             )pbdoc")
         .def("__add__", [](const HybZono& self, const Box& box){ return self + box; },
+            py::arg("box"),
             py::is_operator(),
             R"pbdoc(
             Minkowski sum with box
@@ -2322,6 +2427,7 @@ PYBIND11_MODULE(_core, m)
                 HybZono
             )pbdoc")
         .def("__radd__", [](HybZono& self, const Eigen::Vector<zono_float, -1>& v){ return v + self; },
+            py::arg("v"),
             py::is_operator(),
             R"pbdoc(
             Minkowski sum with point
@@ -2333,6 +2439,7 @@ PYBIND11_MODULE(_core, m)
                 HybZono
             )pbdoc")
         .def("__radd__", [](HybZono& self, const Box& box){ return box + self; },
+            py::arg("box"),
             py::is_operator(),
             R"pbdoc(
             Minkowski sum with box
@@ -2344,6 +2451,7 @@ PYBIND11_MODULE(_core, m)
                 HybZono
             )pbdoc")
         .def("__iadd__", [](HybZono& self, HybZono& other) { self += other; return &self; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
             In-place Minkowski sum
@@ -2352,6 +2460,7 @@ PYBIND11_MODULE(_core, m)
                 other (HybZono)
             )pbdoc")
         .def("__iadd__", [](HybZono& self, const Eigen::Vector<zono_float, -1>& v){ self += v; return &self; },
+            py::arg("v"),
             py::is_operator(),
             R"pbdoc(
             In-place Minkowski sum with point
@@ -2360,6 +2469,7 @@ PYBIND11_MODULE(_core, m)
                 v (numpy.array)
             )pbdoc")
         .def("__iadd__", [](HybZono& self, const Box& box){ self += box; return &self; },
+            py::arg("box"),
             py::is_operator(),
             R"pbdoc(
             In-place Minkowski sum with box
@@ -2368,6 +2478,7 @@ PYBIND11_MODULE(_core, m)
                 box (Box)
             )pbdoc")
         .def("__rmatmul__", [](const HybZono& self, const Eigen::Matrix<zono_float, -1, -1>& R) { return R * self; }, 
+            py::arg("R"),
             py::is_operator(), 
             R"pbdoc(
             Affine map with dense matrix
@@ -2380,6 +2491,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__rmatmul__", [](const HybZono& self, const Eigen::SparseMatrix<zono_float>& R) { return R * self;},
+            py::arg("R"),
             py::is_operator(),
             R"pbdoc(
             Affine map with sparse matrix
@@ -2392,6 +2504,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__rmatmul__", [](const HybZono& self, const IntervalMatrix& R) {return R * self; },
+            py::arg("R"),
             py::is_operator(),
             R"pbdoc(
             Affine inclusion with interval matrix
@@ -2404,6 +2517,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
             )
         .def("__mul__", [](const HybZono& self, zono_float f) { return self * f; }, 
+            py::arg("f"),
             py::is_operator(),
             R"pbdoc(
             Scalar multiplication
@@ -2416,6 +2530,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__rmul__", [](const HybZono& self, zono_float f) { return self * f; }, 
+            py::arg("f"),
             py::is_operator(),
             R"pbdoc(
             Scalar multiplication
@@ -2428,6 +2543,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__imul__", [](HybZono& self, zono_float f) { self *= f; return &self; }, 
+            py::arg("f"),
             py::is_operator(),
             R"pbdoc(
             In-place scalar multiplication
@@ -2440,6 +2556,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__sub__", [](HybZono& self, Zono& other){ return self - other; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
             Pontryagin difference
@@ -2452,6 +2569,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__sub__", [](HybZono& self, const Eigen::Vector<zono_float, -1>& v){ return self - v; },
+            py::arg("v"),
             py::is_operator(),
             R"pbdoc(
             Pontryagin difference with point
@@ -2464,6 +2582,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__sub__", [](HybZono& self, const Box& box){ return self - box; },
+            py::arg("box"),
             py::is_operator(),
             R"pbdoc(
             Pontryagin difference with box
@@ -2476,6 +2595,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__isub__", [](HybZono& self, Zono& other) {self -= other; return &self; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
             In-place Pontryagin difference
@@ -2485,6 +2605,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__isub__", [](HybZono& self, const Eigen::Vector<zono_float, -1>& v) {self -= v; return &self; },
+            py::arg("v"),
             py::is_operator(),
             R"pbdoc(
             In-place Pontryagin difference with point
@@ -2494,6 +2615,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__isub__", [](HybZono& self, const Box& box){ self -= box; return &self; },
+            py::arg("box"),
             py::is_operator(),
             R"pbdoc(
                 In-place pontryagin difference with box
@@ -2503,6 +2625,7 @@ PYBIND11_MODULE(_core, m)
                 )pbdoc"
         )
         .def("__mul__", [](const HybZono& self, HybZono& other) { return self * other; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
             Cartesian product
@@ -2515,6 +2638,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__mul__", [](const HybZono& self, const Box& box) { return self * box; },
+            py::arg("box"),
             py::is_operator(),
             R"pbdoc(
             Cartesian product with box
@@ -2527,6 +2651,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__rmul__", [](HybZono& self, const Box& box) { return box * self; },
+            py::arg("box"),
             py::is_operator(),
             R"pbdoc(
             Cartesian product with box
@@ -2539,6 +2664,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__imul__", [](HybZono& self, HybZono& other) { self *= other; return &self; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
             In-place Cartesian product
@@ -2548,6 +2674,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__imul__", [](HybZono& self, const Box& box) { self *= box; return &self; },
+            py::arg("box"),
             py::is_operator(),
             R"pbdoc(
             In-place Cartesian product with box
@@ -2560,6 +2687,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__and__", [](const HybZono& self, HybZono& other) { return self & other; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
             Intersection
@@ -2572,6 +2700,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc"
         )
         .def("__or__", [](const HybZono& self, HybZono& other) { return self | other; },
+            py::arg("other"),
             py::is_operator(),
             R"pbdoc(
             Union
