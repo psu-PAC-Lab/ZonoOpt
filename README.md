@@ -68,7 +68,7 @@ Some key features of the ZonoOpt library are as follows:
 - Factors are flexibly defined as either $[\xi_c \quad \xi_b]^T \in [0,1]^{nGc} \times \lbrace 0,1 \rbrace^{nGb}$ or the more standard form $[\xi_c \quad \xi_b]^T \in [-1,1]^{nGc} \times \lbrace -1,1 \rbrace^{nGb}$ to facilitate certain set operations.
 - Interval arithmetic is provided via the `Interval`, `Box`, and `IntervalMatrix` classes. 
   - Boost's interval library is used within `Interval` for most of the fundamental operations.
-- Operator overloading for commonly-used set operations.
+- Operator overloading is implemented for commonly-used set operations.
 
 ## Building and Installing
 Python bindings can be installed from PyPI with `pip install zonoopt`. To build the bindings from source, use `pip install .`. Note that a C++ compiler is required to build from source.
