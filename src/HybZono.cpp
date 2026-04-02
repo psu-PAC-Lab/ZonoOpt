@@ -123,13 +123,19 @@ namespace ZonoOpt
         MI_Box box(x_l, x_u, {this->nGc, this->nGb}, this->zero_one_form);
         box.contract(this->A, this->b, contractor_iter);
 
+        // check for seperable blocks of form:
+        // [g0 0 0 ...]^T * xi + c, a^T * xi = b
+        // this enables solving for xi_0 box and eliminating all other factors involved
+        const auto simplifiable_cons = get_simplifiable_constraints(box);
+        apply_constraint_simplification(simplifiable_cons, box);
+
         // find any variables whose values are fixed
         std::vector<std::pair<int, zono_float>> fixed_vars;
         for (int i = 0; i < this->nG; ++i)
         {
             if (box.get_element(i).is_single_valued())
             {
-                fixed_vars.emplace_back(i, box.get_element(i).upper());
+                fixed_vars.emplace_back(i, box.get_element(i).center());
                 if (i < this->nGc)
                 {
                     idx_c_to_remove.insert(i);
@@ -189,6 +195,85 @@ namespace ZonoOpt
         // flag indicating success
         return (this->nG < nG_init || this->nC < nC_init);
     }
+
+    std::vector<std::pair<int, int>> HybZono::get_simplifiable_constraints(const Box& box) const
+    {
+        // tuple: {constraint index, factor to keep, valid}
+        std::vector<std::tuple<int, int, bool>> simplifiable_constraints;
+
+        // lambda to add constraint and factor
+        auto insert_cons = [&](int cons, int gen) -> void {
+            for (auto& [ind, fac, valid] : simplifiable_constraints) {
+                if (cons == ind) {
+                    valid = false;
+                    return;
+                }
+            }
+            simplifiable_constraints.emplace_back(cons, gen, true);
+        };
+
+        // loop through constraints
+        const Eigen::SparseMatrix<zono_float, Eigen::RowMajor> A_rm = this->A;
+        for (int k=0; k<A_rm.outerSize(); ++k) {
+
+            // loop through generators
+            int gen = -1;
+            bool cons_valid = false;
+            for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(A_rm, k); it; ++it) {
+                for (Eigen::SparseMatrix<zono_float>::InnerIterator it_inner(this->G, it.col()); it_inner; ++it_inner) {
+                    if (!box.get_element(static_cast<int>(it.col())).is_single_valued() && std::abs(it_inner.value()) > zono_eps) {
+                        if (gen == -1) {
+                            gen = static_cast<int>(it.col());
+                            cons_valid = true;
+                            break;
+                        }
+                        else {
+                            cons_valid = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (cons_valid) {
+                insert_cons(k, gen);
+            }
+        }
+
+        // check for valid constraints and return
+        std::vector<std::pair<int, int>> simp_cons_out;
+        for (auto [ind, fac, valid] : simplifiable_constraints) {
+            if (valid) {
+                simp_cons_out.emplace_back(ind, fac);
+            }
+        }
+        return simp_cons_out;
+    }
+
+    void HybZono::apply_constraint_simplification(const std::vector<std::pair<int, int>>& cons, Box& box) const {
+        // get constraints in row-major form
+        const Eigen::SparseMatrix<zono_float, Eigen::RowMajor> A_rm = this->A;
+
+        // loop through and apply simplification
+        for (auto [con, fac] : cons) {
+            zono_float a0 = zero; // init
+            Interval b_int (this->b(con), this->b(con));
+            for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(A_rm, con); it; ++it) {
+                if (it.col() == fac) {
+                    a0 = it.value();
+                }
+                else {
+                    b_int -= it.value()*box.get_element(static_cast<int>(it.col()));
+                    box.set_element(static_cast<int>(it.col()), Interval(zero, zero)); // can remove generator
+                }
+            }
+
+            if (std::abs(a0) < zono_eps) continue; // divide by zero protection - do nothing
+            b_int /= a0;
+            box.set_element(fac, b_int.intersect(box.get_element(fac)));
+        }
+    }
+
 
     std::string HybZono::print() const
     {
