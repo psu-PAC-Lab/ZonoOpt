@@ -214,20 +214,32 @@ namespace ZonoOpt
 
         // loop through constraints
         const Eigen::SparseMatrix<zono_float, Eigen::RowMajor> A_rm = this->A;
-        for (int k=0; k<A_rm.outerSize(); ++k) {
-
+        for (int k=0; k<A_rm.outerSize(); ++k)
+        {
             // loop through generators
             int gen = -1;
             bool cons_valid = false;
-            for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(A_rm, k); it; ++it) {
-                for (Eigen::SparseMatrix<zono_float>::InnerIterator it_inner(this->G, it.col()); it_inner; ++it_inner) {
-                    if (!box.get_element(static_cast<int>(it.col())).is_single_valued() && std::abs(it_inner.value()) > zono_eps) {
-                        if (gen == -1) {
+            for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(A_rm, k); it; ++it)
+            {
+                if (it.col() >= this->nGc)
+                {
+                    // simplification only applies for constraints where there are no binary variables
+                    cons_valid = false;
+                    break;
+                }
+
+                for (Eigen::SparseMatrix<zono_float>::InnerIterator it_inner(this->G, it.col()); it_inner; ++it_inner)
+                {
+                    if (!box.get_element(static_cast<int>(it.col())).is_single_valued() && std::abs(it_inner.value()) > zono_eps)
+                    {
+                        if (gen == -1)
+                        {
                             gen = static_cast<int>(it.col());
                             cons_valid = true;
                             break;
                         }
-                        else {
+                        else
+                        {
                             cons_valid = false;
                             break;
                         }
@@ -235,7 +247,8 @@ namespace ZonoOpt
                 }
             }
 
-            if (cons_valid) {
+            if (cons_valid)
+            {
                 insert_cons(k, gen);
             }
         }
