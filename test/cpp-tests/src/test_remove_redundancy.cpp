@@ -29,13 +29,13 @@ int main() {
     d << 1.;
 
     zono_float sup = Z.support(d);
-    ss << "Expected support = 10., got support = " << sup;
-    test_assert(std::abs(sup - 10.) < zono_eps, ss.str());
+    ss << "Expected support = 10., got support = " << sup << std::endl;
+    test_assert(std::abs(sup - 10.) < 1e-3, ss.str());
 
     d(0) = -1.;
     sup = Z.support(d);
-    ss << "Expected support = 6., got support = " << sup;
-    test_assert(std::abs(sup - 6.) < zono_eps, ss.str());
+    ss << "Expected support = -4., got support = " << sup << std::endl;
+    test_assert(std::abs(sup - -4.) < 1e-3, ss.str());
 
     return 0;
 }

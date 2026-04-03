@@ -754,7 +754,7 @@ class HybZono
         std::vector<Eigen::Vector<zono_float, -1>> get_bin_leaves(const OptSettings &settings=OptSettings(), std::shared_ptr<OptSolution>* solution=nullptr,
             int n_leaves = std::numeric_limits<int>::max()) const;
         std::vector<std::pair<int, int>> get_simplifiable_constraints(const Box& box) const;
-        void apply_constraint_simplification(const std::vector<std::pair<int, int>>& cons, Box& box) const;
+        void apply_constraint_simplification(const std::vector<std::pair<int, int>>& cons, Box& box);
 
 };
 

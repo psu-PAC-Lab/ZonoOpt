@@ -250,11 +250,13 @@ namespace ZonoOpt
         return simp_cons_out;
     }
 
-    void HybZono::apply_constraint_simplification(const std::vector<std::pair<int, int>>& cons, Box& box) const {
+    void HybZono::apply_constraint_simplification(const std::vector<std::pair<int, int>>& cons, Box& box)
+    {
         // get constraints in row-major form
         const Eigen::SparseMatrix<zono_float, Eigen::RowMajor> A_rm = this->A;
 
         // loop through and apply simplification
+        std::set<int> gens_to_remove;
         for (auto [con, fac] : cons) {
             zono_float a0 = zero; // init
             Interval b_int (this->b(con), this->b(con));
@@ -264,7 +266,7 @@ namespace ZonoOpt
                 }
                 else {
                     b_int -= it.value()*box.get_element(static_cast<int>(it.col()));
-                    box.set_element(static_cast<int>(it.col()), Interval(zero, zero)); // can remove generator
+                    gens_to_remove.insert(static_cast<int>(it.col()));
                 }
             }
 
@@ -272,6 +274,156 @@ namespace ZonoOpt
             b_int /= a0;
             box.set_element(fac, b_int.intersect(box.get_element(fac)));
         }
+
+        // return if nothing to do
+        if (gens_to_remove.empty()) return;
+
+        // remove generators
+        std::vector<Eigen::Triplet<zono_float>> triplets;
+        triplets.reserve(std::max(this->A.nonZeros(), this->G.nonZeros()));
+
+        auto remove_gens = [&](const Eigen::SparseMatrix<zono_float>& M, int offset) -> int
+        {
+            triplets.clear();
+
+            int col_adj = 0;
+            auto it_gen = gens_to_remove.begin();
+            while (it_gen != gens_to_remove.end() && *it_gen - offset < 0)
+            {
+                ++it_gen;
+            }
+
+            for (int k=0; k<M.outerSize(); ++k)
+            {
+                if (it_gen != gens_to_remove.end() && k == *it_gen - offset)
+                {
+                    ++it_gen;
+                    ++col_adj;
+                }
+                else
+                {
+                    for (Eigen::SparseMatrix<zono_float>::InnerIterator it(M, k); it; ++it)
+                    {
+                        triplets.emplace_back(it.row(), it.col()-col_adj, it.value());
+                    }
+                }
+            }
+
+            return col_adj;
+        };
+
+        int col_adj;
+
+        col_adj = remove_gens(this->Gc, 0);
+        Eigen::SparseMatrix<zono_float> Gc_new (this->n, this->nGc-col_adj);
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
+        Gc_new.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
+        Gc_new.setFromTriplets(triplets.begin(), triplets.end());
+#endif
+
+        col_adj = remove_gens(this->Gb, this->nGc);
+        Eigen::SparseMatrix<zono_float> Gb_new (this->n, this->nGb-col_adj);
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
+        Gb_new.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
+        Gb_new.setFromTriplets(triplets.begin(), triplets.end());
+#endif
+
+        col_adj = remove_gens(this->Ac, 0);
+        Eigen::SparseMatrix<zono_float> Ac_new (this->nC, this->nGc-col_adj);
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
+        Ac_new.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
+        Ac_new.setFromTriplets(triplets.begin(), triplets.end());
+#endif
+
+        col_adj = remove_gens(this->Ab, this->nGc);
+        Eigen::SparseMatrix<zono_float> Ab_new (this->nC, this->nGb-col_adj);
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
+        Ab_new.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
+        Ab_new.setFromTriplets(triplets.begin(), triplets.end());
+#endif
+
+        // remove generators from box
+        std::vector<Interval> int_vec;
+        int_vec.reserve(this->nG);
+        auto it_gen = gens_to_remove.begin();
+        for (int k=0; k<this->nG; ++k)
+        {
+            if (it_gen != gens_to_remove.end() && k == *it_gen)
+            {
+                ++it_gen;
+            }
+            else
+            {
+                int_vec.push_back(box.get_element(k));
+            }
+        }
+        box = Box(int_vec);
+
+        // remove constraints
+        auto remove_cons = [&](const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& M) -> void
+        {
+            triplets.clear();
+
+            int row_adj = 0;
+            auto it_cons = cons.begin();
+
+            for (int k=0; k<M.outerSize(); ++k)
+            {
+                if (it_cons != cons.end() && k == it_cons->first)
+                {
+                    ++it_cons;
+                    ++row_adj;
+                }
+                else
+                {
+                    for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(M, k); it; ++it)
+                    {
+                        triplets.emplace_back(it.row()-row_adj, it.col(), it.value());
+                    }
+                }
+            }
+        };
+
+        const int row_adj = static_cast<int>(cons.size());
+        remove_cons(Ac_new);
+        Eigen::SparseMatrix<zono_float, Eigen::RowMajor> Ac_new_rm (Ac_new.rows()-row_adj, Ac_new.cols());
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
+        Ac_new_rm.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
+        Ac_new_rm.setFromTriplets(triplets.begin(), triplets.end());
+#endif
+
+        remove_cons(Ab_new);
+        Eigen::SparseMatrix<zono_float, Eigen::RowMajor> Ab_new_rm (Ab_new.rows()-row_adj, Ab_new.cols());
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
+        Ab_new_rm.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
+        Ab_new_rm.setFromTriplets(triplets.begin(), triplets.end());
+#endif
+
+        std::vector<zono_float> b_vec;
+        b_vec.reserve(this->nC);
+        auto it_cons = cons.begin();
+        for (int k=0; k<this->nC; ++k)
+        {
+            if (it_cons != cons.end() && k == it_cons->first)
+            {
+                ++it_cons;
+            }
+            else
+            {
+                b_vec.push_back(this->b(k));
+            }
+        }
+
+        Eigen::Vector<zono_float, -1> b_new = Eigen::Map<Eigen::Vector<zono_float, -1>>(b_vec.data(), static_cast<Eigen::Index>(b_vec.size()));
+
+        // set new matrices and vectors
+        set(Gc_new, Gb_new, this->c, Ac_new_rm, Ab_new_rm, b_new, this->zero_one_form, this->sharp);
     }
 
 
