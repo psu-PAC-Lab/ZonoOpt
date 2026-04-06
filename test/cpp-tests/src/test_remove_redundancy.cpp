@@ -163,6 +163,11 @@ void test_random_conzono(std::mt19937& rand_gen)
         return;
     }
 
+    // randomly convert form
+    // std::uniform_real_distribution<double> form_dist(0., 1.);
+    // if (form_dist(rand_gen) < 0.5)
+    //     Z.convert_form();
+
     std::string Z_before_str = Z.print();
 
     // get support after simplifying
@@ -203,7 +208,7 @@ int main()
 
     for (int i=0; i<500; ++i)
     {
-        if (i == 54)
+        if (i == 301)
             std::cout << "DEBUG" << std::endl;
 
         test_random_conzono(rand_gen);

@@ -100,9 +100,9 @@ namespace ZonoOpt
             }
 
             // update number of generators (needs to happen before call to make_G_A())
-            this->nG = static_cast<int>(this->G.cols());
             this->nGc = static_cast<int>(this->Gc.cols());
             this->nGb = static_cast<int>(this->Gb.cols());
+            this->nG = this->nGc + this->nGb;
 
             // update equivalent matrices
             make_G_A();
@@ -127,9 +127,6 @@ namespace ZonoOpt
         // [g0 0 0 ...]^T * xi + c, a^T * xi = b
         // this enables solving for xi_0 box and eliminating all other factors involved
         const auto simplifiable_cons = get_simplifiable_constraints(box);
-        if (!simplifiable_cons.empty())
-            std::cout << "TEST" << std::endl;
-
         apply_constraint_simplification(simplifiable_cons, box);
         rescale_generators(box);
 
@@ -152,32 +149,18 @@ namespace ZonoOpt
         }
 
         // get updates to c and b
-        Eigen::Vector<zono_float, -1> dc(this->n);
-        Eigen::Vector<zono_float, -1> db(this->nC);
-        Eigen::Vector<zono_float, -1> dc_k(this->n);
-        Eigen::Vector<zono_float, -1> db_k(this->nC);
-        dc.setZero();
-        db.setZero();
         for (auto& [k, val] : fixed_vars)
         {
-            dc_k.setZero();
             for (Eigen::SparseMatrix<zono_float>::InnerIterator it(this->G, k); it; ++it)
             {
-                dc_k(it.row()) = it.value() * val;
+                this->c(it.row()) += it.value() * val;
             }
-            dc += dc_k;
 
-            db_k.setZero();
             for (Eigen::SparseMatrix<zono_float>::InnerIterator it(this->A, k); it; ++it)
             {
-                db_k(it.row()) = it.value() * val;
+                this->b(it.row()) -= it.value() * val;
             }
-            db -= db_k;
         }
-
-        // set center and constraint vector
-        this->c += dc;
-        this->b += db;
 
         // remove generators
         remove_all_generators(idx_c_to_remove, idx_b_to_remove);
@@ -185,8 +168,6 @@ namespace ZonoOpt
         // remove redundant constraints
         remove_redundant_constraints<zono_float>(this->A, this->b);
         this->nC = static_cast<int>(this->A.rows());
-
-        // update Ac, Ab
         set_Ac_Ab_from_A();
 
         // identify any unused generators
@@ -462,12 +443,20 @@ namespace ZonoOpt
                 it.valueRef() *= g_tilde;
                 this->c(it.row()) += it.value() * c_tilde;
             }
+            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(this->G, k); it; ++it) // duplicate for G
+            {
+                it.valueRef() *= g_tilde;
+            }
 
             // loop through constraint matrix
             for (Eigen::SparseMatrix<zono_float>::InnerIterator it(this->Ac, k); it; ++it)
             {
                 it.valueRef() *= g_tilde;
                 this->b(it.row()) -= it.value() * c_tilde;
+            }
+            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(this->A, k); it; ++it) // duplicate for A
+            {
+                it.valueRef() *= g_tilde;
             }
         }
     }
@@ -716,46 +705,34 @@ namespace ZonoOpt
     std::set<int> HybZono::find_unused_generators(const Eigen::SparseMatrix<zono_float>& G,
                                                   const Eigen::SparseMatrix<zono_float>& A)
     {
-        std::set<int> idx_no_cons;
-        for (int k = 0; k < A.outerSize(); k++)
+        if (G.cols() != A.cols())
+            throw std::invalid_argument("Find unused generators: inconsistent dimensions.");
+
+        std::set<int> unused_generators;
+        for (int k=0; k<G.cols(); ++k)
         {
-            bool is_unused = true;
+            bool unused = true;
+            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(G, k); it; ++it)
+            {
+                if (std::abs(it.value()) > zono_eps)
+                {
+                    unused = false;
+                    break;
+                }
+            }
+            if (!unused) continue;
             for (Eigen::SparseMatrix<zono_float>::InnerIterator it(A, k); it; ++it)
             {
                 if (std::abs(it.value()) > zono_eps)
                 {
-                    is_unused = false;
+                    unused = false;
                     break;
                 }
             }
-
-            if (is_unused)
-            {
-                idx_no_cons.insert(k);
-            }
+            if (unused)
+                unused_generators.insert(k);
         }
-
-        // check if any of idx_no_cons multiply only zeros
-        std::set<int> idx_to_remove;
-        for (int idx_no_con : idx_no_cons)
-        {
-            bool is_zero = true;
-            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(G, idx_no_con); it; ++it)
-            {
-                if (std::abs(it.value()) > zono_eps)
-                {
-                    is_zero = false;
-                    break;
-                }
-            }
-
-            if (is_zero)
-            {
-                idx_to_remove.insert(idx_no_con);
-            }
-        }
-
-        return idx_to_remove;
+        return unused_generators;
     }
 
     void HybZono::make_G_A()
