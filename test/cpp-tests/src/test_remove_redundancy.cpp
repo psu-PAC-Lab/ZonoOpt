@@ -141,9 +141,10 @@ void test_random_conzono(std::mt19937& rand_gen)
 
     // get support before simplifying
     OptSettings settings;
-    settings.eps_prim = 1e-3;
-    settings.eps_dual = 1e-3;
+    settings.eps_prim = 1e-4;
+    settings.eps_dual = 1e-4;
     settings.rho = 1.;
+    settings.k_max_admm = 50000;
     std::array<zono_float, 4> sup_before;
 
     Eigen::Vector<zono_float, 2> d;
@@ -164,9 +165,9 @@ void test_random_conzono(std::mt19937& rand_gen)
     }
 
     // randomly convert form
-    // std::uniform_real_distribution<double> form_dist(0., 1.);
-    // if (form_dist(rand_gen) < 0.5)
-    //     Z.convert_form();
+    std::uniform_real_distribution<double> form_dist(0., 1.);
+    if (form_dist(rand_gen) < 0.5)
+        Z.convert_form();
 
     std::string Z_before_str = Z.print();
 
@@ -208,9 +209,6 @@ int main()
 
     for (int i=0; i<500; ++i)
     {
-        if (i == 301)
-            std::cout << "DEBUG" << std::endl;
-
         test_random_conzono(rand_gen);
     }
 

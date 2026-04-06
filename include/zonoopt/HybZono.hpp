@@ -737,7 +737,7 @@ class HybZono
             std::shared_ptr<OptSolution>* solution, int n_leaves, int contractor_iter);
 
 
-        static void remove_generators(Eigen::SparseMatrix<zono_float>& G, Eigen::SparseMatrix<zono_float>& A, const std::set<int>& idx_to_remove);
+        static void remove_cols(Eigen::SparseMatrix<zono_float>& M, const std::set<int>& idx_to_remove);
         static std::set<int> find_unused_generators(const Eigen::SparseMatrix<zono_float>& G, const Eigen::SparseMatrix<zono_float>& A);
         OptSolution mi_opt(const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q,
             zono_float c, const Eigen::SparseMatrix<zono_float>& A, const Eigen::Vector<zono_float, -1>& b,
