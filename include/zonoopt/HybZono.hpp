@@ -755,6 +755,7 @@ class HybZono
             int n_leaves = std::numeric_limits<int>::max()) const;
         std::vector<std::pair<int, int>> get_simplifiable_constraints(const Box& box) const;
         void apply_constraint_simplification(const std::vector<std::pair<int, int>>& cons, Box& box);
+        void rescale_generators(const Box& box);
 
 };
 

@@ -131,6 +131,7 @@ namespace ZonoOpt
             std::cout << "TEST" << std::endl;
 
         apply_constraint_simplification(simplifiable_cons, box);
+        rescale_generators(box);
 
         // find any variables whose values are fixed
         std::vector<std::pair<int, zono_float>> fixed_vars;
@@ -431,6 +432,44 @@ namespace ZonoOpt
 
         // set new matrices and vectors
         set(Gc_new, this->Gb, this->c, Ac_new_rm, Ab_new_rm, b_new, this->zero_one_form, this->sharp);
+    }
+
+    void HybZono::rescale_generators(const Box& box)
+    {
+        // update continuous generators
+        for (int k=0; k<this->nGc; ++k)
+        {
+            // get interval and make sure not single-valued
+            const Interval box_k = box.get_element(k);
+            if (box_k.is_single_valued()) continue;
+
+            // get scaling and offset
+            zono_float g_tilde, c_tilde;
+            if (this->zero_one_form)
+            {
+                g_tilde = box_k.upper() - box_k.lower();
+                c_tilde = box_k.lower();
+            }
+            else
+            {
+                g_tilde = (box_k.upper() - box_k.lower()) / two;
+                c_tilde = (box_k.upper() + box_k.lower()) / two;
+            }
+
+            // loop through generator matrix
+            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(this->Gc, k); it; ++it)
+            {
+                it.valueRef() *= g_tilde;
+                this->c(it.row()) += it.value() * c_tilde;
+            }
+
+            // loop through constraint matrix
+            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(this->Ac, k); it; ++it)
+            {
+                it.valueRef() *= g_tilde;
+                this->b(it.row()) -= it.value() * c_tilde;
+            }
+        }
     }
 
 
