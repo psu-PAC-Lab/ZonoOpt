@@ -61,9 +61,16 @@ void test2()
     // get leaves
     auto leaves_before_simplifying = Zh.get_leaves(false);
 
+    // get support
+    Eigen::Vector<zono_float, 1> d;
+    d << 1.;
+    const zono_float sup1_1 = Zh.support(d);
+
+    d(0) = -1.;
+    const zono_float sup2_1 = Zh.support(d);
+
     // simplify
     Zh.remove_redundancy();
-    std::cout << Zh << std::endl;
 
     // get leaves
     auto leaves_after_simplifying = Zh.get_leaves(false);
@@ -72,6 +79,18 @@ void test2()
     ss << "case2: expected " << leaves_before_simplifying.size() << " leaves, got " << leaves_after_simplifying.size() << std::endl;
     test_assert(leaves_before_simplifying.size() == leaves_after_simplifying.size(), ss.str());
     ss.clear();
+
+    // check that support is as expected
+    d(0) = 1.;
+    const zono_float sup1_2 = Zh.support(d);
+    ss << "case3: expected support = " << sup1_1 << ", got support = " << sup1_2 << std::endl;
+    test_assert(std::abs(sup1_1 - sup1_2) < 1e-3, ss.str());
+    ss.clear();
+
+    d(0) = -1.;
+    const zono_float sup2_2 = Zh.support(d);
+    ss << "case3: expected support = " << sup2_1 << ", got support = " << sup2_2 << std::endl;
+    test_assert(std::abs(sup2_1 - sup2_2) < 1e-3, ss.str());
 }
 
 void test3()

@@ -211,6 +211,20 @@ namespace ZonoOpt
         auto start = std::chrono::high_resolution_clock::now();
         std::stringstream ss;
 
+        // handle zero-dimensional case
+        if (this->data->n_x == 0)
+        {
+            solution.J = (this->data->c)(0);
+            solution.primal_residual = zero;
+            solution.dual_residual = zero;
+            solution.run_time = solution.startup_time;
+            solution.iter = 0;
+            solution.converged = true;
+            solution.infeasible = false;
+
+            return;
+        }
+
         // initial values
         Eigen::Vector<zono_float, -1> xk, zk, uk, zkm1, rhs, x_nu;
         if (this->is_warmstarted)
@@ -492,6 +506,20 @@ namespace ZonoOpt
 
     void ADMM_FP_solver::solve_core(const Box& x_box, OptSolution& solution, std::atomic<bool>* stop)
     {
+        // handle zero-dimensional case
+        if (this->data->n_x == 0)
+        {
+            solution.J = (this->data->c)(0);
+            solution.primal_residual = zero;
+            solution.dual_residual = zero;
+            solution.run_time = solution.startup_time;
+            solution.iter = 0;
+            solution.converged = true;
+            solution.infeasible = false;
+
+            return;
+        }
+
         // cast to MI_Box
         const auto* mi_box = dynamic_cast<const MI_Box*>(&x_box);
         if (mi_box == nullptr)
