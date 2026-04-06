@@ -4,6 +4,9 @@
 #include "ZonoOpt.hpp"
 #include <fstream>
 #include <iostream>
+#include <random>
+
+using namespace ZonoOpt;
 
 inline Eigen::SparseMatrix<zono_float> load_sparse_matrix(const std::string& filename)
 {
@@ -62,6 +65,92 @@ inline void test_assert(const bool assert_cond, const std::string& message = "")
     }
 }
 
+inline Eigen::SparseMatrix<zono_float> random_sparse_matrix(int m, int n, double density, zono_float val_min, zono_float val_max, std::mt19937& rand_gen)
+{
+    // input checking
+    if (m < 0 || n < 0)
+        throw std::invalid_argument("matrix dimensions must be non-negative");
+    if (density <= 0 || density > 1)
+        throw std::invalid_argument("density must be in (0, 1]");
+    if (val_max < val_min)
+        throw std::invalid_argument("val_max must be greater than val_min");
+
+    // initialize randomization
+    std::uniform_real_distribution<zono_float> val_dist(val_min, val_max);
+    std::uniform_real_distribution<double> density_dist(0.0, 1.0);
+
+    // generate random triplets
+    Eigen::SparseMatrix<zono_float> mat(m, n);
+    std::vector<Eigen::Triplet<zono_float>> triplets;
+    for (int i=0; i<m; ++i)
+    {
+        for (int j=0; j<n; ++j)
+        {
+            if (density_dist(rand_gen) < density)
+            {
+                triplets.emplace_back(i, j, val_dist(rand_gen));
+            }
+        }
+    }
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
+    mat.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
+    mat.setFromTriplets(triplets.begin(), triplets.end());
+#endif
+
+    return mat;
+}
+
+inline Eigen::Vector<zono_float, -1> random_vector(int n, zono_float val_min, zono_float val_max, std::mt19937& rand_gen)
+{
+    // input checking
+    if (n < 0)
+        throw std::invalid_argument("vector dimension must be non-negative");
+    if (val_max < val_min)
+        throw std::invalid_argument("val_max must be greater than val_min");
+
+    // initialize randomization
+    std::uniform_real_distribution<zono_float> val_dist(val_min, val_max);
+
+    // generate random vector
+    Eigen::Vector<zono_float, -1> vec(n);
+    for (int i=0; i<n; ++i)
+    {
+        vec(i) = val_dist(rand_gen);
+    }
+
+    return vec;
+}
+
+inline HybZono random_hybzono(int n, int nGc, int nGb, int nC, double density, zono_float val_min, zono_float val_max, std::mt19937& rand_gen)
+{
+    Eigen::SparseMatrix<zono_float> Gc = random_sparse_matrix(n, nGc, density, val_min, val_max, rand_gen);
+    Eigen::SparseMatrix<zono_float> Gb = random_sparse_matrix(n, nGb, density, val_min, val_max, rand_gen);
+    Eigen::Vector<zono_float, -1> c = random_vector(n, val_min, val_max, rand_gen);
+    Eigen::SparseMatrix<zono_float> Ac = random_sparse_matrix(nC, nGc, density, val_min, val_max, rand_gen);
+    Eigen::SparseMatrix<zono_float> Ab = random_sparse_matrix(nC, nGb, density, val_min, val_max, rand_gen);
+    Eigen::Vector<zono_float, -1> b = random_vector(nC, val_min, val_max, rand_gen);
+
+    return {Gc, Gb, c, Ac, Ab, b};
+}
+
+inline ConZono random_conzono(int n, int nG, int nC, double density, zono_float val_min, zono_float val_max, std::mt19937& rand_gen)
+{
+    Eigen::SparseMatrix<zono_float> G = random_sparse_matrix(n, nG, density, val_min, val_max, rand_gen);
+    Eigen::Vector<zono_float, -1> c = random_vector(n, val_min, val_max, rand_gen);
+    Eigen::SparseMatrix<zono_float> A = random_sparse_matrix(nC, nG, density, val_min, val_max, rand_gen);
+    Eigen::Vector<zono_float, -1> b = random_vector(nC, val_min, val_max, rand_gen);
+
+    return {G, c, A, b};
+}
+
+inline Zono random_zono(int n, int nG, double density, zono_float val_min, zono_float val_max, std::mt19937& rand_gen)
+{
+    Eigen::SparseMatrix<zono_float> G = random_sparse_matrix(n, nG, density, val_min, val_max, rand_gen);
+    Eigen::Vector<zono_float, -1> c = random_vector(n, val_min, val_max, rand_gen);
+
+    return {G, c};
+}
 
 
 #endif
