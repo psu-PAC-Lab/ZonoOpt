@@ -123,7 +123,7 @@ namespace ZonoOpt
         MI_Box box(x_l, x_u, {this->nGc, this->nGb}, this->zero_one_form);
         box.contract(this->A, this->b, contractor_iter);
 
-        // check for seperable blocks of form:
+        // check for separable blocks of form:
         // [g0 0 0 ...]^T * xi + c, a^T * xi = b
         // this enables solving for xi_0 box and eliminating all other factors involved
         const auto simplifiable_cons = get_simplifiable_constraints(box);
@@ -261,17 +261,15 @@ namespace ZonoOpt
             // if simplifiable constraint found, add to vector
             if (cons_valid)
             {
-                if (gen_keep == -1) // factors involved in constraint do not appear in generator matrix
-                {
-                    if (const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it_A_rm(A_rm, k); it_A_rm)
-                    {
-                        // just use first element from constraint
-                        simplifiable_constraints.emplace_back(k, static_cast<int>(it_A_rm.col()));
-                    }
-                }
-                else
+                if (gen_keep != -1) // factors involved in constraint do not appear in generator matrix
                 {
                     simplifiable_constraints.emplace_back(k, gen_keep);
+
+                }
+                else if (const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it_A_rm(A_rm, k); it_A_rm)
+                {
+                    // just use first element from constraint
+                    simplifiable_constraints.emplace_back(k, static_cast<int>(it_A_rm.col()));
                 }
             }
         }
@@ -310,20 +308,16 @@ namespace ZonoOpt
         std::vector<Eigen::Triplet<zono_float>> triplets;
         triplets.reserve(std::max(this->A.nonZeros(), this->G.nonZeros()));
 
-        auto remove_gens = [&](const Eigen::SparseMatrix<zono_float>& M, int offset) -> int
+        auto remove_gens = [&](const Eigen::SparseMatrix<zono_float>& M) -> int
         {
             triplets.clear();
 
             int col_adj = 0;
             auto it_gen = gens_to_remove.begin();
-            while (it_gen != gens_to_remove.end() && *it_gen - offset < 0)
-            {
-                ++it_gen;
-            }
 
             for (int k=0; k<M.outerSize(); ++k)
             {
-                if (it_gen != gens_to_remove.end() && k == *it_gen - offset)
+                if (it_gen != gens_to_remove.end() && k == *it_gen)
                 {
                     ++it_gen;
                     ++col_adj;
@@ -340,9 +334,7 @@ namespace ZonoOpt
             return col_adj;
         };
 
-        int col_adj;
-
-        col_adj = remove_gens(this->Gc, 0);
+        const int col_adj = remove_gens(this->Gc);
         Eigen::SparseMatrix<zono_float> Gc_new (this->n, this->nGc-col_adj);
 #if EIGEN_VERSION_AT_LEAST(5, 0, 0)
         Gc_new.setFromSortedTriplets(triplets.begin(), triplets.end());
@@ -350,28 +342,12 @@ namespace ZonoOpt
         Gc_new.setFromTriplets(triplets.begin(), triplets.end());
 #endif
 
-        col_adj = remove_gens(this->Gb, this->nGc);
-        Eigen::SparseMatrix<zono_float> Gb_new (this->n, this->nGb-col_adj);
-#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
-        Gb_new.setFromSortedTriplets(triplets.begin(), triplets.end());
-#else
-        Gb_new.setFromTriplets(triplets.begin(), triplets.end());
-#endif
-
-        col_adj = remove_gens(this->Ac, 0);
+        remove_gens(this->Ac);
         Eigen::SparseMatrix<zono_float> Ac_new (this->nC, this->nGc-col_adj);
 #if EIGEN_VERSION_AT_LEAST(5, 0, 0)
         Ac_new.setFromSortedTriplets(triplets.begin(), triplets.end());
 #else
         Ac_new.setFromTriplets(triplets.begin(), triplets.end());
-#endif
-
-        col_adj = remove_gens(this->Ab, this->nGc);
-        Eigen::SparseMatrix<zono_float> Ab_new (this->nC, this->nGb-col_adj);
-#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
-        Ab_new.setFromSortedTriplets(triplets.begin(), triplets.end());
-#else
-        Ab_new.setFromTriplets(triplets.begin(), triplets.end());
 #endif
 
         // remove generators from box
@@ -425,8 +401,11 @@ namespace ZonoOpt
         Ac_new_rm.setFromTriplets(triplets.begin(), triplets.end());
 #endif
 
-        remove_cons(Ab_new);
-        Eigen::SparseMatrix<zono_float, Eigen::RowMajor> Ab_new_rm (Ab_new.rows()-row_adj, Ab_new.cols());
+        if (this->Ab.nonZeros())
+            remove_cons(this->Ab);
+        else
+            triplets.clear();
+        Eigen::SparseMatrix<zono_float, Eigen::RowMajor> Ab_new_rm (this->nC-row_adj, this->nGb);
 #if EIGEN_VERSION_AT_LEAST(5, 0, 0)
         Ab_new_rm.setFromSortedTriplets(triplets.begin(), triplets.end());
 #else
@@ -451,7 +430,7 @@ namespace ZonoOpt
         Eigen::Vector<zono_float, -1> b_new = Eigen::Map<Eigen::Vector<zono_float, -1>>(b_vec.data(), static_cast<Eigen::Index>(b_vec.size()));
 
         // set new matrices and vectors
-        set(Gc_new, Gb_new, this->c, Ac_new_rm, Ab_new_rm, b_new, this->zero_one_form, this->sharp);
+        set(Gc_new, this->Gb, this->c, Ac_new_rm, Ab_new_rm, b_new, this->zero_one_form, this->sharp);
     }
 
 
