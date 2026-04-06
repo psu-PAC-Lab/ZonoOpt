@@ -127,6 +127,9 @@ namespace ZonoOpt
         // [g0 0 0 ...]^T * xi + c, a^T * xi = b
         // this enables solving for xi_0 box and eliminating all other factors involved
         const auto simplifiable_cons = get_simplifiable_constraints(box);
+        if (!simplifiable_cons.empty())
+            std::cout << "TEST" << std::endl;
+
         apply_constraint_simplification(simplifiable_cons, box);
 
         // find any variables whose values are fixed
@@ -198,44 +201,52 @@ namespace ZonoOpt
 
     std::vector<std::pair<int, int>> HybZono::get_simplifiable_constraints(const Box& box) const
     {
-        // tuple: {constraint index, factor to keep, valid}
-        std::vector<std::tuple<int, int, bool>> simplifiable_constraints;
-
-        // lambda to add constraint and factor
-        auto insert_cons = [&](int cons, int gen) -> void {
-            for (auto& [ind, fac, valid] : simplifiable_constraints) {
-                if (cons == ind) {
-                    valid = false;
-                    return;
-                }
-            }
-            simplifiable_constraints.emplace_back(cons, gen, true);
-        };
+        // tuple: {constraint index, factor to keep}
+        std::vector<std::pair<int, int>> simplifiable_constraints;
 
         // loop through constraints
         const Eigen::SparseMatrix<zono_float, Eigen::RowMajor> A_rm = this->A;
         for (int k=0; k<A_rm.outerSize(); ++k)
         {
             // loop through generators
-            int gen = -1;
-            bool cons_valid = false;
-            for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(A_rm, k); it; ++it)
+            int gen_keep = -1;
+            bool cons_valid = true;
+
+            for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it_A_rm(A_rm, k); it_A_rm; ++it_A_rm)
             {
-                if (it.col() >= this->nGc)
+                // any constraints involving binary variables cannot be simplified
+                if (it_A_rm.col() >= this->nGc)
                 {
-                    // simplification only applies for constraints where there are no binary variables
                     cons_valid = false;
                     break;
                 }
 
-                for (Eigen::SparseMatrix<zono_float>::InnerIterator it_inner(this->G, it.col()); it_inner; ++it_inner)
+                // if involved generators appear in more than one constraint and is not single-valued, cannot simplify
+                if (!box.get_element(static_cast<int>(it_A_rm.col())).is_single_valued())
                 {
-                    if (!box.get_element(static_cast<int>(it.col())).is_single_valued() && std::abs(it_inner.value()) > zono_eps)
+                    int gen_cnt = 0;
+                    for (Eigen::SparseMatrix<zono_float>::InnerIterator it_A(this->A, it_A_rm.col()); it_A; ++it_A)
                     {
-                        if (gen == -1)
+                        if (std::abs(it_A.value()) > zono_eps)
                         {
-                            gen = static_cast<int>(it.col());
-                            cons_valid = true;
+                            ++gen_cnt;
+                        }
+                    }
+                    if (gen_cnt > 1)
+                    {
+                        cons_valid = false;
+                        break;
+                    }
+                }
+
+                // require at most one generator from constraint used in generator matrix
+                for (Eigen::SparseMatrix<zono_float>::InnerIterator it_G(this->G, it_A_rm.col()); it_G; ++it_G)
+                {
+                    if (std::abs(it_G.value()) > zono_eps)
+                    {
+                        if (gen_keep == -1)
+                        {
+                            gen_keep = static_cast<int>(it_A_rm.col());
                             break;
                         }
                         else
@@ -247,20 +258,24 @@ namespace ZonoOpt
                 }
             }
 
+            // if simplifiable constraint found, add to vector
             if (cons_valid)
             {
-                insert_cons(k, gen);
+                if (gen_keep == -1) // factors involved in constraint do not appear in generator matrix
+                {
+                    if (const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it_A_rm(A_rm, k); it_A_rm)
+                    {
+                        // just use first element from constraint
+                        simplifiable_constraints.emplace_back(k, static_cast<int>(it_A_rm.col()));
+                    }
+                }
+                else
+                {
+                    simplifiable_constraints.emplace_back(k, gen_keep);
+                }
             }
         }
-
-        // check for valid constraints and return
-        std::vector<std::pair<int, int>> simp_cons_out;
-        for (auto [ind, fac, valid] : simplifiable_constraints) {
-            if (valid) {
-                simp_cons_out.emplace_back(ind, fac);
-            }
-        }
-        return simp_cons_out;
+        return simplifiable_constraints;
     }
 
     void HybZono::apply_constraint_simplification(const std::vector<std::pair<int, int>>& cons, Box& box)
