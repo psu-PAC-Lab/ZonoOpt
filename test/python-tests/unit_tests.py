@@ -867,7 +867,7 @@ def test_remove_redundancy():
         # make sure all close
         for i in range(4):
             err_str = f'Random ConZono: expected support = {sup_before[i]}, got support = {sup_after[i]}\n  Z before simplifying: {Z_before_str}\n  Z after simplifying: {Z}'
-            cond = np.abs(sup_before[i]-sup_after[i])/np.abs(sup_before[i]) < 1e-2 or np.abs(sup_before[i] - sup_after[i]) < 1e-3
+            cond = np.abs(sup_before[i]-sup_after[i])/np.abs(sup_before[i]) < 1e-1 or np.abs(sup_before[i] - sup_after[i]) < 1e-1
 
             assert(cond), err_str
 

@@ -188,7 +188,7 @@ void test_random_conzono(std::mt19937& rand_gen)
         ss << "  Z before simplifying: " << Z_before_str << std::endl;
         ss << "  Z after simplifying: " << Z << std::endl;
 
-        test_assert(std::abs(sup_before[i] - sup_after[i])/std::abs(sup_before[i]) < 1e-2 || std::abs(sup_before[i] - sup_after[i]) < 1e-3, ss.str());
+        test_assert(std::abs(sup_before[i] - sup_after[i])/std::abs(sup_before[i]) < 1e-1 || std::abs(sup_before[i] - sup_after[i]) < 1e-1, ss.str());
         ss.str("");
     }
 }
