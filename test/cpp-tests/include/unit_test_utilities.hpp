@@ -6,8 +6,6 @@
 #include <iostream>
 #include <random>
 
-using namespace ZonoOpt;
-
 inline Eigen::SparseMatrix<zono_float> load_sparse_matrix(const std::string& filename)
 {
     std::ifstream file(filename);
@@ -122,7 +120,7 @@ inline Eigen::Vector<zono_float, -1> random_vector(int n, zono_float val_min, zo
     return vec;
 }
 
-inline HybZono random_hybzono(int n, int nGc, int nGb, int nC, double density, zono_float val_min, zono_float val_max, std::mt19937& rand_gen)
+inline ZonoOpt::HybZono random_hybzono(int n, int nGc, int nGb, int nC, double density, zono_float val_min, zono_float val_max, std::mt19937& rand_gen)
 {
     Eigen::SparseMatrix<zono_float> Gc = random_sparse_matrix(n, nGc, density, val_min, val_max, rand_gen);
     Eigen::SparseMatrix<zono_float> Gb = random_sparse_matrix(n, nGb, density, val_min, val_max, rand_gen);
@@ -134,7 +132,7 @@ inline HybZono random_hybzono(int n, int nGc, int nGb, int nC, double density, z
     return {Gc, Gb, c, Ac, Ab, b};
 }
 
-inline ConZono random_conzono(int n, int nG, int nC, double density, zono_float val_min, zono_float val_max, std::mt19937& rand_gen)
+inline ZonoOpt::ConZono random_conzono(int n, int nG, int nC, double density, zono_float val_min, zono_float val_max, std::mt19937& rand_gen)
 {
     Eigen::SparseMatrix<zono_float> G = random_sparse_matrix(n, nG, density, val_min, val_max, rand_gen);
     Eigen::Vector<zono_float, -1> c = random_vector(n, val_min, val_max, rand_gen);
@@ -144,7 +142,7 @@ inline ConZono random_conzono(int n, int nG, int nC, double density, zono_float 
     return {G, c, A, b};
 }
 
-inline Zono random_zono(int n, int nG, double density, zono_float val_min, zono_float val_max, std::mt19937& rand_gen)
+inline ZonoOpt::Zono random_zono(int n, int nG, double density, zono_float val_min, zono_float val_max, std::mt19937& rand_gen)
 {
     Eigen::SparseMatrix<zono_float> G = random_sparse_matrix(n, nG, density, val_min, val_max, rand_gen);
     Eigen::Vector<zono_float, -1> c = random_vector(n, val_min, val_max, rand_gen);

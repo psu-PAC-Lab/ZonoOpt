@@ -753,9 +753,11 @@ class HybZono
         void set_Ac_Ab_from_A();
         std::vector<Eigen::Vector<zono_float, -1>> get_bin_leaves(const OptSettings &settings=OptSettings(), std::shared_ptr<OptSolution>* solution=nullptr,
             int n_leaves = std::numeric_limits<int>::max()) const;
-        std::vector<std::pair<int, int>> get_simplifiable_constraints(const Box& box) const;
+        std::vector<std::pair<int, int>> get_simplifiable_constraints() const;
         void apply_constraint_simplification(const std::vector<std::pair<int, int>>& cons, Box& box);
         void rescale_generators(const Box& box);
+        void remove_generators(const std::set<int>& idx_c, const std::set<int>& idx_b, Box& box);
+        void remove_fixed_vars(Box& box);
 
 };
 

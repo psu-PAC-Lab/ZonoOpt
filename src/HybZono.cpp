@@ -83,30 +83,6 @@ namespace ZonoOpt
         const int nG_init = this->nG;
         const int nC_init = this->nC;
 
-        // lambda to remove generators
-        auto remove_all_generators = [this](const std::set<int>& idx_c, const std::set<int>& idx_b) -> void
-        {
-            // remove generators
-            if (!idx_c.empty())
-            {
-                remove_cols(this->Gc, idx_c);
-                remove_cols(this->Ac, idx_c);
-            }
-            if (!idx_b.empty())
-            {
-                remove_cols(this->Gb, idx_b);
-                remove_cols(this->Ab, idx_b);
-            }
-
-            // update number of generators (needs to happen before call to make_G_A())
-            this->nGc = static_cast<int>(this->Gc.cols());
-            this->nGb = static_cast<int>(this->Gb.cols());
-            this->nG = this->nGc + this->nGb;
-
-            // update equivalent matrices
-            make_G_A();
-        };
-
         // apply interval contractor
         Eigen::Vector<zono_float, -1> x_l(this->nG);
         Eigen::Vector<zono_float, -1> x_u(this->nG);
@@ -122,48 +98,18 @@ namespace ZonoOpt
         MI_Box box(x_l, x_u, {this->nGc, this->nGb}, this->zero_one_form);
         box.contract(this->A, this->b, contractor_iter);
 
+        // remove fixed vars
+        remove_fixed_vars(box);
+
         // check for separable blocks of form:
         // [g0 0 0 ...]^T * xi + c, a^T * xi = b
         // this enables solving for xi_0 box and eliminating all other factors involved
-        const auto simplifiable_cons = get_simplifiable_constraints(box);
+        const auto simplifiable_cons = get_simplifiable_constraints();
         apply_constraint_simplification(simplifiable_cons, box);
         rescale_generators(box);
 
-        // find any variables whose values are fixed
-        std::set<int> idx_c_to_remove, idx_b_to_remove;
-        std::vector<std::pair<int, zono_float>> fixed_vars;
-        for (int i = 0; i < this->nG; ++i)
-        {
-            if (box.get_element(i).is_single_valued())
-            {
-                fixed_vars.emplace_back(i, box.get_element(i).center());
-                if (i < this->nGc)
-                {
-                    idx_c_to_remove.insert(i);
-                }
-                else
-                {
-                    idx_b_to_remove.insert(i - this->nGc);
-                }
-            }
-        }
-
-        // get updates to c and b
-        for (auto& [k, val] : fixed_vars)
-        {
-            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(this->G, k); it; ++it)
-            {
-                this->c(it.row()) += it.value() * val;
-            }
-
-            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(this->A, k); it; ++it)
-            {
-                this->b(it.row()) -= it.value() * val;
-            }
-        }
-
-        // remove generators
-        remove_all_generators(idx_c_to_remove, idx_b_to_remove);
+        // remove fixed vars
+        remove_fixed_vars(box);
 
         // remove redundant constraints
         remove_redundant_constraints<zono_float>(this->A, this->b);
@@ -171,17 +117,17 @@ namespace ZonoOpt
         set_Ac_Ab_from_A();
 
         // identify any unused generators
-        idx_c_to_remove = find_unused_generators(this->Gc, this->Ac);
-        idx_b_to_remove = find_unused_generators(this->Gb, this->Ab);
+        const std::set idx_c_to_remove = find_unused_generators(this->Gc, this->Ac);
+        const std::set idx_b_to_remove = find_unused_generators(this->Gb, this->Ab);
 
         // remove
-        remove_all_generators(idx_c_to_remove, idx_b_to_remove);
+        remove_generators(idx_c_to_remove, idx_b_to_remove, box);
 
         // flag indicating success
         return (this->nG < nG_init || this->nC < nC_init);
     }
 
-    std::vector<std::pair<int, int>> HybZono::get_simplifiable_constraints(const Box& box) const
+    std::vector<std::pair<int, int>> HybZono::get_simplifiable_constraints() const
     {
         // tuple: {constraint index, factor to keep}
         std::vector<std::pair<int, int>> simplifiable_constraints;
@@ -203,22 +149,19 @@ namespace ZonoOpt
                     break;
                 }
 
-                // if involved generators appear in more than one constraint and is not single-valued, cannot simplify
-                if (!box.get_element(static_cast<int>(it_A_rm.col())).is_single_valued())
+                // if involved generators appear in more than one constraint, cannot simplify
+                int gen_cnt = 0;
+                for (Eigen::SparseMatrix<zono_float>::InnerIterator it_A(this->A, it_A_rm.col()); it_A; ++it_A)
                 {
-                    int gen_cnt = 0;
-                    for (Eigen::SparseMatrix<zono_float>::InnerIterator it_A(this->A, it_A_rm.col()); it_A; ++it_A)
+                    if (std::abs(it_A.value()) > zono_eps)
                     {
-                        if (std::abs(it_A.value()) > zono_eps)
-                        {
-                            ++gen_cnt;
-                        }
+                        ++gen_cnt;
                     }
-                    if (gen_cnt > 1)
-                    {
-                        cons_valid = false;
-                        break;
-                    }
+                }
+                if (gen_cnt > 1)
+                {
+                    cons_valid = false;
+                    break;
                 }
 
                 // require at most one generator from constraint used in generator matrix
@@ -281,8 +224,9 @@ namespace ZonoOpt
                     gens_to_remove.insert(static_cast<int>(it.col()));
                 }
             }
+            assert(std::abs(a0) >= zono_eps); // should be true from get_simplifiable_constraints
+            if (std::abs(a0) < zono_eps) return; // fail-safe, do not perform simplification
 
-            if (std::abs(a0) < zono_eps) continue; // divide by zero protection - do nothing
             b_int /= a0;
             box.set_element(fac, b_int.intersect(box.get_element(fac)));
         }
@@ -464,6 +408,96 @@ namespace ZonoOpt
                 it.valueRef() *= g_tilde;
             }
         }
+    }
+
+    void HybZono::remove_generators(const std::set<int>& idx_c, const std::set<int>& idx_b, Box& box)
+    {
+        // remove generators
+        if (!idx_c.empty())
+        {
+            remove_cols(this->Gc, idx_c);
+            remove_cols(this->Ac, idx_c);
+        }
+        if (!idx_b.empty())
+        {
+            remove_cols(this->Gb, idx_b);
+            remove_cols(this->Ab, idx_b);
+        }
+
+        // update box
+        std::vector<Interval> box_vec;
+        auto it_c = idx_c.begin();
+        for (int k=0; k<this->nGc; ++k)
+        {
+            if (it_c != idx_c.end() && k == *it_c)
+            {
+                ++it_c;
+            }
+            else
+            {
+                box_vec.push_back(box.get_element(k));
+            }
+        }
+        auto it_b = idx_b.begin();
+        for (int k=this->nGc; k<this->nG; ++k)
+        {
+            if (it_b != idx_b.end() && k-this->nGc == *it_b)
+            {
+                ++it_b;
+            }
+            else
+            {
+                box_vec.push_back(box.get_element(k));
+            }
+        }
+        box = Box(box_vec);
+
+        // update number of generators (needs to happen before call to make_G_A())
+        this->nGc = static_cast<int>(this->Gc.cols());
+        this->nGb = static_cast<int>(this->Gb.cols());
+        this->nG = this->nGc + this->nGb;
+
+        // update equivalent matrices
+        make_G_A();
+    }
+
+    void HybZono::remove_fixed_vars(Box& box)
+    {
+        // find any variables whose values are fixed
+        std::set<int> idx_c_to_remove, idx_b_to_remove;
+        std::vector<std::pair<int, zono_float>> fixed_vars;
+        for (int i = 0; i < this->nG; ++i)
+        {
+            if (box.get_element(i).is_single_valued())
+            {
+                fixed_vars.emplace_back(i, box.get_element(i).center());
+                if (i < this->nGc)
+                {
+                    idx_c_to_remove.insert(i);
+                }
+                else
+                {
+                    idx_b_to_remove.insert(i - this->nGc);
+                }
+            }
+        }
+
+        // get updates to c and b
+        for (auto& [k, val] : fixed_vars)
+        {
+            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(this->G, k); it; ++it)
+            {
+                this->c(it.row()) += it.value() * val;
+            }
+
+            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(this->A, k); it; ++it)
+            {
+                this->b(it.row()) -= it.value() * val;
+            }
+        }
+
+        // remove generators
+        remove_generators(idx_c_to_remove, idx_b_to_remove, box);
     }
 
 

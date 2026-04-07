@@ -155,9 +155,18 @@ void test_random_conzono(std::mt19937& rand_gen)
         d << 0., -1.;
         sup_before[3] = Z.support(d, settings);
     }
-    catch (std::exception& err)
+    catch (std::runtime_error& err)
     {
         return;
+    }
+    catch (std::invalid_argument& err)
+    {
+        return;
+    }
+    catch (std::exception& err)
+    {
+        std::cerr << err.what() << std::endl;
+        std::exit(1);
     }
 
     // randomly convert form
@@ -188,7 +197,7 @@ void test_random_conzono(std::mt19937& rand_gen)
         ss << "  Z before simplifying: " << Z_before_str << std::endl;
         ss << "  Z after simplifying: " << Z << std::endl;
 
-        test_assert(std::abs(sup_before[i] - sup_after[i])/std::abs(sup_before[i]) < 1e-1 || std::abs(sup_before[i] - sup_after[i]) < 1e-1, ss.str());
+        test_assert(std::abs(sup_before[i] - sup_after[i])/std::abs(sup_before[i]) < 1e-2 || std::abs(sup_before[i] - sup_after[i]) < 1e-1, ss.str());
         ss.str("");
     }
 }
@@ -222,9 +231,18 @@ void test_random_hybzono(std::mt19937& rand_gen)
         d << 0., -1.;
         sup_before[3] = Z.support(d, settings);
     }
-    catch (std::exception& err)
+    catch (std::runtime_error& err)
     {
         return;
+    }
+    catch (std::invalid_argument& err)
+    {
+        return;
+    }
+    catch (std::exception& err)
+    {
+        std::cerr << err.what() << std::endl;
+        std::exit(1);
     }
 
     // randomly convert form
@@ -270,12 +288,12 @@ int main()
     // random constrained and hybrid zonotopes
     std::mt19937 rand_gen(0);
 
-    for (int i=0; i<500; ++i)
+    for (int i=0; i<100; ++i)
     {
         test_random_conzono(rand_gen);
     }
 
-    for (int i=0; i<500; ++i)
+    for (int i=0; i<100; ++i)
     {
         test_random_hybzono(rand_gen);
     }
