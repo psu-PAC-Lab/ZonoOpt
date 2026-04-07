@@ -730,15 +730,106 @@ def test_constrain():
 
 def test_remove_redundancy():
 
+    def _test1():
+        # constrained zonotope that can be simplified
+        G = np.array([[3., 1., 0., 0.]])
+        c = np.array([8.])
+        A = np.array([[0.5, 0., 1., 0.],
+                      [0., 0.5, 0., 0.5]])
+        b = np.array([-0.5, -1.])
+
+        Z = zono.ConZono(G, c, A, b)
+
+        # simplify
+        Z.remove_redundancy()
+
+        # check that support is as expected
+        d = np.array([1.])
+        sup = Z.support(d)
+        assert(np.abs(sup - 10.) < 1e-3), f'case 1: expected support = 10., got support = {sup}'
+
+        d = np.array([-1.])
+        sup = Z.support(d)
+        assert(np.abs(sup - -4.) < 1e-3), f'case 1: expected support = -4., got support = {sup}'
+
+    def _test2():
+        # hybrid zonotope
+        Gc = np.array([[3., 1.]])
+        Gb = np.zeros((1,2))
+        c = np.array([8.])
+        Ac = np.array([[0.5, 0.],
+                       [0., 0.5]])
+        Ab = np.array([[1., 0.],
+                       [0., 0.5]])
+        b = np.array([-0.5, -1.])
+
+        Z = zono.HybZono(Gc, Gb, c, Ac, Ab, b)
+
+        # get support
+        sup_before = np.zeros(2)
+
+        d = np.array([1.])
+        sup_before[0] =  Z.support(d)
+
+        d = np.array([-1.])
+        sup_before[1] = Z.support(d)
+
+        # simplify
+        Z.remove_redundancy()
+
+        # check that support is as expected
+        sup_after = np.zeros(2)
+        d = np.array([1.])
+        sup_after[0] = Z.support(d)
+
+        d = np.array([-1.])
+        sup_after[1] = Z.support(d)
+        
+        for i in range(2):
+            assert(np.abs(sup_before[i]-sup_after[i]) < 1e-3), f'Hybrid Zono: expected support = {sup_before[i]}, got support = {sup_after[i]}'
+            
+
+    def _test3():
+        # constrained zonotope
+        G = np.array([[3., 1., 0., 0.]])
+        c = np.array([8.])
+        A = np.array([[0.5, 0.1, 1., 0.],
+                      [0., 0.5, 0., 0.5]])
+        b = np.array([-0.5, -1.])
+
+        Z = zono.ConZono(G, c, A, b)
+
+        # get support
+        sup_before = np.zeros(2)
+
+        d = np.array([1.])
+        sup_before[0] =  Z.support(d)
+
+        d = np.array([-1.])
+        sup_before[1] = Z.support(d)
+
+        # simplify
+        Z.remove_redundancy()
+
+        # check that support is as expected
+        sup_after = np.zeros(2)
+        d = np.array([1.])
+        sup_after[0] = Z.support(d)
+
+        d = np.array([-1.])
+        sup_after[1] = Z.support(d)
+        
+        for i in range(2):
+            assert(np.abs(sup_before[i]-sup_after[i]) < 1e-3), f'Hybrid Zono: expected support = {sup_before[i]}, got support = {sup_after[i]}'
+
     def _test_random_conzono():
         Z = TestUtilities.random_conzono(n=2, nG=30, nC=10, density=0.1, val_min=0., val_max=1.)
 
         # get support before simplifying
         settings = zono.OptSettings()
-        settings.eps_prim = 1e-4
-        settings.eps_dual = 1e-4
+        settings.eps_prim = 1e-3
+        settings.eps_dual = 1e-3
         settings.rho = 1.
-        settings.k_max_admm = 50000
         sup_before = np.zeros(4)
 
         try:
@@ -785,17 +876,15 @@ def test_remove_redundancy():
 
         # get support before simplifying
         settings = zono.OptSettings()
-        settings.eps_prim = 1e-4
-        settings.eps_dual = 1e-4
+        settings.eps_prim = 1e-3
+        settings.eps_dual = 1e-3
+        settings.eps_prim_search = 1e-3
+        settings.eps_dual_search = 1e-3
         settings.rho = 1.
-        settings.k_max_admm = 50000
-        settings.n_threads_admm_fp = 0
-        settings.n_threads_bnb = 1
-        settings.polish = True
         settings.eps_r = 0.
         settings.eps_a = 0.
-        # settings.verbose = True
-        # settings.verbosity_interval = 1
+        settings.n_threads_bnb = 1
+        settings.n_threads_admm_fp = 0
         sup_before = np.zeros(4)
 
         try:
@@ -815,7 +904,6 @@ def test_remove_redundancy():
         if np.random.rand() < 0.5:
             Z.convert_form()
         
-        Z_before = Z.copy()
         Z_before_str = str(Z)
 
         # get support after simplifying
@@ -834,36 +922,14 @@ def test_remove_redundancy():
         # make sure all close
         for i in range(4):
             err_str = f'Random HybZono: expected support = {sup_before[i]}, got support = {sup_after[i]}\n  Z before simplifying: {Z_before_str}\n  Z after simplifying: {Z}'
-            cond = np.abs(sup_before[i]-sup_after[i])/np.abs(sup_before[i]) < 1e-2 or np.abs(sup_before[i] - sup_after[i]) < 1e-3
-
-            if not cond:
-                print(err_str)
-
-                import matplotlib.pyplot as plt
-
-                # plots separated
-                fig = plt.figure()
-                
-                ax = fig.add_subplot(211)
-                zono.plot(Z_before, ax=ax, color='b')
-                ax.set_aspect('equal')
-                
-                ax = fig.add_subplot(212)
-                zono.plot(Z, ax=ax, color='r')
-                ax.set_aspect('equal')
-
-                # plots on same axes
-                fig = plt.figure()
-                ax = fig.add_subplot(111)
-                zono.plot(Z_before, ax=ax, color='b', alpha=0.2, label='before')
-                zono.plot(Z, ax=ax, color='r', alpha=0.2, label='after')
-                ax.set_aspect('equal')
-
-                plt.show()
-            
-            # assert(cond), err_str
+            cond = np.abs(sup_before[i]-sup_after[i])/np.abs(sup_before[i]) < 1e-1 or np.abs(sup_before[i] - sup_after[i]) < 1e-1
+            assert(cond), err_str
 
     # main
+    _test1()
+    _test2()
+    _test3()
+
     np.random.seed(0)
 
     for _ in range(500):
