@@ -615,6 +615,14 @@ namespace ZonoOpt
         MI_Box(const Eigen::Vector<zono_float, -1>& x_lb, const Eigen::Vector<zono_float, -1>& x_ub,
                const std::pair<int, int>& idx_b, bool zero_one_form);
 
+        /**
+         * @brief Constructor for MI_Box from vector of intervals
+         * @param intervals vector intervals
+         * @param idx_b indices of binary variables {start index, number of binaries}
+         * @param zero_one_form flag indicating whether binary variables are in {0,1} form (true) or {-1,1} form (false)
+         */
+        MI_Box(const std::vector<Interval>& intervals, const std::pair<int, int>& idx_b, bool zero_one_form);
+
         // clone operation
         Box* clone() const override;
 

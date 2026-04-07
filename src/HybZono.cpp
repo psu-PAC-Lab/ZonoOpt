@@ -106,10 +106,8 @@ namespace ZonoOpt
         // this enables solving for xi_0 box and eliminating all other factors involved
         const auto simplifiable_cons = get_simplifiable_constraints();
         apply_constraint_simplification(simplifiable_cons, box);
-        rescale_generators(box);
-
-        // remove fixed vars
         remove_fixed_vars(box);
+        rescale_generators(box);
 
         // remove redundant constraints
         remove_redundant_constraints<zono_float>(this->A, this->b);
@@ -364,13 +362,15 @@ namespace ZonoOpt
         set(Gc_new, this->Gb, this->c, Ac_new_rm, Ab_new_rm, b_new, this->zero_one_form, this->sharp);
     }
 
-    void HybZono::rescale_generators(const Box& box)
+    void HybZono::rescale_generators(Box& box)
     {
         // update continuous generators
         for (int k=0; k<this->nGc; ++k)
         {
             // get interval and make sure not single-valued
             const Interval box_k = box.get_element(k);
+
+            assert(!box_k.is_single_valued() && "box should not have any single-valued elements at this point");
             if (box_k.is_single_valued()) continue;
 
             // get scaling and offset
@@ -407,10 +407,20 @@ namespace ZonoOpt
             {
                 it.valueRef() *= g_tilde;
             }
+
+            // update box
+            if (this->zero_one_form)
+            {
+                box.set_element(k, Interval(zero, one));
+            }
+            else
+            {
+                box.set_element(k, Interval(-one, one));
+            }
         }
     }
 
-    void HybZono::remove_generators(const std::set<int>& idx_c, const std::set<int>& idx_b, Box& box)
+    void HybZono::remove_generators(const std::set<int>& idx_c, const std::set<int>& idx_b, MI_Box& box)
     {
         // remove generators
         if (!idx_c.empty())
@@ -450,7 +460,6 @@ namespace ZonoOpt
                 box_vec.push_back(box.get_element(k));
             }
         }
-        box = Box(box_vec);
 
         // update number of generators (needs to happen before call to make_G_A())
         this->nGc = static_cast<int>(this->Gc.cols());
@@ -459,9 +468,12 @@ namespace ZonoOpt
 
         // update equivalent matrices
         make_G_A();
+
+        // update box
+        box = MI_Box(box_vec, {this->nGc, this->nGb}, this->zero_one_form);
     }
 
-    void HybZono::remove_fixed_vars(Box& box)
+    void HybZono::remove_fixed_vars(MI_Box& box)
     {
         // find any variables whose values are fixed
         std::set<int> idx_c_to_remove, idx_b_to_remove;
@@ -763,14 +775,20 @@ namespace ZonoOpt
         get_triplets_offset<zono_float>(this->Gc, tripvec, 0, 0);
         get_triplets_offset<zono_float>(this->Gb, tripvec, 0, this->nGc);
         this->G.resize(this->n, this->nGc + this->nGb);
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
+        this->G.setFromSortedTriplets(tripvec.begin(), tripvec.end());
+#else
         this->G.setFromTriplets(tripvec.begin(), tripvec.end());
-
+#endif
         tripvec.clear();
         get_triplets_offset<zono_float>(this->Ac, tripvec, 0, 0);
         get_triplets_offset<zono_float>(this->Ab, tripvec, 0, this->nGc);
         this->A.resize(this->nC, this->nGc + this->nGb);
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
+        this->A.setFromSortedTriplets(tripvec.begin(), tripvec.end());
+#else
         this->A.setFromTriplets(tripvec.begin(), tripvec.end());
-
+#endif
         this->nG = this->nGc + this->nGb;
     }
 

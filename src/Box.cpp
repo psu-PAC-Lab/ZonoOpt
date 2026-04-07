@@ -673,6 +673,17 @@ namespace ZonoOpt {
         this->bin_high = one;
     }
 
+    MI_Box::MI_Box(const std::vector<Interval>& intervals, const std::pair<int, int>& idx_b, bool zero_one_form) : Box(intervals), idx_b(idx_b)
+    {
+        // check that binary variables are in range
+        if (idx_b.first < 0 || idx_b.first + idx_b.second > static_cast<int>(this->size()))
+            throw std::out_of_range("Binary variable index out of range");
+
+        // zero-one form handling
+        this->bin_low = (zero_one_form) ? zero : -one;
+        this->bin_high = one;
+    }
+
     Box* MI_Box::clone() const
     {
         return new MI_Box(*this);

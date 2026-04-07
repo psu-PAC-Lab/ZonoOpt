@@ -17,7 +17,7 @@
 #include "BnbDataStructures.hpp"
 #include "IntervalMatrix.hpp"
 
-#include <stdexcept>
+#include <cassert>
 #include <limits>
 #include <set>
 
@@ -755,9 +755,9 @@ class HybZono
             int n_leaves = std::numeric_limits<int>::max()) const;
         std::vector<std::pair<int, int>> get_simplifiable_constraints() const;
         void apply_constraint_simplification(const std::vector<std::pair<int, int>>& cons, Box& box);
-        void rescale_generators(const Box& box);
-        void remove_generators(const std::set<int>& idx_c, const std::set<int>& idx_b, Box& box);
-        void remove_fixed_vars(Box& box);
+        void rescale_generators(Box& box);
+        void remove_generators(const std::set<int>& idx_c, const std::set<int>& idx_b, MI_Box& box);
+        void remove_fixed_vars(MI_Box& box);
 
 };
 
