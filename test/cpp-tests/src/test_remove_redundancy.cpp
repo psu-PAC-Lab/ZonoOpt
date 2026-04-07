@@ -197,6 +197,75 @@ void test_random_conzono(std::mt19937& rand_gen)
     }
 }
 
+void test_random_hybzono(std::mt19937& rand_gen)
+{
+    HybZono Z = random_hybzono(2, 30, 10, 10, 0.1, 0., 1., rand_gen);
+
+    // get support before simplifying
+    OptSettings settings;
+    settings.eps_prim = 1e-4;
+    settings.eps_dual = 1e-4;
+    settings.rho = 1.;
+    settings.k_max_admm = 50000;
+    settings.n_threads_admm_fp = 0;
+    settings.n_threads_bnb = 1;
+    settings.polish = true;
+    settings.eps_a = 0.;
+    settings.eps_r = 0.;
+    settings.verbose = true;
+    settings.verbosity_interval = 1;
+    std::array<zono_float, 4> sup_before;
+
+    Eigen::Vector<zono_float, 2> d;
+    try
+    {
+        d << 1., 0.;
+        sup_before[0] = Z.support(d, settings);
+        d << -1., 0.;
+        sup_before[1] = Z.support(d, settings);
+        d << 0., 1.;
+        sup_before[2] = Z.support(d, settings);
+        d << 0., -1.;
+        sup_before[3] = Z.support(d, settings);
+    }
+    catch (std::exception& err)
+    {
+        return;
+    }
+
+    // randomly convert form
+    std::uniform_real_distribution<double> form_dist(0., 1.);
+    if (form_dist(rand_gen) < 0.5)
+        Z.convert_form();
+
+    std::string Z_before_str = Z.print();
+
+    // get support after simplifying
+    Z.remove_redundancy();
+    std::array<zono_float, 4> sup_after;
+
+    d << 1., 0.;
+    sup_after[0] = Z.support(d, settings);
+    d << -1., 0.;
+    sup_after[1] = Z.support(d, settings);
+    d << 0., 1.;
+    sup_after[2] = Z.support(d, settings);
+    d << 0., -1.;
+    sup_after[3] = Z.support(d, settings);
+
+    // make sure all close
+    std::stringstream ss;
+    for (int i=0; i<4; ++i)
+    {
+        ss << "Random HybZono: expected support = " << sup_before[i] << ", got support = " << sup_after[i] << std::endl;
+        ss << "  Z before simplifying: " << Z_before_str << std::endl;
+        ss << "  Z after simplifying: " << Z << std::endl;
+
+        test_assert(std::abs(sup_before[i] - sup_after[i])/std::abs(sup_before[i]) < 1e-2 || std::abs(sup_before[i] - sup_after[i]) < 1e-3, ss.str());
+        ss.str("");
+    }
+}
+
 int main()
 {
     // manually specified test
@@ -204,12 +273,17 @@ int main()
     test2();
     test3();
 
-    // random constrained zonotopes
+    // random constrained and hybrid zonotopes
     std::mt19937 rand_gen(0);
 
     for (int i=0; i<500; ++i)
     {
         test_random_conzono(rand_gen);
+    }
+
+    for (int i=0; i<500; ++i)
+    {
+        test_random_hybzono(rand_gen);
     }
 
 

@@ -1000,11 +1000,12 @@ namespace ZonoOpt
         }
 
         // cost
-        Eigen::SparseMatrix<zono_float> P(this->nG, this->nG);
-        Eigen::Vector<zono_float, -1> q = -this->G.transpose() * d;
+        const Eigen::SparseMatrix<zono_float> P(this->nG, this->nG);
+        const Eigen::Vector<zono_float, -1> q = -this->G.transpose() * d;
+        const zono_float c_cost = this->c.dot(d);
 
         // solve MIQP
-        const OptSolution sol = this->mi_opt(P, q, 0, this->A, this->b, settings, solution, warm_start_params);
+        const OptSolution sol = this->mi_opt(P, q, c_cost, this->A, this->b, settings, solution, warm_start_params);
 
         // check feasibility and return solution
         if (sol.infeasible) // Z is empty
