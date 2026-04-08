@@ -714,6 +714,10 @@ namespace ZonoOpt {
                                  const Eigen::Vector<zono_float, -1>& b, const int iter,
                                  const std::set<int>& constraints)
     {
+        // if no binary variables, just use Box contractor
+        if (this->idx_b.second == 0)
+            return Box::contract_helper(A, b, iter, constraints);
+
         // find participating binary variables
         std::set<int> bin_vars;
         for (const int k : constraints)

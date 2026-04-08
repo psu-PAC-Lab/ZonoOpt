@@ -54,7 +54,7 @@ namespace ZonoOpt
         std::string print() const override;
 
         // do nothing methods
-        bool remove_redundancy(int) override { return false; }
+        std::unique_ptr<HybZono> remove_redundancy(int) const override { return std::unique_ptr<HybZono>(this->clone()); }
 
         void convert_form() override
         {

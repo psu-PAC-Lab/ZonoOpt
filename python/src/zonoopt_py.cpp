@@ -2102,6 +2102,7 @@ PYBIND11_MODULE(_core, m)
                 Removes redundant constraints and any unused generators
                 
                 This method uses an interval contractor to detect generators that can be removed. 
+                Constrained zonotopes with separable constraints and generators in the form [g0 0 0 ...]^T * xi + c, a^T * xi = b are simplified.
                 Additionally, any linearly dependent rows of the constraint matrix A are removed.
                 If the linearly dependent constraints are not consistent (e.g., if A = [1, 0.1; 1, 0.1] and b = [1; 0.8]), 
                 the returned set is not equivalent to the original set.
@@ -2111,7 +2112,7 @@ PYBIND11_MODULE(_core, m)
                     contractor_iter (int): number of interval contractor iterations to run
 
                 Returns:
-                    bool: true if successful, false if unable to reduce the complexity of the set representation
+                    HybZono: set with redundancies removed
             )pbdoc")
         .def("is_point", &HybZono::is_point,
             R"pbdoc(
@@ -2321,21 +2322,21 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
         .def("get_leaves", [](const HybZono& self, bool remove_redundancy,
             const OptSettings &settings, OptSolution* solution,
-            int n_leaves, int contractor_iter) -> std::vector<ConZono>
+            int n_leaves, int contractor_iter) -> std::vector<std::unique_ptr<ConZono>>
             {
                 auto sol_shared = std::make_shared<OptSolution>();
-                const auto leaves = self.get_leaves(remove_redundancy, settings, &sol_shared, n_leaves, contractor_iter);
+                auto leaves = self.get_leaves(remove_redundancy, settings, &sol_shared, n_leaves, contractor_iter);
                 if (solution)
                     *solution = *sol_shared;
                 return leaves;
             },
-            py::arg("remove_redundancy")=true, py::arg("settings")=OptSettings(), py::arg("solution")=nullptr,
+            py::arg("remove_redundancy")=false, py::arg("settings")=OptSettings(), py::arg("solution")=nullptr,
             py::arg("n_leaves")=std::numeric_limits<int>::max(), py::arg("contractor_iter")=100, 
             R"pbdoc(
                 Computes individual constrained zonotopes whose union is the hybrid zonotope object.
                 
                 Args:
-                    remove_redundancy (bool, optional): flag to make call to remove_redundancy for each identified leaf
+                    remove_redundancy (bool, optional): flag to make call to remove_redundancy for each identified leaf (default false)
                     settings (OptSettings, optional): optimization settings structure
                     solution (OptSolution, optional): optimization solution structure pointer, populated with result
                     n_leaves (int, optional): max number of leaves to find
