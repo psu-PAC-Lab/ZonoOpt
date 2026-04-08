@@ -135,6 +135,30 @@ void test3()
     }
 }
 
+void test4()
+{
+    // infeasible constrained zonotope
+    Eigen::Matrix<zono_float, 2, 2> G;
+    G << 1., 1.,
+         1., 2.;
+    Eigen::Vector<zono_float, 2> c;
+    c << 1., 2.;
+    Eigen::Matrix<zono_float, 1, 2> A;
+    A << 1., 1.;
+    Eigen::Vector<zono_float, 1> b;
+    b << 3.;
+
+    const ConZono Z (G.sparseView(), c, A.sparseView(), b);
+
+    // remove redundancy
+    const auto Z_rr = Z.remove_redundancy();
+
+    // check that result is EmptySet object
+    std::stringstream ss;
+    ss << "Expected EmptySet, got " << *Z_rr << std::endl;
+    test_assert(Z_rr->is_empty_set(), ss.str());
+}
+
 void test_random_conzono(std::mt19937& rand_gen)
 {
     ConZono Z = random_conzono(2, 30, 10, 0.1, 0., 1., rand_gen);
@@ -283,6 +307,7 @@ int main()
     test1();
     test2();
     test3();
+    test4();
 
     // random constrained and hybrid zonotopes
     std::mt19937 rand_gen(0);

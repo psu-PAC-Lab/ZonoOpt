@@ -823,6 +823,22 @@ def test_remove_redundancy():
         for i in range(2):
             assert(np.abs(sup_before[i]-sup_after[i]) < 1e-3), f'Hybrid Zono: expected support = {sup_before[i]}, got support = {sup_after[i]}'
 
+    def _test4():
+        # infeasible constrained zonotope
+        G = np.array([[1., 1.],
+                      [1., 2.]])
+        c = np.array([1., 2.])
+        A = np.array([[1., 1.]])
+        b = np.array([3.])
+        
+        Z = zono.ConZono(G, c, A, b)
+
+        # remove redundancy
+        Z_rr = Z.remove_redundancy()
+
+        # check that result is EmptySet object
+        assert Z_rr.is_empty_set(), f'Expected EmptySet, got {Z_rr}'
+
     def _test_random_conzono():
         Z = TestUtilities.random_conzono(n=2, nG=30, nC=10, density=0.1, val_min=0., val_max=1.)
 
@@ -927,6 +943,7 @@ def test_remove_redundancy():
     _test1()
     _test2()
     _test3()
+    _test4()
 
     np.random.seed(0)
 
