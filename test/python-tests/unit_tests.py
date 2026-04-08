@@ -741,16 +741,18 @@ def test_remove_redundancy():
         Z = zono.ConZono(G, c, A, b)
 
         # simplify
-        Z.remove_redundancy()
+        Z_rr = Z.remove_redundancy()
 
         # check that support is as expected
         d = np.array([1.])
-        sup = Z.support(d)
+        sup = Z_rr.support(d)
         assert(np.abs(sup - 10.) < 1e-3), f'case 1: expected support = 10., got support = {sup}'
 
         d = np.array([-1.])
-        sup = Z.support(d)
+        sup = Z_rr.support(d)
         assert(np.abs(sup - -4.) < 1e-3), f'case 1: expected support = -4., got support = {sup}'
+
+        assert(Z_rr.is_zono()), 'case1: expected result to be a zonotope after removing redundancy'
 
     def _test2():
         # hybrid zonotope
@@ -775,19 +777,18 @@ def test_remove_redundancy():
         sup_before[1] = Z.support(d)
 
         # simplify
-        Z.remove_redundancy()
+        Z_rr = Z.remove_redundancy()
 
         # check that support is as expected
         sup_after = np.zeros(2)
         d = np.array([1.])
-        sup_after[0] = Z.support(d)
+        sup_after[0] = Z_rr.support(d)
 
         d = np.array([-1.])
-        sup_after[1] = Z.support(d)
+        sup_after[1] = Z_rr.support(d)
         
         for i in range(2):
             assert(np.abs(sup_before[i]-sup_after[i]) < 1e-3), f'Hybrid Zono: expected support = {sup_before[i]}, got support = {sup_after[i]}'
-            
 
     def _test3():
         # constrained zonotope
@@ -809,15 +810,15 @@ def test_remove_redundancy():
         sup_before[1] = Z.support(d)
 
         # simplify
-        Z.remove_redundancy()
+        Z_rr = Z.remove_redundancy()
 
         # check that support is as expected
         sup_after = np.zeros(2)
         d = np.array([1.])
-        sup_after[0] = Z.support(d)
+        sup_after[0] = Z_rr.support(d)
 
         d = np.array([-1.])
-        sup_after[1] = Z.support(d)
+        sup_after[1] = Z_rr.support(d)
         
         for i in range(2):
             assert(np.abs(sup_before[i]-sup_after[i]) < 1e-3), f'Hybrid Zono: expected support = {sup_before[i]}, got support = {sup_after[i]}'
@@ -848,25 +849,23 @@ def test_remove_redundancy():
         # randomly convert form
         if np.random.rand() < 0.5:
             Z.convert_form()
-        
-        Z_before_str = str(Z)
 
         # get support after simplifying
-        Z.remove_redundancy()
+        Z_rr = Z.remove_redundancy()
         sup_after = np.zeros(4)
 
         d = [1., 0.]
-        sup_after[0] = Z.support(d, settings=settings)
+        sup_after[0] = Z_rr.support(d, settings=settings)
         d = [-1., 0.]
-        sup_after[1] = Z.support(d, settings=settings)
+        sup_after[1] = Z_rr.support(d, settings=settings)
         d = [0., 1.]
-        sup_after[2] = Z.support(d, settings=settings)
+        sup_after[2] = Z_rr.support(d, settings=settings)
         d = [0., -1.]
-        sup_after[3] = Z.support(d, settings=settings)
+        sup_after[3] = Z_rr.support(d, settings=settings)
 
         # make sure all close
         for i in range(4):
-            err_str = f'Random ConZono: expected support = {sup_before[i]}, got support = {sup_after[i]}\n  Z before simplifying: {Z_before_str}\n  Z after simplifying: {Z}'
+            err_str = f'Random ConZono: expected support = {sup_before[i]}, got support = {sup_after[i]}\n  Z before simplifying: {Z}\n  Z after simplifying: {Z_rr}'
             cond = np.abs(sup_before[i]-sup_after[i])/np.abs(sup_before[i]) < 1e-1 or np.abs(sup_before[i] - sup_after[i]) < 1e-1
 
             assert(cond), err_str
@@ -903,26 +902,23 @@ def test_remove_redundancy():
         # randomly convert form
         if np.random.rand() < 0.5:
             Z.convert_form()
-        
-        Z_before_str = str(Z)
-        Z_before = Z.copy()
 
         # get support after simplifying
-        Z.remove_redundancy()
+        Z_rr = Z.remove_redundancy()
         sup_after = np.zeros(4)
 
         d = [1., 0.]
-        sup_after[0] = Z.support(d, settings=settings)
+        sup_after[0] = Z_rr.support(d, settings=settings)
         d = [-1., 0.]
-        sup_after[1] = Z.support(d, settings=settings)
+        sup_after[1] = Z_rr.support(d, settings=settings)
         d = [0., 1.]
-        sup_after[2] = Z.support(d, settings=settings)
+        sup_after[2] = Z_rr.support(d, settings=settings)
         d = [0., -1.]
-        sup_after[3] = Z.support(d, settings=settings)
+        sup_after[3] = Z_rr.support(d, settings=settings)
 
         # make sure all close
         for i in range(4):
-            err_str = f'Random HybZono: expected support = {sup_before[i]}, got support = {sup_after[i]}\n  Z before simplifying: {Z_before_str}\n  Z after simplifying: {Z}'
+            err_str = f'Random HybZono: expected support = {sup_before[i]}, got support = {sup_after[i]}\n  Z before simplifying: {Z}\n  Z after simplifying: {Z_rr}'
             cond = np.abs(sup_before[i]-sup_after[i])/np.abs(sup_before[i]) < 1e-1 or np.abs(sup_before[i] - sup_after[i]) < 1e-1
             
             assert(cond), err_str
