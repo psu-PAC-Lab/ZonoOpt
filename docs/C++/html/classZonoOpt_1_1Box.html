@@ -34,7 +34,7 @@ MathJax.Hub.Config({
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">ZonoOpt<span id="projectnumber">&#160;2.2.0</span>
+   <div id="projectname">ZonoOpt<span id="projectnumber">&#160;2.3.0</span>
    </div>
   </td>
  </tr>
@@ -169,6 +169,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a88505ef0c5fbc76d0983c562f7e145bb" id="r_a88505ef0c5fbc76d0983c562f7e145bb"><td class="memItemLeft" align="right" valign="top">Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1Box.html#a88505ef0c5fbc76d0983c562f7e145bb">center</a> () const</td></tr>
 <tr class="memdesc:a88505ef0c5fbc76d0983c562f7e145bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get center of box.  <br /></td></tr>
 <tr class="separator:a88505ef0c5fbc76d0983c562f7e145bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af52750bea477963711eb439641463438" id="r_af52750bea477963711eb439641463438"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1Box.html#af52750bea477963711eb439641463438">is_empty</a> () const</td></tr>
+<tr class="memdesc:af52750bea477963711eb439641463438"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine whether box is empty (any contained interval is empty)  <br /></td></tr>
+<tr class="separator:af52750bea477963711eb439641463438"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf0022e8b0925e7f06c8fcae7de5046f" id="r_adf0022e8b0925e7f06c8fcae7de5046f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1Box.html#adf0022e8b0925e7f06c8fcae7de5046f">is_single_valued</a> () const</td></tr>
+<tr class="memdesc:adf0022e8b0925e7f06c8fcae7de5046f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine whether box is single-valued (i.e., all intervals have width 0 within numerical tolerance)  <br /></td></tr>
+<tr class="separator:adf0022e8b0925e7f06c8fcae7de5046f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67f381b247d4d3b62bb819617e3772b9" id="r_a67f381b247d4d3b62bb819617e3772b9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1Box.html#a67f381b247d4d3b62bb819617e3772b9">intersect</a> (const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;other) const</td></tr>
 <tr class="memdesc:a67f381b247d4d3b62bb819617e3772b9"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a> intersection.  <br /></td></tr>
 <tr class="separator:a67f381b247d4d3b62bb819617e3772b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -876,6 +882,46 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>interval hull of this and other </dd></dl>
+
+</div>
+</div>
+<a id="af52750bea477963711eb439641463438" name="af52750bea477963711eb439641463438"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af52750bea477963711eb439641463438">&#9670;&#160;</a></span>is_empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ZonoOpt::Box::is_empty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determine whether box is empty (any contained interval is empty) </p>
+<dl class="section return"><dt>Returns</dt><dd>true if box is empty </dd></dl>
+
+</div>
+</div>
+<a id="adf0022e8b0925e7f06c8fcae7de5046f" name="adf0022e8b0925e7f06c8fcae7de5046f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf0022e8b0925e7f06c8fcae7de5046f">&#9670;&#160;</a></span>is_single_valued()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ZonoOpt::Box::is_single_valued </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determine whether box is single-valued (i.e., all intervals have width 0 within numerical tolerance) </p>
+<dl class="section return"><dt>Returns</dt><dd>true if box is single-valued </dd></dl>
 
 </div>
 </div>
