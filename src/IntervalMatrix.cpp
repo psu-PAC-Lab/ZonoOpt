@@ -174,9 +174,9 @@ namespace ZonoOpt
         IntervalMatrix mat(*this);
         for (int i=0; i<static_cast<int>(mat.rows()); ++i)
         {
-            for (auto& [k, val] : mat.mat_[i])
+            for (auto it = mat.mat_[i].begin(); it != mat.mat_[i].end(); ++it)
             {
-                val *= alpha;
+                it->second *= alpha;
             }
         }
         return mat;
@@ -192,9 +192,9 @@ namespace ZonoOpt
         IntervalMatrix mat(*this);
         for (int i=0; i<static_cast<int>(mat.rows()); ++i)
         {
-            for (auto& [k, val] : mat.mat_[i])
+            for (auto it = mat.mat_[i].begin(); it != mat.mat_[i].end(); ++it)
             {
-                val *= interval;
+                it->second *= interval;
             }
         }
         return mat;
@@ -220,9 +220,9 @@ namespace ZonoOpt
         IntervalMatrix mat(*this);
         for (int i=0; i<static_cast<int>(mat.rows()); ++i)
         {
-            for (auto& [k, val] : mat.mat_[i])
+            for (auto it = mat.mat_[i].begin(); it != mat.mat_[i].end(); ++it)
             {
-                val /= alpha;
+                it->second /= alpha;
             }
         }
         return mat;
@@ -238,9 +238,9 @@ namespace ZonoOpt
         IntervalMatrix mat(*this);
         for (int i=0; i<static_cast<int>(mat.rows()); ++i)
         {
-            for (auto& [k, val] : mat.mat_[i])
+            for (auto it = mat.mat_[i].begin(); it != mat.mat_[i].end(); ++it)
             {
-                val /= interval;
+                it->second /= interval;
             }
         }
         return mat;
@@ -394,9 +394,9 @@ namespace ZonoOpt
         IntervalMatrix mat(*this);
         for (int i=0; i<static_cast<int>(mat.rows()); ++i)
         {
-            for (auto& [k, val] : mat.mat_[i])
+            for (auto it = mat.mat_[i].begin(); it != mat.mat_[i].end(); ++it)
             {
-                val += interval;
+                it->second += interval;
             }
         }
         return mat;
@@ -412,9 +412,9 @@ namespace ZonoOpt
         IntervalMatrix mat(*this);
         for (int i=0; i<static_cast<int>(mat.rows()); ++i)
         {
-            for (auto& [k, val] : mat.mat_[i])
+            for (auto it = mat.mat_[i].begin(); it != mat.mat_[i].end(); ++it)
             {
-                val += alpha;
+                it->second += alpha;
             }
         }
         return mat;
@@ -444,9 +444,9 @@ namespace ZonoOpt
         IntervalMatrix mat(*this);
         for (int i=0; i<static_cast<int>(mat.rows()); ++i)
         {
-            for (auto& [k, val] : mat.mat_[i])
+            for (auto it = mat.mat_[i].begin(); it != mat.mat_[i].end(); ++it)
             {
-                val -= interval;
+                it->second -= interval;
             }
         }
         return mat;
@@ -462,9 +462,9 @@ namespace ZonoOpt
         IntervalMatrix mat(*this);
         for (int i=0; i<static_cast<int>(mat.rows()); ++i)
         {
-            for (auto& [k, val] : mat.mat_[i])
+            for (auto it = mat.mat_[i].begin(); it != mat.mat_[i].end(); ++it)
             {
-                val -= alpha;
+                it->second -= alpha;
             }
         }
         return mat;
@@ -485,9 +485,9 @@ namespace ZonoOpt
         IntervalMatrix mat(A);
         for (int i=0; i<static_cast<int>(mat.rows()); ++i)
         {
-            for (auto& [k, val] : mat.mat_[i])
+            for (auto it = mat.mat_[i].begin(); it != mat.mat_[i].end(); ++it)
             {
-                val = alpha / val;
+                it->second = alpha / it->second;
             }
         }
         return mat;
@@ -498,9 +498,9 @@ namespace ZonoOpt
         IntervalMatrix mat(A);
         for (int i=0; i<static_cast<int>(mat.rows()); ++i)
         {
-            for (auto& [k, val] : mat.mat_[i])
+            for (auto it = mat.mat_[i].begin(); it != mat.mat_[i].end(); ++it)
             {
-                val = interval / val;
+                it->second = interval / it->second;
             }
         }
         return mat;
@@ -511,9 +511,9 @@ namespace ZonoOpt
         IntervalMatrix mat(*this);
         for (int i=0; i<static_cast<int>(mat.rows()); ++i)
         {
-            for (auto& [k, val] : mat.mat_[i])
+            for (auto it = mat.mat_[i].begin(); it != mat.mat_[i].end(); ++it)
             {
-                val = -val;
+                it->second = -it->second;
             }
         }
         return mat;
@@ -594,9 +594,9 @@ namespace ZonoOpt
         zono_float w = 0;
         for (size_t i = 0; i < this->rows_; i++)
         {
-            for (const auto& [col, val] : this->mat_[i])
+            for (auto it = this->mat_[i].begin(); it != this->mat_[i].end(); ++it)
             {
-                w = std::max(w, val.width());
+                w = std::max(w, it->second.width());
             }
         }
         return w;
@@ -606,9 +606,9 @@ namespace ZonoOpt
     {
          for (size_t i = 0; i < this->rows_; i++)
          {
-             for (const auto& [col, val] : this->mat_[i])
+             for (auto it = this->mat_[i].begin(); it != this->mat_[i].end(); ++it)
              {
-                 if (val.is_empty())
+                 if (it->second.is_empty())
                      return true;
              }
          }
@@ -619,9 +619,9 @@ namespace ZonoOpt
     {
         for (size_t i = 0; i < this->rows_; i++)
         {
-            for (const auto& [col, val] : this->mat_[i])
+            for (auto it = this->mat_[i].begin(); it != this->mat_[i].end(); ++it)
             {
-                 if (!val.is_single_valued())
+                 if (!it->second.is_single_valued())
                      return false;
             }
         }
