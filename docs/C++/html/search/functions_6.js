@@ -12,7 +12,7 @@ var searchData=
   ['get_5fg_9',['get_G',['../classZonoOpt_1_1HybZono.html#add9c3d6b99d42da8d17089b414f90167',1,'ZonoOpt::HybZono']]],
   ['get_5fgb_10',['get_Gb',['../classZonoOpt_1_1HybZono.html#ae5dd6c62051011b883d468f16fb7869f',1,'ZonoOpt::HybZono']]],
   ['get_5fgc_11',['get_Gc',['../classZonoOpt_1_1HybZono.html#a1ff3229111634faed429a4c287d8c822',1,'ZonoOpt::HybZono']]],
-  ['get_5fleaves_12',['get_leaves',['../classZonoOpt_1_1HybZono.html#a267fca300692120f0efefae82bce758b',1,'ZonoOpt::HybZono']]],
+  ['get_5fleaves_12',['get_leaves',['../classZonoOpt_1_1HybZono.html#a183a21de575390a12c1789cb36ffb172',1,'ZonoOpt::HybZono']]],
   ['get_5fn_13',['get_n',['../classZonoOpt_1_1HybZono.html#a0edc0ec72b94f2ef3c882bb24da5ade3',1,'ZonoOpt::HybZono']]],
   ['get_5fnc_14',['get_nC',['../classZonoOpt_1_1HybZono.html#a46463c644dcbb4588ec9408ea3c3f18e',1,'ZonoOpt::HybZono']]],
   ['get_5fng_15',['get_nG',['../classZonoOpt_1_1HybZono.html#abb909e4cc7bd34bddcadd8fcdce69c9c',1,'ZonoOpt::HybZono']]],
