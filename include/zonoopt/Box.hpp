@@ -158,6 +158,18 @@ namespace ZonoOpt
         Eigen::Vector<zono_float, -1> center() const;
 
         /**
+         * @brief Determine whether box is empty (any contained interval is empty)
+         * @return true if box is empty
+         */
+        bool is_empty() const;
+
+        /**
+         * @brief Determine whether box is single-valued (i.e., all intervals have width 0 within numerical tolerance)
+         * @return true if box is single-valued
+         */
+        bool is_single_valued() const;
+
+        /**
          * @brief Box intersection
          *
          * @param other other

@@ -127,6 +127,26 @@ namespace ZonoOpt {
         return out;
     }
 
+    bool Box::is_empty() const
+    {
+        for (int i=0; i<static_cast<int>(this->size()); ++i)
+        {
+            if (get_element(i).is_empty())
+                return true;
+        }
+        return false;
+    }
+
+    bool Box::is_single_valued() const
+    {
+        for (int i=0; i<static_cast<int>(this->size()); ++i)
+        {
+            if (!get_element(i).is_single_valued())
+                return false;
+        }
+        return true;
+    }
+
     Box Box::intersect(const Box& other) const
     {
         if (this->size() != other.size())

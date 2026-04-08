@@ -602,6 +602,32 @@ namespace ZonoOpt
         return w;
     }
 
+    bool IntervalMatrix::is_empty() const
+    {
+         for (size_t i = 0; i < this->rows_; i++)
+         {
+             for (const auto& [col, val] : this->mat_[i])
+             {
+                 if (val.is_empty())
+                     return true;
+             }
+         }
+         return false;
+    }
+    
+    bool IntervalMatrix::is_single_valued() const
+    {
+        for (size_t i = 0; i < this->rows_; i++)
+        {
+            for (const auto& [col, val] : this->mat_[i])
+            {
+                 if (!val.is_single_valued())
+                     return false;
+            }
+        }
+        return true;
+    }
+
     IntervalMatrix IntervalMatrix::intersect(const IntervalMatrix& other) const
     {
         // input handling
