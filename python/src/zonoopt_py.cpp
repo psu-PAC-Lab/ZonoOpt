@@ -479,6 +479,30 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     bool: flag indicating whether self is a superset of other
             )pbdoc")
+        .def("__and__", &Interval::operator&,
+            py::arg("other"),
+            py::is_operator(),
+            R"pbdoc(
+                Interval intersection
+
+                Args:
+                    other (Interval): other interval
+
+                Returns:
+                    Interval: intersection of self and other
+            )pbdoc")
+        .def("__or__", &Interval::operator|,
+            py::arg("other"),
+            py::is_operator(),
+            R"pbdoc(
+                Interval union
+
+                Args:
+                    other (Interval): other interval
+
+                Returns:
+                    Interval: interval hull of self and other
+            )pbdoc")
         .def("contains_set", &Interval::contains_set, py::arg("other"),
             R"pbdoc(
                 Checks whether interval contains another interval

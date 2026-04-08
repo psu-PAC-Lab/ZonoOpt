@@ -614,7 +614,7 @@ namespace ZonoOpt
          }
          return false;
     }
-    
+
     bool IntervalMatrix::is_single_valued() const
     {
         for (size_t i = 0; i < this->rows_; i++)
