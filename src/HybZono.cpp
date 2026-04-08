@@ -83,8 +83,9 @@ namespace ZonoOpt
         // copy set
         HybZono Z_rr = *this;
 
-        // empty set tracking
-        bool empty = Z_rr.is_empty_set();
+        // empty set case
+        if (Z_rr.is_empty_set())
+            return std::make_unique<EmptySet>(Z_rr.n);
 
         // apply interval contractor
         Eigen::Vector<zono_float, -1> x_l(Z_rr.nG);
@@ -99,7 +100,8 @@ namespace ZonoOpt
         }
         x_u.setOnes();
         MI_Box box(x_l, x_u, {Z_rr.nGc, Z_rr.nGb}, Z_rr.zero_one_form);
-        empty &= !box.contract(Z_rr.A, Z_rr.b, contractor_iter);
+        if (!box.contract(Z_rr.A, Z_rr.b, contractor_iter))
+            return std::make_unique<EmptySet>(Z_rr.n);
 
         // remove fixed vars
         Z_rr.remove_fixed_vars(box);
@@ -112,7 +114,8 @@ namespace ZonoOpt
             const auto simplifiable_cons = Z_rr.get_simplifiable_constraints();
             Z_rr.apply_constraint_simplification(simplifiable_cons, box);
             Z_rr.remove_fixed_vars(box);
-            empty &= !Z_rr.rescale_generators(box);
+            if (!Z_rr.rescale_generators(box))
+                return std::make_unique<EmptySet>(Z_rr.n);
         }
 
         // remove redundant constraints
@@ -127,9 +130,7 @@ namespace ZonoOpt
         Z_rr.remove_generators(idx_c_to_remove, idx_b_to_remove, box);
 
         // output
-        if (empty)
-            return std::make_unique<EmptySet>(Z_rr.n);
-        else if (Z_rr.nGb > 0)
+        if (Z_rr.nGb > 0)
             return std::make_unique<HybZono>(Z_rr.Gc, Z_rr.Gb, Z_rr.c, Z_rr.Ac, Z_rr.Ab, Z_rr.b, Z_rr.zero_one_form, Z_rr.sharp);
         else if (Z_rr.nC > 0)
             return std::make_unique<ConZono>(Z_rr.G, Z_rr.c, Z_rr.A, Z_rr.b, Z_rr.zero_one_form);
