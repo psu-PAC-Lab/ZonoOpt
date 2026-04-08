@@ -32,7 +32,7 @@ namespace ZonoOpt
         this->n = static_cast<int>(this->G.rows());
         this->zero_one_form = zero_one_form;
 
-        // abstract zono parameters
+        // hybzono params
         this->nGc = this->nG;
         this->nGb = 0;
         this->nC = 0;

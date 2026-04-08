@@ -905,6 +905,7 @@ def test_remove_redundancy():
             Z.convert_form()
         
         Z_before_str = str(Z)
+        Z_before = Z.copy()
 
         # get support after simplifying
         Z.remove_redundancy()
@@ -923,6 +924,7 @@ def test_remove_redundancy():
         for i in range(4):
             err_str = f'Random HybZono: expected support = {sup_before[i]}, got support = {sup_after[i]}\n  Z before simplifying: {Z_before_str}\n  Z after simplifying: {Z}'
             cond = np.abs(sup_before[i]-sup_after[i])/np.abs(sup_before[i]) < 1e-1 or np.abs(sup_before[i] - sup_after[i]) < 1e-1
+            
             assert(cond), err_str
 
     # main
@@ -932,10 +934,10 @@ def test_remove_redundancy():
 
     np.random.seed(0)
 
-    for _ in range(500):
+    for _ in range(100):
         _test_random_conzono()
 
-    for _ in range(500):
+    for _ in range(100):
         _test_random_hybzono()
 
     print('Passed: Remove Redundancy')

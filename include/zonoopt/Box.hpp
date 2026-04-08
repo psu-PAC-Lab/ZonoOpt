@@ -636,6 +636,10 @@ namespace ZonoOpt
          */
         const std::pair<int, int>& binary_indices() const { return idx_b; }
 
+        // get binary range
+        zono_float get_bin_low() const { return bin_low; }
+        zono_float get_bin_high() const { return bin_high; }
+
     protected:
         bool contract_helper(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A,
                              const Eigen::Vector<zono_float, -1>& b, const int iter,

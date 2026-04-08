@@ -21,6 +21,7 @@ namespace ZonoOpt
                       const Eigen::SparseMatrix<zono_float>& A, const Eigen::Vector<zono_float, -1>& b,
                       const bool zero_one_form)
     {
+
         // check dimensions
         if (G.rows() != c.size() || A.rows() != b.size() || G.cols() != A.cols())
         {
@@ -37,13 +38,13 @@ namespace ZonoOpt
         this->n = static_cast<int>(G.rows());
         this->zero_one_form = zero_one_form;
 
-        // abstract zono parameters
+        // hybzono params
         this->nGc = this->nG;
         this->nGb = 0;
         this->Gc = this->G;
         this->Gb.resize(this->n, 0);
         this->Ac = this->A;
-        this->Ab.resize(0, 0);
+        this->Ab.resize(this->nC, 0);
     }
 
     void ConZono::convert_form()

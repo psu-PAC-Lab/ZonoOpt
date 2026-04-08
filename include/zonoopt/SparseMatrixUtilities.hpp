@@ -111,7 +111,7 @@ namespace ZonoOpt::detail
         // check for empty input matrix
         if (A.rows() == 0 || A.cols() == 0)
         {
-            A.resize(0, 0);
+            A.resize(0, A.cols());
             b.resize(0);
             return;
         }
