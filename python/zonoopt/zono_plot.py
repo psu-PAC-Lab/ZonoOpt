@@ -49,10 +49,6 @@ def get_vertices(Z, t_max=60.0):
         # init time
         t0 = time.time()
 
-        # make sure Z is not empty
-        if Z.is_empty():
-            return []
-
         # search for vertices along perpendicular directions to get initial simplex
         verts = []
         D = [np.array([1 if i==j else 0 for j in range(Z.get_n())]) for i in range(Z.get_n())] # init directions as standard basis

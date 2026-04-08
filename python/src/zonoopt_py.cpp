@@ -2330,13 +2330,13 @@ PYBIND11_MODULE(_core, m)
                     *solution = *sol_shared;
                 return leaves;
             },
-            py::arg("remove_redundancy")=true, py::arg("settings")=OptSettings(), py::arg("solution")=nullptr,
+            py::arg("remove_redundancy")=false, py::arg("settings")=OptSettings(), py::arg("solution")=nullptr,
             py::arg("n_leaves")=std::numeric_limits<int>::max(), py::arg("contractor_iter")=100, 
             R"pbdoc(
                 Computes individual constrained zonotopes whose union is the hybrid zonotope object.
                 
                 Args:
-                    remove_redundancy (bool, optional): flag to make call to remove_redundancy for each identified leaf
+                    remove_redundancy (bool, optional): flag to make call to remove_redundancy for each identified leaf (default false)
                     settings (OptSettings, optional): optimization settings structure
                     solution (OptSolution, optional): optimization solution structure pointer, populated with result
                     n_leaves (int, optional): max number of leaves to find

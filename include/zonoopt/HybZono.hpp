@@ -407,7 +407,7 @@ class HybZono
         /**
          * @brief Computes individual constrained zonotopes whose union is the hybrid zonotope object.
          * 
-         * @param remove_redundancy flag to make call to remove_redundancy for each identified leaf
+         * @param remove_redundancy flag to make call to remove_redundancy for each identified leaf (default false)
          * @param settings optimization settings structure
          * @param solution optimization solution structure pointer, populated with result
          * @param n_leaves max number of leaves to find
@@ -421,7 +421,7 @@ class HybZono
          * Branch and bound search is used to find all leaves of the hybrid zonotope tree. If any threads are allocated
          * for ADMM-FP, these will instead be used for branch and bound search.
          */
-        std::vector<std::unique_ptr<ConZono>> get_leaves(bool remove_redundancy=true, const OptSettings &settings=OptSettings(),
+        std::vector<std::unique_ptr<ConZono>> get_leaves(bool remove_redundancy=false, const OptSettings &settings=OptSettings(),
             std::shared_ptr<OptSolution>* solution=nullptr, int n_leaves = std::numeric_limits<int>::max(), int contractor_iter=10) const;
 
         // friend function declarations
