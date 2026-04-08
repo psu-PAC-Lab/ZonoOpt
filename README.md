@@ -221,5 +221,11 @@ More information about ZonoOpt can be found in the following publications. Pleas
 
 **Robbins, J.A., Thompson, A.F., Glunt, J.J., and Pangborn, H.C., "Hybrid System Planning using a Mixed-Integer ADMM Heuristic and Hybrid Zonotopes", 2026. [https://arxiv.org/abs/2602.17574](https://doi.org/10.48550/arXiv.2602.17574)**
 
+## A Note on Version Numbers
+For internal reasons, ZonoOpt's versioning begins at 2.0.0. 
+
+Please note that the library is currently in Beta. In this phase, there may be API changes in minor version updates (e.g., 2.1.0 to 2.2.0). 
+There will be no API changes between patch numbers (e.g., 2.2.0 to 2.2.1).
+
 ## See Also
 For MATLAB users, [zonoLAB](https://github.com/ESCL-at-UTD/zonoLAB) provides classes and set operations for zonotopes, constrained zonotopes, and hybrid zonotopes.

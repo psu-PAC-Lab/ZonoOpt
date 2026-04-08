@@ -212,15 +212,16 @@ class HybZono
         /**
          * @brief Removes redundant constraints and any unused generators
          * @param contractor_iter number of interval contractor iterations to run
-         * @returns true if successful, false if unable to reduce the complexity of the set representation
+         * @returns set with redundancies removed
          *
-         * This method uses an interval contractor to detect generators that can be removed. 
+         * This method uses an interval contractor to detect generators that can be removed.
+         * Constrained zonotopes with separable constraints and generators in the form [g0 0 0 ...]^T * xi + c, a^T * xi = b are simplified.
          * Additionally, any linearly dependent rows of the constraint matrix A are removed.
          * If the linearly dependent constraints are not consistent (e.g., if A = [1, 0.1; 1, 0.1] and b = [1; 0.8]), 
          * the returned set is not equivalent to the original set.
          * Unused factors are also removed.
          */
-        virtual bool remove_redundancy(int contractor_iter=10);
+        virtual std::unique_ptr<HybZono> remove_redundancy(int contractor_iter=10) const;
 
         /**
          * @brief Returns convex relaxation of the hybrid zonotope.
@@ -420,7 +421,7 @@ class HybZono
          * Branch and bound search is used to find all leaves of the hybrid zonotope tree. If any threads are allocated
          * for ADMM-FP, these will instead be used for branch and bound search.
          */
-        std::vector<ConZono> get_leaves(bool remove_redundancy=true, const OptSettings &settings=OptSettings(),
+        std::vector<std::unique_ptr<ConZono>> get_leaves(bool remove_redundancy=true, const OptSettings &settings=OptSettings(),
             std::shared_ptr<OptSolution>* solution=nullptr, int n_leaves = std::numeric_limits<int>::max(), int contractor_iter=10) const;
 
         // friend function declarations
@@ -755,7 +756,7 @@ class HybZono
             int n_leaves = std::numeric_limits<int>::max()) const;
         std::vector<std::pair<int, int>> get_simplifiable_constraints() const;
         void apply_constraint_simplification(const std::vector<std::pair<int, int>>& cons, Box& box);
-        void rescale_generators(MI_Box& box);
+        bool rescale_generators(MI_Box& box); // returns false if empty set detected
         void remove_generators(const std::set<int>& idx_c, const std::set<int>& idx_b, MI_Box& box);
         void remove_fixed_vars(MI_Box& box);
 
