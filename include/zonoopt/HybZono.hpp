@@ -17,7 +17,7 @@
 #include "BnbDataStructures.hpp"
 #include "IntervalMatrix.hpp"
 
-#include <stdexcept>
+#include <cassert>
 #include <limits>
 #include <set>
 
@@ -737,7 +737,7 @@ class HybZono
             std::shared_ptr<OptSolution>* solution, int n_leaves, int contractor_iter);
 
 
-        static void remove_generators(Eigen::SparseMatrix<zono_float>& G, Eigen::SparseMatrix<zono_float>& A, const std::set<int>& idx_to_remove);
+        static void remove_cols(Eigen::SparseMatrix<zono_float>& M, const std::set<int>& idx_to_remove);
         static std::set<int> find_unused_generators(const Eigen::SparseMatrix<zono_float>& G, const Eigen::SparseMatrix<zono_float>& A);
         OptSolution mi_opt(const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q,
             zono_float c, const Eigen::SparseMatrix<zono_float>& A, const Eigen::Vector<zono_float, -1>& b,
@@ -753,6 +753,12 @@ class HybZono
         void set_Ac_Ab_from_A();
         std::vector<Eigen::Vector<zono_float, -1>> get_bin_leaves(const OptSettings &settings=OptSettings(), std::shared_ptr<OptSolution>* solution=nullptr,
             int n_leaves = std::numeric_limits<int>::max()) const;
+        std::vector<std::pair<int, int>> get_simplifiable_constraints() const;
+        void apply_constraint_simplification(const std::vector<std::pair<int, int>>& cons, Box& box);
+        void rescale_generators(MI_Box& box);
+        void remove_generators(const std::set<int>& idx_c, const std::set<int>& idx_b, MI_Box& box);
+        void remove_fixed_vars(MI_Box& box);
+
 };
 
 // forward delcarations
