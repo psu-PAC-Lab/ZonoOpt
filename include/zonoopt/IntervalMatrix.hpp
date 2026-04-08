@@ -103,6 +103,18 @@ namespace ZonoOpt
         zono_float width() const;
 
         /**
+         * @brief Determine whether interval matrix is empty (any contained interval is empty)
+         * @return true if interval matrix is empty
+         */
+        bool is_empty() const;
+
+        /**
+         * @brief Determine whether interval matrix is single-valued (i.e., all intervals have width 0 within numerical tolerance)
+         * @return true if interval matrix is single-valued
+         */
+        bool is_single_valued() const;
+
+        /**
          * @brief Interval matrix intersection
          * 
          * @param other interval matrix to intersect with

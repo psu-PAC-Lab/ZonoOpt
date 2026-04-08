@@ -479,6 +479,30 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     bool: flag indicating whether self is a superset of other
             )pbdoc")
+        .def("__and__", &Interval::operator&,
+            py::arg("other"),
+            py::is_operator(),
+            R"pbdoc(
+                Interval intersection
+
+                Args:
+                    other (Interval): other interval
+
+                Returns:
+                    Interval: intersection of self and other
+            )pbdoc")
+        .def("__or__", &Interval::operator|,
+            py::arg("other"),
+            py::is_operator(),
+            R"pbdoc(
+                Interval union
+
+                Args:
+                    other (Interval): other interval
+
+                Returns:
+                    Interval: interval hull of self and other
+            )pbdoc")
         .def("contains_set", &Interval::contains_set, py::arg("other"),
             R"pbdoc(
                 Checks whether interval contains another interval
@@ -789,6 +813,20 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     numpy.array: center of box
+            )pbdoc")
+        .def("is_empty", &Box::is_empty,
+            R"pbdoc(
+                Checks whether box is empty (any contained interval is empty)
+
+                Returns:
+                    bool: flag indicating whether box is empty
+            )pbdoc")
+        .def("is_single_valued", &Box::is_single_valued,
+            R"pbdoc(
+                Checks whether box is single-valued (i.e., all intervals have width 0 within numerical tolerance)
+
+                Returns:
+                    bool: flag indicating whether box is single-valued
             )pbdoc")
         .def("contains", &Box::contains, py::arg("v"),
             R"pbdoc(
@@ -1397,6 +1435,20 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     IntervalMatrix: radius of interval matrix
+            )pbdoc")
+        .def("is_empty", &IntervalMatrix::is_empty,
+            R"pbdoc(
+                Checks whether interval matrix is empty (any contained interval is empty)
+
+                Returns:
+                    bool: flag indicating whether interval matrix is empty
+            )pbdoc")
+        .def("is_single_valued", &IntervalMatrix::is_single_valued,
+            R"pbdoc(
+                Checks whether interval matrix is single-valued (i.e., all intervals have width 0 within numerical tolerance)
+                
+                Returns:
+                    bool: flag indicating whether interval matrix is single-valued
             )pbdoc")
         .def("intersect", &IntervalMatrix::intersect,
             R"pbdoc(

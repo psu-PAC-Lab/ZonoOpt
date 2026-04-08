@@ -34,7 +34,7 @@ MathJax.Hub.Config({
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">ZonoOpt<span id="projectnumber">&#160;2.2.0</span>
+   <div id="projectname">ZonoOpt<span id="projectnumber">&#160;2.3.0</span>
    </div>
   </td>
  </tr>
@@ -131,6 +131,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2edbbd3e86b4c2b046bec42e8857b999" id="r_a2edbbd3e86b4c2b046bec42e8857b999"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a2edbbd3e86b4c2b046bec42e8857b999">width</a> () const</td></tr>
 <tr class="memdesc:a2edbbd3e86b4c2b046bec42e8857b999"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get width of interval matrix.  <br /></td></tr>
 <tr class="separator:a2edbbd3e86b4c2b046bec42e8857b999"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83cf48df738919c42cddbefc3b589b29" id="r_a83cf48df738919c42cddbefc3b589b29"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a83cf48df738919c42cddbefc3b589b29">is_empty</a> () const</td></tr>
+<tr class="memdesc:a83cf48df738919c42cddbefc3b589b29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine whether interval matrix is empty (any contained interval is empty)  <br /></td></tr>
+<tr class="separator:a83cf48df738919c42cddbefc3b589b29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3d79c05d43a3a301ee070cc141f5504" id="r_ab3d79c05d43a3a301ee070cc141f5504"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#ab3d79c05d43a3a301ee070cc141f5504">is_single_valued</a> () const</td></tr>
+<tr class="memdesc:ab3d79c05d43a3a301ee070cc141f5504"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine whether interval matrix is single-valued (i.e., all intervals have width 0 within numerical tolerance)  <br /></td></tr>
+<tr class="separator:ab3d79c05d43a3a301ee070cc141f5504"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49f25eb80a1498dc6660787d8a148bec" id="r_a49f25eb80a1498dc6660787d8a148bec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1IntervalMatrix.html#a49f25eb80a1498dc6660787d8a148bec">intersect</a> (const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;other) const</td></tr>
 <tr class="memdesc:a49f25eb80a1498dc6660787d8a148bec"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1Interval.html" title="Interval class.">Interval</a> matrix intersection.  <br /></td></tr>
 <tr class="separator:a49f25eb80a1498dc6660787d8a148bec"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -606,6 +612,46 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> </dd></dl>
+
+</div>
+</div>
+<a id="a83cf48df738919c42cddbefc3b589b29" name="a83cf48df738919c42cddbefc3b589b29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83cf48df738919c42cddbefc3b589b29">&#9670;&#160;</a></span>is_empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ZonoOpt::IntervalMatrix::is_empty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determine whether interval matrix is empty (any contained interval is empty) </p>
+<dl class="section return"><dt>Returns</dt><dd>true if interval matrix is empty </dd></dl>
+
+</div>
+</div>
+<a id="ab3d79c05d43a3a301ee070cc141f5504" name="ab3d79c05d43a3a301ee070cc141f5504"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3d79c05d43a3a301ee070cc141f5504">&#9670;&#160;</a></span>is_single_valued()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ZonoOpt::IntervalMatrix::is_single_valued </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determine whether interval matrix is single-valued (i.e., all intervals have width 0 within numerical tolerance) </p>
+<dl class="section return"><dt>Returns</dt><dd>true if interval matrix is single-valued </dd></dl>
 
 </div>
 </div>
