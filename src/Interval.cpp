@@ -213,14 +213,13 @@ namespace ZonoOpt
 
         Interval Interval::pow(const zono_float f) const
         {
+            // integer-valued case
             if (std::abs(f - std::round(f)) < zono_eps)
                 return this->pow(static_cast<int>(std::round(f)));
 
-            zono_float frac = one / f;
-            if (std::abs(frac - std::round(frac)) < zono_eps && frac > zero)
-                return this->nth_root(static_cast<int>(std::round(frac)));
-
-            throw std::invalid_argument("Fractional powers are only supported for integer and positive rational exponents within numerical tolerance");
+            // get rational exponent
+            const auto [numerator, denominator] = get_rational(static_cast<double>(f));
+            return this->pow(numerator) * this->nth_root(denominator);
         }
 
         Interval Interval::nth_root(const int n) const
@@ -307,5 +306,27 @@ namespace ZonoOpt
         {
             os << interval.print();
             return os;
+        }
+
+        std::pair<int, int> Interval::get_rational(double x)
+        {
+            int n;
+            double result = std::frexp(x, &n);
+
+            auto numerator = static_cast<long long>(result * std::pow(2, DBL_MANT_DIG));
+            auto denominator = static_cast<long long>(std::pow(2, DBL_MANT_DIG-n));
+
+            const long long gcd = std::gcd(numerator, denominator);
+            numerator /= gcd;
+            denominator /= gcd;
+
+            // make sure values in range
+            if (numerator > static_cast<long long>(std::numeric_limits<int>::max()) || denominator > static_cast<long long>(std::numeric_limits<int>::max() ) ||
+                numerator < static_cast<long long>(std::numeric_limits<int>::min()) || denominator < static_cast<long long>(std::numeric_limits<int>::min()))
+            {
+                throw std::overflow_error("Numerator or denominator exceeds int limits");
+            }
+
+            return {static_cast<int>(numerator), static_cast<int>(denominator)};
         }
 }
