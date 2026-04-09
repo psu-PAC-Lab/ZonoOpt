@@ -69,9 +69,6 @@ void run_interval_test(zono_float x_min, zono_float x_max)
         err_ss << "f(" << x_sample.transpose() << ") = " << f_sample << " not in " << f_interval;
         test_assert(f_interval.contains(f_sample), err_ss.str());
     }
-
-    // test fractional exponent
-    test_exponent();
 }
 
 int main()
@@ -84,6 +81,9 @@ int main()
 
     // Case 3: spanning 0
     run_interval_test(-1., 1.);
+
+    // test fractional exponent
+    test_exponent();
 
     return 0;
 }

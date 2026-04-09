@@ -419,15 +419,15 @@ def test_interval_arithmetic():
 
     def _test_exponent():
         a = zono.Interval(0.5, 3.)
-        b = a**(345./123)
+        b = a**(456./123)
         assert not b.is_empty(), 'test_exponent did not succeed'
-        assert np.abs(b.lower() - 0.5**(345/123)) < 1e-6, 'test_exponent lower bound is incorrect'
-        assert np.abs(b.upper() - 3.0**(345/123)) < 1e-6, 'test_exponent upper bound is incorrect'
+        assert np.abs(b.lower() - 0.5**(456/123)) < 1e-6, 'test_exponent lower bound is incorrect'
+        assert np.abs(b.upper() - 3.0**(456/123)) < 1e-6, 'test_exponent upper bound is incorrect'
 
         a = zono.Interval(-3., -0.5)
         try:
-            b = a**(345./123)
-            raise ValueError('test_exponent: expected fractional power of negative interval to throw')
+            b = a**(456./123)
+            raise RuntimeError('test_exponent: expected fractional power of negative interval to throw')
         except ValueError:
             pass
 
