@@ -24,19 +24,24 @@ Interval f_int(const Box& x)
     return 2.*(x0.tan().pow(-2)) + (x1/x0).cos()/3. + (x0 + x2.arctan()).sin()*x0.sinh() + (1. + x1.abs()).arccosh().exp() - (x0.arccos()*x1.arcsin())/(x2.pow(2)).log();
 }
 
-void test_exponent() {
-    Interval a (1., 3.);
-    Interval b = a.pow(3./2.);
+void test_exponent() 
+{
+    Interval a (0.5, 3.);
+    Interval b = a.pow(456./123.);
 
     test_assert(!b.is_empty(), "test_exponent did not succeed");
+    test_assert(std::abs(b.lower() - std::pow(0.5, 456./123.)) < 1e-6, "test_exponent lower bound incorrect");
+    test_assert(std::abs(b.upper() - std::pow(3., 456./123.)) < 1e-6, "test_exponent upper bound incorrect");
 
-    a = Interval(-3., -1.);
-    try {
-        b = a.pow(3./2.);
+    a = Interval(-3., -0.5);
+    try 
+    {
+        b = a.pow(456./123.);
         std::cerr << "test_exponent: expected fractional power of negative interval to throw" << std::endl;
         std::exit(1);
     }
-    catch (std::invalid_argument& e) {
+    catch (std::domain_error& e) 
+    {
         // expected behavior
     }
 }

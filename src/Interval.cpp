@@ -217,9 +217,13 @@ namespace ZonoOpt
             if (std::abs(f - std::round(f)) < zono_eps)
                 return this->pow(static_cast<int>(std::round(f)));
 
+            // negative intervals not supported
+            if (this->lower() < zero)
+                throw std::domain_error("Negative intervals not supported for non-integer powers.");
+
             // get rational exponent
             const auto [numerator, denominator] = get_rational(static_cast<double>(f));
-            return this->pow(numerator) * this->nth_root(denominator);
+            return this->pow(numerator).nth_root(denominator);
         }
 
         Interval Interval::nth_root(const int n) const
