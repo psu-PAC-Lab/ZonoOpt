@@ -417,6 +417,19 @@ def test_interval_arithmetic():
         for f_sample in f_samples:
             assert np.isnan(f_sample) or f_bounds.contains(f_sample)
 
+    def _test_exponent():
+        a = zono.Interval(1., 3.)
+        b = a**(3./2.)
+        assert not b.is_empty(), 'test_exponent did not succeed'
+
+        a = zono.Interval(-3., -1.)
+        try:
+            a**(3./2.)
+            raise RuntimeError('test_exponent: expected fractional power of negative interval to throw')
+        except ValueError as e:
+            #expected behavior
+            pass
+
     # Case 1: positive range
     _run_interval_test(0.1, 0.2)
     
@@ -425,6 +438,9 @@ def test_interval_arithmetic():
 
     # Case 3: spanning 0
     _run_interval_test(-1., 1.)
+
+    # fractional power test
+    _test_exponent()
 
     print('Passed: Interval Arithmetic')
 

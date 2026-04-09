@@ -24,6 +24,23 @@ Interval f_int(const Box& x)
     return 2.*(x0.tan().pow(-2)) + (x1/x0).cos()/3. + (x0 + x2.arctan()).sin()*x0.sinh() + (1. + x1.abs()).arccosh().exp() - (x0.arccos()*x1.arcsin())/(x2.pow(2)).log();
 }
 
+void test_exponent() {
+    Interval a (1., 3.);
+    Interval b = a.pow(3./2.);
+
+    test_assert(!b.is_empty(), "test_exponent did not succeed");
+
+    a = Interval(-3., -1.);
+    try {
+        b = a.pow(3./2.);
+        std::cerr << "test_exponent: expected fractional power of negative interval to throw" << std::endl;
+        std::exit(1);
+    }
+    catch (std::invalid_argument& e) {
+        // expected behavior
+    }
+}
+
 void run_interval_test(zono_float x_min, zono_float x_max)
 {
     // create box for input intervals
@@ -47,6 +64,9 @@ void run_interval_test(zono_float x_min, zono_float x_max)
         err_ss << "f(" << x_sample.transpose() << ") = " << f_sample << " not in " << f_interval;
         test_assert(f_interval.contains(f_sample), err_ss.str());
     }
+
+    // test fractional exponent
+    test_exponent();
 }
 
 int main()
