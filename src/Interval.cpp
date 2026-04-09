@@ -308,25 +308,37 @@ namespace ZonoOpt
             return os;
         }
 
-        std::pair<int, int> Interval::get_rational(double x)
+        std::pair<int, int> Interval::get_rational(zono_float x)
         {
-            int n;
-            double result = std::frexp(x, &n);
+            // get upper and lower bound
+            int n_l = static_cast<int>(std::floor(x)); // numerator, lower
+            int n_u = static_cast<int>(std::ceil(x)); // numerator, upper
+            int d_l = 1; // denominator, lower
+            int d_u = 1; // denominator, upper
 
-            auto numerator = static_cast<long long>(result * std::pow(2, DBL_MANT_DIG));
-            auto denominator = static_cast<long long>(std::pow(2, DBL_MANT_DIG-n));
+            // get point in between
+            int n = n_l + n_u;
+            int d = d_l + d_u;
+            zono_float n_d = static_cast<zono_float>(n) / d;
 
-            const long long gcd = std::gcd(numerator, denominator);
-            numerator /= gcd;
-            denominator /= gcd;
-
-            // make sure values in range
-            if (numerator > static_cast<long long>(std::numeric_limits<int>::max()) || denominator > static_cast<long long>(std::numeric_limits<int>::max() ) ||
-                numerator < static_cast<long long>(std::numeric_limits<int>::min()) || denominator < static_cast<long long>(std::numeric_limits<int>::min()))
+            // iterate until convergence
+            while (std::abs(n_d - x) > zono_eps) 
             {
-                throw std::overflow_error("Numerator or denominator exceeds int limits");
+                if (x > n_d)
+                {
+                    n_l = n;
+                    d_l = d;
+                }
+                else
+                {
+                    n_u = n;
+                    d_u = d;
+                }
+                n = n_l + n_u;
+                d = d_l + d_u;
+                n_d = static_cast<zono_float>(n) / d;
             }
 
-            return {static_cast<int>(numerator), static_cast<int>(denominator)};
+            return {n, d};
         }
 }
