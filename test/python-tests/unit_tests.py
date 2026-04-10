@@ -924,8 +924,11 @@ def test_remove_redundancy():
         Z = TestUtilities.random_hybzono(n=2, nGc=20, nGb=5, nC=5, density=0.2, val_min=0., val_max=1.)
 
         # get vertices before simplifying
-        V_before = zono.get_vertices(Z)
-        if V_before.shape[0] == 0: # infeasible
+        try:
+            V_before = zono.get_vertices(Z)
+            if V_before.shape[0] == 0: # infeasible
+                return
+        except RuntimeError: # can't factor problem matrices
             return
         
         # randomly convert form
@@ -949,7 +952,7 @@ def test_remove_redundancy():
             print(Z_rr)
             
             fig = plt.figure()
-            ax = fig.add_subplot(1, 2, 1)
+            ax = fig.add_subplot(1, 1, 1)
             ax.scatter(V_before[:,0], V_before[:,1], color='blue', marker='.', label='before')
             ax.scatter(V_after[:,0], V_after[:,1], color='red', marker='x', label='after')
             ax.legend()
@@ -967,7 +970,7 @@ def test_remove_redundancy():
     for _ in range(100):
         _test_random_conzono()
 
-    for _ in range(50):
+    for _ in range(100):
         _test_random_hybzono()
 
     print('Passed: Remove Redundancy')

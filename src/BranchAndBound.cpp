@@ -166,8 +166,6 @@ namespace ZonoOpt::detail
             }
         }
 
-        // make ADMM-FP thread
-
         // if contractor has collapsed any integer values, use that information
         this->admm_fp_data.reset(this->bnb_data->clone()); // copies over matrix factorization
         this->admm_fp_data->x_box = std::make_shared<MI_Box>(root->get_box().lower(), root->get_box().upper(),
@@ -255,6 +253,7 @@ namespace ZonoOpt::detail
 
             return sol;
         }
+
         // start threads
         std::vector<std::thread> bnb_threads;
         for (int i = 0; i < this->data.admm_data->settings.n_threads_bnb; i++)
@@ -295,7 +294,7 @@ namespace ZonoOpt::detail
             }
 
             // check for max nodes
-            int queue_size;
+            int queue_size = 0;
             {
                 std::lock_guard<std::mutex> lock(pq_mtx);
                 queue_size = static_cast<int>(this->node_queue.size());
@@ -316,25 +315,24 @@ namespace ZonoOpt::detail
             // get lower bound / check if there are no nodes remaining
             zono_float J_min = -std::numeric_limits<zono_float>::infinity();
             {
-                std::pair<zono_float, bool> J_min_threads_pair;
                 std::lock_guard<std::mutex> lock(pq_mtx);
-                J_min_threads_pair = this->J_threads.get_min(); // lower bound from active threads
+                auto [min_val_pair, valid] = this->J_threads.get_min(); // lower bound from active threads
 
                 if (this->node_queue.empty())
                 {
-                    if (!J_min_threads_pair.second)
+                    if (!valid)
                     {
                         this->done = true; // no nodes remaining
                         this->converged = true;
                     }
                     else
                     {
-                        J_min = J_min_threads_pair.first;
+                        J_min = min_val_pair.second;
                     }
                 }
                 else
                 {
-                    J_min = std::min(this->node_queue.top()->solution.J, J_min_threads_pair.first);
+                    J_min = std::min(this->node_queue.top()->solution.J, min_val_pair.second);
                 }
             }
 
@@ -351,13 +349,10 @@ namespace ZonoOpt::detail
                     this->converged = true;
                 }
             }
-            else // check based on number of solutions
+            else if (this->solutions.size() >= static_cast<size_t>(max_sols)) // check based on number of solutions
             {
-                if (this->solutions.size() >= static_cast<size_t>(max_sols))
-                {
-                    this->done = true;
-                    this->converged = true;
-                }
+                this->done = true;
+                this->converged = true;
             }
 
             // verbosity
@@ -374,7 +369,7 @@ namespace ZonoOpt::detail
             }
 
             // small sleep
-            std::this_thread::sleep_for(std::chrono::microseconds(100));
+            std::this_thread::sleep_for(std::chrono::microseconds(100)); // DEBUG
         }
 
         // clean up
@@ -710,14 +705,13 @@ namespace ZonoOpt::detail
         while (!this->done)
         {
             std::unique_ptr<Node, NodeDeleter> node(nullptr, NodeDeleter(&pool));
-            JThreadGuard guard(this->J_threads);
+            ThreadGuard<std::pair<int, zono_float>, JThreadCompare> guard(this->J_threads);
             {
                 std::unique_lock<std::mutex> lock(pq_mtx);
                 pq_cv_bnb.wait(lock, [this]() { return this->done || !this->node_queue.empty(); });
                 if (this->done) return;
                 node = this->node_queue.pop_top();
-                guard.specify_J(node->solution.J);
-                // add J to J_threads vector, need to do this before releasing lock
+                guard.specify_tag({this->uniform_dist(this->rng), node->solution.J});
             }
             if (node) 
             {

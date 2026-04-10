@@ -90,24 +90,25 @@ namespace ZonoOpt::detail
         T data;
     };
 
-    class ThreadSafeMultiset
+    template <typename T, typename Compare=std::less<T>>
+    class ThreadSafeSet
     {
     public:
         // constructor
-        ThreadSafeMultiset() = default;
+        ThreadSafeSet() = default;
 
-        // add J
-        void add(const zono_float J)
+        // add val
+        void add(const T val)
         {
             std::lock_guard<std::mutex> lock(mtx);
-            data.insert(J);
+            data.insert(val);
         }
 
-        // remove J
-        void remove(const zono_float J)
+        // remove val
+        void remove(const T val)
         {
             std::lock_guard<std::mutex> lock(mtx);
-            if (const auto it = data.find(J); it != data.end())
+            if (const auto it = data.find(val); it != data.end())
                 data.erase(it);
         }
 
@@ -119,13 +120,18 @@ namespace ZonoOpt::detail
         }
 
         // get min, bool indicates if valid (i.e. not empty)
-        std::pair<zono_float, bool> get_min() const
+        std::pair<T, bool> get_min() const
         {
             std::lock_guard<std::mutex> lock(mtx);
             if (data.empty())
-                return std::make_pair(std::numeric_limits<zono_float>::infinity(), false);
+            {
+                T val;
+                return std::make_pair(val, false);
+            }
             else
+            {
                 return std::make_pair(*data.begin(), true);
+            }
         }
 
         // get size
@@ -137,7 +143,7 @@ namespace ZonoOpt::detail
 
     private:
         mutable std::mutex mtx;
-        std::multiset<zono_float> data;
+        std::set<T, Compare> data;
     };
 
     template <typename T>

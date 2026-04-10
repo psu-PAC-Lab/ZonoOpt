@@ -27,9 +27,9 @@ def get_vertices(Z, t_max=60.0):
         # maximize dot product
         c = -Z.get_G().transpose().dot(d)
         if Z.is_0_1_form():
-            bounds = [(0, 1) for i in range(Z.get_nG())]
+            bounds = [(0, 1) for _ in range(Z.get_nG())]
         else:
-            bounds = [(-1, 1) for i in range(Z.get_nG())]
+            bounds = [(-1, 1) for _ in range(Z.get_nG())]
 
         if Z.is_zono():
             res = linprog(c, bounds=bounds)
@@ -50,7 +50,7 @@ def get_vertices(Z, t_max=60.0):
         t0 = time.time()
 
         # search for vertices along perpendicular directions to get initial simplex
-        verts = []
+        verts = np.zeros((0, Z.get_n()))
         D = [np.array([1 if i==j else 0 for j in range(Z.get_n())]) for i in range(Z.get_n())] # init directions as standard basis
         B = [] # init basis
         vc = np.zeros(Z.get_n()) # init vertex candidate as origin
@@ -77,9 +77,9 @@ def get_vertices(Z, t_max=60.0):
 
                 # add new vertices
                 if is_vd_pos_new:
-                    verts.append(vd_pos)
+                    verts = np.vstack([verts, vd_pos])
                 if is_vd_neg_new:
-                    verts.append(vd_neg)
+                    verts = np.vstack([verts, vd_neg])
 
                 # update direction
                 B.append(vd_pos - vd_neg)
@@ -89,7 +89,7 @@ def get_vertices(Z, t_max=60.0):
 
         # return if set is not full-dimensional
         if len(verts) < Z.get_n()+1:
-            return np.array(verts)
+            return verts
         
         # search for additional vertices along the directions of the facet normals
         converged = False
@@ -137,7 +137,7 @@ def get_vertices(Z, t_max=60.0):
 
                 # check if vertex is new
                 if not any(np.allclose(vd, v) for v in verts):
-                    verts.append(vd)
+                    verts = np.vstack([verts, vd])
                     n_new_verts += 1
 
             # already-checked normal directions
@@ -168,10 +168,8 @@ def get_vertices(Z, t_max=60.0):
         t0 = time.time()
         settings = OptSettings()
         settings.t_max = t_max
-        settings.n_threads_bnb = 1
+        settings.n_threads_bnb = 8
         settings.n_threads_admm_fp = 0
-        settings.verbose = True
-        settings.verbosity_interval = 1
         sol = OptSolution()
         Z_leaves = Z.get_leaves(settings=settings, solution=sol)
         if not sol.converged and not sol.infeasible:
