@@ -186,6 +186,18 @@ namespace ZonoOpt::detail
             return false;
         }
 
+        // atomically insert value only if no equivalent element already exists; returns true if inserted
+        bool push_back_if_not_contains(const T& value, std::function<bool(const OptSolution&, const OptSolution&)>& compare)
+        {
+            std::lock_guard<std::mutex> lock(mtx);
+            for (const auto& existing : data)
+            {
+                if (compare(existing, value)) return false;
+            }
+            data.push_back(value);
+            return true;
+        }
+
     private:
         mutable std::mutex mtx;
         std::vector<T> data;

@@ -159,14 +159,31 @@ def get_vertices(Z, t_max=60.0):
     
     # get vertices based on type
     if Z.is_empty_set():
-        return None
+        return np.zeros((0, Z.get_n()))
     elif Z.is_point():
         return Z.get_c().reshape(1,-1)
     elif Z.is_zono() or Z.is_conzono():
         return _get_conzono_vertices(Z, t_max=t_max)
     elif Z.is_hybzono():
-        raise ValueError('get_vertices not implemented for HybZono')
-
+        t0 = time.time()
+        settings = OptSettings()
+        settings.t_max = t_max
+        settings.n_threads_bnb = 1
+        settings.n_threads_admm_fp = 0
+        settings.verbose = True
+        settings.verbosity_interval = 1
+        sol = OptSolution()
+        Z_leaves = Z.get_leaves(settings=settings, solution=sol)
+        if not sol.converged and not sol.infeasible:
+            warnings.warn('get_leaves returned before convergence, get_vertices may be incomplete.')
+        dt = time.time() - t0
+        V = np.zeros((0, Z.get_n()))
+        for leaf in Z_leaves:
+            V_leaf = get_vertices(leaf, t_max=t_max-dt)
+            if V_leaf is not None:
+                V = np.vstack((V, V_leaf))
+            dt = time.time() - t0
+        return V
 
 def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
     """
@@ -199,7 +216,7 @@ def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
         sol = OptSolution()
         leaves = Z.get_leaves(settings=settings, solution=sol)
 
-        if not sol.converged:
+        if not sol.converged and not sol.infeasible:
             warnings.warn('get_leaves returned before convergence, plot may be incomplete.')
 
         if len(leaves) == 0:

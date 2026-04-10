@@ -112,6 +112,7 @@ namespace ZonoOpt::detail
 
         PriorityQueuePrunable<std::unique_ptr<Node, NodeDeleter>, NodeCompare> node_queue; // priority queue for nodes
         mutable std::mutex pq_mtx;
+        mutable std::mutex incumbent_mtx; // guards atomic check-and-update of incumbent (J_max, z, x, u, etc.)
         std::condition_variable pq_cv_bnb, pq_cv_admm_fp;
         // condition variables for branch-and-bound and ADMM-FP threads
 

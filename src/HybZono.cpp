@@ -737,7 +737,12 @@ namespace ZonoOpt
         BranchAndBound mi_solver(mi_data);
 
         // solve optimization problem
-        n_sols = std::min(n_sols, static_cast<int>(std::pow(2, this->nGb)));
+        // Cap n_sols at 2^nGb (the maximum number of binary combinations).
+        // Use integer arithmetic to avoid UB: static_cast<int>(std::pow(2, nGb)) overflows
+        // when nGb >= 31, producing undefined behavior and a garbage max_sols that can cause
+        // the B&B to terminate early and miss leaves.
+        const int max_combinations = (this->nGb < 31) ? (1 << this->nGb) : std::numeric_limits<int>::max();
+        n_sols = std::min(n_sols, max_combinations);
         auto [fst, snd] = mi_solver.multi_solve(n_sols);
         if (solution != nullptr)
             *solution = std::make_shared<OptSolution>(snd);

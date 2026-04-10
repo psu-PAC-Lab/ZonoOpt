@@ -502,23 +502,25 @@ namespace ZonoOpt::detail
                     {
                         return this->check_bin_equal(a, b);
                     };
-                    if (!this->solutions.contains(node->solution, compare_eq)) // new solution
-                        this->solutions.push_back(node->solution);
+                    this->solutions.push_back_if_not_contains(node->solution, compare_eq);
                 }
-                if (node->solution.J < this->J_max - zono_eps) // check if node is better than current best
                 {
-                    // update incumbent
-                    this->J_max = node->solution.J;
-                    this->x.set(node->solution.x);
-                    this->z.set(node->solution.z);
-                    this->u.set(node->solution.u);
-                    this->primal_residual = node->solution.primal_residual;
-                    this->dual_residual = node->solution.dual_residual;
-                    this->feasible = true;
-                    this->admm_fp_incumbent = false;
+                    std::lock_guard<std::mutex> inc_lock(incumbent_mtx);
+                    if (node->solution.J < this->J_max - zono_eps) // check if node is better than current best
+                    {
+                        // update incumbent
+                        this->J_max = node->solution.J;
+                        this->x.set(node->solution.x);
+                        this->z.set(node->solution.z);
+                        this->u.set(node->solution.u);
+                        this->primal_residual = node->solution.primal_residual;
+                        this->dual_residual = node->solution.dual_residual;
+                        this->feasible = true;
+                        this->admm_fp_incumbent = false;
 
-                    // prune
-                    if (!this->multi_sol) this->prune(node->solution.J);
+                        // prune
+                        if (!this->multi_sol) this->prune(node->solution.J);
+                    }
                 }
             }
             else
@@ -576,25 +578,27 @@ namespace ZonoOpt::detail
                 {
                     return this->check_bin_equal(a, b);
                 };
-                if (!this->solutions.contains(sol, compare_eq)) // new solution
-                    this->solutions.push_back(sol);
+                this->solutions.push_back_if_not_contains(sol, compare_eq);
             }
 
             // new incumbent
-            if (sol.J < this->J_max - zono_eps) // check if node is better than current best
             {
-                // update incumbent
-                this->J_max = sol.J;
-                this->x.set(sol.x);
-                this->z.set(sol.z);
-                this->u.set(sol.u);
-                this->primal_residual = sol.primal_residual;
-                this->dual_residual = sol.dual_residual;
-                this->feasible = true;
-                this->admm_fp_incumbent = true;
+                std::lock_guard<std::mutex> inc_lock(incumbent_mtx);
+                if (sol.J < this->J_max - zono_eps) // check if node is better than current best
+                {
+                    // update incumbent
+                    this->J_max = sol.J;
+                    this->x.set(sol.x);
+                    this->z.set(sol.z);
+                    this->u.set(sol.u);
+                    this->primal_residual = sol.primal_residual;
+                    this->dual_residual = sol.dual_residual;
+                    this->feasible = true;
+                    this->admm_fp_incumbent = true;
 
-                // prune
-                if (!this->multi_sol) this->prune(sol.J);
+                    // prune
+                    if (!this->multi_sol) this->prune(sol.J);
+                }
             }
         }
 

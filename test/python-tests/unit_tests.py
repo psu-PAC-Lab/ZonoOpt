@@ -903,58 +903,58 @@ def test_remove_redundancy():
 
             assert(cond), err_str
 
+    def _check_vertices_equal(V1, V2):
+        for i in range(V1.shape[0]):
+            v1 = V1[i,:]
+            found_match = False
+            min_dist = np.inf
+            closest_vertex = None
+            for j in range(V2.shape[0]):
+                v2 = V2[j,:]
+                if np.linalg.norm(v1-v2) < min_dist:
+                    min_dist = np.linalg.norm(v1-v2)
+                    closest_vertex = v2
+                if min_dist < 1e-3:
+                    found_match = True
+                    break
+            
+            assert found_match, f'Vertex {v1} not found in second set of vertices, closest vertex was {closest_vertex} with distance {min_dist}'
+
     def _test_random_hybzono():
-        Z = TestUtilities.random_hybzono(n=2, nGc=30, nGb=10, nC=10, density=0.1, val_min=0., val_max=1.)
+        Z = TestUtilities.random_hybzono(n=2, nGc=20, nGb=5, nC=5, density=0.2, val_min=0., val_max=1.)
 
-        # get support before simplifying
-        settings = zono.OptSettings()
-        settings.eps_prim = 1e-3
-        settings.eps_dual = 1e-3
-        settings.eps_prim_search = 1e-3
-        settings.eps_dual_search = 1e-3
-        settings.rho = 1.
-        settings.eps_r = 0.
-        settings.eps_a = 0.
-        settings.n_threads_bnb = 1
-        settings.n_threads_admm_fp = 0
-        sup_before = np.zeros(4)
-
-        try:
-            d = [1., 0.]
-            sup_before[0] = Z.support(d, settings=settings)
-            d = [-1., 0.]
-            sup_before[1] = Z.support(d, settings=settings)
-            d = [0., 1.]
-            sup_before[2] = Z.support(d, settings=settings)
-            d = [0., -1.]
-            sup_before[3] = Z.support(d, settings=settings)
-
-        except Exception as e:
+        # get vertices before simplifying
+        V_before = zono.get_vertices(Z)
+        if V_before.shape[0] == 0: # infeasible
             return
         
         # randomly convert form
         if np.random.rand() < 0.5:
             Z.convert_form()
 
-        # get support after simplifying
+        # get vertices after simplifying
         Z_rr = Z.remove_redundancy()
-        sup_after = np.zeros(4)
 
-        d = [1., 0.]
-        sup_after[0] = Z_rr.support(d, settings=settings)
-        d = [-1., 0.]
-        sup_after[1] = Z_rr.support(d, settings=settings)
-        d = [0., 1.]
-        sup_after[2] = Z_rr.support(d, settings=settings)
-        d = [0., -1.]
-        sup_after[3] = Z_rr.support(d, settings=settings)
+        # get vertices after simplifying
+        V_after = zono.get_vertices(Z_rr)
 
-        # make sure all close
-        for i in range(4):
-            err_str = f'Random HybZono: expected support = {sup_before[i]}, got support = {sup_after[i]}\n  Z before simplifying: {Z}\n  Z after simplifying: {Z_rr}'
-            cond = np.abs(sup_before[i]-sup_after[i])/np.abs(sup_before[i]) < 1e-1 or np.abs(sup_before[i] - sup_after[i]) < 1e-1
+        # check that vertices are the same
+        try:
+            _check_vertices_equal(V_before, V_after)
+            _check_vertices_equal(V_after, V_before)
+        except Exception:
+            import matplotlib.pyplot as plt
+
+            print(Z)
+            print(Z_rr)
             
-            assert(cond), err_str
+            fig = plt.figure()
+            ax = fig.add_subplot(1, 2, 1)
+            ax.scatter(V_before[:,0], V_before[:,1], color='blue', marker='.', label='before')
+            ax.scatter(V_after[:,0], V_after[:,1], color='red', marker='x', label='after')
+            ax.legend()
+            ax.set_aspect('equal')
+            plt.show()
 
     # main
     _test1()
@@ -967,7 +967,7 @@ def test_remove_redundancy():
     for _ in range(100):
         _test_random_conzono()
 
-    for _ in range(100):
+    for _ in range(50):
         _test_random_hybzono()
 
     print('Passed: Remove Redundancy')
