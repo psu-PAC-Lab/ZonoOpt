@@ -499,6 +499,12 @@ namespace ZonoOpt::detail
                         return this->check_bin_equal(a, b);
                     };
                     this->solutions.push_back_if_not_contains(node->solution, compare_eq);
+
+                    // if integer variables not fully specified in node, need to keep branching
+                    if (!is_box_integer(node->get_box()))
+                    {
+                        branch_most_frac(node);
+                    }
                 }
                 {
                     std::lock_guard<std::mutex> inc_lock(incumbent_mtx);
@@ -634,9 +640,29 @@ namespace ZonoOpt::detail
         const Eigen::Array<zono_float, -1, 1> d_u = (xb - upper).abs();
         const Eigen::Array<zono_float, -1, 1> d = d_l.min(d_u); // distance to rounded value
         int idx_most_frac = 0;
-        d.maxCoeff(&idx_most_frac); // index of most fractional variable
-        idx_most_frac += this->data.idx_b.first; // convert to original index
-        assert(idx_most_frac >= 0 && idx_most_frac < this->data.admm_data->n_x && "Most fractional variable index out of bounds");
+        const zono_float max_val = d.maxCoeff(&idx_most_frac); // get index of most fractional variable
+        if (max_val > zono_eps)
+        {
+            // solution is fractional, can do most fractional branching
+            idx_most_frac += this->data.idx_b.first; // convert to original index
+        }
+        else
+        {
+            // solution is integer, need to find element where bounds are not single-valued to branch on
+            // this only happens during multi-sol when enumerating all solutions
+            const Box box = node->get_box();
+            idx_most_frac = this->data.idx_b.first; // init
+            while (idx_most_frac < this->data.idx_b.first + this->data.idx_b.second && box.get_element(idx_most_frac).is_single_valued())
+            {
+                ++idx_most_frac;
+            }
+        }
+        if (idx_most_frac < 0 || idx_most_frac >= this->data.admm_data->n_x)
+        {
+            std::stringstream ss;
+            ss << "Most fractional variable index out of bounds: " << idx_most_frac;
+            throw std::runtime_error(ss.str());
+        }
 
         // branch on most fractional variable
         std::unique_ptr<Node, NodeDeleter> left = this->clone_node(node);
@@ -761,5 +787,15 @@ namespace ZonoOpt::detail
         return (sol1.z.segment(this->data.idx_b.first, this->data.idx_b.second) - sol2.z.segment(
                    this->data.idx_b.first, this->data.idx_b.second))
                .cwiseAbs().maxCoeff() < zono_eps;
+    }
+
+    bool BranchAndBound::is_box_integer(const Box& box) const
+    {
+        const Eigen::Vector<zono_float, -1> lower = box.lower();
+        const Eigen::Vector<zono_float, -1> upper = box.upper();
+
+        const Box int_box (lower.segment(this->data.idx_b.first, this->data.idx_b.second),
+                                        upper.segment(this->data.idx_b.first, this->data.idx_b.second));
+        return int_box.is_single_valued(); 
     }
 }

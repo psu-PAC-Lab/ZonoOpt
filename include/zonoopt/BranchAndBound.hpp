@@ -185,6 +185,9 @@ namespace ZonoOpt::detail
 
         // check if 2 solutions correspond to the same binaries
         bool check_bin_equal(const OptSolution& sol1, const OptSolution& sol2) const;
+
+        // check whether integer variables are fully specified
+        bool is_box_integer(const Box& box) const;
     };
 } // namespace ZonoOpt::detail
 
