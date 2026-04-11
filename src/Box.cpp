@@ -600,7 +600,7 @@ namespace ZonoOpt {
             Interval y(0, 0);
             for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(A, k); it; ++it)
             {
-                y = y + this->get_element(static_cast<int>(it.col()))*it.value();
+                y += this->get_element(static_cast<int>(it.col()))*it.value();
             }
 
             // check validity
@@ -628,7 +628,7 @@ namespace ZonoOpt {
                 {
                     if (it_inner.col() != it_outer.col())
                     {
-                        x = x + this->get_element(static_cast<int>(it_inner.col()))*(-it_inner.value());
+                        x += this->get_element(static_cast<int>(it_inner.col()))*(-it_inner.value());
                     }
                 }
 
@@ -734,62 +734,31 @@ namespace ZonoOpt {
                                  const Eigen::Vector<zono_float, -1>& b, const int iter,
                                  const std::set<int>& constraints)
     {
-        // if no binary variables, just use Box contractor
-        if (this->idx_b.second == 0)
-            return Box::contract_helper(A, b, iter, constraints);
+        // base class contractor
+        bool success = Box::contract_helper(A, b, iter, constraints);
 
-        // find participating binary variables
-        std::set<int> bin_vars;
-        for (const int k : constraints)
+        // loop through binary variables and fix if possible
+        for (int i=this->idx_b.first; i<this->idx_b.first + this->idx_b.second; ++i)
         {
-            for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(A, k); it; ++it)
+            if (this->x_lb(i) > this->bin_low + zono_eps && this->x_ub(i) < this->bin_high - zono_eps)
             {
-                if (it.col() >= this->idx_b.first && it.col() < this->idx_b.first + this->idx_b.second)
-                {
-                    bin_vars.insert(static_cast<int>(it.col()));
-                }
+                return false; // infeasible
+            }
+            else if (this->x_lb(i) > this->bin_low + zono_eps)
+            {
+                this->x_lb(i) = this->bin_high;
+                this->x_ub(i) = this->bin_high;
+            }
+            else if (this->x_ub(i) < this->bin_high - zono_eps)
+            {
+                this->x_lb(i) = this->bin_low;
+                this->x_ub(i) = this->bin_low;
             }
         }
 
-        // contract with binary variable probing
-        for (int i = 0; i < iter; ++i)
-        {
-            // binary variable probing
-            for (const int ib : bin_vars)
-            {
-                if (this->get_element(ib).is_single_valued())
-                    continue; // already fixed
+        // forward contract to test if infeasible after fixing binary variables
+        success &= Box::contract_forward(A, b, constraints);
 
-                // test if low value is valid
-                Box low_box(this->x_lb, this->x_ub);
-                low_box.set_element(ib, Interval(this->bin_low, this->bin_low));
-                low_box.contract_backward(A, b, constraints);
-                const bool low_valid = low_box.contract_forward(A, b, constraints);
-
-                // test if high value is valid
-                Box high_box(this->x_lb, this->x_ub);
-                high_box.set_element(ib, Interval(this->bin_high, this->bin_high));
-                high_box.contract_backward(A, b, constraints);
-                const bool high_valid = high_box.contract_forward(A, b, constraints);
-
-                // update interval based on validity
-                if (low_valid && !high_valid)
-                {
-                    this->x_lb = low_box.x_lb;
-                    this->x_ub = low_box.x_ub;
-                }
-                else if (high_valid && !low_valid)
-                {
-                    this->x_lb = high_box.x_lb;
-                    this->x_ub = high_box.x_ub;
-                }
-                else if (!low_valid && !high_valid)
-                {
-                    return false; // both invalid
-                }
-            }
-        }
-
-        return true; // constraints valid
+        return success;
     }
 }

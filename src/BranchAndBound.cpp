@@ -48,6 +48,10 @@ namespace ZonoOpt::detail
     std::pair<std::vector<OptSolution>, OptSolution> BranchAndBound::multi_solve(const int max_sols)
     {
         this->multi_sol = true;
+        if (!this->data.admm_data->settings.use_interval_contractor)
+        {
+            throw std::invalid_argument("Multi-solve requires use of interval contractor.");
+        }
         auto sol = solver_core(max_sols);
         return std::get<std::pair<std::vector<OptSolution>, OptSolution>>(sol);
     }
@@ -171,7 +175,7 @@ namespace ZonoOpt::detail
         this->admm_fp_data->x_box = std::make_shared<MI_Box>(root->get_box().lower(), root->get_box().upper(),
                                                              this->data.idx_b, this->data.zero_one_form);
         const zono_float low = this->data.zero_one_form ? zero : -one;
-        constexpr zono_float high = 1;
+        constexpr zono_float high = one;
         for (int i = this->data.idx_b.first; i < this->data.idx_b.first + this->data.idx_b.second; i++)
         {
             bool low_cutoff = std::abs(root->get_box().lower()(i) - low) > zono_eps;
@@ -370,7 +374,7 @@ namespace ZonoOpt::detail
             }
 
             // small sleep
-            std::this_thread::sleep_for(std::chrono::microseconds(100)); // DEBUG
+            std::this_thread::sleep_for(std::chrono::microseconds(100));
         }
 
         // clean up
@@ -610,7 +614,7 @@ namespace ZonoOpt::detail
     bool BranchAndBound::is_integer_feasible(const Eigen::Ref<const Eigen::Vector<zono_float, -1>> xb) const
     {
         const zono_float low = this->data.zero_one_form ? zero : -one;
-        constexpr zono_float high = 1;
+        constexpr zono_float high = one;
 
         for (int i = 0; i < xb.size(); i++)
         {

@@ -81,63 +81,63 @@ namespace ZonoOpt
     std::unique_ptr<HybZono> HybZono::remove_redundancy(const int contractor_iter) const
     {
         // copy set
-        HybZono Z_rr = *this;
+        std::unique_ptr<HybZono> Z_rr (this->clone());
 
         // empty set case
-        if (Z_rr.is_empty_set())
-            return std::make_unique<EmptySet>(Z_rr.n);
+        if (Z_rr->is_empty_set())
+            return std::make_unique<EmptySet>(Z_rr->n);
 
         // apply interval contractor
-        Eigen::Vector<zono_float, -1> x_l(Z_rr.nG);
-        Eigen::Vector<zono_float, -1> x_u(Z_rr.nG);
-        if (Z_rr.zero_one_form)
+        Eigen::Vector<zono_float, -1> x_l(Z_rr->nG);
+        Eigen::Vector<zono_float, -1> x_u(Z_rr->nG);
+        if (Z_rr->zero_one_form)
         {
             x_l.setZero();
         }
         else
         {
-            x_l.setConstant(-1);
+            x_l.setConstant(-one);
         }
         x_u.setOnes();
-        MI_Box box(x_l, x_u, {Z_rr.nGc, Z_rr.nGb}, Z_rr.zero_one_form);
-        if (!box.contract(Z_rr.A, Z_rr.b, contractor_iter))
-            return std::make_unique<EmptySet>(Z_rr.n);
+        MI_Box box(x_l, x_u, {Z_rr->nGc, Z_rr->nGb}, Z_rr->zero_one_form);
+        if (!box.contract(Z_rr->A, Z_rr->b, contractor_iter))
+            return std::make_unique<EmptySet>(Z_rr->n);
 
         // remove fixed vars
-        Z_rr.remove_fixed_vars(box);
+        Z_rr->remove_fixed_vars(box);
 
         // check for separable blocks of form:
         // [g0 0 0 ...]^T * xi + c, a^T * xi = b
         // this enables solving for xi_0 box and eliminating all other factors involved
-        if (Z_rr.nGb == 0) //TODO: figure out why this doesn't always work with HZs
+        if (Z_rr->nGb == 0) //TODO: figure out why this doesn't always work with HZs
         {
-            const auto simplifiable_cons = Z_rr.get_simplifiable_constraints();
-            Z_rr.apply_constraint_simplification(simplifiable_cons, box);
-            Z_rr.remove_fixed_vars(box);
-            if (!Z_rr.rescale_generators(box))
-                return std::make_unique<EmptySet>(Z_rr.n);
+            const auto simplifiable_cons = Z_rr->get_simplifiable_constraints();
+            Z_rr->apply_constraint_simplification(simplifiable_cons, box);
+            Z_rr->remove_fixed_vars(box);
+            if (!Z_rr->rescale_generators(box))
+                return std::make_unique<EmptySet>(Z_rr->n);
         }
 
         // remove redundant constraints
-        remove_redundant_constraints<zono_float>(Z_rr.A, Z_rr.b);
-        Z_rr.set_Ac_Ab_from_A();
+        remove_redundant_constraints<zono_float>(Z_rr->A, Z_rr->b);
+        Z_rr->set_Ac_Ab_from_A();
 
         // identify any unused generators
-        const std::set idx_c_to_remove = find_unused_generators(Z_rr.Gc, Z_rr.Ac);
-        const std::set idx_b_to_remove = find_unused_generators(Z_rr.Gb, Z_rr.Ab);
+        const std::set idx_c_to_remove = find_unused_generators(Z_rr->Gc, Z_rr->Ac);
+        const std::set idx_b_to_remove = find_unused_generators(Z_rr->Gb, Z_rr->Ab);
 
         // remove
-        Z_rr.remove_generators(idx_c_to_remove, idx_b_to_remove, box);
+        Z_rr->remove_generators(idx_c_to_remove, idx_b_to_remove, box);
 
         // output
-        if (Z_rr.nGb > 0)
-            return std::make_unique<HybZono>(Z_rr.Gc, Z_rr.Gb, Z_rr.c, Z_rr.Ac, Z_rr.Ab, Z_rr.b, Z_rr.zero_one_form, Z_rr.sharp);
-        else if (Z_rr.nC > 0)
-            return std::make_unique<ConZono>(Z_rr.G, Z_rr.c, Z_rr.A, Z_rr.b, Z_rr.zero_one_form);
-        else if (Z_rr.nG > 0)
-            return std::make_unique<Zono>(Z_rr.G, Z_rr.c, Z_rr.zero_one_form);
+        if (Z_rr->nGb > 0)
+            return std::make_unique<HybZono>(Z_rr->Gc, Z_rr->Gb, Z_rr->c, Z_rr->Ac, Z_rr->Ab, Z_rr->b, Z_rr->zero_one_form, Z_rr->sharp);
+        else if (Z_rr->nC > 0)
+            return std::make_unique<ConZono>(Z_rr->G, Z_rr->c, Z_rr->A, Z_rr->b, Z_rr->zero_one_form);
+        else if (Z_rr->nG > 0)
+            return std::make_unique<Zono>(Z_rr->G, Z_rr->c, Z_rr->zero_one_form);
         else
-            return std::make_unique<Point>(Z_rr.c);
+            return std::make_unique<Point>(Z_rr->c);
     }
 
     std::vector<std::pair<int, int>> HybZono::get_simplifiable_constraints() const
@@ -926,8 +926,11 @@ namespace ZonoOpt
                 {
                     throw std::runtime_error("Redundancy removal failed or resulted in a HybZono, which should not happen.");
                 }
-                HybZono* leaf_rr_ptr = leaf_rr.release();
-                leaf.reset(dynamic_cast<ConZono*>(leaf_rr_ptr));
+                if (!leaf_rr->is_empty_set())
+                {
+                    HybZono* leaf_rr_ptr = leaf_rr.release();
+                    leaf.reset(dynamic_cast<ConZono*>(leaf_rr_ptr));
+                }
             }
         }
 

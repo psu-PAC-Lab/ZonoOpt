@@ -25,7 +25,7 @@ def get_vertices(Z, t_max=60.0):
         """Get vertex of Z nearest to direction d"""
         
         # maximize dot product
-        c = -Z.get_G().transpose().dot(d)
+        c = -Z.get_G().transpose() @ d 
         if Z.is_0_1_form():
             bounds = [(0, 1) for _ in range(Z.get_nG())]
         else:
@@ -65,7 +65,7 @@ def get_vertices(Z, t_max=60.0):
 
             # make sure feasible
             if vd_pos is None or vd_neg is None: # infeasible, not detected during get_leaves
-                return []
+                return np.zeros((0, Z.get_n()))
             
             # check if vertices are new and whether direction is thin
             is_vd_pos_new = not any(np.allclose(vd_pos, v) for v in verts)
@@ -97,20 +97,19 @@ def get_vertices(Z, t_max=60.0):
         while not converged and ((time.time()-t0) < t_max):
 
             # compute convex hull and centroid
-            verts_np_arr = np.array(verts)
             try:
-                hull = ConvexHull(verts_np_arr)
+                hull = ConvexHull(verts)
             except:
                 warnings.warn('ConvexHull failed, returning current vertices')
-                return np.array(verts)
-            centroid = np.mean(verts_np_arr, axis=0)
+                return verts
+            centroid = np.mean(verts, axis=0)
 
             # get facet normals
             new_normals = []
             for simplex in hull.simplices:
                 
                 # get vertices of facet. each row is a vertex
-                V = verts_np_arr[simplex]
+                V = verts[simplex]
                 
                 # get normal
                 Vn = V[-1,:] # last element
@@ -137,7 +136,7 @@ def get_vertices(Z, t_max=60.0):
 
                 # check if vertex is new
                 if not any(np.allclose(vd, v) for v in verts):
-                    verts = np.vstack([verts, vd])
+                    verts = np.vstack((verts, vd))
                     n_new_verts += 1
 
             # already-checked normal directions
@@ -151,24 +150,24 @@ def get_vertices(Z, t_max=60.0):
         if (time.time()-t0) > t_max:
             warnings.warn('get_vertices time limit reached, terminating early.')
 
-        V = np.array(verts)
-        hull = ConvexHull(V)
-        V = V[hull.vertices,:]
+        hull = ConvexHull(verts)
+        verts = verts[hull.vertices,:]
 
-        return V
+        return verts
     
     # get vertices based on type
     if Z.is_empty_set():
         return np.zeros((0, Z.get_n()))
     elif Z.is_point():
-        return Z.get_c().reshape(1,-1)
+        return Z.get_c().reshape(1, Z.get_n())
     elif Z.is_zono() or Z.is_conzono():
         return _get_conzono_vertices(Z, t_max=t_max)
     elif Z.is_hybzono():
         t0 = time.time()
         settings = OptSettings()
         settings.t_max = t_max
-        settings.verbose = True
+        settings.n_threads_bnb = 1
+        settings.n_threads_admm_fp = 0
         sol = OptSolution()
         Z_leaves = Z.get_leaves(settings=settings, solution=sol)
         if not sol.converged and not sol.infeasible:

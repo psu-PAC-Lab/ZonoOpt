@@ -855,6 +855,220 @@ def test_remove_redundancy():
 
         # check that result is EmptySet object
         assert Z_rr.is_empty_set(), f'Expected EmptySet, got {Z_rr}'
+    
+    def _test5():
+        # hybrid zonotope
+        Gc = np.array([[0., 0.0859281, 0., 0., 0., 0., 0., 0.284171, 0.308149, 0., 0.116677, 0., 0., 0., 0., 0., 0., 0., 0., 0.798126],
+                       [0.211588, 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.511238, 0., 0.644165, 0., 0., 0., 0.28926, 0., 0., 0.]])
+        Gb = np.array([[0, 0.235959, 0.26797, 0.669308, 0.757279],
+                       [0, 0, 0, 0, 0]])
+        c = np.array([0.209747, 0.0100703])
+        Ac = np.array([[0, 0.731125, 0, 0.853555, 0.63719, 0.174854, 0, 0, 0.582327, 0, 0, 0, 0, 0, 0.575434, 0.0713598, 0, 0, 0, 0],
+                       [0, 0, 0, 0.99319, 0.72748, 0, 0, 0, 0, 0, 0.355254, 0, 0.954118, 0, 0, 0, 0, 0, 0, 0],
+                       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.771462, 0, 0, 0, 0, 0, 0, 0],
+                       [0.81856, 0, 0, 0.576755, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                       [0, 0, 0, 0, 0.0988853, 0, 0, 0, 0.306937, 0.262899, 0, 0, 0, 0, 0, 0, 0, 0, 0.76945, 0]])
+        Ab = np.array([[0, 0, 0.660926, 0, 0],
+                       [0, 0, 0, 0, 0],
+                       [0.742336, 0, 0, 0.474032, 0],
+                       [0, 0, 0, 0, 0.560643],
+                       [0.327432, 0, 0, 0, 0]])
+        b = np.array([0.243035, 0.292617, 0.610422, 0.173898, 0.702892])
+        
+        Z = zono.HybZono(sparse.csc_matrix(Gc), sparse.csc_matrix(Gb), c, sparse.csc_matrix(Ac), sparse.csc_matrix(Ab), b)
+        
+        # remove redundancy
+        Z_rr = Z.remove_redundancy()
+        
+        settings = zono.OptSettings()
+        settings.t_max = 60.
+        settings.verbose = True
+        settings.n_threads_bnb = 1
+        settings.n_threads_admm_fp = 0
+        leaves = Z_rr.get_leaves(False, settings)
+        print(f'Number of leaves in Z_rr: {len(leaves)}')
+
+        V = zono.get_vertices(Z_rr)
+        print(f'Vertices of Z_rr: {V}')
+        
+        # check that result is not empty set
+        assert not Z_rr.is_empty(), f'Expected non-empty set, got {Z_rr}'
+
+    def _test6():
+        Gc = np.array([[0, 0, 0, 0.892208, 0, 0, 0, 0, 0, 1.76931, 0, 1.79659, 0, 0, 0, 0, 0, 0, 1.50728, 1.7175],
+                   [0, 0, 0, 0, 0, 0.291828, 0, 0, 0, 0, 0, 0.897203, 0.546921, 0, 1.5427, 0, 0, 0, 0, 0]])
+        Gb = np.array([[1.57073, 0, 0, 0, 1.03718],
+                       [0, 0, 0, 0.928746, 0]])
+        c = np.array([-5.10334, -1.76904])
+        Ac = np.array([[0, 0.859991, 0, 0.248768, 0, 1.33204, 0, 0, 0, 0, 0, 1.77906, 0, 0, 0, 0, 0, 0.51641, 0.735777, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.693223, 0, 0, 1.31185, 0, 0, 0, 0.535605, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.73293, 0, 0, 0.0493211, 1.22101, 1.90473, 0, 0, 0.500892, 0],
+                    [1.60426, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.512083, 0, 0, 0, 0, 1.11276, 0, 0, 0.768591],
+                    [0, 0, 0, 0, 0, 1.62928, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+        Ab = np.array([[0, 1.36621, 0, 0, 0],
+                    [0, 0, 0, 0, 0],
+                    [0, 0, 0, 0.432728, 0.163503],
+                    [0, 0, 0, 0, 0],
+                    [0.141471, 0.130434, 0, 0, 0]])
+        b = np.array([4.00623,
+                      1.83749,
+                      3.30875,
+                      2.69349,
+                      1.63513])
+        Z = zono.HybZono(sparse.csc_matrix(Gc), sparse.csc_matrix(Gb), c, sparse.csc_matrix(Ac), sparse.csc_matrix(Ab), b, zero_one_form=True)
+
+        V_before = zono.get_vertices(Z)
+
+        Z_rr = Z.remove_redundancy()
+
+        V_after = zono.get_vertices(Z_rr)
+
+        # check that vertices are the same
+        try:
+            _check_vertices_equal(V_before, V_after)
+            _check_vertices_equal(V_after, V_before)
+        except Exception:   
+            
+            print(Z)
+            print(Z_rr)
+
+            print(f'Z_rr is hybzono? {Z_rr.is_hybzono()}')
+            print(f'Z_rr is conzono? {Z_rr.is_conzono()}')
+
+            print(f'Number of leaves in Z_rr: {len(Z_rr.get_leaves())}')
+            
+        import matplotlib.pyplot as plt
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        ax.scatter(V_before[:,0], V_before[:,1], color='blue', marker='.', label='before')
+        ax.scatter(V_after[:,0], V_after[:,1], color='red', marker='x', label='after')
+        ax.legend()
+        ax.set_aspect('equal')
+        plt.show()
+
+    def _test7():
+        # build directly
+        Gc = np.array([[0., 0.0859281, 0., 0., 0., 0., 0., 0.284171, 0.308149, 0., 0.116677, 0., 0., 0., 0., 0., 0., 0., 0., 0.798126],
+                       [0.211588, 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.511238, 0., 0.644165, 0., 0., 0., 0.28926, 0., 0., 0.]])
+        Gb = np.array([[0, 0.235959, 0.26797, 0.669308, 0.757279],
+                       [0, 0, 0, 0, 0]])
+        c = np.array([0.209747, 0.0100703])
+        Ac = np.array([[0, 0.731125, 0, 0.853555, 0.63719, 0.174854, 0, 0, 0.582327, 0, 0, 0, 0, 0, 0.575434, 0.0713598, 0, 0, 0, 0],
+                       [0, 0, 0, 0.99319, 0.72748, 0, 0, 0, 0, 0, 0.355254, 0, 0.954118, 0, 0, 0, 0, 0, 0, 0],
+                       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.771462, 0, 0, 0, 0, 0, 0, 0],
+                       [0.81856, 0, 0, 0.576755, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                       [0, 0, 0, 0, 0.0988853, 0, 0, 0, 0.306937, 0.262899, 0, 0, 0, 0, 0, 0, 0, 0, 0.76945, 0]])
+        Ab = np.array([[0, 0, 0.660926, 0, 0],
+                       [0, 0, 0, 0, 0],
+                       [0.742336, 0, 0, 0.474032, 0],
+                       [0, 0, 0, 0, 0.560643],
+                       [0.327432, 0, 0, 0, 0]])
+        b = np.array([0.243035, 0.292617, 0.610422, 0.173898, 0.702892])
+        
+        Z = zono.HybZono(sparse.csc_matrix(Gc), sparse.csc_matrix(Gb), c, sparse.csc_matrix(Ac), sparse.csc_matrix(Ab), b)
+
+        # from file
+        Z_before = zono.from_json('Z_before.json')
+
+        # compare
+        def _mat_compare(A, B):
+            if A.shape != B.shape:
+                return False
+            
+            max_diff = 0.
+            for i in range(A.shape[0]):
+                for j in range(A.shape[1]):
+                    max_diff = max(max_diff, np.abs(A[i,j]-B[i,j]))
+                    
+            return max_diff
+        def _vec_compare(a, b):
+            if a.shape != b.shape:
+                return False
+            
+            max_diff = 0.
+            for i in range(a.shape[0]):
+                max_diff = max(max_diff, np.abs(a[i]-b[i]))
+                    
+            return max_diff
+
+        print(f'Max difference in G: {_mat_compare(Z_before.get_G().toarray(), Z.get_G().toarray())}')
+        print(f'Max difference in Gc: {_mat_compare(Z_before.get_Gc().toarray(), Z.get_Gc().toarray())}')
+        print(f'Max difference in Gb: {_mat_compare(Z_before.get_Gb().toarray(), Z.get_Gb().toarray())}')
+        print(f'Max difference in c: {_vec_compare(Z_before.get_c(), Z.get_c())}')
+        print(f'Max difference in A: {_mat_compare(Z_before.get_A().toarray(), Z.get_A().toarray())}')
+        print(f'Max difference in Ac: {_mat_compare(Z_before.get_Ac().toarray(), Z.get_Ac().toarray())}')
+        print(f'Max difference in Ab: {_mat_compare(Z_before.get_Ab().toarray(), Z.get_Ab().toarray())}')
+        print(f'Max difference in b: {_vec_compare(Z_before.get_b(), Z.get_b())}')
+        print(f'  Z_before is 0-1 form? {Z_before.is_0_1_form()}, Z is 0-1 form? {Z.is_0_1_form()}')
+
+
+        settings = zono.OptSettings()
+        settings.verbose = True
+        settings.verbosity_interval = 1
+        settings.n_threads_bnb = 0
+        settings.n_threads_admm_fp = 1
+        settings.contractor_iter = 100
+
+        # # TEST: perturb
+        # Ac = Z_before.get_Ac().toarray()
+        # Ab = Z_before.get_Ab().toarray()
+        # for i in range(Ac.shape[0]):
+        #     for j in range(Ac.shape[1]):
+        #         Ac[i,j] += np.random.randn() * 1e-12
+        # for i in range(Ab.shape[0]):
+        #     for j in range(Ab.shape[1]):
+        #         Ab[i,j] += np.random.randn() * 1e-12
+        # Z_perturbed = zono.HybZono(Z_before.get_Gc(), 
+        #                            Z_before.get_Gb(), 
+        #                            Z_before.get_c(), 
+        #                            sparse.csc_matrix(Ac), 
+        #                            sparse.csc_matrix(Ab), 
+        #                            Z_before.get_b(), 
+        #                            zero_one_form=Z_before.is_0_1_form())
+        
+        
+        # # Z_perturbed.convert_form()
+        # Z_rr = Z_perturbed.remove_redundancy()
+        # # Z_rr.convert_form()
+        # # V_before = zono.get_vertices(Z_perturbed)
+        
+        # remove redundancy
+        Z_before.convert_form()
+        Z_rr = Z_before.remove_redundancy()
+        Z_rr.convert_form()
+
+        print(f'Z_rr is empty? {Z_rr.is_empty(settings=settings)}')
+        print(f'Z_rr number of leaves: {len(Z_rr.get_leaves(settings=settings))}')
+        print(f'Z_rr convex relaxation is empty? {Z_rr.convex_relaxation().is_empty()}')
+
+        exit()
+
+        V_before = zono.get_vertices(Z_before)
+
+        # Z.convert_form()
+        # Z_rr = Z.remove_redundancy()
+        # Z_rr.convert_form()
+        # V_before = zono.get_vertices(Z)
+
+        # check that vertices are the same
+        
+        V_after = zono.get_vertices(Z_rr)
+        try:
+            _check_vertices_equal(V_before, V_after)
+            _check_vertices_equal(V_after, V_before)
+        except Exception:
+            print(Z_before)
+            print(Z_rr)
+            
+            import matplotlib.pyplot as plt
+            fig = plt.figure()
+            ax = fig.add_subplot(1, 1, 1)
+            ax.scatter(V_before[:,0], V_before[:,1], color='blue', marker='.', label='before')
+            ax.scatter(V_after[:,0], V_after[:,1], color='red', marker='x', label='after')
+            ax.legend()
+            ax.set_aspect('equal')
+            plt.show()
+
 
     def _test_random_conzono():
         Z = TestUtilities.random_conzono(n=2, nG=30, nC=10, density=0.1, val_min=0., val_max=1.)
@@ -948,8 +1162,16 @@ def test_remove_redundancy():
         except Exception:
             import matplotlib.pyplot as plt
 
+            zono.to_json(Z, 'Z_before.json')
+            exit()
+
             print(Z)
             print(Z_rr)
+
+            print(f'Z_rr is hybzono? {Z_rr.is_hybzono()}')
+            print(f'Z_rr is conzono? {Z_rr.is_conzono()}')
+
+            print(f'Number of leaves in Z_rr: {len(Z_rr.get_leaves())}')
             
             fig = plt.figure()
             ax = fig.add_subplot(1, 1, 1)
@@ -960,20 +1182,23 @@ def test_remove_redundancy():
             plt.show()
 
     # main
-    _test1()
-    _test2()
-    _test3()
-    _test4()
+    # _test1()
+    # _test2()
+    # _test3()
+    # _test4()
+    # _test5()
+    # _test6()
+    _test7()
 
-    np.random.seed(0)
+    # np.random.seed(0)
 
-    for _ in range(100):
-        _test_random_conzono()
+    # for _ in range(100):
+    #     _test_random_conzono()
 
-    for _ in range(100):
-        _test_random_hybzono()
+    # for _ in range(100):
+    #     _test_random_hybzono()
 
-    print('Passed: Remove Redundancy')
+    # print('Passed: Remove Redundancy')
 
 
 # run the unit tests

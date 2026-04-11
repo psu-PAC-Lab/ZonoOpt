@@ -159,6 +159,54 @@ void test4()
     test_assert(Z_rr->is_empty_set(), ss.str());
 }
 
+void test5()
+{
+    // hybrid zonotope
+    Eigen::Matrix<zono_float, 2, 20> Gc;
+    Gc << 0., 0.0859281, 0., 0., 0., 0., 0., 0.284171, 0.308149, 0., 0.116677, 0., 0., 0., 0., 0., 0., 0., 0., 0.798126,
+         0.211588, 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.511238, 0., 0.644165, 0., 0., 0., 0.28926, 0., 0., 0.;
+    Eigen::Matrix<zono_float, 2, 5> Gb;
+    Gb << 0, 0.235959, 0.26797, 0.669308, 0.757279,
+            0,        0,        0,        0,        0;
+    Eigen::Vector<zono_float, 2> c;
+    c << 0.209747, 0.0100703;
+    Eigen::Matrix<zono_float, 5, 20> Ac;
+    Ac << 0,  0.731125,         0,  0.853555,   0.63719,  0.174854,         0,         0,  0.582327,         0,         0,         0,         0,         0,  0.575434, 0.0713598,         0,         0,         0,         0,
+        0,         0,         0,   0.99319,   0.72748,         0,         0,         0,         0,         0,  0.355254,         0,  0.954118,         0,         0,         0,         0,         0,         0,         0,
+        0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,  0.771462,         0,         0,         0,         0,         0,         0,         0,
+  0.81856,         0,         0,  0.576755,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,
+        0,         0,         0,         0, 0.0988853,         0,         0,         0,  0.306937,  0.262899,         0,         0,         0,         0,         0,         0,         0,         0,   0.76945,         0;
+    Eigen::Matrix<zono_float, 5, 5> Ab;
+    Ab << 0,        0, 0.660926,        0,        0,
+        0,        0,        0,        0,        0,
+        0.742336, 0,        0, 0.474032,        0,
+        0,        0,        0,        0, 0.560643,
+        0.327432, 0,        0,        0,        0;
+    Eigen::Vector<zono_float, 5> b;
+    b << 0.243035,
+         0.292617,
+         0.610422,
+         0.173898,
+         0.702892;
+    
+    HybZono Z (Gc.sparseView(), Gb.sparseView(), c, Ac.sparseView(), Ab.sparseView(), b);
+    Z.convert_form();
+
+    // remove redundancy
+    OptSettings settings;
+    settings.verbose = true;
+
+    const auto Z_rr = Z.remove_redundancy();
+    std::cout << *Z_rr << std::endl;
+
+    auto leaves = Z_rr->get_leaves(false, settings);
+
+    // check that result is not empty set
+    std::stringstream ss;
+    ss << "Expected non-empty set, got " << *Z_rr << std::endl;
+    test_assert(!Z_rr->is_empty(settings), ss.str());
+}
+
 void test_random_conzono(std::mt19937& rand_gen)
 {
     ConZono Z = random_conzono(2, 30, 10, 0.1, 0., 1., rand_gen);
@@ -234,6 +282,7 @@ int main()
     test2();
     test3();
     test4();
+    test5();
 
     // random constrained and hybrid zonotopes
     std::mt19937 rand_gen(0);
