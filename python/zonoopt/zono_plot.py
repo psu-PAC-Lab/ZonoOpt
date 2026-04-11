@@ -168,8 +168,7 @@ def get_vertices(Z, t_max=60.0):
         t0 = time.time()
         settings = OptSettings()
         settings.t_max = t_max
-        settings.n_threads_bnb = 8
-        settings.n_threads_admm_fp = 0
+        settings.verbose = True
         sol = OptSolution()
         Z_leaves = Z.get_leaves(settings=settings, solution=sol)
         if not sol.converged and not sol.infeasible:
@@ -182,6 +181,8 @@ def get_vertices(Z, t_max=60.0):
                 V = np.vstack((V, V_leaf))
             dt = time.time() - t0
         return V
+    else:
+        raise ValueError('get_vertices unsupported data type')
 
 def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
     """

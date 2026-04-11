@@ -85,7 +85,8 @@ namespace ZonoOpt::detail
             bool operator()(const std::pair<int, zono_float>& v1,
                             const std::pair<int, zono_float>& v2) const
             {
-                return (v1.first == v2.first) ? false : v1.second < v2.second;
+                if (v1.second != v2.second) return v1.second < v2.second;
+                return v1.first < v2.first;
             }
         };
 

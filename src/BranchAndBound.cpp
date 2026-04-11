@@ -332,6 +332,7 @@ namespace ZonoOpt::detail
                 }
                 else
                 {
+                    // TODO: fix this logic for best dive
                     J_min = std::min(this->node_queue.top()->solution.J, min_val_pair.second);
                 }
             }
@@ -620,7 +621,7 @@ namespace ZonoOpt::detail
             return;
 
         const zono_float low = this->data.zero_one_form ? zero : -one;
-        constexpr zono_float high = 1;
+        constexpr zono_float high = one;
 
         // round and find most fractional variable
         const Eigen::Array<zono_float, -1, 1> xb = node->solution.z.segment(
@@ -632,9 +633,10 @@ namespace ZonoOpt::detail
         const Eigen::Array<zono_float, -1, 1> d_l = (xb - lower).abs();
         const Eigen::Array<zono_float, -1, 1> d_u = (xb - upper).abs();
         const Eigen::Array<zono_float, -1, 1> d = d_l.min(d_u); // distance to rounded value
-        int idx_most_frac;
+        int idx_most_frac = 0;
         d.maxCoeff(&idx_most_frac); // index of most fractional variable
-        idx_most_frac = this->data.idx_b.first + idx_most_frac; // convert to original index
+        idx_most_frac += this->data.idx_b.first; // convert to original index
+        assert(idx_most_frac >= 0 && idx_most_frac < this->data.admm_data->n_x && "Most fractional variable index out of bounds");
 
         // branch on most fractional variable
         std::unique_ptr<Node, NodeDeleter> left = this->clone_node(node);
