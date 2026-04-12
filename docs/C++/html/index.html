@@ -117,7 +117,10 @@ image</div></div>
 ZonoOpt Features</h1>
 <p>The <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> library provides classes and set operations for zonotopes, constrained zonotopes, and hybrid zonotopes. For cases where numerical optimization is required, e.g., checking if a set is empty or solving an MPC problem where the constraints are represented as a zonotopic set, custom optimization routines are utilized. Some key features of the <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> library are as follows:</p><ul>
 <li>All classes and methods are implemented using sparse linear algebra via the Eigen library.</li>
-<li><a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> has no external dependencies beyond Eigen and Boost, making it easy to integrate into robotics projects using C++ or Python.</li>
+<li><a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> has minimal external dependencies, making it easy to integrate into robotics projects using C++ or Python.<ul>
+<li>Depdencies are Eigen, Boost, and nlohmann/json</li>
+</ul>
+</li>
 <li>Polymorphism is used to provide a common interface for zonotopes, constrained zonotopes, and hybrid zonotopes while allowing for specialized implementations.<ul>
 <li>E.g., <code>support</code> is more efficient for zonotopes than for constrained zonotopes.</li>
 </ul>
