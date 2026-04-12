@@ -120,9 +120,9 @@ namespace detail
     {
         const int rows = j["rows"];
         const int cols = j["cols"];
-        const std::vector<int> trip_rows(j["trip_rows"]);
-        const std::vector<int> trip_cols(j["trip_cols"]);
-        const std::vector<zono_float> trip_vals(j["trip_vals"]);
+        const std::vector<int> trip_rows = j["trip_rows"].get<std::vector<int>>();
+        const std::vector<int> trip_cols = j["trip_cols"].get<std::vector<int>>();
+        const std::vector<zono_float> trip_vals = j["trip_vals"].get<std::vector<zono_float>>();
 
         if (trip_rows.size() != trip_cols.size() || trip_rows.size() != trip_vals.size())
             throw std::invalid_argument("json_to_sparse: triplet vectors must have the same size.");
