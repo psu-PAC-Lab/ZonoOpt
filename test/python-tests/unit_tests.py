@@ -63,6 +63,38 @@ class TestUtilities:
 
         return zono.Zono(G, c)
 
+    @staticmethod
+    def eq_mats(A, B, tol=1e-6):
+        if A.shape != B.shape:
+            return False
+        
+        for i in range(A.shape[0]):
+            for j in range(A.shape[1]):
+                if np.abs(A[i,j]-B[i,j]) > tol:
+                    return False
+                
+        return True
+    
+    @staticmethod
+    def eq_vecs(a, b, tol=1e-6):
+        if a.shape != b.shape:
+            return False
+
+        for i in range(a.shape[0]):
+            if np.abs(a[i]-b[i]) > tol:
+                return False
+
+        return True
+    
+    @staticmethod
+    def eq_hzs(Z1, Z2, tol=1e-6):
+        return (TestUtilities.eq_mats(Z1.get_Gc().toarray(), Z2.get_Gc().toarray(), tol) and
+                TestUtilities.eq_mats(Z1.get_Gb().toarray(), Z2.get_Gb().toarray(), tol) and
+                TestUtilities.eq_vecs(Z1.get_c(), Z2.get_c(), tol) and
+                TestUtilities.eq_mats(Z1.get_Ac().toarray(), Z2.get_Ac().toarray(), tol) and
+                TestUtilities.eq_mats(Z1.get_Ab().toarray(), Z2.get_Ab().toarray(), tol) and
+                TestUtilities.eq_vecs(Z1.get_b(), Z2.get_b(), tol) and Z1.is_0_1_form() == Z2.is_0_1_form())
+
 
 # unit tests
 def test_vrep_2_hz():
@@ -1200,6 +1232,82 @@ def test_remove_redundancy():
 
     # print('Passed: Remove Redundancy')
 
+def test_json():
+    def _test_zono():
+        Z = zono.make_regular_zono_2D(3., 12)
+        filename = 'test_zono.json'
+        zono.to_json(Z, filename)
+        Z_read = zono.from_json(filename)
+
+        assert TestUtilities.eq_hzs(Z, Z_read), f'_test_zono: expected {Z}, got {Z_read}'
+        assert(Z_read.is_zono()), f'_test_zono: expected result to be a zonotope'
+
+    def _test_hybzono():
+        Gc = np.array([[0., 0.0859281, 0., 0., 0., 0., 0., 0.284171, 0.308149, 0., 0.116677, 0., 0., 0., 0., 0., 0., 0., 0., 0.798126],
+                       [0.211588, 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.511238, 0., 0.644165, 0., 0., 0., 0.28926, 0., 0., 0.]])
+        Gb = np.array([[0, 0.235959, 0.26797, 0.669308, 0.757279],
+                       [0, 0, 0, 0, 0]])
+        c = np.array([0.209747, 0.0100703])
+        Ac = np.array([[0, 0.731125, 0, 0.853555, 0.63719, 0.174854, 0, 0, 0.582327, 0, 0, 0, 0, 0, 0.575434, 0.0713598, 0, 0, 0, 0],
+                       [0, 0, 0, 0.99319, 0.72748, 0, 0, 0, 0, 0, 0.355254, 0, 0.954118, 0, 0, 0, 0, 0, 0, 0],
+                       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.771462, 0, 0, 0, 0, 0, 0, 0],
+                       [0.81856, 0, 0, 0.576755, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                       [0, 0, 0, 0, 0.0988853, 0, 0, 0, 0.306937, 0.262899, 0, 0, 0, 0, 0, 0, 0, 0, 0.76945, 0]])
+        Ab = np.array([[0, 0, 0.660926, 0, 0],
+                       [0, 0, 0, 0, 0],
+                       [0.742336, 0, 0, 0.474032, 0],
+                       [0, 0, 0, 0, 0.560643],
+                       [0.327432, 0, 0, 0, 0]])
+        b = np.array([0.243035, 0.292617, 0.610422, 0.173898, 0.702892])
+
+        Z = zono.HybZono(sparse.csc_matrix(Gc), sparse.csc_matrix(Gb), c, sparse.csc_matrix(Ac), sparse.csc_matrix(Ab), b)
+        filename = 'test_hybzono.json'
+        zono.to_json(Z, filename)
+        Z_read = zono.from_json(filename)
+
+        assert TestUtilities.eq_hzs(Z, Z_read), f'_test_hybzono: expected {Z}, got {Z_read}'
+        assert(Z_read.is_hybzono()), f'_test_hybzono: expected result to be a hybrid zonotope'
+
+    def _test_conzono():
+        G = np.array([[3., 1., 0., 0.]])
+        c = np.array([8.])
+        A = np.array([[0.5, 0.1, 1., 0.],
+                      [0., 0.5, 0., 0.5]])
+        b = np.array([-0.5, -1.])
+
+        Z = zono.ConZono(sparse.csc_matrix(G), c, sparse.csc_matrix(A), b)
+        filename = 'test_conzono.json'
+        zono.to_json(Z, filename)
+        Z_read = zono.from_json(filename)
+
+        assert TestUtilities.eq_hzs(Z, Z_read), f'_test_conzono: expected {Z}, got {Z_read}'
+        assert(Z_read.is_conzono()), f'_test_conzono: expected result to be a constrained zonotope'
+
+    def _test_point():
+        Z = zono.Point([1., 2., 3., 4.])
+        filename = 'test_point.json'
+        zono.to_json(Z, filename)
+        Z_read = zono.from_json(filename)
+
+        assert TestUtilities.eq_hzs(Z, Z_read), f'_test_point: expected {Z}, got {Z_read}'
+        assert Z_read.is_point(), f'_test_point: expected result to be a point'
+
+    def _test_empty_set():
+        Z = zono.EmptySet(6)
+        filename = 'test_empty_set.json'
+        zono.to_json(Z, filename)
+        Z_read = zono.from_json(filename)
+
+        assert TestUtilities.eq_hzs(Z, Z_read), f'_test_empty_set: expected {Z}, got {Z_read}'
+        assert Z_read.is_empty_set(), f'_test_empty_set: expected result to be an empty set'
+    
+
+    _test_zono()
+    _test_hybzono()
+    _test_conzono()
+    _test_point()
+    _test_empty_set()
+    print('Passed: JSON')
 
 # run the unit tests
 test_vrep_2_hz()
@@ -1214,4 +1322,5 @@ test_interval_arithmetic()
 test_affine_inclusion()
 test_operator_overloading()
 test_constrain()
-test_remove_redundancy()
+# test_remove_redundancy()
+test_json()

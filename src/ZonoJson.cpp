@@ -34,7 +34,10 @@ void to_json(const HybZono& Z, const std::string& filename)
     sparse_to_json(Z.get_Gc(), data["Gc"]);
     data["Gb"] = json();
     sparse_to_json(Z.get_Gb(), data["Gb"]);
-    data["c"] = eigen_2_std(Z.get_c());
+    if (Z.is_empty_set())
+        data["c"] = std::vector<zono_float>(Z.get_n(), zero); // handle NaNs in c for EmptySet
+    else
+        data["c"] = eigen_2_std(Z.get_c());
     data["Ac"] = json();
     sparse_to_json(Z.get_Ac(), data["Ac"]);
     data["Ab"] = json();
@@ -160,6 +163,7 @@ namespace detail
         }
         return v_std;
     }
+
 }
 
 }
