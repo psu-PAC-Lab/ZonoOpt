@@ -18,8 +18,6 @@
 #include "nlohmann/json.hpp"
 #include "HybZono.hpp"
 
-using json = nlohmann::json;
-
 namespace ZonoOpt
 {
     /**
@@ -42,8 +40,8 @@ namespace ZonoOpt
 
 namespace detail
 {
-    void sparse_to_json(const Eigen::SparseMatrix<zono_float>& mat, json& j);
-    Eigen::SparseMatrix<zono_float> json_to_sparse(const json& j);
+    void sparse_to_json(const Eigen::SparseMatrix<zono_float>& mat, nlohmann::json& j);
+    Eigen::SparseMatrix<zono_float> json_to_sparse(const nlohmann::json& j);
     Eigen::Vector<zono_float, -1> std_2_eigen(const std::vector<zono_float>& vec);
     std::vector<zono_float> eigen_2_std(const Eigen::Vector<zono_float, -1>& vec);
 }

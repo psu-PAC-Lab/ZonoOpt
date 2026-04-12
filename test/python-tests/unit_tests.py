@@ -2,6 +2,7 @@ import numpy as np
 import zonoopt as zono
 from scipy import sparse
 from pathlib import Path
+import tempfile
 
 # Note: zonoLAB used to generate data for some of these unit tests
 
@@ -1233,16 +1234,16 @@ def test_constrain():
 #     # print('Passed: Remove Redundancy')
 
 def test_json():
-    def _test_zono():
+    def _test_zono(tmp_path):
         Z = zono.make_regular_zono_2D(3., 12)
-        filename = 'test_zono.json'
+        filename = str(tmp_path / 'test_zono.json')
         zono.to_json(Z, filename)
         Z_read = zono.from_json(filename)
 
         assert TestUtilities.eq_hzs(Z, Z_read), f'_test_zono: expected {Z}, got {Z_read}'
         assert(Z_read.is_zono()), f'_test_zono: expected result to be a zonotope'
 
-    def _test_hybzono():
+    def _test_hybzono(tmp_path):
         Gc = np.array([[0., 0.0859281, 0., 0., 0., 0., 0., 0.284171, 0.308149, 0., 0.116677, 0., 0., 0., 0., 0., 0., 0., 0., 0.798126],
                        [0.211588, 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.511238, 0., 0.644165, 0., 0., 0., 0.28926, 0., 0., 0.]])
         Gb = np.array([[0, 0.235959, 0.26797, 0.669308, 0.757279],
@@ -1261,14 +1262,14 @@ def test_json():
         b = np.array([0.243035, 0.292617, 0.610422, 0.173898, 0.702892])
 
         Z = zono.HybZono(sparse.csc_matrix(Gc), sparse.csc_matrix(Gb), c, sparse.csc_matrix(Ac), sparse.csc_matrix(Ab), b)
-        filename = 'test_hybzono.json'
+        filename = str(tmp_path / 'test_hybzono.json')
         zono.to_json(Z, filename)
         Z_read = zono.from_json(filename)
 
         assert TestUtilities.eq_hzs(Z, Z_read), f'_test_hybzono: expected {Z}, got {Z_read}'
         assert(Z_read.is_hybzono()), f'_test_hybzono: expected result to be a hybrid zonotope'
 
-    def _test_conzono():
+    def _test_conzono(tmp_path):
         G = np.array([[3., 1., 0., 0.]])
         c = np.array([8.])
         A = np.array([[0.5, 0.1, 1., 0.],
@@ -1276,37 +1277,38 @@ def test_json():
         b = np.array([-0.5, -1.])
 
         Z = zono.ConZono(sparse.csc_matrix(G), c, sparse.csc_matrix(A), b)
-        filename = 'test_conzono.json'
+        filename = str(tmp_path / 'test_conzono.json')
         zono.to_json(Z, filename)
         Z_read = zono.from_json(filename)
 
         assert TestUtilities.eq_hzs(Z, Z_read), f'_test_conzono: expected {Z}, got {Z_read}'
         assert(Z_read.is_conzono()), f'_test_conzono: expected result to be a constrained zonotope'
 
-    def _test_point():
+    def _test_point(tmp_path):
         Z = zono.Point([1., 2., 3., 4.])
-        filename = 'test_point.json'
+        filename = str(tmp_path / 'test_point.json')
         zono.to_json(Z, filename)
         Z_read = zono.from_json(filename)
 
         assert TestUtilities.eq_hzs(Z, Z_read), f'_test_point: expected {Z}, got {Z_read}'
         assert Z_read.is_point(), f'_test_point: expected result to be a point'
 
-    def _test_empty_set():
+    def _test_empty_set(tmp_path):
         Z = zono.EmptySet(6)
-        filename = 'test_empty_set.json'
+        filename = str(tmp_path / 'test_empty_set.json')
         zono.to_json(Z, filename)
         Z_read = zono.from_json(filename)
 
         assert TestUtilities.eq_hzs(Z, Z_read), f'_test_empty_set: expected {Z}, got {Z_read}'
         assert Z_read.is_empty_set(), f'_test_empty_set: expected result to be an empty set'
-    
 
-    _test_zono()
-    _test_hybzono()
-    _test_conzono()
-    _test_point()
-    _test_empty_set()
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_path = Path(tmp_dir)
+        _test_zono(tmp_path)
+        _test_hybzono(tmp_path)
+        _test_conzono(tmp_path)
+        _test_point(tmp_path)
+        _test_empty_set(tmp_path)
     print('Passed: JSON')
 
 # run the unit tests

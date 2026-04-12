@@ -102,31 +102,28 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;nlohmann/json.hpp&quot;</span></div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;<a class="code" href="HybZono_8hpp.html">HybZono.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="ZonoJson_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">   21</a></span><span class="keyword">using </span><a class="code hl_typedef" href="ZonoJson_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> = nlohmann::json;</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceZonoOpt.html">ZonoOpt</a></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>{</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="group__ZonoOpt__SetupFunctions.html#gabe42964865f7bcef7e73291e984ed233">to_json</a>(<span class="keyword">const</span> HybZono&amp; Z, <span class="keyword">const</span> std::string&amp; filename);</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    std::unique_ptr&lt;HybZono&gt; <a class="code hl_function" href="group__ZonoOpt__SetupFunctions.html#ga3e0632dc1cfda079ce33bfbbf807c0fc">from_json</a>(<span class="keyword">const</span> std::string&amp; filename);</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">namespace </span>detail</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>{</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">void</span> sparse_to_json(<span class="keyword">const</span> Eigen::SparseMatrix&lt;zono_float&gt;&amp; mat, <a class="code hl_typedef" href="ZonoJson_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a>&amp; j);</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    Eigen::SparseMatrix&lt;zono_float&gt; json_to_sparse(<span class="keyword">const</span> <a class="code hl_typedef" href="ZonoJson_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a>&amp; j);</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    Eigen::Vector&lt;<a class="code hl_define" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1&gt; std_2_eigen(<span class="keyword">const</span> std::vector&lt;zono_float&gt;&amp; vec);</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    std::vector&lt;zono_float&gt; eigen_2_std(<span class="keyword">const</span> Eigen::Vector&lt;zono_float, -1&gt;&amp; vec);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceZonoOpt.html">ZonoOpt</a></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>{</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="group__ZonoOpt__SetupFunctions.html#gabe42964865f7bcef7e73291e984ed233">to_json</a>(<span class="keyword">const</span> HybZono&amp; Z, <span class="keyword">const</span> std::string&amp; filename);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    std::unique_ptr&lt;HybZono&gt; <a class="code hl_function" href="group__ZonoOpt__SetupFunctions.html#ga3e0632dc1cfda079ce33bfbbf807c0fc">from_json</a>(<span class="keyword">const</span> std::string&amp; filename);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">namespace </span>detail</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>{</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">void</span> sparse_to_json(<span class="keyword">const</span> Eigen::SparseMatrix&lt;zono_float&gt;&amp; mat, nlohmann::json&amp; j);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    Eigen::SparseMatrix&lt;zono_float&gt; json_to_sparse(<span class="keyword">const</span> nlohmann::json&amp; j);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    Eigen::Vector&lt;<a class="code hl_define" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1&gt; std_2_eigen(<span class="keyword">const</span> std::vector&lt;zono_float&gt;&amp; vec);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    std::vector&lt;zono_float&gt; eigen_2_std(<span class="keyword">const</span> Eigen::Vector&lt;zono_float, -1&gt;&amp; vec);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>}</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>}</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aHybZono_8hpp_html"><div class="ttname"><a href="HybZono_8hpp.html">HybZono.hpp</a></div><div class="ttdoc">Hybrid zonotope class for ZonoOpt library.</div></div>
-<div class="ttc" id="aZonoJson_8hpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="ZonoJson_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition</b> ZonoJson.hpp:21</div></div>
 <div class="ttc" id="agroup__ZonoOpt__PreprocessorMacros_html_ga10f9d95aa3b7fa4dca1699582aa53598"><div class="ttname"><a href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a></div><div class="ttdeci">#define zono_float</div><div class="ttdoc">Defines the floating-point type used in ZonoOpt.</div><div class="ttdef"><b>Definition</b> ZonoOpt.hpp:45</div></div>
-<div class="ttc" id="agroup__ZonoOpt__SetupFunctions_html_ga3e0632dc1cfda079ce33bfbbf807c0fc"><div class="ttname"><a href="group__ZonoOpt__SetupFunctions.html#ga3e0632dc1cfda079ce33bfbbf807c0fc">ZonoOpt::from_json</a></div><div class="ttdeci">std::unique_ptr&lt; HybZono &gt; from_json(const std::string &amp;filename)</div><div class="ttdoc">Read a HybZono object from a JSON file.</div><div class="ttdef"><b>Definition</b> ZonoJson.cpp:55</div></div>
-<div class="ttc" id="agroup__ZonoOpt__SetupFunctions_html_gabe42964865f7bcef7e73291e984ed233"><div class="ttname"><a href="group__ZonoOpt__SetupFunctions.html#gabe42964865f7bcef7e73291e984ed233">ZonoOpt::to_json</a></div><div class="ttdeci">void to_json(const HybZono &amp;Z, const std::string &amp;filename)</div><div class="ttdoc">Write a HybZono object to a JSON file.</div><div class="ttdef"><b>Definition</b> ZonoJson.cpp:7</div></div>
+<div class="ttc" id="agroup__ZonoOpt__SetupFunctions_html_ga3e0632dc1cfda079ce33bfbbf807c0fc"><div class="ttname"><a href="group__ZonoOpt__SetupFunctions.html#ga3e0632dc1cfda079ce33bfbbf807c0fc">ZonoOpt::from_json</a></div><div class="ttdeci">std::unique_ptr&lt; HybZono &gt; from_json(const std::string &amp;filename)</div><div class="ttdoc">Read a HybZono object from a JSON file.</div><div class="ttdef"><b>Definition</b> ZonoJson.cpp:56</div></div>
+<div class="ttc" id="agroup__ZonoOpt__SetupFunctions_html_gabe42964865f7bcef7e73291e984ed233"><div class="ttname"><a href="group__ZonoOpt__SetupFunctions.html#gabe42964865f7bcef7e73291e984ed233">ZonoOpt::to_json</a></div><div class="ttdeci">void to_json(const HybZono &amp;Z, const std::string &amp;filename)</div><div class="ttdoc">Write a HybZono object to a JSON file.</div><div class="ttdef"><b>Definition</b> ZonoJson.cpp:8</div></div>
 <div class="ttc" id="anamespaceZonoOpt_html"><div class="ttname"><a href="namespaceZonoOpt.html">ZonoOpt</a></div><div class="ttdef"><b>Definition</b> ZonoOpt.hpp:58</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

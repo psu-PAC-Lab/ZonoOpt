@@ -174,7 +174,7 @@ inline bool matrix_eq(const Eigen::SparseMatrix<zono_float>& A, const Eigen::Spa
     return matrix_eq(Ad, Bd);
 }
 
-inline bool vector_eq(const Eigen::VectorXd& A, const Eigen::VectorXd& B)
+inline bool vector_eq(const Eigen::Vector<zono_float, -1>& A, const Eigen::Vector<zono_float, -1>& B)
 {
     if (A.size() != B.size())
         return false;

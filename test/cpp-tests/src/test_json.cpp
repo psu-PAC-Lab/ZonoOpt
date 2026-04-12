@@ -1,12 +1,28 @@
 #include "ZonoOpt.hpp"
 #include "unit_test_utilities.hpp"
+#include <filesystem>
 
 using namespace ZonoOpt;
+
+static std::filesystem::path tmp_dir()
+{
+    return std::filesystem::temp_directory_path() / "zonoopt_tests";
+}
+
+static void setup_tmp_dir()
+{
+    std::filesystem::create_directories(tmp_dir());
+}
+
+static void cleanup_tmp_dir()
+{
+    std::filesystem::remove_all(tmp_dir());
+}
 
 void test_zono()
 {
     const ZonoPtr Z = make_regular_zono_2D(3., 12);
-    const std::string filename = "test_zono.json";
+    const std::string filename = (tmp_dir() / "test_zono.json").string();
     to_json(*Z, filename);
 
     const ZonoPtr Z_read = from_json(filename);
@@ -50,7 +66,7 @@ void test_hybzono()
     HybZono Z (Gc.sparseView(), Gb.sparseView(), c, Ac.sparseView(), Ab.sparseView(), b);
 
     // test json
-    const std::string filename = "test_hybzono.json";
+    const std::string filename = (tmp_dir() / "test_hybzono.json").string();
     to_json(Z, filename);
 
     const ZonoPtr Z_read = from_json(filename);
@@ -77,7 +93,7 @@ void test_conzono()
     ConZono Z (G.sparseView(), c, A.sparseView(), b);
 
     // test json
-    const std::string filename = "test_conzono.json";
+    const std::string filename = (tmp_dir() / "test_conzono.json").string();
     to_json(Z, filename);
 
     const ZonoPtr Z_read = from_json(filename);
@@ -95,7 +111,7 @@ void test_point()
     Point Z (c);
 
     // test json
-    const std::string filename = "test_point.json";
+    const std::string filename = (tmp_dir() / "test_point.json").string();
     to_json(Z, filename);
 
     const ZonoPtr Z_read = from_json(filename);
@@ -111,7 +127,7 @@ void test_empty_set()
     EmptySet Z (6);
 
     // test json
-    const std::string filename = "test_empty_set.json";
+    const std::string filename = (tmp_dir() / "test_empty_set.json").string();
     to_json(Z, filename);
 
     const ZonoPtr Z_read = from_json(filename);
@@ -124,11 +140,14 @@ void test_empty_set()
 
 int main()
 {
+    setup_tmp_dir();
+
     test_hybzono();
     test_conzono();
     test_zono();
     test_point();
     test_empty_set();
 
+    cleanup_tmp_dir();
     return 0;
 }

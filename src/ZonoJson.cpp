@@ -3,6 +3,7 @@
 namespace ZonoOpt
 {
 using namespace detail;
+using json = nlohmann::json;
 
 void to_json(const HybZono& Z, const std::string& filename)
 {
@@ -75,8 +76,6 @@ std::unique_ptr<HybZono> from_json(const std::string& filename)
     const int n = data["n"];
 
     // return zonotopic set
-    std::string class_str = data["class"];
-    std::string hz_class_str = "HybZono";
     if (data["class"] == "HybZono")
         return std::make_unique<HybZono>(Gc, Gb, c, Ac, Ab, b, zero_one_form);
     else if (data["class"] == "ConZono")
@@ -133,14 +132,14 @@ namespace detail
         triplets.reserve(trip_rows.size());
         for (int i=0; i<static_cast<int>(trip_rows.size()); ++i)
         {
+            if (trip_rows[i] >= rows)
+                throw std::invalid_argument("json_to_sparse: triplet row index out of bounds.");
+            if (trip_cols[i] >= cols)
+                throw std::invalid_argument("json_to_sparse: triplet column index out of bounds.");
             triplets.emplace_back(trip_rows[i], trip_cols[i], trip_vals[i]);
         }
-#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
-        mat.setFromSortedTriplets(triplets.begin(), triplets.end());
-#else
-        mat.setFromTriplets(triplets.begin(), triplets.end());
-#endif
 
+        mat.setFromTriplets(triplets.begin(), triplets.end());
         return mat;
     }
 
