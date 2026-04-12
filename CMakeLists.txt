@@ -66,7 +66,7 @@ if (NOT TARGET Eigen3::Eigen)
     message(FATAL_ERROR "Failed to fetch Eigen dependency.")
 endif()
 
-
+# Boost dependency
 function(fetch_boost_lib name repo)
   FetchContent_Declare(
     boost_${name}
@@ -110,6 +110,22 @@ if (NOT TARGET ${boost_handle})
     message(FATAL_ERROR "Failed to fetch Boost dependency.")
 endif()
 
+# json dependency
+find_package(nlohmann_json 3.10 CONFIG QUIET)
+if (NOT nlohmann_json_FOUND)
+    if (ZONOOPT_INSTALL)
+        message(FATAL_ERROR "nlohmann_json not found on system. Required for ZONOOPT_INSTALL.")
+    else()
+        message(STATUS "nlohmann_json not found, fetching 3.12.0 via FetchContent...")
+        FetchContent_Declare(
+                nlohmann_json
+                GIT_REPOSITORY https://github.com/nlohmann/json.git
+                GIT_TAG v3.12.0
+        )
+        FetchContent_MakeAvailable(nlohmann_json)
+    endif()
+endif()
+
 # python dependencies
 if (ZONOOPT_BUILD_PYTHON_BINDINGS)
     # Find the module development requirements (requires FindPython from 3.17 or
@@ -132,6 +148,7 @@ set(SOURCE_FILES
     src/Box.cpp
     src/IntervalMatrix.cpp
     src/BranchAndBound.cpp
+    src/ZonoJson.cpp
 )
 
 # build
@@ -158,9 +175,10 @@ else()
     )
 endif()
 
-# link Eigen and Boost
+# link dependencies
 target_link_libraries(${TARGET_VAR} PUBLIC Eigen3::Eigen)
 target_link_libraries(${TARGET_VAR} PUBLIC ${boost_handle})
+target_link_libraries(${TARGET_VAR} PUBLIC nlohmann_json::nlohmann_json)
 
 # include directories
 target_include_directories(${TARGET_VAR} PUBLIC
