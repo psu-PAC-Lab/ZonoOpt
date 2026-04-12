@@ -42,9 +42,9 @@ namespace ZonoOpt
 
         std::string print() const override;
 
-        void constraint_reduction() override
+        std::unique_ptr<ConZono> constraint_reduction() const override
         {
-            /* do nothing */
+            return std::make_unique<EmptySet>(this->n);
         }
 
         std::unique_ptr<Zono> to_zono_approx() const override { throw std::runtime_error("to_zono_approx: EmptySet"); }
