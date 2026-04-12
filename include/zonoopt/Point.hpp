@@ -61,6 +61,11 @@ namespace ZonoOpt
             /* do nothing */
         }
 
+        std::unique_ptr<ConZono> constraint_reduction() const override
+        {
+            return std::make_unique<Point>(*this);
+        }
+
     protected:
         Eigen::Vector<zono_float, -1> do_optimize_over(
             const Eigen::SparseMatrix<zono_float>&, const Eigen::Vector<zono_float, -1>&, zono_float,

@@ -9,12 +9,13 @@ void test_reduce_order(const std::string& filename)
     ZonoPtr Z = from_json(filename);
 
     // convert to Zono
-    if (!Z->is_zono())
+    Zono* Z_zono_ptr = dynamic_cast<Zono*>(Z.get());
+    if (Z_zono_ptr == nullptr)
     {
         throw std::invalid_argument("Expected set to be a zonotope for reduce order test.");
     }
-    
-    std::unique_ptr<Zono> Z_zono (dynamic_cast<Zono*>(Z.release()));
+    Z.release();
+    std::unique_ptr<Zono> Z_zono (Z_zono_ptr);
 
     // project point onto set
     Eigen::Vector<zono_float, -1> p (Z_zono->get_n());
@@ -34,12 +35,14 @@ void test_constraint_reduction(const std::string& filename)
     ZonoPtr Z = from_json(filename);
 
     // convert to ConZono
-    if (!Z->is_conzono())
+    HybZono* Z_ptr = Z.get();
+    ConZono* Z_cz_ptr = dynamic_cast<ConZono*>(Z_ptr);
+    if (Z_cz_ptr == nullptr)
     {
         throw std::invalid_argument("Expected set to be a constrained zonotope for constraint reduction test.");
     }
-    
-    std::unique_ptr<ConZono> Z_conzono (dynamic_cast<ConZono*>(Z.release()));
+    Z.release(); // release ownership of Z before creating new unique_ptr
+    std::unique_ptr<ConZono> Z_conzono (Z_cz_ptr);
 
     // project point onto set
     Eigen::Vector<zono_float, -1> p (Z_conzono->get_n());
@@ -59,12 +62,13 @@ void test_to_zono_approx(const std::string& filename)
     ZonoPtr Z = from_json(filename);
 
     // convert to ConZono
-    if (!Z->is_conzono())
+    ConZono* Z_conzono_ptr = dynamic_cast<ConZono*>(Z.get());
+    if (Z_conzono_ptr == nullptr)
     {
         throw std::invalid_argument("Expected set to be a constrained zonotope for zonotope approximation test.");
     }
-    
-    std::unique_ptr<ConZono> Z_conzono (dynamic_cast<ConZono*>(Z.release()));
+    Z.release();
+    std::unique_ptr<ConZono> Z_conzono (Z_conzono_ptr);
 
     // project point onto set
     Eigen::Vector<zono_float, -1> p (Z_conzono->get_n());
