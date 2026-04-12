@@ -1,6 +1,18 @@
 #ifndef ZONOOPT_ZONO_JSON_HPP__
 #define ZONOOPT_ZONO_JSON_HPP__
 
+/**
+ * @file ZonoJson.hpp
+ * @author Josh Robbins (jrobbins@psu.edu)
+ * @brief Read / write zonotopic sets from / to JSON files
+ * @version 1.0
+ * @date 2026-04-12
+ *
+ * @copyright Copyright (c) 2026
+ *
+ */
+
+
 #include <fstream>
 #include <string>
 #include "nlohmann/json.hpp"

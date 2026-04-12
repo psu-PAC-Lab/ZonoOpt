@@ -8,9 +8,11 @@ var searchData=
   ['zono_5feps_5',['zono_eps',['../group__ZonoOpt__PreprocessorMacros.html#gab032f85dcb52e4286915ac533b5f3697',1,'ZonoOpt.hpp']]],
   ['zono_5ffloat_6',['zono_float',['../group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598',1,'ZonoOpt.hpp']]],
   ['zono_5funion_5f2_5fhybzono_7',['zono_union_2_hybzono',['../classZonoOpt_1_1HybZono.html#a7de51eb6b0817d9f0afec85b97e548ed',1,'ZonoOpt::HybZono::zono_union_2_hybzono'],['../group__ZonoOpt__SetupFunctions.html#ga45a1a10e0c353d2ecf52580e176dc9dc',1,'ZonoOpt::zono_union_2_hybzono()']]],
-  ['zonoopt_8',['zonoopt',['../namespaceZonoOpt.html',1,'ZonoOpt'],['../index.html',1,'ZonoOpt']]],
-  ['zonoopt_20features_9',['ZonoOpt Features',['../index.html#autotoc_md2',1,'']]],
-  ['zonoopt_2ehpp_10',['ZonoOpt.hpp',['../ZonoOpt_8hpp.html',1,'']]],
-  ['zonoptr_11',['ZonoPtr',['../group__ZonoOpt__Typedefs.html#ga3a3f3cf55efb220d20c4a23c7a34f4d4',1,'ZonoOpt']]],
-  ['zonotopes_20constrained_20zonotopes_20and_20hybrid_20zonotopes_12',['Zonotopes, Constrained Zonotopes, and Hybrid Zonotopes',['../index.html#autotoc_md1',1,'']]]
+  ['zonojson_2ecpp_8',['ZonoJson.cpp',['../ZonoJson_8cpp.html',1,'']]],
+  ['zonojson_2ehpp_9',['ZonoJson.hpp',['../ZonoJson_8hpp.html',1,'']]],
+  ['zonoopt_10',['zonoopt',['../namespaceZonoOpt.html',1,'ZonoOpt'],['../index.html',1,'ZonoOpt']]],
+  ['zonoopt_20features_11',['ZonoOpt Features',['../index.html#autotoc_md2',1,'']]],
+  ['zonoopt_2ehpp_12',['ZonoOpt.hpp',['../ZonoOpt_8hpp.html',1,'']]],
+  ['zonoptr_13',['ZonoPtr',['../group__ZonoOpt__Typedefs.html#ga3a3f3cf55efb220d20c4a23c7a34f4d4',1,'ZonoOpt']]],
+  ['zonotopes_20constrained_20zonotopes_20and_20hybrid_20zonotopes_14',['Zonotopes, Constrained Zonotopes, and Hybrid Zonotopes',['../index.html#autotoc_md1',1,'']]]
 ];
