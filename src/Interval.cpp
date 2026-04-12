@@ -213,14 +213,17 @@ namespace ZonoOpt
 
         Interval Interval::pow(const zono_float f) const
         {
+            // integer-valued case
             if (std::abs(f - std::round(f)) < zono_eps)
                 return this->pow(static_cast<int>(std::round(f)));
 
-            zono_float frac = one / f;
-            if (std::abs(frac - std::round(frac)) < zono_eps && frac > zero)
-                return this->nth_root(static_cast<int>(std::round(frac)));
+            // negative intervals not supported
+            if (this->lower() < zero)
+                throw std::domain_error("Negative intervals not supported for non-integer powers.");
 
-            throw std::invalid_argument("Fractional powers are only supported for integer and positive rational exponents within numerical tolerance");
+            // get rational exponent
+            const auto [numerator, denominator] = get_rational(static_cast<double>(f));
+            return this->pow(numerator).nth_root(denominator);
         }
 
         Interval Interval::nth_root(const int n) const
@@ -307,5 +310,39 @@ namespace ZonoOpt
         {
             os << interval.print();
             return os;
+        }
+
+        std::pair<int, int> Interval::get_rational(zono_float x)
+        {
+            // get upper and lower bound
+            int n_l = static_cast<int>(std::floor(x)); // numerator, lower
+            int n_u = static_cast<int>(std::ceil(x)); // numerator, upper
+            int d_l = 1; // denominator, lower
+            int d_u = 1; // denominator, upper
+
+            // get point in between
+            int n = n_l + n_u;
+            int d = d_l + d_u;
+            zono_float n_d = static_cast<zono_float>(n) / d;
+
+            // iterate until convergence
+            while (std::abs(n_d - x) > zono_eps) 
+            {
+                if (x > n_d)
+                {
+                    n_l = n;
+                    d_l = d;
+                }
+                else
+                {
+                    n_u = n;
+                    d_u = d;
+                }
+                n = n_l + n_u;
+                d = d_l + d_u;
+                n_d = static_cast<zono_float>(n) / d;
+            }
+
+            return {n, d};
         }
 }

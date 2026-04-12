@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ZonoOpt: /home/joshr/Documents/Projects/ZonoOpt/include/zonoopt/BranchAndBound.hpp File Reference</title>
+<title>ZonoOpt: /home/joshr/Documents/Projects/ZonoOpt/include/zonoopt/ZonoJson.hpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -87,40 +87,41 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a>  </div>
-  <div class="headertitle"><div class="title">BranchAndBound.hpp File Reference</div></div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle"><div class="title">ZonoJson.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Internal branch-and-bound routines for <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> library.  
+<p>Read / write zonotopic sets from / to JSON files.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;thread&gt;</code><br />
-<code>#include &lt;atomic&gt;</code><br />
-<code>#include &lt;mutex&gt;</code><br />
-<code>#include &lt;condition_variable&gt;</code><br />
-<code>#include &lt;sstream&gt;</code><br />
-<code>#include &lt;iomanip&gt;</code><br />
-<code>#include &lt;variant&gt;</code><br />
-<code>#include &lt;memory_resource&gt;</code><br />
-<code>#include &lt;cmath&gt;</code><br />
-<code>#include &lt;random&gt;</code><br />
-<code>#include &quot;<a class="el" href="BnbDataStructures_8hpp_source.html">BnbDataStructures.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="SolverDataStructures_8hpp_source.html">SolverDataStructures.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="ADMM_8hpp_source.html">ADMM.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &lt;fstream&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &quot;nlohmann/json.hpp&quot;</code><br />
+<code>#include &quot;<a class="el" href="HybZono_8hpp_source.html">HybZono.hpp</a>&quot;</code><br />
 </div>
-<p><a href="BranchAndBound_8hpp_source.html">Go to the source code of this file.</a></p>
+<p><a href="ZonoJson_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespaceZonoOpt" id="r_namespaceZonoOpt"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html">ZonoOpt</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:gabe42964865f7bcef7e73291e984ed233" id="r_gabe42964865f7bcef7e73291e984ed233"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetupFunctions.html#gabe42964865f7bcef7e73291e984ed233">ZonoOpt::to_json</a> (const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z, const std::string &amp;filename)</td></tr>
+<tr class="memdesc:gabe42964865f7bcef7e73291e984ed233"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a <a class="el" href="classZonoOpt_1_1HybZono.html" title="Hybrid zonotope class.">HybZono</a> object to a JSON file.  <br /></td></tr>
+<tr class="separator:gabe42964865f7bcef7e73291e984ed233"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3e0632dc1cfda079ce33bfbbf807c0fc" id="r_ga3e0632dc1cfda079ce33bfbbf807c0fc"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetupFunctions.html#ga3e0632dc1cfda079ce33bfbbf807c0fc">ZonoOpt::from_json</a> (const std::string &amp;filename)</td></tr>
+<tr class="memdesc:ga3e0632dc1cfda079ce33bfbbf807c0fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a <a class="el" href="classZonoOpt_1_1HybZono.html" title="Hybrid zonotope class.">HybZono</a> object from a JSON file.  <br /></td></tr>
+<tr class="separator:ga3e0632dc1cfda079ce33bfbbf807c0fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Internal branch-and-bound routines for <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> library. </p>
+<div class="textblock"><p>Read / write zonotopic sets from / to JSON files. </p>
 <dl class="section author"><dt>Author</dt><dd>Josh Robbins (<a href="#" onclick="location.href='mai'+'lto:'+'jro'+'bb'+'ins'+'@p'+'su.'+'ed'+'u'; return false;">jrobb<span class="obfuscator">.nosp@m.</span>ins@<span class="obfuscator">.nosp@m.</span>psu.e<span class="obfuscator">.nosp@m.</span>du</a>) </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
-<dl class="section date"><dt>Date</dt><dd>2025-06-04</dd></dl>
-<dl class="section copyright"><dt>Copyright</dt><dd>Copyright (c) 2025 </dd></dl>
+<dl class="section date"><dt>Date</dt><dd>2026-04-12</dd></dl>
+<dl class="section copyright"><dt>Copyright</dt><dd>Copyright (c) 2026 </dd></dl>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

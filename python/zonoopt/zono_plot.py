@@ -25,11 +25,11 @@ def get_vertices(Z, t_max=60.0):
         """Get vertex of Z nearest to direction d"""
         
         # maximize dot product
-        c = -Z.get_G().transpose().dot(d)
+        c = -Z.get_G().transpose() @ d 
         if Z.is_0_1_form():
-            bounds = [(0, 1) for i in range(Z.get_nG())]
+            bounds = [(0, 1) for _ in range(Z.get_nG())]
         else:
-            bounds = [(-1, 1) for i in range(Z.get_nG())]
+            bounds = [(-1, 1) for _ in range(Z.get_nG())]
 
         if Z.is_zono():
             res = linprog(c, bounds=bounds)
@@ -50,7 +50,7 @@ def get_vertices(Z, t_max=60.0):
         t0 = time.time()
 
         # search for vertices along perpendicular directions to get initial simplex
-        verts = []
+        verts = np.zeros((0, Z.get_n()))
         D = [np.array([1 if i==j else 0 for j in range(Z.get_n())]) for i in range(Z.get_n())] # init directions as standard basis
         B = [] # init basis
         vc = np.zeros(Z.get_n()) # init vertex candidate as origin
@@ -65,7 +65,7 @@ def get_vertices(Z, t_max=60.0):
 
             # make sure feasible
             if vd_pos is None or vd_neg is None: # infeasible, not detected during get_leaves
-                return []
+                return np.zeros((0, Z.get_n()))
             
             # check if vertices are new and whether direction is thin
             is_vd_pos_new = not any(np.allclose(vd_pos, v) for v in verts)
@@ -77,9 +77,9 @@ def get_vertices(Z, t_max=60.0):
 
                 # add new vertices
                 if is_vd_pos_new:
-                    verts.append(vd_pos)
+                    verts = np.vstack([verts, vd_pos])
                 if is_vd_neg_new:
-                    verts.append(vd_neg)
+                    verts = np.vstack([verts, vd_neg])
 
                 # update direction
                 B.append(vd_pos - vd_neg)
@@ -89,7 +89,7 @@ def get_vertices(Z, t_max=60.0):
 
         # return if set is not full-dimensional
         if len(verts) < Z.get_n()+1:
-            return np.array(verts)
+            return verts
         
         # search for additional vertices along the directions of the facet normals
         converged = False
@@ -97,20 +97,19 @@ def get_vertices(Z, t_max=60.0):
         while not converged and ((time.time()-t0) < t_max):
 
             # compute convex hull and centroid
-            verts_np_arr = np.array(verts)
             try:
-                hull = ConvexHull(verts_np_arr)
+                hull = ConvexHull(verts)
             except:
                 warnings.warn('ConvexHull failed, returning current vertices')
-                return np.array(verts)
-            centroid = np.mean(verts_np_arr, axis=0)
+                return verts
+            centroid = np.mean(verts, axis=0)
 
             # get facet normals
             new_normals = []
             for simplex in hull.simplices:
                 
                 # get vertices of facet. each row is a vertex
-                V = verts_np_arr[simplex]
+                V = verts[simplex]
                 
                 # get normal
                 Vn = V[-1,:] # last element
@@ -137,7 +136,7 @@ def get_vertices(Z, t_max=60.0):
 
                 # check if vertex is new
                 if not any(np.allclose(vd, v) for v in verts):
-                    verts.append(vd)
+                    verts = np.vstack((verts, vd))
                     n_new_verts += 1
 
             # already-checked normal directions
@@ -151,22 +150,36 @@ def get_vertices(Z, t_max=60.0):
         if (time.time()-t0) > t_max:
             warnings.warn('get_vertices time limit reached, terminating early.')
 
-        V = np.array(verts)
-        hull = ConvexHull(V)
-        V = V[hull.vertices,:]
+        hull = ConvexHull(verts)
+        verts = verts[hull.vertices,:]
 
-        return V
+        return verts
     
     # get vertices based on type
     if Z.is_empty_set():
-        return None
+        return np.zeros((0, Z.get_n()))
     elif Z.is_point():
-        return Z.get_c().reshape(1,-1)
+        return Z.get_c().reshape(1, Z.get_n())
     elif Z.is_zono() or Z.is_conzono():
         return _get_conzono_vertices(Z, t_max=t_max)
     elif Z.is_hybzono():
-        raise ValueError('get_vertices not implemented for HybZono')
-
+        t0 = time.time()
+        settings = OptSettings()
+        settings.t_max = t_max
+        sol = OptSolution()
+        Z_leaves = Z.get_leaves(settings=settings, solution=sol)
+        if not sol.converged and not sol.infeasible:
+            warnings.warn('get_leaves returned before convergence, get_vertices may be incomplete.')
+        dt = time.time() - t0
+        V = np.zeros((0, Z.get_n()))
+        for leaf in Z_leaves:
+            V_leaf = get_vertices(leaf, t_max=t_max-dt)
+            if V_leaf is not None:
+                V = np.vstack((V, V_leaf))
+            dt = time.time() - t0
+        return V
+    else:
+        raise ValueError('get_vertices unsupported data type')
 
 def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
     """
@@ -199,7 +212,7 @@ def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
         sol = OptSolution()
         leaves = Z.get_leaves(settings=settings, solution=sol)
 
-        if not sol.converged:
+        if not sol.converged and not sol.infeasible:
             warnings.warn('get_leaves returned before convergence, plot may be incomplete.')
 
         if len(leaves) == 0:

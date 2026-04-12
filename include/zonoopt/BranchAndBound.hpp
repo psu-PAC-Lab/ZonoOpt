@@ -21,6 +21,7 @@
 #include <variant>
 #include <memory_resource>
 #include <cmath>
+#include <random>
 
 #include "BnbDataStructures.hpp"
 #include "SolverDataStructures.hpp"
@@ -79,30 +80,41 @@ namespace ZonoOpt::detail
             }
         };
 
-        struct JThreadGuard
+        struct JThreadCompare
         {
-            ThreadSafeMultiset& J_threads;
-            zono_float J = zero;
+            bool operator()(const std::pair<int, zono_float>& v1,
+                            const std::pair<int, zono_float>& v2) const
+            {
+                if (v1.second != v2.second) return v1.second < v2.second;
+                return v1.first < v2.first;
+            }
+        };
+
+        template <typename T, typename Comp=std::less<T>>
+        struct ThreadGuard
+        {
+            ThreadSafeSet<T, Comp>& thread_tags;
+            T tag;
             bool specified = false;
 
-            explicit JThreadGuard(ThreadSafeMultiset& J_threads): J_threads(J_threads)
+            explicit ThreadGuard(ThreadSafeSet<T, Comp>& thread_tags): thread_tags(thread_tags)
             {
             }
 
-            void specify_J(zono_float J)
+            void specify_tag(const T& tag)
             {
                 if (!specified)
                 {
-                    this->J = J;
+                    this->tag = tag;
                     this->specified = true;
-                    this->J_threads.add(J);
+                    this->thread_tags.add(tag);
                 }
             }
 
-            ~JThreadGuard()
+            ~ThreadGuard()
             {
                 if (specified)
-                    this->J_threads.remove(J);
+                    this->thread_tags.remove(tag);
             }
         };
 
@@ -112,6 +124,7 @@ namespace ZonoOpt::detail
 
         PriorityQueuePrunable<std::unique_ptr<Node, NodeDeleter>, NodeCompare> node_queue; // priority queue for nodes
         mutable std::mutex pq_mtx;
+        mutable std::mutex incumbent_mtx; // guards atomic check-and-update of incumbent (J_max, z, x, u, etc.)
         std::condition_variable pq_cv_bnb, pq_cv_admm_fp;
         // condition variables for branch-and-bound and ADMM-FP threads
 
@@ -131,8 +144,10 @@ namespace ZonoOpt::detail
         std::atomic<zono_float> dual_residual = std::numeric_limits<zono_float>::infinity();
         ThreadSafeIncrementable<double> total_startup_time{0.0};
         ThreadSafeIncrementable<double> total_run_time{0.0};
-        ThreadSafeMultiset J_threads; // threads for J values
+        ThreadSafeSet<std::pair<int, zono_float>, JThreadCompare> J_threads; // threads for J values
         ThreadSafeVector<OptSolution> solutions; // solutions found
+        std::uniform_int_distribution<int> uniform_dist{0, std::numeric_limits<int>::max()};
+        std::mt19937 rng{0};
 
         // warmstart variables
         Eigen::Vector<zono_float, -1> xi_ws, u_ws;
@@ -170,6 +185,9 @@ namespace ZonoOpt::detail
 
         // check if 2 solutions correspond to the same binaries
         bool check_bin_equal(const OptSolution& sol1, const OptSolution& sol2) const;
+
+        // check whether integer variables are fully specified
+        bool is_box_integer(const Box& box) const;
     };
 } // namespace ZonoOpt::detail
 

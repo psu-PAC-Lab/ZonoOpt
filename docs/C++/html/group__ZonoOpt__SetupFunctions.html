@@ -108,10 +108,43 @@ Functions</h2></td></tr>
 <tr class="memitem:ga5e33e41bf5f1cf8e1f32e1de45dba939" id="r_ga5e33e41bf5f1cf8e1f32e1de45dba939"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1Zono.html">Zono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetupFunctions.html#ga5e33e41bf5f1cf8e1f32e1de45dba939">ZonoOpt::make_regular_zono_2D</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> radius, int n_sides, bool outer_approx=false, const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, 2 &gt; &amp;c=Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, 2 &gt;::Zero())</td></tr>
 <tr class="memdesc:ga5e33e41bf5f1cf8e1f32e1de45dba939"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds a 2D regular zonotope with a given radius and number of sides.  <br /></td></tr>
 <tr class="separator:ga5e33e41bf5f1cf8e1f32e1de45dba939"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabe42964865f7bcef7e73291e984ed233" id="r_gabe42964865f7bcef7e73291e984ed233"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetupFunctions.html#gabe42964865f7bcef7e73291e984ed233">ZonoOpt::to_json</a> (const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z, const std::string &amp;filename)</td></tr>
+<tr class="memdesc:gabe42964865f7bcef7e73291e984ed233"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a <a class="el" href="classZonoOpt_1_1HybZono.html" title="Hybrid zonotope class.">HybZono</a> object to a JSON file.  <br /></td></tr>
+<tr class="separator:gabe42964865f7bcef7e73291e984ed233"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3e0632dc1cfda079ce33bfbbf807c0fc" id="r_ga3e0632dc1cfda079ce33bfbbf807c0fc"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetupFunctions.html#ga3e0632dc1cfda079ce33bfbbf807c0fc">ZonoOpt::from_json</a> (const std::string &amp;filename)</td></tr>
+<tr class="memdesc:ga3e0632dc1cfda079ce33bfbbf807c0fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a <a class="el" href="classZonoOpt_1_1HybZono.html" title="Hybrid zonotope class.">HybZono</a> object from a JSON file.  <br /></td></tr>
+<tr class="separator:ga3e0632dc1cfda079ce33bfbbf807c0fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Setup functions for <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> library. </p>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="ga3e0632dc1cfda079ce33bfbbf807c0fc" name="ga3e0632dc1cfda079ce33bfbbf807c0fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga3e0632dc1cfda079ce33bfbbf807c0fc">&#9670;&#160;</a></span>from_json()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; ZonoOpt::from_json </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>filename</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read a <a class="el" href="classZonoOpt_1_1HybZono.html" title="Hybrid zonotope class.">HybZono</a> object from a JSON file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>The name of the JSON file to read from </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>zonotopic set </dd></dl>
+
+</div>
+</div>
 <a id="ga22e35050f518e280aae3e824b539ef76" name="ga22e35050f518e280aae3e824b539ef76"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga22e35050f518e280aae3e824b539ef76">&#9670;&#160;</a></span>interval_2_zono()</h2>
 
@@ -188,6 +221,43 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>zonotope </dd></dl>
+
+</div>
+</div>
+<a id="gabe42964865f7bcef7e73291e984ed233" name="gabe42964865f7bcef7e73291e984ed233"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gabe42964865f7bcef7e73291e984ed233">&#9670;&#160;</a></span>to_json()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ZonoOpt::to_json </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;&#160;</td>
+          <td class="paramname"><em>Z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>filename</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write a <a class="el" href="classZonoOpt_1_1HybZono.html" title="Hybrid zonotope class.">HybZono</a> object to a JSON file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Z</td><td>zonotopic set </td></tr>
+    <tr><td class="paramname">filename</td><td>the name of the JSON file to write to </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

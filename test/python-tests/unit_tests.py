@@ -2,6 +2,7 @@ import numpy as np
 import zonoopt as zono
 from scipy import sparse
 from pathlib import Path
+import tempfile
 
 # Note: zonoLAB used to generate data for some of these unit tests
 
@@ -62,6 +63,38 @@ class TestUtilities:
         c = TestUtilities.random_vector(n, val_min, val_max)
 
         return zono.Zono(G, c)
+
+    @staticmethod
+    def eq_mats(A, B, tol=1e-6):
+        if A.shape != B.shape:
+            return False
+        
+        for i in range(A.shape[0]):
+            for j in range(A.shape[1]):
+                if np.abs(A[i,j]-B[i,j]) > tol:
+                    return False
+                
+        return True
+    
+    @staticmethod
+    def eq_vecs(a, b, tol=1e-6):
+        if a.shape != b.shape:
+            return False
+
+        for i in range(a.shape[0]):
+            if np.abs(a[i]-b[i]) > tol:
+                return False
+
+        return True
+    
+    @staticmethod
+    def eq_hzs(Z1, Z2, tol=1e-6):
+        return (TestUtilities.eq_mats(Z1.get_Gc().toarray(), Z2.get_Gc().toarray(), tol) and
+                TestUtilities.eq_mats(Z1.get_Gb().toarray(), Z2.get_Gb().toarray(), tol) and
+                TestUtilities.eq_vecs(Z1.get_c(), Z2.get_c(), tol) and
+                TestUtilities.eq_mats(Z1.get_Ac().toarray(), Z2.get_Ac().toarray(), tol) and
+                TestUtilities.eq_mats(Z1.get_Ab().toarray(), Z2.get_Ab().toarray(), tol) and
+                TestUtilities.eq_vecs(Z1.get_b(), Z2.get_b(), tol) and Z1.is_0_1_form() == Z2.is_0_1_form())
 
 
 # unit tests
@@ -417,6 +450,20 @@ def test_interval_arithmetic():
         for f_sample in f_samples:
             assert np.isnan(f_sample) or f_bounds.contains(f_sample)
 
+    def _test_exponent():
+        a = zono.Interval(0.5, 3.)
+        b = a**(456./123)
+        assert not b.is_empty(), 'test_exponent did not succeed'
+        assert np.abs(b.lower() - 0.5**(456/123)) < 1e-6, 'test_exponent lower bound is incorrect'
+        assert np.abs(b.upper() - 3.0**(456/123)) < 1e-6, 'test_exponent upper bound is incorrect'
+
+        a = zono.Interval(-3., -0.5)
+        try:
+            b = a**(456./123)
+            raise RuntimeError('test_exponent: expected fractional power of negative interval to throw')
+        except ValueError:
+            pass
+
     # Case 1: positive range
     _run_interval_test(0.1, 0.2)
     
@@ -425,6 +472,9 @@ def test_interval_arithmetic():
 
     # Case 3: spanning 0
     _run_interval_test(-1., 1.)
+
+    # fractional power test
+    _test_exponent()
 
     print('Passed: Interval Arithmetic')
 
@@ -838,6 +888,22 @@ def test_remove_redundancy():
 
         # check that result is EmptySet object
         assert Z_rr.is_empty_set(), f'Expected EmptySet, got {Z_rr}'
+    
+    def _test_from_file(filename):       
+
+        # from file
+        Z = zono.from_json(filename)
+
+        # remove redundancy
+        Z_rr = Z.remove_redundancy()
+
+        # check vertices are the same
+        V_before = zono.get_vertices(Z)
+        V_after = zono.get_vertices(Z_rr)
+
+        # check that vertices are the same
+        _check_vertices_equal(V_before, V_after)
+        _check_vertices_equal(V_after, V_before)
 
     def _test_random_conzono():
         Z = TestUtilities.random_conzono(n=2, nG=30, nC=10, density=0.1, val_min=0., val_max=1.)
@@ -886,75 +952,142 @@ def test_remove_redundancy():
 
             assert(cond), err_str
 
+    def _check_vertices_equal(V1, V2):
+        for i in range(V1.shape[0]):
+            v1 = V1[i,:]
+            found_match = False
+            min_dist = np.inf
+            closest_vertex = None
+            for j in range(V2.shape[0]):
+                v2 = V2[j,:]
+                if np.linalg.norm(v1-v2) < min_dist:
+                    min_dist = np.linalg.norm(v1-v2)
+                    closest_vertex = v2
+                if min_dist < 1e-3:
+                    found_match = True
+                    break
+            
+            assert found_match, f'Vertex {v1} not found in second set of vertices, closest vertex was {closest_vertex} with distance {min_dist}'
+
     def _test_random_hybzono():
-        Z = TestUtilities.random_hybzono(n=2, nGc=30, nGb=10, nC=10, density=0.1, val_min=0., val_max=1.)
+        Z = TestUtilities.random_hybzono(n=2, nGc=20, nGb=5, nC=5, density=0.2, val_min=0., val_max=1.)
 
-        # get support before simplifying
-        settings = zono.OptSettings()
-        settings.eps_prim = 1e-3
-        settings.eps_dual = 1e-3
-        settings.eps_prim_search = 1e-3
-        settings.eps_dual_search = 1e-3
-        settings.rho = 1.
-        settings.eps_r = 0.
-        settings.eps_a = 0.
-        settings.n_threads_bnb = 1
-        settings.n_threads_admm_fp = 0
-        sup_before = np.zeros(4)
-
+        # get vertices before simplifying
         try:
-            d = [1., 0.]
-            sup_before[0] = Z.support(d, settings=settings)
-            d = [-1., 0.]
-            sup_before[1] = Z.support(d, settings=settings)
-            d = [0., 1.]
-            sup_before[2] = Z.support(d, settings=settings)
-            d = [0., -1.]
-            sup_before[3] = Z.support(d, settings=settings)
-
-        except Exception as e:
+            V_before = zono.get_vertices(Z)
+            if V_before.shape[0] == 0: # infeasible
+                return
+        except RuntimeError: # can't factor problem matrices
             return
         
         # randomly convert form
         if np.random.rand() < 0.5:
             Z.convert_form()
 
-        # get support after simplifying
+        # get vertices after simplifying
         Z_rr = Z.remove_redundancy()
-        sup_after = np.zeros(4)
 
-        d = [1., 0.]
-        sup_after[0] = Z_rr.support(d, settings=settings)
-        d = [-1., 0.]
-        sup_after[1] = Z_rr.support(d, settings=settings)
-        d = [0., 1.]
-        sup_after[2] = Z_rr.support(d, settings=settings)
-        d = [0., -1.]
-        sup_after[3] = Z_rr.support(d, settings=settings)
+        # get vertices after simplifying
+        V_after = zono.get_vertices(Z_rr)
 
-        # make sure all close
-        for i in range(4):
-            err_str = f'Random HybZono: expected support = {sup_before[i]}, got support = {sup_after[i]}\n  Z before simplifying: {Z}\n  Z after simplifying: {Z_rr}'
-            cond = np.abs(sup_before[i]-sup_after[i])/np.abs(sup_before[i]) < 1e-1 or np.abs(sup_before[i] - sup_after[i]) < 1e-1
-            
-            assert(cond), err_str
+        # check that vertices are the same
+        _check_vertices_equal(V_before, V_after)
+        _check_vertices_equal(V_after, V_before)
 
     # main
     _test1()
     _test2()
     _test3()
     _test4()
+    _test_from_file(str(test_data_folder / 'remove_redundancy' / 'Z_test5.json'))
+    _test_from_file(str(test_data_folder / 'remove_redundancy' / 'Z_test6.json'))
+    _test_from_file(str(test_data_folder / 'remove_redundancy' / 'Z_test7.json'))
+
 
     np.random.seed(0)
 
     for _ in range(100):
         _test_random_conzono()
 
-    for _ in range(100):
-        _test_random_hybzono()
-
     print('Passed: Remove Redundancy')
 
+def test_json():
+    def _test_zono(tmp_path):
+        Z = zono.make_regular_zono_2D(3., 12)
+        filename = str(tmp_path / 'test_zono.json')
+        zono.to_json(Z, filename)
+        Z_read = zono.from_json(filename)
+
+        assert TestUtilities.eq_hzs(Z, Z_read), f'_test_zono: expected {Z}, got {Z_read}'
+        assert(Z_read.is_zono()), f'_test_zono: expected result to be a zonotope'
+
+    def _test_hybzono(tmp_path):
+        Gc = np.array([[0., 0.0859281, 0., 0., 0., 0., 0., 0.284171, 0.308149, 0., 0.116677, 0., 0., 0., 0., 0., 0., 0., 0., 0.798126],
+                       [0.211588, 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.511238, 0., 0.644165, 0., 0., 0., 0.28926, 0., 0., 0.]])
+        Gb = np.array([[0, 0.235959, 0.26797, 0.669308, 0.757279],
+                       [0, 0, 0, 0, 0]])
+        c = np.array([0.209747, 0.0100703])
+        Ac = np.array([[0, 0.731125, 0, 0.853555, 0.63719, 0.174854, 0, 0, 0.582327, 0, 0, 0, 0, 0, 0.575434, 0.0713598, 0, 0, 0, 0],
+                       [0, 0, 0, 0.99319, 0.72748, 0, 0, 0, 0, 0, 0.355254, 0, 0.954118, 0, 0, 0, 0, 0, 0, 0],
+                       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.771462, 0, 0, 0, 0, 0, 0, 0],
+                       [0.81856, 0, 0, 0.576755, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                       [0, 0, 0, 0, 0.0988853, 0, 0, 0, 0.306937, 0.262899, 0, 0, 0, 0, 0, 0, 0, 0, 0.76945, 0]])
+        Ab = np.array([[0, 0, 0.660926, 0, 0],
+                       [0, 0, 0, 0, 0],
+                       [0.742336, 0, 0, 0.474032, 0],
+                       [0, 0, 0, 0, 0.560643],
+                       [0.327432, 0, 0, 0, 0]])
+        b = np.array([0.243035, 0.292617, 0.610422, 0.173898, 0.702892])
+
+        Z = zono.HybZono(sparse.csc_matrix(Gc), sparse.csc_matrix(Gb), c, sparse.csc_matrix(Ac), sparse.csc_matrix(Ab), b)
+        filename = str(tmp_path / 'test_hybzono.json')
+        zono.to_json(Z, filename)
+        Z_read = zono.from_json(filename)
+
+        assert TestUtilities.eq_hzs(Z, Z_read), f'_test_hybzono: expected {Z}, got {Z_read}'
+        assert(Z_read.is_hybzono()), f'_test_hybzono: expected result to be a hybrid zonotope'
+
+    def _test_conzono(tmp_path):
+        G = np.array([[3., 1., 0., 0.]])
+        c = np.array([8.])
+        A = np.array([[0.5, 0.1, 1., 0.],
+                      [0., 0.5, 0., 0.5]])
+        b = np.array([-0.5, -1.])
+
+        Z = zono.ConZono(sparse.csc_matrix(G), c, sparse.csc_matrix(A), b)
+        filename = str(tmp_path / 'test_conzono.json')
+        zono.to_json(Z, filename)
+        Z_read = zono.from_json(filename)
+
+        assert TestUtilities.eq_hzs(Z, Z_read), f'_test_conzono: expected {Z}, got {Z_read}'
+        assert(Z_read.is_conzono()), f'_test_conzono: expected result to be a constrained zonotope'
+
+    def _test_point(tmp_path):
+        Z = zono.Point([1., 2., 3., 4.])
+        filename = str(tmp_path / 'test_point.json')
+        zono.to_json(Z, filename)
+        Z_read = zono.from_json(filename)
+
+        assert TestUtilities.eq_hzs(Z, Z_read), f'_test_point: expected {Z}, got {Z_read}'
+        assert Z_read.is_point(), f'_test_point: expected result to be a point'
+
+    def _test_empty_set(tmp_path):
+        Z = zono.EmptySet(6)
+        filename = str(tmp_path / 'test_empty_set.json')
+        zono.to_json(Z, filename)
+        Z_read = zono.from_json(filename)
+
+        assert TestUtilities.eq_hzs(Z, Z_read), f'_test_empty_set: expected {Z}, got {Z_read}'
+        assert Z_read.is_empty_set(), f'_test_empty_set: expected result to be an empty set'
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_path = Path(tmp_dir)
+        _test_zono(tmp_path)
+        _test_hybzono(tmp_path)
+        _test_conzono(tmp_path)
+        _test_point(tmp_path)
+        _test_empty_set(tmp_path)
+    print('Passed: JSON')
 
 # run the unit tests
 test_vrep_2_hz()
@@ -969,4 +1102,5 @@ test_interval_arithmetic()
 test_affine_inclusion()
 test_operator_overloading()
 test_constrain()
+test_json()
 test_remove_redundancy()

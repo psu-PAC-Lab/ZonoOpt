@@ -492,6 +492,8 @@ namespace ZonoOpt
         boost::numeric::interval<zono_float, interval_policy> _val;
 
         explicit Interval(const boost::numeric::interval<zono_float, interval_policy>& val) : _val(val) {}
+
+        static std::pair<int, int> get_rational(zono_float x);
     };
 
 } // namespace ZonoOpt

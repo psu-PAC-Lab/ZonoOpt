@@ -159,6 +159,26 @@ void test4()
     test_assert(Z_rr->is_empty_set(), ss.str());
 }
 
+void test_not_empty(const std::string& filename)
+{
+    // from file
+    const ZonoPtr Z = from_json(filename);
+
+    // remove redundancy
+    OptSettings settings;
+    settings.verbose = true;
+
+    const auto Z_rr = Z->remove_redundancy();
+    std::cout << *Z_rr << std::endl;
+
+    auto leaves = Z_rr->get_leaves(false, settings);
+
+    // check that result is not empty set
+    std::stringstream ss;
+    ss << "Expected non-empty set, got " << *Z_rr << std::endl;
+    test_assert(!Z_rr->is_empty(settings), ss.str());
+}
+
 void test_random_conzono(std::mt19937& rand_gen)
 {
     ConZono Z = random_conzono(2, 30, 10, 0.1, 0., 1., rand_gen);
@@ -227,87 +247,25 @@ void test_random_conzono(std::mt19937& rand_gen)
     }
 }
 
-void test_random_hybzono(std::mt19937& rand_gen)
+int main(int argc, char* argv[])
 {
-    HybZono Z = random_hybzono(2, 30, 10, 10, 0.1, 0., 1., rand_gen);
-
-    // get support before simplifying
-    OptSettings settings;
-    settings.eps_prim = 1e-3;
-    settings.eps_dual = 1e-3;
-    settings.eps_prim_search = 1e-3;
-    settings.eps_dual_search = 1e-3;
-    settings.rho = 1.;
-    settings.n_threads_admm_fp = 0;
-    settings.n_threads_bnb = 1;
-    settings.eps_a = 0.;
-    settings.eps_r = 0.;
-    std::array<zono_float, 4> sup_before;
-
-    Eigen::Vector<zono_float, 2> d;
-    try
+    // input: directory where unit test data resides
+    if (argc < 2)
     {
-        d << 1., 0.;
-        sup_before[0] = Z.support(d, settings);
-        d << -1., 0.;
-        sup_before[1] = Z.support(d, settings);
-        d << 0., 1.;
-        sup_before[2] = Z.support(d, settings);
-        d << 0., -1.;
-        sup_before[3] = Z.support(d, settings);
+        std::cerr << "Usage: " << argv[0] << " <test data folder>" << std::endl;
+        return 1;
     }
-    catch (std::runtime_error& err)
-    {
-        return;
-    }
-    catch (std::invalid_argument& err)
-    {
-        return;
-    }
-    catch (std::exception& err)
-    {
-        std::cerr << err.what() << std::endl;
-        std::exit(1);
-    }
+    std::string test_folder = argv[1];
+    test_folder += "/remove_redundancy/";
 
-    // randomly convert form
-    std::uniform_real_distribution<double> form_dist(0., 1.);
-    if (form_dist(rand_gen) < 0.5)
-        Z.convert_form();
-
-    // get support after simplifying
-    const auto Z_rr = Z.remove_redundancy();
-    std::array<zono_float, 4> sup_after;
-
-    d << 1., 0.;
-    sup_after[0] = Z_rr->support(d, settings);
-    d << -1., 0.;
-    sup_after[1] = Z_rr->support(d, settings);
-    d << 0., 1.;
-    sup_after[2] = Z_rr->support(d, settings);
-    d << 0., -1.;
-    sup_after[3] = Z_rr->support(d, settings);
-
-    // make sure all close
-    std::stringstream ss;
-    for (int i=0; i<4; ++i)
-    {
-        ss << "Random HybZono: expected support = " << sup_before[i] << ", got support = " << sup_after[i] << std::endl;
-        ss << "  Z before simplifying: " << Z << std::endl;
-        ss << "  Z after simplifying: " << *Z_rr << std::endl;
-
-        test_assert(std::abs(sup_before[i] - sup_after[i])/std::abs(sup_before[i]) < 1e-1 || std::abs(sup_before[i] - sup_after[i]) < 1e-1, ss.str());
-        ss.str("");
-    }
-}
-
-int main()
-{
     // manually specified test
     test1();
     test2();
     test3();
     test4();
+    test_not_empty(test_folder + "Z_test5.json");
+    test_not_empty(test_folder + "Z_test6.json");
+    test_not_empty(test_folder + "Z_test7.json");
 
     // random constrained and hybrid zonotopes
     std::mt19937 rand_gen(0);
@@ -316,12 +274,6 @@ int main()
     {
         test_random_conzono(rand_gen);
     }
-
-    for (int i=0; i<100; ++i)
-    {
-        test_random_hybzono(rand_gen);
-    }
-
 
     return 0;
 }

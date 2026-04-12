@@ -3189,4 +3189,22 @@ PYBIND11_MODULE(_core, m)
             Returns:
                 Zono: zonotope
         )pbdoc");
+    m.def("to_json", &to_json, py::arg("Z"), py::arg("filename"),
+        R"pbdoc(
+            Serializes a HybZono object to a JSON file.
+
+            Args:
+                Z (HybZono): zonotopic set to serialize
+                filename (str): name of the JSON file to write to
+        )pbdoc");
+    m.def("from_json", &from_json, py::arg("filename"),
+        R"pbdoc(
+            Deserializes a HybZono object from a JSON file.
+
+            Args:
+                filename (str): name of the JSON file to read from
+
+            Returns:
+                HybZono: deserialized zonotopic set
+        )pbdoc");
 }

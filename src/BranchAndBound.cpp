@@ -48,6 +48,10 @@ namespace ZonoOpt::detail
     std::pair<std::vector<OptSolution>, OptSolution> BranchAndBound::multi_solve(const int max_sols)
     {
         this->multi_sol = true;
+        if (!this->data.admm_data->settings.use_interval_contractor)
+        {
+            throw std::invalid_argument("Multi-solve requires use of interval contractor.");
+        }
         auto sol = solver_core(max_sols);
         return std::get<std::pair<std::vector<OptSolution>, OptSolution>>(sol);
     }
@@ -166,14 +170,12 @@ namespace ZonoOpt::detail
             }
         }
 
-        // make ADMM-FP thread
-
         // if contractor has collapsed any integer values, use that information
         this->admm_fp_data.reset(this->bnb_data->clone()); // copies over matrix factorization
         this->admm_fp_data->x_box = std::make_shared<MI_Box>(root->get_box().lower(), root->get_box().upper(),
                                                              this->data.idx_b, this->data.zero_one_form);
         const zono_float low = this->data.zero_one_form ? zero : -one;
-        constexpr zono_float high = 1;
+        constexpr zono_float high = one;
         for (int i = this->data.idx_b.first; i < this->data.idx_b.first + this->data.idx_b.second; i++)
         {
             bool low_cutoff = std::abs(root->get_box().lower()(i) - low) > zono_eps;
@@ -255,6 +257,7 @@ namespace ZonoOpt::detail
 
             return sol;
         }
+
         // start threads
         std::vector<std::thread> bnb_threads;
         for (int i = 0; i < this->data.admm_data->settings.n_threads_bnb; i++)
@@ -295,7 +298,7 @@ namespace ZonoOpt::detail
             }
 
             // check for max nodes
-            int queue_size;
+            int queue_size = 0;
             {
                 std::lock_guard<std::mutex> lock(pq_mtx);
                 queue_size = static_cast<int>(this->node_queue.size());
@@ -316,25 +319,25 @@ namespace ZonoOpt::detail
             // get lower bound / check if there are no nodes remaining
             zono_float J_min = -std::numeric_limits<zono_float>::infinity();
             {
-                std::pair<zono_float, bool> J_min_threads_pair;
                 std::lock_guard<std::mutex> lock(pq_mtx);
-                J_min_threads_pair = this->J_threads.get_min(); // lower bound from active threads
+                auto [min_val_pair, valid] = this->J_threads.get_min(); // lower bound from active threads
 
                 if (this->node_queue.empty())
                 {
-                    if (!J_min_threads_pair.second)
+                    if (!valid)
                     {
                         this->done = true; // no nodes remaining
                         this->converged = true;
                     }
                     else
                     {
-                        J_min = J_min_threads_pair.first;
+                        J_min = min_val_pair.second;
                     }
                 }
                 else
                 {
-                    J_min = std::min(this->node_queue.top()->solution.J, J_min_threads_pair.first);
+                    // TODO: fix this logic for best dive
+                    J_min = std::min(this->node_queue.top()->solution.J, min_val_pair.second);
                 }
             }
 
@@ -351,13 +354,10 @@ namespace ZonoOpt::detail
                     this->converged = true;
                 }
             }
-            else // check based on number of solutions
+            else if (this->solutions.size() >= static_cast<size_t>(max_sols)) // check based on number of solutions
             {
-                if (this->solutions.size() >= static_cast<size_t>(max_sols))
-                {
-                    this->done = true;
-                    this->converged = true;
-                }
+                this->done = true;
+                this->converged = true;
             }
 
             // verbosity
@@ -502,23 +502,31 @@ namespace ZonoOpt::detail
                     {
                         return this->check_bin_equal(a, b);
                     };
-                    if (!this->solutions.contains(node->solution, compare_eq)) // new solution
-                        this->solutions.push_back(node->solution);
-                }
-                if (node->solution.J < this->J_max - zono_eps) // check if node is better than current best
-                {
-                    // update incumbent
-                    this->J_max = node->solution.J;
-                    this->x.set(node->solution.x);
-                    this->z.set(node->solution.z);
-                    this->u.set(node->solution.u);
-                    this->primal_residual = node->solution.primal_residual;
-                    this->dual_residual = node->solution.dual_residual;
-                    this->feasible = true;
-                    this->admm_fp_incumbent = false;
+                    this->solutions.push_back_if_not_contains(node->solution, compare_eq);
 
-                    // prune
-                    if (!this->multi_sol) this->prune(node->solution.J);
+                    // if integer variables not fully specified in node, need to keep branching
+                    if (!is_box_integer(node->get_box()))
+                    {
+                        branch_most_frac(node);
+                    }
+                }
+                {
+                    std::lock_guard<std::mutex> inc_lock(incumbent_mtx);
+                    if (node->solution.J < this->J_max - zono_eps) // check if node is better than current best
+                    {
+                        // update incumbent
+                        this->J_max = node->solution.J;
+                        this->x.set(node->solution.x);
+                        this->z.set(node->solution.z);
+                        this->u.set(node->solution.u);
+                        this->primal_residual = node->solution.primal_residual;
+                        this->dual_residual = node->solution.dual_residual;
+                        this->feasible = true;
+                        this->admm_fp_incumbent = false;
+
+                        // prune
+                        if (!this->multi_sol) this->prune(node->solution.J);
+                    }
                 }
             }
             else
@@ -576,25 +584,27 @@ namespace ZonoOpt::detail
                 {
                     return this->check_bin_equal(a, b);
                 };
-                if (!this->solutions.contains(sol, compare_eq)) // new solution
-                    this->solutions.push_back(sol);
+                this->solutions.push_back_if_not_contains(sol, compare_eq);
             }
 
             // new incumbent
-            if (sol.J < this->J_max - zono_eps) // check if node is better than current best
             {
-                // update incumbent
-                this->J_max = sol.J;
-                this->x.set(sol.x);
-                this->z.set(sol.z);
-                this->u.set(sol.u);
-                this->primal_residual = sol.primal_residual;
-                this->dual_residual = sol.dual_residual;
-                this->feasible = true;
-                this->admm_fp_incumbent = true;
+                std::lock_guard<std::mutex> inc_lock(incumbent_mtx);
+                if (sol.J < this->J_max - zono_eps) // check if node is better than current best
+                {
+                    // update incumbent
+                    this->J_max = sol.J;
+                    this->x.set(sol.x);
+                    this->z.set(sol.z);
+                    this->u.set(sol.u);
+                    this->primal_residual = sol.primal_residual;
+                    this->dual_residual = sol.dual_residual;
+                    this->feasible = true;
+                    this->admm_fp_incumbent = true;
 
-                // prune
-                if (!this->multi_sol) this->prune(sol.J);
+                    // prune
+                    if (!this->multi_sol) this->prune(sol.J);
+                }
             }
         }
 
@@ -604,7 +614,7 @@ namespace ZonoOpt::detail
     bool BranchAndBound::is_integer_feasible(const Eigen::Ref<const Eigen::Vector<zono_float, -1>> xb) const
     {
         const zono_float low = this->data.zero_one_form ? zero : -one;
-        constexpr zono_float high = 1;
+        constexpr zono_float high = one;
 
         for (int i = 0; i < xb.size(); i++)
         {
@@ -621,7 +631,7 @@ namespace ZonoOpt::detail
             return;
 
         const zono_float low = this->data.zero_one_form ? zero : -one;
-        constexpr zono_float high = 1;
+        constexpr zono_float high = one;
 
         // round and find most fractional variable
         const Eigen::Array<zono_float, -1, 1> xb = node->solution.z.segment(
@@ -633,9 +643,30 @@ namespace ZonoOpt::detail
         const Eigen::Array<zono_float, -1, 1> d_l = (xb - lower).abs();
         const Eigen::Array<zono_float, -1, 1> d_u = (xb - upper).abs();
         const Eigen::Array<zono_float, -1, 1> d = d_l.min(d_u); // distance to rounded value
-        int idx_most_frac;
-        d.maxCoeff(&idx_most_frac); // index of most fractional variable
-        idx_most_frac = this->data.idx_b.first + idx_most_frac; // convert to original index
+        int idx_most_frac = 0;
+        const zono_float max_val = d.maxCoeff(&idx_most_frac); // get index of most fractional variable
+        if (max_val > zono_eps)
+        {
+            // solution is fractional, can do most fractional branching
+            idx_most_frac += this->data.idx_b.first; // convert to original index
+        }
+        else
+        {
+            // solution is integer, need to find element where bounds are not single-valued to branch on
+            // this only happens during multi-sol when enumerating all solutions
+            const Box box = node->get_box();
+            idx_most_frac = this->data.idx_b.first; // init
+            while (idx_most_frac < this->data.idx_b.first + this->data.idx_b.second && box.get_element(idx_most_frac).is_single_valued())
+            {
+                ++idx_most_frac;
+            }
+        }
+        if (idx_most_frac < 0 || idx_most_frac >= this->data.admm_data->n_x)
+        {
+            std::stringstream ss;
+            ss << "Most fractional variable index out of bounds: " << idx_most_frac;
+            throw std::runtime_error(ss.str());
+        }
 
         // branch on most fractional variable
         std::unique_ptr<Node, NodeDeleter> left = this->clone_node(node);
@@ -706,14 +737,13 @@ namespace ZonoOpt::detail
         while (!this->done)
         {
             std::unique_ptr<Node, NodeDeleter> node(nullptr, NodeDeleter(&pool));
-            JThreadGuard guard(this->J_threads);
+            ThreadGuard<std::pair<int, zono_float>, JThreadCompare> guard(this->J_threads);
             {
                 std::unique_lock<std::mutex> lock(pq_mtx);
                 pq_cv_bnb.wait(lock, [this]() { return this->done || !this->node_queue.empty(); });
                 if (this->done) return;
                 node = this->node_queue.pop_top();
-                guard.specify_J(node->solution.J);
-                // add J to J_threads vector, need to do this before releasing lock
+                guard.specify_tag({this->uniform_dist(this->rng), node->solution.J});
             }
             if (node) 
             {
@@ -761,5 +791,15 @@ namespace ZonoOpt::detail
         return (sol1.z.segment(this->data.idx_b.first, this->data.idx_b.second) - sol2.z.segment(
                    this->data.idx_b.first, this->data.idx_b.second))
                .cwiseAbs().maxCoeff() < zono_eps;
+    }
+
+    bool BranchAndBound::is_box_integer(const Box& box) const
+    {
+        const Eigen::Vector<zono_float, -1> lower = box.lower();
+        const Eigen::Vector<zono_float, -1> upper = box.upper();
+
+        const Box int_box (lower.segment(this->data.idx_b.first, this->data.idx_b.second),
+                                        upper.segment(this->data.idx_b.first, this->data.idx_b.second));
+        return int_box.is_single_valued(); 
     }
 }
