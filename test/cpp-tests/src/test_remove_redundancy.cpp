@@ -159,44 +159,16 @@ void test4()
     test_assert(Z_rr->is_empty_set(), ss.str());
 }
 
-void test5()
+void test_not_empty(const std::string& filename)
 {
-    // hybrid zonotope
-    Eigen::Matrix<zono_float, 2, 20> Gc;
-    Gc << 0., 0.0859281, 0., 0., 0., 0., 0., 0.284171, 0.308149, 0., 0.116677, 0., 0., 0., 0., 0., 0., 0., 0., 0.798126,
-         0.211588, 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.511238, 0., 0.644165, 0., 0., 0., 0.28926, 0., 0., 0.;
-    Eigen::Matrix<zono_float, 2, 5> Gb;
-    Gb << 0, 0.235959, 0.26797, 0.669308, 0.757279,
-            0,        0,        0,        0,        0;
-    Eigen::Vector<zono_float, 2> c;
-    c << 0.209747, 0.0100703;
-    Eigen::Matrix<zono_float, 5, 20> Ac;
-    Ac << 0,  0.731125,         0,  0.853555,   0.63719,  0.174854,         0,         0,  0.582327,         0,         0,         0,         0,         0,  0.575434, 0.0713598,         0,         0,         0,         0,
-        0,         0,         0,   0.99319,   0.72748,         0,         0,         0,         0,         0,  0.355254,         0,  0.954118,         0,         0,         0,         0,         0,         0,         0,
-        0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,  0.771462,         0,         0,         0,         0,         0,         0,         0,
-  0.81856,         0,         0,  0.576755,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,
-        0,         0,         0,         0, 0.0988853,         0,         0,         0,  0.306937,  0.262899,         0,         0,         0,         0,         0,         0,         0,         0,   0.76945,         0;
-    Eigen::Matrix<zono_float, 5, 5> Ab;
-    Ab << 0,        0, 0.660926,        0,        0,
-        0,        0,        0,        0,        0,
-        0.742336, 0,        0, 0.474032,        0,
-        0,        0,        0,        0, 0.560643,
-        0.327432, 0,        0,        0,        0;
-    Eigen::Vector<zono_float, 5> b;
-    b << 0.243035,
-         0.292617,
-         0.610422,
-         0.173898,
-         0.702892;
-    
-    HybZono Z (Gc.sparseView(), Gb.sparseView(), c, Ac.sparseView(), Ab.sparseView(), b);
-    Z.convert_form();
+    // from file
+    const ZonoPtr Z = from_json(filename);
 
     // remove redundancy
     OptSettings settings;
     settings.verbose = true;
 
-    const auto Z_rr = Z.remove_redundancy();
+    const auto Z_rr = Z->remove_redundancy();
     std::cout << *Z_rr << std::endl;
 
     auto leaves = Z_rr->get_leaves(false, settings);
@@ -275,14 +247,25 @@ void test_random_conzono(std::mt19937& rand_gen)
     }
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+    // input: directory where unit test data resides
+    if (argc < 2)
+    {
+        std::cerr << "Usage: " << argv[0] << " <test data folder>" << std::endl;
+        return 1;
+    }
+    std::string test_folder = argv[1];
+    test_folder += "/remove_redundancy/";
+
     // manually specified test
     test1();
     test2();
     test3();
     test4();
-    test5();
+    test_not_empty(test_folder + "Z_test5.json");
+    test_not_empty(test_folder + "Z_test6.json");
+    test_not_empty(test_folder + "Z_test7.json");
 
     // random constrained and hybrid zonotopes
     std::mt19937 rand_gen(0);

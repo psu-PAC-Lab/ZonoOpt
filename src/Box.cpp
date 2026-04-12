@@ -632,8 +632,8 @@ namespace ZonoOpt {
                     }
                 }
 
-                // update interval
-                this->set_element(static_cast<int>(it_outer.col()), this->get_element(static_cast<int>(it_outer.col())).intersect(x * (one/a_col)));
+                // update interval (use interval division with directed rounding to preserve soundness)
+                this->set_element(static_cast<int>(it_outer.col()), this->get_element(static_cast<int>(it_outer.col())).intersect(x / a_col));
             }
         }
     }
