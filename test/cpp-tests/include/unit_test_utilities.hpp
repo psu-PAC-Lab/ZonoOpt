@@ -150,5 +150,49 @@ inline ZonoOpt::Zono random_zono(int n, int nG, double density, zono_float val_m
     return {G, c};
 }
 
+inline bool matrix_eq(const Eigen::Matrix<zono_float, -1, -1>& A, const Eigen::Matrix<zono_float, -1, -1>& B)
+{
+    if (A.rows() != B.rows() || A.cols() != B.cols())
+        return false;
+
+    for (int i=0; i<A.rows(); ++i)
+    {
+        for (int j=0; j<A.cols(); ++j)
+        {
+            if (std::abs(A(i,j) - B(i,j)) > zono_eps)
+                return false;
+        }
+    }
+    return true;
+}
+
+inline bool matrix_eq(const Eigen::SparseMatrix<zono_float>& A, const Eigen::SparseMatrix<zono_float>& B)
+{
+    // convert to dense
+    const Eigen::Matrix<zono_float, -1, -1>& Ad = A.toDense();
+    const Eigen::Matrix<zono_float, -1, -1>& Bd = B.toDense();
+    return matrix_eq(Ad, Bd);
+}
+
+inline bool vector_eq(const Eigen::Vector<zono_float, -1>& A, const Eigen::Vector<zono_float, -1>& B)
+{
+    if (A.size() != B.size())
+        return false;
+
+    for (int i=0; i<A.size(); ++i)
+    {
+        if (std::abs(A(i) - B(i)) > zono_eps)
+            return false;
+    }
+    return true;
+}
+
+inline bool hz_eq(const ZonoOpt::HybZono& A, const ZonoOpt::HybZono& B)
+{
+    return matrix_eq(A.get_Gc(), B.get_Gc()) && matrix_eq(A.get_Gb(), B.get_Gb()) && vector_eq(A.get_c(), B.get_c())
+        && matrix_eq(A.get_Ac(), B.get_Ac()) && matrix_eq(A.get_Ab(), B.get_Ab()) && vector_eq(A.get_b(), B.get_b())
+        && A.is_0_1_form() == B.is_0_1_form();
+}
+
 
 #endif

@@ -134,6 +134,8 @@ Typedefs</h2></td></tr>
 <tr class="memitem:ga3a3f3cf55efb220d20c4a23c7a34f4d4" id="r_ga3a3f3cf55efb220d20c4a23c7a34f4d4"><td class="memItemLeft" align="right" valign="top">typedef std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__Typedefs.html#ga3a3f3cf55efb220d20c4a23c7a34f4d4">ZonoPtr</a></td></tr>
 <tr class="memdesc:ga3a3f3cf55efb220d20c4a23c7a34f4d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type alias for a unique pointer to a (polymorphic) <a class="el" href="classZonoOpt_1_1HybZono.html" title="Hybrid zonotope class.">HybZono</a> object. &lt;&gt;  <br /></td></tr>
 <tr class="separator:ga3a3f3cf55efb220d20c4a23c7a34f4d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34cb3244b5df9123d5515ea3069aa0ee" id="r_a34cb3244b5df9123d5515ea3069aa0ee"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a34cb3244b5df9123d5515ea3069aa0ee">json</a> = nlohmann::json</td></tr>
+<tr class="separator:a34cb3244b5df9123d5515ea3069aa0ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -191,6 +193,12 @@ Functions</h2></td></tr>
 <tr class="memitem:ga5e33e41bf5f1cf8e1f32e1de45dba939" id="r_ga5e33e41bf5f1cf8e1f32e1de45dba939"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1Zono.html">Zono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetupFunctions.html#ga5e33e41bf5f1cf8e1f32e1de45dba939">make_regular_zono_2D</a> (<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> radius, int n_sides, bool outer_approx=false, const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, 2 &gt; &amp;c=Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, 2 &gt;::Zero())</td></tr>
 <tr class="memdesc:ga5e33e41bf5f1cf8e1f32e1de45dba939"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds a 2D regular zonotope with a given radius and number of sides.  <br /></td></tr>
 <tr class="separator:ga5e33e41bf5f1cf8e1f32e1de45dba939"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabe42964865f7bcef7e73291e984ed233" id="r_gabe42964865f7bcef7e73291e984ed233"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetupFunctions.html#gabe42964865f7bcef7e73291e984ed233">to_json</a> (const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z, const std::string &amp;filename)</td></tr>
+<tr class="memdesc:gabe42964865f7bcef7e73291e984ed233"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a <a class="el" href="classZonoOpt_1_1HybZono.html" title="Hybrid zonotope class.">HybZono</a> object to a JSON file.  <br /></td></tr>
+<tr class="separator:gabe42964865f7bcef7e73291e984ed233"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3e0632dc1cfda079ce33bfbbf807c0fc" id="r_ga3e0632dc1cfda079ce33bfbbf807c0fc"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetupFunctions.html#ga3e0632dc1cfda079ce33bfbbf807c0fc">from_json</a> (const std::string &amp;filename)</td></tr>
+<tr class="memdesc:ga3e0632dc1cfda079ce33bfbbf807c0fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a <a class="el" href="classZonoOpt_1_1HybZono.html" title="Hybrid zonotope class.">HybZono</a> object from a JSON file.  <br /></td></tr>
+<tr class="separator:ga3e0632dc1cfda079ce33bfbbf807c0fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d071c860a0200fc223527285f2df4f2" id="r_a6d071c860a0200fc223527285f2df4f2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a6d071c860a0200fc223527285f2df4f2">perturb_binaries</a> (const <a class="el" href="classZonoOpt_1_1MI__Box.html">MI_Box</a> &amp;x_box, const Eigen::Ref&lt; const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &gt; xk, Eigen::Ref&lt; Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &gt; zk, const bool restart, std::mt19937 &amp;rand_gen)</td></tr>
 <tr class="separator:a6d071c860a0200fc223527285f2df4f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e62a8ab6586a18146e3466b56eb8d72" id="r_a5e62a8ab6586a18146e3466b56eb8d72"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a5e62a8ab6586a18146e3466b56eb8d72">operator+</a> (const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;v, const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;box)</td></tr>
@@ -262,6 +270,21 @@ Functions</h2></td></tr>
 <tr class="memitem:adb54084522859805d259e7d67ab1f81a" id="r_adb54084522859805d259e7d67ab1f81a"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#adb54084522859805d259e7d67ab1f81a">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="classZonoOpt_1_1IntervalMatrix.html">IntervalMatrix</a> &amp;interval_matrix)</td></tr>
 <tr class="separator:adb54084522859805d259e7d67ab1f81a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a id="a34cb3244b5df9123d5515ea3069aa0ee" name="a34cb3244b5df9123d5515ea3069aa0ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34cb3244b5df9123d5515ea3069aa0ee">&#9670;&#160;</a></span>json</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceZonoOpt.html#a34cb3244b5df9123d5515ea3069aa0ee">ZonoOpt::json</a> = typedef nlohmann::json</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="ae2531d1f4642557d9ffc96a20caf1449" name="ae2531d1f4642557d9ffc96a20caf1449"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae2531d1f4642557d9ffc96a20caf1449">&#9670;&#160;</a></span>operator*() <span class="overload">[1/15]</span></h2>

@@ -79,6 +79,7 @@ namespace ZonoOpt::detail
 #include "zonoopt/SolverDataStructures.hpp"
 #include "zonoopt/SparseMatrixUtilities.hpp"
 #include "zonoopt/Zono.hpp"
+#include "zonoopt/ZonoJson.hpp"
 
 // typedef
 namespace ZonoOpt
