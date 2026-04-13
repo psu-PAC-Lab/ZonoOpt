@@ -71,12 +71,7 @@ namespace ZonoOpt::detail
             bool operator()(const std::unique_ptr<Node, NodeDeleter>& n1,
                             const std::unique_ptr<Node, NodeDeleter>& n2) const
             {
-                if (n2->is_priority() && !n1->is_priority())
-                    return true;
-                else if (!n2->is_priority() && n1->is_priority())
-                    return false;
-                else
-                    return n1->solution.J > n2->solution.J;
+                return n1->solution.J > n2->solution.J; // min-heap on J
             }
         };
 
@@ -123,6 +118,7 @@ namespace ZonoOpt::detail
         NodeCompare comp;
 
         PriorityQueuePrunable<std::unique_ptr<Node, NodeDeleter>, NodeCompare> node_queue; // priority queue for nodes
+        PriorityQueuePrunable<std::unique_ptr<Node, NodeDeleter>, NodeCompare> dive_queue; // dive queue for search mode 1
         mutable std::mutex pq_mtx;
         mutable std::mutex incumbent_mtx; // guards atomic check-and-update of incumbent (J_max, z, x, u, etc.)
         std::condition_variable pq_cv_bnb, pq_cv_admm_fp;
@@ -179,6 +175,9 @@ namespace ZonoOpt::detail
 
         // push node to queue
         void push_node(std::unique_ptr<Node, NodeDeleter>&& node);
+
+        // push node to dive queue (search mode 1)
+        void push_dive_node(std::unique_ptr<Node, NodeDeleter>&& node);
 
         // prune
         void prune(zono_float J_prune);

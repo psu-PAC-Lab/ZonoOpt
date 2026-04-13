@@ -2,7 +2,7 @@
 
 namespace ZonoOpt::detail
 {
-    BranchAndBound::BranchAndBound(const MI_data& data) : data(data), node_queue(comp)
+    BranchAndBound::BranchAndBound(const MI_data& data) : data(data), node_queue(comp), dive_queue(comp)
     {
         // check settings validity
         if (!this->data.admm_data->settings.settings_valid())
@@ -301,7 +301,7 @@ namespace ZonoOpt::detail
             int queue_size = 0;
             {
                 std::lock_guard<std::mutex> lock(pq_mtx);
-                queue_size = static_cast<int>(this->node_queue.size());
+                queue_size = static_cast<int>(this->node_queue.size() + this->dive_queue.size());
             }
             if (queue_size > this->data.admm_data->settings.max_nodes)
             {
@@ -372,6 +372,7 @@ namespace ZonoOpt::detail
         {
             std::lock_guard<std::mutex> lock(pq_mtx);
             this->node_queue.clear(); // nodes need to be freed before pool goes out of scope to avoid race condition
+            this->dive_queue.clear();
         }
         this->J_threads.clear();
 
@@ -669,35 +670,31 @@ namespace ZonoOpt::detail
             }
         case (1):
             {
-                // best dive: push worse nodes to queue, solve better node
+                // best dive: push deeper node to dive_queue, shallower to node_queue
                 if (left_inf && right_inf) // both branches infeasible
                 {
                     return; // nothing to do
                 }
                 else if (left_inf)
                 {
-                    right->set_priority(true);
-                    this->push_node(std::move(right));
+                    this->push_dive_node(std::move(right));
                 }
                 else if (right_inf)
                 {
-                    left->set_priority(true);
-                    this->push_node(std::move(left));
+                    this->push_dive_node(std::move(left));
                 }
                 else // both branches feasible
                 {
                     if (left->get_box().width() > right->get_box().width()) // right is greater depth
                     {
-                        left->set_priority(false);
-                        right->set_priority(true);
+                        this->push_node(std::move(left));
+                        this->push_dive_node(std::move(right));
                     }
                     else // left is greater depth
                     {
-                        left->set_priority(true);
-                        right->set_priority(false);
+                        this->push_dive_node(std::move(left));
+                        this->push_node(std::move(right));
                     }
-                    this->push_node(std::move(left));
-                    this->push_node(std::move(right));
                 }
                 break;
             }
@@ -718,15 +715,20 @@ namespace ZonoOpt::detail
             ThreadGuard<std::pair<int, zono_float>, JThreadCompare> guard(this->J_threads);
             {
                 std::unique_lock<std::mutex> lock(pq_mtx);
-                pq_cv_bnb.wait(lock, [this]() { return this->done || !this->node_queue.empty(); });
+                pq_cv_bnb.wait(lock, [this]() {
+                    return this->done || !this->dive_queue.empty() || !this->node_queue.empty();
+                });
                 if (this->done) return;
-                node = this->node_queue.pop_top();
+                if (!this->dive_queue.empty())
+                    node = this->dive_queue.pop_top();
+                else
+                    node = this->node_queue.pop_top();
                 guard.specify_tag({this->uniform_dist(this->rng), node->solution.J});
             }
-            if (node) 
+            if (node)
             {
                 solve_and_branch(node);
-            }    
+            }
         }
     }
 
@@ -737,9 +739,12 @@ namespace ZonoOpt::detail
         {
             {
                 std::unique_lock<std::mutex> lock(pq_mtx);
-                pq_cv_admm_fp.wait(lock, [this]() { return this->done || !this->node_queue.empty(); });
+                pq_cv_admm_fp.wait(lock, [this]() {
+                    return this->done || !this->dive_queue.empty() || !this->node_queue.empty();
+                });
                 if (this->done) return;
-                node->warmstart(this->node_queue.top()->solution.z, this->node_queue.top()->solution.u);
+                const auto& top = !this->dive_queue.empty() ? this->dive_queue.top() : this->node_queue.top();
+                node->warmstart(top->solution.z, top->solution.u);
             }
             admm_fp_solve(node);
         }
@@ -753,6 +758,14 @@ namespace ZonoOpt::detail
         pq_cv_admm_fp.notify_all();
     }
 
+    void BranchAndBound::push_dive_node(std::unique_ptr<Node, NodeDeleter>&& node)
+    {
+        std::unique_lock<std::mutex> lock(pq_mtx);
+        this->dive_queue.push(std::move(node));
+        pq_cv_bnb.notify_all();
+        pq_cv_admm_fp.notify_all();
+    }
+
     void BranchAndBound::prune(const zono_float J_prune)
     {
         // create node with J = J_prune
@@ -761,6 +774,7 @@ namespace ZonoOpt::detail
         {
             std::lock_guard<std::mutex> lock(pq_mtx);
             this->node_queue.prune(n);
+            this->dive_queue.prune(n);
         }
     }
 
@@ -783,36 +797,23 @@ namespace ZonoOpt::detail
 
     zono_float BranchAndBound::get_lower_bound()
     {
-        zono_float J_min = std::numeric_limits<zono_float>::infinity(); // init
+        zono_float J_min = std::numeric_limits<zono_float>::infinity();
         {
             std::lock_guard<std::mutex> lock(pq_mtx);
             auto [min_val_pair, valid] = this->J_threads.get_min(); // lower bound from active threads
             if (valid)
-            {
                 J_min = min_val_pair.second;
-            }
-            else if (this->node_queue.empty())
+            else if (this->node_queue.empty() && this->dive_queue.empty())
             {
                 this->done = true; // no nodes remaining
                 this->converged = true;
-                J_min = -std::numeric_limits<zono_float>::infinity();
+                return -std::numeric_limits<zono_float>::infinity();
             }
 
-            if (this->data.admm_data->settings.search_mode == 0) // best first
-            {
+            if (!this->node_queue.empty())
                 J_min = std::min(this->node_queue.top()->solution.J, J_min);
-            }
-            else if (this->data.admm_data->settings.search_mode == 1) // best dive
-            {
-                for (const auto& n : this->node_queue.get_container())
-                    J_min = std::min(n->solution.J, J_min);
-            }
-            else
-            {
-                std::stringstream ss;
-                ss << "MI_ADMM_solver: get_lower_bound unknown search mode " << this->data.admm_data->settings.search_mode;
-                throw std::runtime_error(ss.str());
-            }
+            if (!this->dive_queue.empty())
+                J_min = std::min(this->dive_queue.top()->solution.J, J_min);
         }
         return J_min;
     }
