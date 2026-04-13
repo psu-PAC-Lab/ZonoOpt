@@ -77,10 +77,12 @@ namespace ZonoOpt
         /**
          * @brief Execute constraint reduction algorithm from Scott et. al. 2016
          *
+         * @return Over-approximated constrained zonotope
+         * 
          * Removes one constraint and one generator from the constrained zonotope.
          * The resulting set is an over-approximation of the original set.
          */
-        virtual void constraint_reduction();
+        virtual std::unique_ptr<ConZono> constraint_reduction() const;
 
         // generator conversion between [-1,1] and [0,1]
         void convert_form() override;

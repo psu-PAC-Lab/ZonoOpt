@@ -141,9 +141,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0a4cad796e50fc4ad6640fce0df3ad17" id="r_a0a4cad796e50fc4ad6640fce0df3ad17"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1ConZono.html#a0a4cad796e50fc4ad6640fce0df3ad17">set</a> (const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#aed139ecd3415d14c3fce8f09d28910a6">G</a>, const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#a988a9040bbee473e3a43ace3c0dd1511">c</a>, const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#ac0106a84ab134180cd9d69a486eeae37">A</a>, const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;<a class="el" href="classZonoOpt_1_1HybZono.html#ac19cee5ccdf6afde9d183960997d2c8a">b</a>, bool <a class="el" href="classZonoOpt_1_1HybZono.html#a4e37404489e8ad6a73586ba545563a63">zero_one_form</a>=false)</td></tr>
 <tr class="memdesc:a0a4cad796e50fc4ad6640fce0df3ad17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset constrained zonotope object with the given parameters.  <br /></td></tr>
 <tr class="separator:a0a4cad796e50fc4ad6640fce0df3ad17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a23bf29a6f15280f663cb7e8ba7c10276" id="r_a23bf29a6f15280f663cb7e8ba7c10276"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1ConZono.html#a0a4cad796e50fc4ad6640fce0df3ad17">virtual</a> <a class="el" href="classZonoOpt_1_1ConZono.html#a0a4cad796e50fc4ad6640fce0df3ad17">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1ConZono.html#a23bf29a6f15280f663cb7e8ba7c10276">constraint_reduction</a> ()</td></tr>
-<tr class="memdesc:a23bf29a6f15280f663cb7e8ba7c10276"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute constraint reduction algorithm from Scott et. al. 2016.  <br /></td></tr>
-<tr class="separator:a23bf29a6f15280f663cb7e8ba7c10276"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbce2835b8112c20c5af09cc109cd33e" id="r_abbce2835b8112c20c5af09cc109cd33e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1ConZono.html#a0a4cad796e50fc4ad6640fce0df3ad17">virtual</a> std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1ConZono.html">ConZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1ConZono.html#abbce2835b8112c20c5af09cc109cd33e">constraint_reduction</a> () <a class="el" href="classZonoOpt_1_1ConZono.html#a0a4cad796e50fc4ad6640fce0df3ad17">const</a></td></tr>
+<tr class="memdesc:abbce2835b8112c20c5af09cc109cd33e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute constraint reduction algorithm from Scott et. al. 2016.  <br /></td></tr>
+<tr class="separator:abbce2835b8112c20c5af09cc109cd33e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a626ff5fadc6560a8fed6aeb7e154435b" id="r_a626ff5fadc6560a8fed6aeb7e154435b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1ConZono.html#a0a4cad796e50fc4ad6640fce0df3ad17">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1ConZono.html#a626ff5fadc6560a8fed6aeb7e154435b">convert_form</a> () <a class="el" href="classZonoOpt_1_1ConZono.html#a0a4cad796e50fc4ad6640fce0df3ad17">override</a></td></tr>
 <tr class="memdesc:a626ff5fadc6560a8fed6aeb7e154435b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the set representation between -1-1 and 0-1 forms.  <br /></td></tr>
 <tr class="separator:a626ff5fadc6560a8fed6aeb7e154435b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -543,8 +543,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="a23bf29a6f15280f663cb7e8ba7c10276" name="a23bf29a6f15280f663cb7e8ba7c10276"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a23bf29a6f15280f663cb7e8ba7c10276">&#9670;&#160;</a></span>constraint_reduction()</h2>
+<a id="abbce2835b8112c20c5af09cc109cd33e" name="abbce2835b8112c20c5af09cc109cd33e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbce2835b8112c20c5af09cc109cd33e">&#9670;&#160;</a></span>constraint_reduction()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -553,10 +553,10 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classZonoOpt_1_1ConZono.html#a0a4cad796e50fc4ad6640fce0df3ad17">void</a> ZonoOpt::ConZono::constraint_reduction </td>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1ConZono.html">ConZono</a> &gt; ZonoOpt::ConZono::constraint_reduction </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -567,9 +567,10 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Execute constraint reduction algorithm from Scott et. al. 2016. </p>
+<dl class="section return"><dt>Returns</dt><dd>Over-approximated constrained zonotope</dd></dl>
 <p>Removes one constraint and one generator from the constrained zonotope. The resulting set is an over-approximation of the original set. </p>
 
-<p>Reimplemented in <a class="el" href="classZonoOpt_1_1EmptySet.html#a50723209a5a9a21224e6b33a5b668ac7">ZonoOpt::EmptySet</a>.</p>
+<p>Reimplemented in <a class="el" href="classZonoOpt_1_1EmptySet.html#a39cffa0e2e8cc68495e0360c6bd323ac">ZonoOpt::EmptySet</a>, <a class="el" href="classZonoOpt_1_1Point.html#a761b9e6354f373f2e50ed4e82feca112">ZonoOpt::Point</a>, and <a class="el" href="classZonoOpt_1_1Zono.html#a14541e6c6f17b3b43fb6893c0662f50a">ZonoOpt::Zono</a>.</p>
 
 </div>
 </div>

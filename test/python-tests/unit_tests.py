@@ -1089,6 +1089,58 @@ def test_json():
         _test_empty_set(tmp_path)
     print('Passed: JSON')
 
+def test_overapproximation():
+    overapprox_folder = test_data_folder / 'overapproximation'
+
+    def _test_reduce_order():
+        Z = zono.from_json(str(overapprox_folder / 'rand_zono.json'))
+        assert Z.is_zono(), '_test_reduce_order: expected set to be a zonotope'
+
+        p = np.zeros(Z.get_n())
+        p_proj = Z.project_point(p)
+
+        Z_r = Z.reduce_order(10)
+
+        assert Z_r.contains_point(p_proj), '_test_reduce_order: reduced zonotope does not contain projected point'
+
+    def _test_constraint_reduction():
+        Z = zono.from_json(str(overapprox_folder / 'rand_conzono.json'))
+        assert Z.is_conzono(), '_test_constraint_reduction: expected set to be a constrained zonotope'
+
+        p = np.zeros(Z.get_n())
+        p_proj = Z.project_point(p)
+
+        Z_cr = Z.constraint_reduction()
+
+        assert Z_cr.contains_point(p_proj), '_test_constraint_reduction: reduced constrained zonotope does not contain projected point'
+
+    def _test_to_zono_approx():
+        Z = zono.from_json(str(overapprox_folder / 'rand_conzono.json'))
+        assert Z.is_conzono(), '_test_to_zono_approx: expected set to be a constrained zonotope'
+
+        p = np.zeros(Z.get_n())
+        p_proj = Z.project_point(p)
+
+        Z_approx = Z.to_zono_approx()
+
+        assert Z_approx.contains_point(p_proj), '_test_to_zono_approx: zonotope approximation does not contain projected point'
+
+    def _test_convex_relaxation():
+        Z = zono.from_json(str(overapprox_folder / 'rand_hybzono.json'))
+
+        p = np.zeros(Z.get_n())
+        p_proj = Z.project_point(p)
+
+        Z_relax = Z.convex_relaxation()
+
+        assert Z_relax.contains_point(p_proj), '_test_convex_relaxation: convex relaxation does not contain projected point'
+
+    _test_reduce_order()
+    _test_constraint_reduction()
+    _test_to_zono_approx()
+    _test_convex_relaxation()
+    print('Passed: Overapproximation')
+
 # run the unit tests
 test_vrep_2_hz()
 test_minkowski_sum()
@@ -1104,3 +1156,4 @@ test_operator_overloading()
 test_constrain()
 test_json()
 test_remove_redundancy()
+test_overapproximation()

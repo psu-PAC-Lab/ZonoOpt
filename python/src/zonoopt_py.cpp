@@ -2828,6 +2828,9 @@ PYBIND11_MODULE(_core, m)
             R"pbdoc(
                 Execute constraint reduction algorithm from Scott et. al. 2016
 
+                Returns:
+                    ConZono: overapproximated constrained zonotope
+
                 Removes one constraint and one generator from the constrained zonotope.
                 The resulting set is an over-approximation of the original set.
             )pbdoc")

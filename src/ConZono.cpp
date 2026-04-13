@@ -365,30 +365,33 @@ namespace ZonoOpt
         return std::make_unique<Zono>(G_zono, c_zono, this->zero_one_form);
     }
 
-    void ConZono::constraint_reduction()
+    std::unique_ptr<ConZono> ConZono::constraint_reduction() const
     {
+        // clone
+        auto Z = std::make_unique<ConZono>(*this);
+
         // make sure there are constraints to remove
-        if (this->nC == 0) return;
+        if (Z->nC == 0) return Z;
 
         // put set into [-1, 1] form
-        if (this->zero_one_form) this->convert_form();
+        if (Z->zero_one_form) Z->convert_form();
 
         // execute algorithm 1 from paper
-        Eigen::Vector<zono_float, -1> x_lb(this->nG);
-        Eigen::Vector<zono_float, -1> x_ub(this->nG);
+        Eigen::Vector<zono_float, -1> x_lb(Z->nG);
+        Eigen::Vector<zono_float, -1> x_ub(Z->nG);
         x_lb.setConstant(-1);
         x_ub.setConstant(1);
         Box E(x_lb, x_ub);
         x_lb.setConstant(-std::numeric_limits<zono_float>::infinity());
         x_ub.setConstant(std::numeric_limits<zono_float>::infinity());
         Box R(x_lb, x_ub);
-        Eigen::SparseMatrix<zono_float, Eigen::RowMajor> A_rm = this->A;
-        for (int i = 0; i < this->nC; ++i)
+        Eigen::SparseMatrix<zono_float, Eigen::RowMajor> A_rm = Z->A;
+        for (int i = 0; i < Z->nC; ++i)
         {
             for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it_j(A_rm, i); it_j; ++it_j)
             {
                 const zono_float a_ij = it_j.value();
-                Interval y(this->b(i) / a_ij, this->b(i) / a_ij);
+                Interval y(Z->b(i) / a_ij, Z->b(i) / a_ij);
                 for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it_k(A_rm, i); it_k; ++it_k)
                 {
                     if (it_j.col() == it_k.col()) continue;
@@ -400,23 +403,23 @@ namespace ZonoOpt
         }
 
         // make sure conzono isn't empty (interval check)
-        for (int j = 0; j < this->nG; ++j)
+        for (int j = 0; j < Z->nG; ++j)
         {
             if (E.get_element(j).is_empty())
-                throw std::runtime_error("ConZono constraint reduction: set is empty");
+                return std::make_unique<EmptySet>(Z->n);
         }
 
         // build Q matrix
-        Eigen::SparseMatrix<zono_float> Q(this->nG + this->nC, this->nG + this->nC);
+        Eigen::SparseMatrix<zono_float> Q(Z->nG + Z->nC, Z->nG + Z->nC);
 
-        Eigen::SparseMatrix<zono_float> I_nG(this->nG, this->nG);
+        Eigen::SparseMatrix<zono_float> I_nG(Z->nG, Z->nG);
         I_nG.setIdentity();
-        const Eigen::SparseMatrix<zono_float> Phi = this->G.transpose() * this->G + I_nG;
+        const Eigen::SparseMatrix<zono_float> Phi = Z->G.transpose() * Z->G + I_nG;
 
         std::vector<Eigen::Triplet<zono_float>> triplets;
         get_triplets_offset<zono_float>(Phi, triplets, 0, 0);
-        get_triplets_offset<zono_float>(this->A, triplets, this->nG, 0);
-        get_triplets_offset<zono_float>(this->A.transpose(), triplets, 0, this->nG);
+        get_triplets_offset<zono_float>(Z->A, triplets, Z->nG, 0);
+        get_triplets_offset<zono_float>(Z->A.transpose(), triplets, 0, Z->nG);
         Q.setFromTriplets(triplets.begin(), triplets.end());
 
         // factorize Q
@@ -427,8 +430,8 @@ namespace ZonoOpt
 
         // get estimated Hausdorff error for eliminating each generator
         std::vector<std::pair<int, zono_float>> haus_vec; // (index, error)
-        haus_vec.reserve(this->nG);
-        auto shift_permute = [size=this->nG + this->nC + 1](const int start_index,
+        haus_vec.reserve(Z->nG);
+        auto shift_permute = [size=Z->nG + Z->nC + 1](const int start_index,
                                                             const int end_index) -> Eigen::PermutationMatrix<
             Eigen::Dynamic, Eigen::Dynamic>
         {
@@ -453,8 +456,8 @@ namespace ZonoOpt
             }
             return P;
         };
-        Eigen::Vector<zono_float, -1> e_j(this->nG + this->nC);
-        for (int j = 0; j < this->nG; ++j)
+        Eigen::Vector<zono_float, -1> e_j(Z->nG + Z->nC);
+        for (int j = 0; j < Z->nG; ++j)
         {
             // get r_j
             const zono_float r_j = std::max<zono_float>(
@@ -471,19 +474,19 @@ namespace ZonoOpt
             const Eigen::Vector<zono_float, -1> Qinv_e_j = Q_ldlt.solve(e_j);
 
             triplets.clear();
-            for (int i = 0; i < this->nG + this->nC; ++i)
+            for (int i = 0; i < Z->nG + Z->nC; ++i)
             {
                 triplets.emplace_back(i, i, one);
                 if (i == j)
                 {
-                    triplets.emplace_back(this->nG + this->nC, j, one); // extra row for e_j^T
+                    triplets.emplace_back(Z->nG + Z->nC, j, one); // extra row for e_j^T
                 }
             }
-            for (int i = 0; i < this->nG + this->nC; ++i)
+            for (int i = 0; i < Z->nG + Z->nC; ++i)
             {
-                triplets.emplace_back(i, this->nG + this->nC, Qinv_e_j(i));
+                triplets.emplace_back(i, Z->nG + Z->nC, Qinv_e_j(i));
             }
-            Eigen::SparseMatrix<zono_float> M(this->nG + this->nC + 1, this->nG + this->nC + 1);
+            Eigen::SparseMatrix<zono_float> M(Z->nG + Z->nC + 1, Z->nG + Z->nC + 1);
 #if EIGEN_VERSION_AT_LEAST(5, 0, 0)
             M.setFromSortedTriplets(triplets.begin(), triplets.end());
 #else
@@ -491,13 +494,13 @@ namespace ZonoOpt
 #endif
 
             // RHS for linear system
-            Eigen::Vector<zono_float, -1> rhs(this->nG + this->nC + 1);
+            Eigen::Vector<zono_float, -1> rhs(Z->nG + Z->nC + 1);
             rhs.setZero();
-            rhs(this->nG + this->nC) = r_j;
+            rhs(Z->nG + Z->nC) = r_j;
 
             // permutation matrices to make system upper triangular
-            const auto P_R = shift_permute(j, this->nG + this->nC);
-            const auto P_L = shift_permute(j, this->nG + this->nC - 1);
+            const auto P_R = shift_permute(j, Z->nG + Z->nC);
+            const auto P_L = shift_permute(j, Z->nG + Z->nC - 1);
 
             // solve linear system in permuted space
             const Eigen::SparseMatrix<zono_float> M_perm = P_L * M * P_R.inverse();
@@ -506,21 +509,21 @@ namespace ZonoOpt
             const Eigen::Vector<zono_float, -1> y = P_R * y_perm;
 
             // get Hausdorff distance estimate
-            const Eigen::Vector<zono_float, -1> d = y.segment(0, this->nG);
-            const zono_float haus_j = (this->G * d).norm() + d.norm();
+            const Eigen::Vector<zono_float, -1> d = y.segment(0, Z->nG);
+            const zono_float haus_j = (Z->G * d).norm() + d.norm();
             haus_vec.emplace_back(j, haus_j);
         }
 
         // sort by Hausdorff error
         std::sort(haus_vec.begin(), haus_vec.end(), [](const auto& a, const auto& b) { return a.second < b.second; });
 
-        Eigen::SparseMatrix<zono_float> Ea(this->nG, this->nC); // init
+        Eigen::SparseMatrix<zono_float> Ea(Z->nG, Z->nC); // init
         int gen_remove = -1;
         int cons_remove = -1;
         for (const auto& [j, err] : haus_vec)
         {
             // loop through column k of A to find a constraint to remove
-            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(this->A, j); it; ++it)
+            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(Z->A, j); it; ++it)
             {
                 if (std::abs(it.value()) > zono_eps)
                 {
@@ -540,12 +543,12 @@ namespace ZonoOpt
             throw std::runtime_error("ConZono: constraint reduction cannot find valid constraint to remove");
 
         // apply algorithm from Scott paper
-        const Eigen::SparseMatrix<zono_float> Lambda_G = G * Ea;
-        const Eigen::SparseMatrix<zono_float> Lambda_A = A * Ea;
-        Eigen::SparseMatrix<zono_float> Gp = this->G - Lambda_G * this->A;
-        Eigen::Vector<zono_float, -1> cp = this->c + Lambda_G * this->b;
-        Eigen::SparseMatrix<zono_float> Ap = this->A - Lambda_A * this->A;
-        Eigen::Vector<zono_float, -1> bp = this->b - Lambda_A * this->b;
+        const Eigen::SparseMatrix<zono_float> Lambda_G = Z->G * Ea;
+        const Eigen::SparseMatrix<zono_float> Lambda_A = Z->A * Ea;
+        Eigen::SparseMatrix<zono_float> Gp = Z->G - Lambda_G * Z->A;
+        Eigen::Vector<zono_float, -1> cp = Z->c + Lambda_G * Z->b;
+        Eigen::SparseMatrix<zono_float> Ap = Z->A - Lambda_A * Z->A;
+        Eigen::Vector<zono_float, -1> bp = Z->b - Lambda_A * Z->b;
 
         // generator removal matrix
         triplets.clear();
@@ -553,11 +556,11 @@ namespace ZonoOpt
         {
             triplets.emplace_back(j, j, one);
         }
-        for (int j = gen_remove + 1; j < this->nG; ++j)
+        for (int j = gen_remove + 1; j < Z->nG; ++j)
         {
             triplets.emplace_back(j, j - 1, one);
         }
-        Eigen::SparseMatrix<zono_float> dG(this->nG, this->nG - 1);
+        Eigen::SparseMatrix<zono_float> dG(Z->nG, Z->nG - 1);
 #if EIGEN_VERSION_AT_LEAST(5, 0, 0)
         dG.setFromSortedTriplets(triplets.begin(), triplets.end());
 #else
@@ -570,11 +573,11 @@ namespace ZonoOpt
         {
             triplets.emplace_back(i, i, one);
         }
-        for (int i = cons_remove + 1; i < this->nC; ++i)
+        for (int i = cons_remove + 1; i < Z->nC; ++i)
         {
             triplets.emplace_back(i - 1, i, one);
         }
-        Eigen::SparseMatrix<zono_float> dA(this->nC - 1, this->nC);
+        Eigen::SparseMatrix<zono_float> dA(Z->nC - 1, Z->nC);
 #if EIGEN_VERSION_AT_LEAST(5, 0, 0)
         dA.setFromSortedTriplets(triplets.begin(), triplets.end());
 #else
@@ -582,7 +585,10 @@ namespace ZonoOpt
 #endif
 
         // update
-        this->set(Gp * dG, cp, dA * Ap * dG, dA * bp, false);
+        Z->set(Gp * dG, cp, dA * Ap * dG, dA * bp, false);
+
+        // return
+        return Z;
     }
 
     std::unique_ptr<ConZono> vrep_2_conzono(const Eigen::Matrix<zono_float, -1, -1>& Vpoly)

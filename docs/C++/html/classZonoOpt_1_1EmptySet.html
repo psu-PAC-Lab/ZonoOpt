@@ -137,9 +137,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab8237b8aa4063542fe7da076f304cd66" id="r_ab8237b8aa4063542fe7da076f304cd66"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1EmptySet.html#ab8237b8aa4063542fe7da076f304cd66">print</a> () <a class="el" href="classZonoOpt_1_1ConZono.html#a0a4cad796e50fc4ad6640fce0df3ad17">const</a> <a class="el" href="classZonoOpt_1_1ConZono.html#a0a4cad796e50fc4ad6640fce0df3ad17">override</a></td></tr>
 <tr class="memdesc:ab8237b8aa4063542fe7da076f304cd66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns set information as a string.  <br /></td></tr>
 <tr class="separator:ab8237b8aa4063542fe7da076f304cd66"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a50723209a5a9a21224e6b33a5b668ac7" id="r_a50723209a5a9a21224e6b33a5b668ac7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1ConZono.html#a0a4cad796e50fc4ad6640fce0df3ad17">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1EmptySet.html#a50723209a5a9a21224e6b33a5b668ac7">constraint_reduction</a> () <a class="el" href="classZonoOpt_1_1ConZono.html#a0a4cad796e50fc4ad6640fce0df3ad17">override</a></td></tr>
-<tr class="memdesc:a50723209a5a9a21224e6b33a5b668ac7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute constraint reduction algorithm from Scott et. al. 2016.  <br /></td></tr>
-<tr class="separator:a50723209a5a9a21224e6b33a5b668ac7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39cffa0e2e8cc68495e0360c6bd323ac" id="r_a39cffa0e2e8cc68495e0360c6bd323ac"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1ConZono.html">ConZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1EmptySet.html#a39cffa0e2e8cc68495e0360c6bd323ac">constraint_reduction</a> () <a class="el" href="classZonoOpt_1_1ConZono.html#a0a4cad796e50fc4ad6640fce0df3ad17">const</a> <a class="el" href="classZonoOpt_1_1ConZono.html#a0a4cad796e50fc4ad6640fce0df3ad17">override</a></td></tr>
+<tr class="memdesc:a39cffa0e2e8cc68495e0360c6bd323ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute constraint reduction algorithm from Scott et. al. 2016.  <br /></td></tr>
+<tr class="separator:a39cffa0e2e8cc68495e0360c6bd323ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74e3e8dcf40797efbb91233555bf7891" id="r_a74e3e8dcf40797efbb91233555bf7891"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1Zono.html">Zono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1EmptySet.html#a74e3e8dcf40797efbb91233555bf7891">to_zono_approx</a> () <a class="el" href="classZonoOpt_1_1ConZono.html#a0a4cad796e50fc4ad6640fce0df3ad17">const</a> <a class="el" href="classZonoOpt_1_1ConZono.html#a0a4cad796e50fc4ad6640fce0df3ad17">override</a></td></tr>
 <tr class="memdesc:a74e3e8dcf40797efbb91233555bf7891"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute outer approximation of constrained zonotope as zonotope using SVD.  <br /></td></tr>
 <tr class="separator:a74e3e8dcf40797efbb91233555bf7891"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -498,8 +498,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="a50723209a5a9a21224e6b33a5b668ac7" name="a50723209a5a9a21224e6b33a5b668ac7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a50723209a5a9a21224e6b33a5b668ac7">&#9670;&#160;</a></span>constraint_reduction()</h2>
+<a id="a39cffa0e2e8cc68495e0360c6bd323ac" name="a39cffa0e2e8cc68495e0360c6bd323ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39cffa0e2e8cc68495e0360c6bd323ac">&#9670;&#160;</a></span>constraint_reduction()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -508,10 +508,10 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classZonoOpt_1_1ConZono.html#a0a4cad796e50fc4ad6640fce0df3ad17">void</a> ZonoOpt::EmptySet::constraint_reduction </td>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1ConZono.html">ConZono</a> &gt; ZonoOpt::EmptySet::constraint_reduction </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -522,9 +522,10 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Execute constraint reduction algorithm from Scott et. al. 2016. </p>
+<dl class="section return"><dt>Returns</dt><dd>Over-approximated constrained zonotope</dd></dl>
 <p>Removes one constraint and one generator from the constrained zonotope. The resulting set is an over-approximation of the original set. </p>
 
-<p>Reimplemented from <a class="el" href="classZonoOpt_1_1ConZono.html#a23bf29a6f15280f663cb7e8ba7c10276">ZonoOpt::ConZono</a>.</p>
+<p>Reimplemented from <a class="el" href="classZonoOpt_1_1ConZono.html#abbce2835b8112c20c5af09cc109cd33e">ZonoOpt::ConZono</a>.</p>
 
 </div>
 </div>
