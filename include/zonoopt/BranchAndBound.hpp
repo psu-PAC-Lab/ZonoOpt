@@ -188,6 +188,9 @@ namespace ZonoOpt::detail
 
         // check whether integer variables are fully specified
         bool is_box_integer(const Box& box) const;
+
+        // get lower bound
+        zono_float get_lower_bound();
     };
 } // namespace ZonoOpt::detail
 

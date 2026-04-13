@@ -299,13 +299,14 @@ namespace ZonoOpt::detail
         // prune queue
         void prune(const T& t)
         {
-            auto it_prune = std::find_if(this->c.begin(), this->c.end(), [&](const T& item)
+            auto it_prune = std::remove_if(this->c.begin(), this->c.end(), [&](const T& item)
             {
                 return this->comp(item, t);
             });
             if (it_prune != this->c.end())
             {
                 this->c.erase(it_prune, this->c.end());
+                std::make_heap(this->c.begin(), this->c.end(), this->comp);
             }
         }
 
@@ -328,6 +329,12 @@ namespace ZonoOpt::detail
         {
             while (!this->empty())
                 this->pop();
+        }
+
+        // get container
+        const std::vector<T>& get_container() const
+        {
+            return this->c;
         }
     };
 } // namespace ZonoOpt::detail

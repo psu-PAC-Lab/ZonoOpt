@@ -317,29 +317,7 @@ namespace ZonoOpt::detail
             // check for convergence
 
             // get lower bound / check if there are no nodes remaining
-            zono_float J_min = -std::numeric_limits<zono_float>::infinity();
-            {
-                std::lock_guard<std::mutex> lock(pq_mtx);
-                auto [min_val_pair, valid] = this->J_threads.get_min(); // lower bound from active threads
-
-                if (this->node_queue.empty())
-                {
-                    if (!valid)
-                    {
-                        this->done = true; // no nodes remaining
-                        this->converged = true;
-                    }
-                    else
-                    {
-                        J_min = min_val_pair.second;
-                    }
-                }
-                else
-                {
-                    // TODO: fix this logic for best dive
-                    J_min = std::min(this->node_queue.top()->solution.J, min_val_pair.second);
-                }
-            }
+            zono_float J_min = get_lower_bound();
 
             // check for convergence based on lower and upper bounds
             zono_float gap_percent = 0;
@@ -801,5 +779,44 @@ namespace ZonoOpt::detail
         const Box int_box (lower.segment(this->data.idx_b.first, this->data.idx_b.second),
                                         upper.segment(this->data.idx_b.first, this->data.idx_b.second));
         return int_box.is_single_valued(); 
+    }
+
+    zono_float BranchAndBound::get_lower_bound()
+    {
+        zono_float J_min = -std::numeric_limits<zono_float>::infinity();
+        {
+            std::lock_guard<std::mutex> lock(pq_mtx);
+            auto [min_val_pair, valid] = this->J_threads.get_min(); // lower bound from active threads
+
+            if (this->node_queue.empty())
+            {
+                if (!valid)
+                {
+                    this->done = true; // no nodes remaining
+                    this->converged = true;
+                }
+                else
+                {
+                    J_min = min_val_pair.second;
+                }
+            }
+            else if (this->data.admm_data->settings.search_mode == 0) // best first
+            {
+                J_min = std::min(this->node_queue.top()->solution.J, min_val_pair.second);
+            }
+            else if (this->data.admm_data->settings.search_mode == 1) // best dive
+            {
+                J_min = min_val_pair.second;
+                for (const auto& n : this->node_queue.get_container())
+                    J_min = std::min(n->solution.J, J_min);
+            }
+            else
+            {
+                std::stringstream ss;
+                ss << "MI_ADMM_solver: get_lower_bound unknown search mode " << this->data.admm_data->settings.search_mode;
+                throw std::runtime_error(ss.str());
+            }
+        }
+        return J_min;
     }
 }
