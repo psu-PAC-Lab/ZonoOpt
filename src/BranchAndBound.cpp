@@ -783,30 +783,27 @@ namespace ZonoOpt::detail
 
     zono_float BranchAndBound::get_lower_bound()
     {
-        zono_float J_min = -std::numeric_limits<zono_float>::infinity();
+        zono_float J_min = std::numeric_limits<zono_float>::infinity(); // init
         {
             std::lock_guard<std::mutex> lock(pq_mtx);
             auto [min_val_pair, valid] = this->J_threads.get_min(); // lower bound from active threads
-
-            if (this->node_queue.empty())
+            if (valid)
             {
-                if (!valid)
-                {
-                    this->done = true; // no nodes remaining
-                    this->converged = true;
-                }
-                else
-                {
-                    J_min = min_val_pair.second;
-                }
+                J_min = min_val_pair.second;
             }
-            else if (this->data.admm_data->settings.search_mode == 0) // best first
+            else if (this->node_queue.empty())
             {
-                J_min = std::min(this->node_queue.top()->solution.J, min_val_pair.second);
+                this->done = true; // no nodes remaining
+                this->converged = true;
+                J_min = -std::numeric_limits<zono_float>::infinity();
+            }
+
+            if (this->data.admm_data->settings.search_mode == 0) // best first
+            {
+                J_min = std::min(this->node_queue.top()->solution.J, J_min);
             }
             else if (this->data.admm_data->settings.search_mode == 1) // best dive
             {
-                J_min = min_val_pair.second;
                 for (const auto& n : this->node_queue.get_container())
                     J_min = std::min(n->solution.J, J_min);
             }
