@@ -181,7 +181,7 @@ def get_vertices(Z, t_max=60.0):
     else:
         raise ValueError('get_vertices unsupported data type')
 
-def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
+def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, enable_progress_bar=True, **kwargs):
     """
     Plots zonotopic set using matplotlib.
 
@@ -190,6 +190,7 @@ def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
         ax (matplotlib.axes.Axes, optional): Axes to plot on. If None, current axes are used.
         settings (OptSettings, optional): Settings for the optimization. Defaults to OptSettings().
         t_max (float, optional): Maximum time to spend on finding vertices. Defaults to 60.0 seconds.
+        enable_progress_bar (bool, optional): If True, will display a progress bar when plotting hybrid zonotopes.
         **kwargs: Additional keyword arguments passed to the plotting function (e.g., color, alpha).
 
     Returns:
@@ -220,9 +221,13 @@ def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, **kwargs):
             return []
         
         objs = []
-        pbar = tqdm(leaves)
+        if enable_progress_bar:
+            pbar = tqdm(leaves)
+        else:
+            pbar = leaves
         for leaf in pbar:
-            pbar.set_description('Plotting HybZono leaves')
+            if enable_progress_bar:
+                pbar.set_description('Plotting HybZono leaves')
             t = time.time() - t0
             if t > t_max:
                 warnings.warn('Plotting time limit reached, terminating early.')
