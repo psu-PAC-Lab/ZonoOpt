@@ -107,7 +107,7 @@ namespace ZonoOpt
         Box do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>*, const WarmStartParams&) override;
 
         zono_float do_support(const Eigen::Vector<zono_float, -1>& d, const OptSettings&,
-                              std::shared_ptr<OptSolution>*, const WarmStartParams&) override;
+                              std::shared_ptr<OptSolution>* sol, const WarmStartParams&) override;
     };
 
     // forward declarations

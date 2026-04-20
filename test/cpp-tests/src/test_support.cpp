@@ -32,5 +32,19 @@ int main(int argc, char* argv[])
     // compare results
     test_assert(std::abs(s - s_expected)/std::abs(s_expected) < 5e-2, "Support value does not match expected value");
 
+    // test that Zono and ConZono return matching support values and factors
+    std::mt19937 rand_gen(42);
+    Zono Z2 = random_zono(5, 10, 0.5, -1., 1., rand_gen);
+    ConZono Zc(Z2.get_G(), Z2.get_c(), Z2.get_A(), Z2.get_b());
+    const Eigen::Vector<zono_float, -1> d2 = random_vector(5, -1., 1., rand_gen);
+
+    auto sol1 = std::make_shared<OptSolution>();
+    auto sol2 = std::make_shared<OptSolution>();
+    const zono_float s1 = Z2.support(d2, OptSettings(), &sol1);
+    const zono_float s2 = Zc.support(d2, OptSettings(), &sol2);
+
+    test_assert(std::abs(s1 - s2) < 1e-3, "Zono and ConZono support values do not match");
+    test_assert((sol1->z - sol2->z).norm() < 1e-3, "Zono and ConZono solution factors do not match");
+
     return 0;
 }

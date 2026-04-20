@@ -327,6 +327,18 @@ def test_support():
     # compare results
     tol = 5e-2 # tolerance on success
     assert np.abs(s-s_expected)/np.abs(s_expected) < tol
+
+    # random zonotope
+    Z = TestUtilities.random_zono(n=5, nG=10, density=0.5, val_min=-1., val_max=1.)
+    Zc = zono.ConZono(Z.get_G(), Z.get_c(), Z.get_A(), Z.get_b(), Z.is_0_1_form())
+    d = TestUtilities.random_vector(5, -1., 1.)
+    sol1 = zono.OptSolution()
+    sol2 = zono.OptSolution()
+    s1 = Z.support(d, solution=sol1)
+    s2 = Zc.support(d, solution=sol2)
+    assert np.linalg.norm(s1-s2) < 1e-3, f'test_support: support values do not match: {s1} vs {s2}'
+    assert np.allclose(sol1.z, sol2.z, atol=1e-3), f'test_support: factors do not match: {sol1.z} vs {sol2.z}'
+
     print('Passed: Support Function')
 
 def test_point_contain():

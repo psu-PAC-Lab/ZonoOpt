@@ -186,7 +186,7 @@ namespace ZonoOpt
     }
 
     zono_float Zono::do_support(const Eigen::Vector<zono_float, -1>& d, const OptSettings&,
-                                std::shared_ptr<OptSolution>*,
+                                std::shared_ptr<OptSolution>* sol,
                                 const WarmStartParams&)
     {
         if (this->zero_one_form) this->convert_form();
@@ -197,6 +197,36 @@ namespace ZonoOpt
         {
             h += std::abs(d.dot(Gd.col(i)));
         }
+
+        // fill in solution struct if requested
+        if (sol)
+        {
+            *sol = std::make_shared<OptSolution>(); // init w/ default fields
+
+            // compute factors for support
+            (*sol)->z.resize(this->nG); // init
+            for (int i = 0; i < this->nG; ++i)
+            {
+                const zono_float dG = d.dot(Gd.col(i));
+                if (dG > zono_eps)
+                {
+                    (*sol)->z(i) = one;
+                }
+                else if (dG < -zono_eps)
+                {
+                    (*sol)->z(i) = -one;
+                }
+                else
+                {
+                    (*sol)->z(i) = zero;
+                }
+            }
+
+            (*sol)->x = (*sol)->z;
+            (*sol)->u = Eigen::Vector<zono_float, -1>::Zero(this->nG);
+        }
+
+
         return h;
     }
 
