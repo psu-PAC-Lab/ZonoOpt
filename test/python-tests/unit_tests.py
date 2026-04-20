@@ -327,6 +327,27 @@ def test_support():
     # compare results
     tol = 5e-2 # tolerance on success
     assert np.abs(s-s_expected)/np.abs(s_expected) < tol
+
+    # test that Zono and ConZono return matching support values and factors
+    d = np.array([1., -1., 0.5, -0.5, 1.5])
+    settings = zono.OptSettings()
+    settings.eps_prim = 1e-3
+    settings.eps_dual = 1e-3
+    settings.rho = 1.
+    for i in range(10):
+        filename = str(test_folder / f'zono_{i}.json')
+        Z = zono.from_json(filename)
+        Zc = zono.ConZono(Z.get_G(), Z.get_c(), Z.get_A(), Z.get_b(), Z.is_0_1_form())
+        
+        sol1 = zono.OptSolution()
+        sol2 = zono.OptSolution()
+        s1 = Z.support(d, solution=sol1)
+        s2 = Zc.support(d, solution=sol2, settings=settings)
+        assert np.linalg.norm(s1-s2) < 1e-2, f'test_support: support values do not match: {s1} vs {s2}'
+        assert np.abs(d.dot(Z.get_G()*sol1.z + Z.get_c()) - d.dot(Zc.get_G()*sol2.z + Zc.get_c())) < 1e-2, \
+            f'test_support: Zono and ConZono solutions do not produce same support: \
+            {d.dot(Z.get_G()*sol1.z + Z.get_c())} vs {d.dot(Zc.get_G()*sol2.z + Zc.get_c())}'
+
     print('Passed: Support Function')
 
 def test_point_contain():

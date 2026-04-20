@@ -40,67 +40,83 @@ namespace ZonoOpt
 
     Eigen::Vector<zono_float, -1> EmptySet::do_optimize_over(
         const Eigen::SparseMatrix<zono_float>&, const Eigen::Vector<zono_float, -1>&, zono_float,
-        const OptSettings&, std::shared_ptr<OptSolution>* solution,
+        const OptSettings&, std::shared_ptr<OptSolution>* sol,
         const WarmStartParams&) const
     {
-        if (solution)
-        {
-            (*solution)->infeasible = true;
-        }
+        make_default_solution(sol);
         return Eigen::Vector<zono_float, -1>::Constant(this->n, std::numeric_limits<zono_float>::quiet_NaN());
     }
 
     Eigen::Vector<zono_float, -1> EmptySet::do_project_point(const Eigen::Vector<zono_float, -1>&, const OptSettings&,
-                                                             std::shared_ptr<OptSolution>* solution,
+                                                             std::shared_ptr<OptSolution>* sol,
                                                              const WarmStartParams&) const
     {
-        if (solution)
-        {
-            (*solution)->infeasible = true;
-        }
+        make_default_solution(sol);
         return Eigen::Vector<zono_float, -1>::Constant(this->n, std::numeric_limits<zono_float>::quiet_NaN());
     }
 
     zono_float EmptySet::do_support(const Eigen::Vector<zono_float, -1>&, const OptSettings&,
-                                    std::shared_ptr<OptSolution>* solution,
+                                    std::shared_ptr<OptSolution>* sol,
                                     const WarmStartParams&)
     {
-        if (solution)
-        {
-            (*solution)->infeasible = true;
-        }
+        make_default_solution(sol);
         return std::numeric_limits<zono_float>::quiet_NaN();
     }
 
     bool EmptySet::do_contains_point(const Eigen::Vector<zono_float, -1>&, const OptSettings&,
-                                     std::shared_ptr<OptSolution>*,
+                                     std::shared_ptr<OptSolution>* sol,
                                      const WarmStartParams&) const
     {
+        make_default_solution(sol);
         return false;
     }
 
-    Box EmptySet::do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>*, const WarmStartParams&)
+    Box EmptySet::do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&)
     {
         const Eigen::Vector<zono_float, -1> x_l = Eigen::Vector<zono_float, -1>::Constant(
             this->n, std::numeric_limits<zono_float>::infinity());
         const Eigen::Vector<zono_float, -1> x_u = -Eigen::Vector<zono_float, -1>::Constant(
             this->n, std::numeric_limits<zono_float>::infinity());
+        make_default_solution(sol);
         return {x_l, x_u};
     }
 
-    bool EmptySet::do_is_empty(const OptSettings&, std::shared_ptr<OptSolution>*, const WarmStartParams&) const
+    bool EmptySet::do_is_empty(const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) const
     {
+        make_default_solution(sol);
         return true;
     }
 
     std::unique_ptr<HybZono> EmptySet::do_complement(zono_float delta_m, bool, const OptSettings&,
-                                                     std::shared_ptr<OptSolution>*,
+                                                     std::shared_ptr<OptSolution>* sol,
                                                      int, int)
     {
         const zono_float m = delta_m + 1; // box width
         const Eigen::Vector<zono_float, -1> x_l = -Eigen::Vector<zono_float, -1>::Constant(this->n, m);
         const Eigen::Vector<zono_float, -1> x_u = Eigen::Vector<zono_float, -1>::Constant(this->n, m);
         const Box box(x_l, x_u);
+
+        if (sol)
+        {
+            *sol = std::make_shared<OptSolution>(); // init w/ default fields
+            (*sol)->infeasible = false;
+            (*sol)->converged = true;
+            (*sol)->primal_residual = zero;
+            (*sol)->dual_residual = zero;
+        }
+
         return interval_2_zono(box);
+    }
+
+    void EmptySet::make_default_solution(std::shared_ptr<OptSolution>* sol) const
+    {
+        if (sol)
+        {
+            *sol = std::make_shared<OptSolution>(); // init w/ default fields
+            (*sol)->infeasible = true;
+            (*sol)->converged = false;
+            (*sol)->primal_residual = std::numeric_limits<zono_float>::infinity();
+            (*sol)->dual_residual = std::numeric_limits<zono_float>::infinity();
+        }
     }
 }

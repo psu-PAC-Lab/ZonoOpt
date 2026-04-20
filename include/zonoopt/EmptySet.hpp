@@ -63,18 +63,23 @@ namespace ZonoOpt
                               std::shared_ptr<OptSolution>* solution,
                               const WarmStartParams&) override;
 
-        bool do_contains_point(const Eigen::Vector<zono_float, -1>&, const OptSettings&, std::shared_ptr<OptSolution>*,
+        bool do_contains_point(const Eigen::Vector<zono_float, -1>&, const OptSettings&, 
+                               std::shared_ptr<OptSolution>* sol,
                                const WarmStartParams&) const override;
 
-        Box do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>*,
+        Box do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>* sol,
                             const WarmStartParams&) override;
 
-        bool do_is_empty(const OptSettings&, std::shared_ptr<OptSolution>*,
+        bool do_is_empty(const OptSettings&, std::shared_ptr<OptSolution>* sol,
                          const WarmStartParams&) const override;
 
         std::unique_ptr<HybZono> do_complement(zono_float delta_m, bool, const OptSettings&,
-                                               std::shared_ptr<OptSolution>*,
+                                               std::shared_ptr<OptSolution>* sol,
                                                int, int) override;
+
+    private:
+        void make_default_solution(std::shared_ptr<OptSolution>* sol) const;
+
     };
 }
 

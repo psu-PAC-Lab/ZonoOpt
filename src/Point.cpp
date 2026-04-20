@@ -47,13 +47,15 @@ namespace ZonoOpt
 
     Eigen::Vector<zono_float, -1> Point::do_optimize_over(
         const Eigen::SparseMatrix<zono_float>&, const Eigen::Vector<zono_float, -1>&, zono_float,
-        const OptSettings&, std::shared_ptr<OptSolution>*, const WarmStartParams&) const
+        const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) const
     {
+        make_default_solution(sol);
+
         return this->c;
     }
 
     Eigen::Vector<zono_float, -1> Point::do_project_point(const Eigen::Vector<zono_float, -1>& x,
-                                                          const OptSettings&, std::shared_ptr<OptSolution>*,
+                                                          const OptSettings&, std::shared_ptr<OptSolution>* sol,
                                                           const WarmStartParams&) const
     {
         // check dimensions
@@ -62,11 +64,13 @@ namespace ZonoOpt
             throw std::invalid_argument("Point projection: inconsistent dimensions.");
         }
 
+        make_default_solution(sol);
+
         return this->c;
     }
 
     zono_float Point::do_support(const Eigen::Vector<zono_float, -1>& d,
-                                 const OptSettings&, std::shared_ptr<OptSolution>*, const WarmStartParams&)
+                                 const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&)
     {
         // check dimensions
         if (this->n != d.size())
@@ -74,22 +78,40 @@ namespace ZonoOpt
             throw std::invalid_argument("Support: inconsistent dimensions.");
         }
 
+        make_default_solution(sol);
+
         return this->c.dot(d);
     }
 
     bool Point::do_contains_point(const Eigen::Vector<zono_float, -1>& x,
-                                  const OptSettings&, std::shared_ptr<OptSolution>*,
+                                  const OptSettings&, std::shared_ptr<OptSolution>* sol,
                                   const WarmStartParams&) const
     {
         if (this->n != x.size())
             throw std::invalid_argument("Contains point: inconsistent dimensions");
 
+        make_default_solution(sol);
+
         const zono_float dist = (x - this->c).norm();
         return dist < zono_eps;
     }
 
-    Box Point::do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>*, const WarmStartParams&)
+    Box Point::do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&)
     {
+        make_default_solution(sol);
+
         return {this->c, this->c};
+    }
+
+    void Point::make_default_solution(std::shared_ptr<OptSolution>* sol) const
+    {
+        if (sol)
+        {
+            *sol = std::make_shared<OptSolution>(); // init w/ default fields
+            (*sol)->infeasible = false;
+            (*sol)->converged = true;
+            (*sol)->primal_residual = zero;
+            (*sol)->dual_residual = zero;
+        }
     }
 }
