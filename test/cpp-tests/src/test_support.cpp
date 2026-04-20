@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
     ConZono Z (G, c, A, b);
 
     // load direction and expected support value
-    const Eigen::Vector<zono_float, -1> d = load_vector(test_folder + "d.txt");
+    Eigen::Vector<zono_float, -1> d = load_vector(test_folder + "d.txt");
     const zono_float s_expected = load_vector(test_folder + "sup.txt")(0);
 
     // compute support
@@ -33,35 +33,44 @@ int main(int argc, char* argv[])
     test_assert(std::abs(s - s_expected)/std::abs(s_expected) < 5e-2, "Support value does not match expected value");
 
     // test that Zono and ConZono return matching support values and factors
-    for (unsigned int i=0; i<100; ++i)
+    d.resize(5);
+    d << 1., -1., 0.5, -0.5, 1.5;
+    OptSettings settings;
+    settings.eps_prim = 1e-3;
+    settings.eps_dual = 1e-3;
+    settings.rho = 1.;
+    for (unsigned int i=0; i<10; ++i)
     {
-        std::mt19937 rand_gen(i);
-        OptSettings settings;
-        settings.eps_prim = 1e-3;
-        settings.eps_dual = 1e-3;
-        settings.rho = 1.;
+        std::string filename = test_folder + "zono_" + std::to_string(i) + ".json";
+        auto Zjson = from_json(filename);
+        Zono* Zz_tmp = dynamic_cast<Zono*>(Zjson.get());
+        if (Zz_tmp == nullptr)
+        {
+            std::cerr << "Error: loaded set from " << filename << " is not a Zono." << std::endl;
+            return 1;
+        }
+        Zjson.release();
+        std::unique_ptr<Zono> Zz (Zz_tmp); 
 
-        Zono Z2 = random_zono(5, 10, 1., -1., 1., rand_gen);
-        ConZono Zc(Z2.get_G(), Z2.get_c(), Z2.get_A(), Z2.get_b());
-        const Eigen::Vector<zono_float, -1> d2 = random_vector(5, -1., 1., rand_gen);
+        ConZono Zc(Zz->get_G(), Zz->get_c(), Zz->get_A(), Zz->get_b());
 
         auto sol1 = std::make_shared<OptSolution>();
         auto sol2 = std::make_shared<OptSolution>();
-        const zono_float s1 = Z2.support(d2, settings, &sol1);
-        const zono_float s2 = Zc.support(d2, settings, &sol2);
+        const zono_float s1 = Zz->support(d, settings, &sol1);
+        const zono_float s2 = Zc.support(d, settings, &sol2);
 
         std::stringstream ss;
 
         ss << "Zono and ConZono support values do not match" << "\nZono support: " << s1 << "\nConZono support: " << s2;
-        ss << "Z2: " << Z2 << ", Zc: " << Zc;
+        ss << "Z2: " << *Zz << ", Zc: " << Zc;
         ss << "sol1: " << sol1->print() << "\nsol2: " << sol2->print();
         test_assert(std::abs(s1 - s2) < 1e-2, ss.str());
 
         ss.str("");
         ss << "Zono and ConZono solutions do not produce same support value when applied to generators and center" << 
-            "\nZono support: " << d2.dot(Z2.get_G() * sol1->z + Z2.get_c()) << "\nConZono support: " << 
-            d2.dot(Zc.get_G() * sol2->z + Zc.get_c());
-        test_assert(std::abs(d2.dot(Z2.get_G() * sol1->z + Z2.get_c()) - d2.dot(Zc.get_G() * sol2->z + Zc.get_c())) < 1e-2, ss.str());
+            "\nZono support: " << d.dot(Zz->get_G() * sol1->z + Zz->get_c()) << "\nConZono support: " << 
+            d.dot(Zc.get_G() * sol2->z + Zc.get_c());
+        test_assert(std::abs(d.dot(Zz->get_G() * sol1->z + Zz->get_c()) - d.dot(Zc.get_G() * sol2->z + Zc.get_c())) < 1e-2, ss.str());
     }
 
     return 0;

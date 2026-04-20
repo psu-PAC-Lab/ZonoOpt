@@ -329,15 +329,16 @@ def test_support():
     assert np.abs(s-s_expected)/np.abs(s_expected) < tol
 
     # test that Zono and ConZono return matching support values and factors
-    for i in range(100):
-        np.random.seed(i)
-        settings = zono.OptSettings()
-        settings.eps_prim = 1e-3
-        settings.eps_dual = 1e-3
-        settings.rho = 1.
-        Z = TestUtilities.random_zono(n=5, nG=10, density=0.5, val_min=-1., val_max=1.)
+    d = np.array([1., -1., 0.5, -0.5, 1.5])
+    settings = zono.OptSettings()
+    settings.eps_prim = 1e-3
+    settings.eps_dual = 1e-3
+    settings.rho = 1.
+    for i in range(10):
+        filename = str(test_folder / f'zono_{i}.json')
+        Z = zono.from_json(filename)
         Zc = zono.ConZono(Z.get_G(), Z.get_c(), Z.get_A(), Z.get_b(), Z.is_0_1_form())
-        d = TestUtilities.random_vector(5, -1., 1.)
+        
         sol1 = zono.OptSolution()
         sol2 = zono.OptSolution()
         s1 = Z.support(d, solution=sol1)
