@@ -328,21 +328,24 @@ def test_support():
     tol = 5e-2 # tolerance on success
     assert np.abs(s-s_expected)/np.abs(s_expected) < tol
 
-    # random zonotope
-    np.random.seed(10)
-    settings = zono.OptSettings()
-    settings.eps_prim = 1e-3
-    settings.eps_dual = 1e-3
-    settings.rho = 1.
-    Z = TestUtilities.random_zono(n=5, nG=10, density=0.5, val_min=-1., val_max=1.)
-    Zc = zono.ConZono(Z.get_G(), Z.get_c(), Z.get_A(), Z.get_b(), Z.is_0_1_form())
-    d = TestUtilities.random_vector(5, -1., 1.)
-    sol1 = zono.OptSolution()
-    sol2 = zono.OptSolution()
-    s1 = Z.support(d, solution=sol1)
-    s2 = Zc.support(d, solution=sol2, settings=settings)
-    assert np.linalg.norm(s1-s2) < 1e-2, f'test_support: support values do not match: {s1} vs {s2}'
-    assert np.allclose(Z.get_G()*sol1.z, Zc.get_G()*sol2.z, atol=1e-2), f'test_support: factors do not match: {Z.get_G()*sol1.z} vs {Zc.get_G()*sol2.z}'
+    # test that Zono and ConZono return matching support values and factors
+    for i in range(1000):
+        np.random.seed(i)
+        settings = zono.OptSettings()
+        settings.eps_prim = 1e-3
+        settings.eps_dual = 1e-3
+        settings.rho = 1.
+        Z = TestUtilities.random_zono(n=5, nG=10, density=0.5, val_min=-1., val_max=1.)
+        Zc = zono.ConZono(Z.get_G(), Z.get_c(), Z.get_A(), Z.get_b(), Z.is_0_1_form())
+        d = TestUtilities.random_vector(5, -1., 1.)
+        sol1 = zono.OptSolution()
+        sol2 = zono.OptSolution()
+        s1 = Z.support(d, solution=sol1)
+        s2 = Zc.support(d, solution=sol2, settings=settings)
+        assert np.linalg.norm(s1-s2) < 1e-2, f'test_support: support values do not match: {s1} vs {s2}'
+        assert np.abs(d.dot(Z.get_G()*sol1.z + Z.get_c()) - d.dot(Zc.get_G()*sol2.z + Zc.get_c())) < 1e-2, \
+            f'test_support: Zono and ConZono solutions do not produce same support: \
+            {d.dot(Z.get_G()*sol1.z + Z.get_c())} vs {d.dot(Zc.get_G()*sol2.z + Zc.get_c())}'
 
     print('Passed: Support Function')
 

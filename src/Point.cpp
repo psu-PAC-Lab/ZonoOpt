@@ -49,14 +49,7 @@ namespace ZonoOpt
         const Eigen::SparseMatrix<zono_float>&, const Eigen::Vector<zono_float, -1>&, zono_float,
         const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) const
     {
-        if (sol)
-        {
-            *sol = std::make_shared<OptSolution>(); // init w/ default fields
-            (*sol)->infeasible = false;
-            (*sol)->converged = true;
-            (*sol)->primal_residual = zero;
-            (*sol)->dual_residual = zero;
-        }
+        make_default_solution(sol);
 
         return this->c;
     }
@@ -71,14 +64,7 @@ namespace ZonoOpt
             throw std::invalid_argument("Point projection: inconsistent dimensions.");
         }
 
-        if (sol)
-        {
-            *sol = std::make_shared<OptSolution>(); // init w/ default fields
-            (*sol)->infeasible = false;
-            (*sol)->converged = true;
-            (*sol)->primal_residual = zero;
-            (*sol)->dual_residual = zero;
-        }
+        make_default_solution(sol);
 
         return this->c;
     }
@@ -92,14 +78,7 @@ namespace ZonoOpt
             throw std::invalid_argument("Support: inconsistent dimensions.");
         }
 
-        if (sol)
-        {
-            *sol = std::make_shared<OptSolution>(); // init w/ default fields
-            (*sol)->infeasible = false;
-            (*sol)->converged = true;
-            (*sol)->primal_residual = zero;
-            (*sol)->dual_residual = zero;
-        }
+        make_default_solution(sol);
 
         return this->c.dot(d);
     }
@@ -111,20 +90,20 @@ namespace ZonoOpt
         if (this->n != x.size())
             throw std::invalid_argument("Contains point: inconsistent dimensions");
 
-        if (sol)
-        {
-            *sol = std::make_shared<OptSolution>(); // init w/ default fields
-            (*sol)->infeasible = false;
-            (*sol)->converged = true;
-            (*sol)->primal_residual = zero;
-            (*sol)->dual_residual = zero;
-        }
+        make_default_solution(sol);
 
         const zono_float dist = (x - this->c).norm();
         return dist < zono_eps;
     }
 
     Box Point::do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&)
+    {
+        make_default_solution(sol);
+
+        return {this->c, this->c};
+    }
+
+    void Point::make_default_solution(std::shared_ptr<OptSolution>* sol) const
     {
         if (sol)
         {
@@ -134,7 +113,5 @@ namespace ZonoOpt
             (*sol)->primal_residual = zero;
             (*sol)->dual_residual = zero;
         }
-
-        return {this->c, this->c};
     }
 }

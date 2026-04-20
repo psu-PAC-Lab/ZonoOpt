@@ -83,6 +83,10 @@ namespace ZonoOpt
                                std::shared_ptr<OptSolution>* sol, const WarmStartParams&) const override;
 
         Box do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) override;
+    
+    private:
+        void make_default_solution(std::shared_ptr<OptSolution>* sol) const;
+    
     };
 } // namespace ZonoOpt
 

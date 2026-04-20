@@ -76,6 +76,10 @@ namespace ZonoOpt
         std::unique_ptr<HybZono> do_complement(zono_float delta_m, bool, const OptSettings&,
                                                std::shared_ptr<OptSolution>* sol,
                                                int, int) override;
+
+    private:
+        void make_default_solution(std::shared_ptr<OptSolution>* sol) const;
+
     };
 }
 

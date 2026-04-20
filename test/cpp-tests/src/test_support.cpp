@@ -33,23 +33,26 @@ int main(int argc, char* argv[])
     test_assert(std::abs(s - s_expected)/std::abs(s_expected) < 5e-2, "Support value does not match expected value");
 
     // test that Zono and ConZono return matching support values and factors
-    std::mt19937 rand_gen(42);
-    OptSettings settings;
-    settings.eps_prim = 1e-3;
-    settings.eps_dual = 1e-3;
-    settings.rho = 1.;
+    for (unsigned int i=0; i<1000; ++i)
+    {
+        std::mt19937 rand_gen(i);
+        OptSettings settings;
+        settings.eps_prim = 1e-3;
+        settings.eps_dual = 1e-3;
+        settings.rho = 1.;
 
-    Zono Z2 = random_zono(5, 10, 0.5, -1., 1., rand_gen);
-    ConZono Zc(Z2.get_G(), Z2.get_c(), Z2.get_A(), Z2.get_b());
-    const Eigen::Vector<zono_float, -1> d2 = random_vector(5, -1., 1., rand_gen);
+        Zono Z2 = random_zono(5, 10, 0.5, -1., 1., rand_gen);
+        ConZono Zc(Z2.get_G(), Z2.get_c(), Z2.get_A(), Z2.get_b());
+        const Eigen::Vector<zono_float, -1> d2 = random_vector(5, -1., 1., rand_gen);
 
-    auto sol1 = std::make_shared<OptSolution>();
-    auto sol2 = std::make_shared<OptSolution>();
-    const zono_float s1 = Z2.support(d2, settings, &sol1);
-    const zono_float s2 = Zc.support(d2, settings, &sol2);
+        auto sol1 = std::make_shared<OptSolution>();
+        auto sol2 = std::make_shared<OptSolution>();
+        const zono_float s1 = Z2.support(d2, settings, &sol1);
+        const zono_float s2 = Zc.support(d2, settings, &sol2);
 
-    test_assert(std::abs(s1 - s2) < 1e-2, "Zono and ConZono support values do not match");
-    test_assert((Z2.get_G() * sol1->z - Zc.get_G() * sol2->z).norm() < 1e-2, "Zono and ConZono solution factors do not match");
+        test_assert(std::abs(s1 - s2) < 1e-2, "Zono and ConZono support values do not match");
+        test_assert((d2.dot(Z2.get_G() * sol1->z + Z2.get_c()) - d2.dot(Zc.get_G() * sol2->z + Zc.get_c())) < 1e-2, "Zono and ConZono solutions do not produce same support");
+    }
 
     return 0;
 }
