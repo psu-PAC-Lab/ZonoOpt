@@ -77,15 +77,24 @@ namespace ZonoOpt
         return ss.str();
     }
 
-    bool Zono::do_is_empty(const OptSettings&, std::shared_ptr<OptSolution>*, const WarmStartParams&) const
+    bool Zono::do_is_empty(const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) const
     {
+        if (sol)
+        {
+            *sol = std::make_shared<OptSolution>(); // init w/ default fields
+            (*sol)->infeasible = false;
+            (*sol)->converged = true;
+            (*sol)->primal_residual = zero;
+            (*sol)->dual_residual = zero;
+        }
+        
         if (this->n == 0)
             return true;
         else
             return false;
     }
 
-    Box Zono::do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>*, const WarmStartParams&)
+    Box Zono::do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&)
     {
         // convert to [-1,1] form
         if (this->zero_one_form) this->convert_form();
@@ -99,6 +108,17 @@ namespace ZonoOpt
         {
             l -= this->G.col(i).cwiseAbs();
             u += this->G.col(i).cwiseAbs();
+        }
+
+        // if sol requested, return default struct marked feasible, converged
+        // does not make sense to populate z, x, u since this would amount to multiple support calls
+        if (sol)
+        {
+            *sol = std::make_shared<OptSolution>(); // init w/ default fields
+            (*sol)->infeasible = false;
+            (*sol)->converged = true;
+            (*sol)->primal_residual = zero;
+            (*sol)->dual_residual = zero;
         }
 
         // return zonotope bounding box
@@ -224,6 +244,12 @@ namespace ZonoOpt
 
             (*sol)->x = (*sol)->z;
             (*sol)->u = Eigen::Vector<zono_float, -1>::Zero(this->nG);
+
+            // mark feasible, converged
+            (*sol)->infeasible = false;
+            (*sol)->converged = true;
+            (*sol)->primal_residual = zero;
+            (*sol)->dual_residual = zero;
         }
 
 

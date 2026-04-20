@@ -69,20 +69,20 @@ namespace ZonoOpt
     protected:
         Eigen::Vector<zono_float, -1> do_optimize_over(
             const Eigen::SparseMatrix<zono_float>&, const Eigen::Vector<zono_float, -1>&, zono_float,
-            const OptSettings&, std::shared_ptr<OptSolution>*,
+            const OptSettings&, std::shared_ptr<OptSolution>* sol,
             const WarmStartParams&) const override;
 
         Eigen::Vector<zono_float, -1> do_project_point(const Eigen::Vector<zono_float, -1>& x,
-                                                       const OptSettings&, std::shared_ptr<OptSolution>*,
+                                                       const OptSettings&, std::shared_ptr<OptSolution>* sol,
                                                        const WarmStartParams&) const override;
 
         zono_float do_support(const Eigen::Vector<zono_float, -1>& d, const OptSettings&,
-                              std::shared_ptr<OptSolution>*, const WarmStartParams&) override;
+                              std::shared_ptr<OptSolution>* sol, const WarmStartParams&) override;
 
         bool do_contains_point(const Eigen::Vector<zono_float, -1>& x, const OptSettings&,
-                               std::shared_ptr<OptSolution>*, const WarmStartParams&) const override;
+                               std::shared_ptr<OptSolution>* sol, const WarmStartParams&) const override;
 
-        Box do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>*, const WarmStartParams&) override;
+        Box do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) override;
     };
 } // namespace ZonoOpt
 
