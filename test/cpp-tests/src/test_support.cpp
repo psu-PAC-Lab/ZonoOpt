@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
         const zono_float s2 = Zc.support(d2, settings, &sol2);
 
         test_assert(std::abs(s1 - s2) < 1e-2, "Zono and ConZono support values do not match");
-        test_assert((d2.dot(Z2.get_G() * sol1->z + Z2.get_c()) - d2.dot(Zc.get_G() * sol2->z + Zc.get_c())) < 1e-2, "Zono and ConZono solutions do not produce same support");
+        test_assert(std::abs(d2.dot(Z2.get_G() * sol1->z + Z2.get_c()) - d2.dot(Zc.get_G() * sol2->z + Zc.get_c())) < 1e-2, "Zono and ConZono solutions do not produce same support");
     }
 
     return 0;
