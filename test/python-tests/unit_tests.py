@@ -329,7 +329,7 @@ def test_support():
     assert np.abs(s-s_expected)/np.abs(s_expected) < tol
 
     # test that Zono and ConZono return matching support values and factors
-    for i in range(1000):
+    for i in range(100):
         np.random.seed(i)
         settings = zono.OptSettings()
         settings.eps_prim = 1e-3

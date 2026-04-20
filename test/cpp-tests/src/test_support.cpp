@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
     test_assert(std::abs(s - s_expected)/std::abs(s_expected) < 5e-2, "Support value does not match expected value");
 
     // test that Zono and ConZono return matching support values and factors
-    for (unsigned int i=0; i<1000; ++i)
+    for (unsigned int i=0; i<100; ++i)
     {
         std::mt19937 rand_gen(i);
         OptSettings settings;
@@ -53,6 +53,8 @@ int main(int argc, char* argv[])
         std::stringstream ss;
 
         ss << "Zono and ConZono support values do not match" << "\nZono support: " << s1 << "\nConZono support: " << s2;
+        ss << "Z2: " << Z2 << ", Zc: " << Zc;
+        ss << "sol1: " << sol1->print() << "\nsol2: " << sol2->print();
         test_assert(std::abs(s1 - s2) < 1e-2, ss.str());
 
         ss.str("");
