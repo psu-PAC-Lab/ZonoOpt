@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
         settings.eps_dual = 1e-3;
         settings.rho = 1.;
 
-        Zono Z2 = random_zono(5, 10, 0.5, -1., 1., rand_gen);
+        Zono Z2 = random_zono(5, 10, 1., -1., 1., rand_gen);
         ConZono Zc(Z2.get_G(), Z2.get_c(), Z2.get_A(), Z2.get_b());
         const Eigen::Vector<zono_float, -1> d2 = random_vector(5, -1., 1., rand_gen);
 
