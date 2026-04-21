@@ -9,17 +9,20 @@ static std::filesystem::path tmp_dir()
     return std::filesystem::temp_directory_path() / "zonoopt_tests";
 }
 
-static void setup_tmp_dir()
-{
-    std::filesystem::create_directories(tmp_dir());
-}
+class JsonTest : public ::testing::Test {
+protected:
+    void SetUp() override
+    {
+        std::filesystem::create_directories(tmp_dir());
+    }
 
-static void cleanup_tmp_dir()
-{
-    std::filesystem::remove_all(tmp_dir());
-}
+    void TearDown() override
+    {
+        std::filesystem::remove_all(tmp_dir());
+    }
+};
 
-void test_zono()
+TEST_F(JsonTest, Zono)
 {
     const ZonoPtr Z = make_regular_zono_2D(3., 12);
     const std::string filename = (tmp_dir() / "test_zono.json").string();
@@ -28,14 +31,13 @@ void test_zono()
     const ZonoPtr Z_read = from_json(filename);
 
     std::stringstream ss;
-    ss << "test_zono: sets are not equal, expected " << *Z << ", got " << *Z_read;
-    test_assert(hz_eq(*Z, *Z_read), ss.str());
-    test_assert(Z_read->is_zono(), "test_zono: expected set to be of type Zono");
+    ss << "sets are not equal, expected " << *Z << ", got " << *Z_read;
+    EXPECT_TRUE(hz_eq(*Z, *Z_read)) << ss.str();
+    EXPECT_TRUE(Z_read->is_zono()) << "expected set to be of type Zono";
 }
 
-void test_hybzono()
+TEST_F(JsonTest, HybZono)
 {
-    // hybrid zonotope
     Eigen::Matrix<zono_float, 2, 20> Gc;
     Gc << 0., 0.0859281, 0., 0., 0., 0., 0., 0.284171, 0.308149, 0., 0.116677, 0., 0., 0., 0., 0., 0., 0., 0., 0.798126,
          0.211588, 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.511238, 0., 0.644165, 0., 0., 0., 0.28926, 0., 0., 0.;
@@ -65,21 +67,19 @@ void test_hybzono()
 
     HybZono Z (Gc.sparseView(), Gb.sparseView(), c, Ac.sparseView(), Ab.sparseView(), b);
 
-    // test json
     const std::string filename = (tmp_dir() / "test_hybzono.json").string();
     to_json(Z, filename);
 
     const ZonoPtr Z_read = from_json(filename);
 
     std::stringstream ss;
-    ss << "test_hybzono: sets are not equal, expected " << Z << ", got " << *Z_read;
-    test_assert(hz_eq(Z, *Z_read), ss.str());
-    test_assert(Z_read->is_hybzono(), "test_hybzono: expected set to be of type HybZono");
+    ss << "sets are not equal, expected " << Z << ", got " << *Z_read;
+    EXPECT_TRUE(hz_eq(Z, *Z_read)) << ss.str();
+    EXPECT_TRUE(Z_read->is_hybzono()) << "expected set to be of type HybZono";
 }
 
-void test_conzono()
+TEST_F(JsonTest, ConZono)
 {
-    // constrained zonotope
     Eigen::Matrix<zono_float, 1, 4> G;
     G << 3., 1., 0., 0.;
     Eigen::Vector<zono_float, 1> c;
@@ -92,62 +92,51 @@ void test_conzono()
 
     ConZono Z (G.sparseView(), c, A.sparseView(), b);
 
-    // test json
     const std::string filename = (tmp_dir() / "test_conzono.json").string();
     to_json(Z, filename);
 
     const ZonoPtr Z_read = from_json(filename);
 
     std::stringstream ss;
-    ss << "test_conzono: sets are not equal, expected " << Z << ", got " << *Z_read;
-    test_assert(hz_eq(Z, *Z_read), ss.str());
-    test_assert(Z_read->is_conzono(), "test_conzono: expected set to be of type ConZono");
+    ss << "sets are not equal, expected " << Z << ", got " << *Z_read;
+    EXPECT_TRUE(hz_eq(Z, *Z_read)) << ss.str();
+    EXPECT_TRUE(Z_read->is_conzono()) << "expected set to be of type ConZono";
 }
 
-void test_point()
+TEST_F(JsonTest, Point)
 {
     Eigen::Vector<zono_float, 4> c;
     c << 1., 2., 3., 4.;
     Point Z (c);
 
-    // test json
     const std::string filename = (tmp_dir() / "test_point.json").string();
     to_json(Z, filename);
 
     const ZonoPtr Z_read = from_json(filename);
 
     std::stringstream ss;
-    ss << "test_point: sets are not equal, expected " << Z << ", got " << *Z_read;
-    test_assert(hz_eq(Z, *Z_read), ss.str());
-    test_assert(Z_read->is_point(), "test_point: expected set to be of type Point");
+    ss << "sets are not equal, expected " << Z << ", got " << *Z_read;
+    EXPECT_TRUE(hz_eq(Z, *Z_read)) << ss.str();
+    EXPECT_TRUE(Z_read->is_point()) << "expected set to be of type Point";
 }
 
-void test_empty_set()
+TEST_F(JsonTest, EmptySet)
 {
     EmptySet Z (6);
 
-    // test json
     const std::string filename = (tmp_dir() / "test_empty_set.json").string();
     to_json(Z, filename);
 
     const ZonoPtr Z_read = from_json(filename);
 
     std::stringstream ss;
-    ss << "test_empty_set: sets are not equal, expected " << Z << ", got " << *Z_read;
-    test_assert(hz_eq(Z, *Z_read), ss.str());
-    test_assert(Z_read->is_empty_set(), "test_empty_set: expected set to be of type EmptySet");
+    ss << "sets are not equal, expected " << Z << ", got " << *Z_read;
+    EXPECT_TRUE(hz_eq(Z, *Z_read)) << ss.str();
+    EXPECT_TRUE(Z_read->is_empty_set()) << "expected set to be of type EmptySet";
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-    setup_tmp_dir();
-
-    test_hybzono();
-    test_conzono();
-    test_zono();
-    test_point();
-    test_empty_set();
-
-    cleanup_tmp_dir();
-    return 0;
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
