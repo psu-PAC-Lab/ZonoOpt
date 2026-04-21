@@ -7,6 +7,7 @@ static std::string g_test_data_dir;
 
 TEST(PointContain, ContainsInternalPoint)
 {
+    ASSERT_FALSE(g_test_data_dir.empty()) << "Test data directory not set (pass path as argv[1])";
     const std::string test_folder = g_test_data_dir + "/point_contain/";
 
     const Eigen::SparseMatrix<zono_float> G = load_sparse_matrix(test_folder + "G.txt");
@@ -23,6 +24,7 @@ TEST(PointContain, ContainsInternalPoint)
 
 TEST(PointContain, RejectsExternalPoint)
 {
+    ASSERT_FALSE(g_test_data_dir.empty()) << "Test data directory not set (pass path as argv[1])";
     const std::string test_folder = g_test_data_dir + "/point_contain/";
 
     const Eigen::SparseMatrix<zono_float> G = load_sparse_matrix(test_folder + "G.txt");

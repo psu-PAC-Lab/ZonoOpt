@@ -7,6 +7,7 @@ static std::string g_test_data_dir;
 
 TEST(Support, ConZonoSupportValue)
 {
+    ASSERT_FALSE(g_test_data_dir.empty()) << "Test data directory not set (pass path as argv[1])";
     const std::string test_folder = g_test_data_dir + "/support/";
 
     const Eigen::SparseMatrix<zono_float> G = load_sparse_matrix(test_folder + "G.txt");
@@ -26,6 +27,7 @@ TEST(Support, ConZonoSupportValue)
 
 TEST(Support, ZonoConZonoConsistency)
 {
+    ASSERT_FALSE(g_test_data_dir.empty()) << "Test data directory not set (pass path as argv[1])";
     const std::string test_folder = g_test_data_dir + "/support/";
 
     Eigen::Vector<zono_float, -1> d(5);

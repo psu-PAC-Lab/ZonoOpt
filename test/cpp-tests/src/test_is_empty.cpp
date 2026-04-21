@@ -7,6 +7,7 @@ static std::string g_test_data_dir;
 
 TEST(IsEmpty, FeasibleIsNotEmpty)
 {
+    ASSERT_FALSE(g_test_data_dir.empty()) << "Test data directory not set (pass path as argv[1])";
     const std::string test_folder = g_test_data_dir + "/is_empty/";
 
     const Eigen::SparseMatrix<zono_float> G = load_sparse_matrix(test_folder + "f_G.txt");
@@ -21,6 +22,7 @@ TEST(IsEmpty, FeasibleIsNotEmpty)
 
 TEST(IsEmpty, InfeasibleIsEmpty)
 {
+    ASSERT_FALSE(g_test_data_dir.empty()) << "Test data directory not set (pass path as argv[1])";
     const std::string test_folder = g_test_data_dir + "/is_empty/";
 
     const Eigen::SparseMatrix<zono_float> G = load_sparse_matrix(test_folder + "i_G.txt");

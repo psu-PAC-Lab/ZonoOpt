@@ -7,6 +7,7 @@ static std::string g_test_data_dir;
 
 TEST(VRep2HybZono, MatchesExpected)
 {
+    ASSERT_FALSE(g_test_data_dir.empty()) << "Test data directory not set (pass path as argv[1])";
     const std::string test_folder = g_test_data_dir + "/vrep_2_hybzono/";
 
     std::vector<Eigen::Matrix<zono_float, -1, -1>> V_polys;

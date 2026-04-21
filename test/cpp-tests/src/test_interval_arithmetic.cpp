@@ -71,8 +71,7 @@ TEST(IntervalArithmetic, FractionalExponent)
     EXPECT_NEAR(b.upper(), std::pow(3., 456./123.), 1e-6) << "test_exponent upper bound incorrect";
 
     a = Interval(-3., -0.5);
-    EXPECT_THROW(a.pow(456./123.), std::domain_error)
-        << "Expected fractional power of negative interval to throw";
+    EXPECT_THROW(a.pow(456./123.), std::domain_error);
 }
 
 int main(int argc, char* argv[])
