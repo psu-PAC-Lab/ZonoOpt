@@ -3,18 +3,13 @@
 
 using namespace ZonoOpt;
 
-int main(int argc, char* argv[])
-{
-    // input: directory where unit test data resides
-    if (argc < 2)
-    {
-        std::cerr << "Usage: " << argv[0] << " <test data folder>" << std::endl;
-        return 1;
-    }
-    std::string test_folder = argv[1];
-    test_folder += "/minkowski_sum/";
+static std::string g_test_data_dir;
 
-    // build hybzono from vrep
+TEST(MinkowskiSum, MatchesExpected)
+{
+    ASSERT_FALSE(g_test_data_dir.empty()) << "Test data directory not set (pass path as argv[1])";
+    const std::string test_folder = g_test_data_dir + "/minkowski_sum/";
+
     std::vector<Eigen::Matrix<zono_float, -1, -1>> V_polys;
     Eigen::Matrix<zono_float, 4, 2> V1;
     V1 << 5.566, 5.896,
@@ -41,19 +36,16 @@ int main(int argc, char* argv[])
 
     const auto Z1 = vrep_2_hybzono(V_polys);
 
-    // zonotope
     Eigen::Matrix<zono_float, 2, 3> G;
     G << 0.5*std::sqrt(3), 0.5, 0.5*std::sqrt(3),
          0.25, 0, -0.25;
     Eigen::Vector2d c(-2.0, 1.0);
     Zono Z2 (G.sparseView(), c);
 
-    // minkowski sum
     const auto Z = minkowski_sum(*Z1, Z2);
     if (Z->is_0_1_form())
         Z->convert_form();
 
-    // expected result
     const Eigen::SparseMatrix<zono_float> Gc_expected = load_sparse_matrix(test_folder + "Gc.txt");
     const Eigen::SparseMatrix<zono_float> Gb_expected = load_sparse_matrix(test_folder + "Gb.txt");
     const Eigen::Vector<zono_float, -1> c_expected = load_vector(test_folder + "c.txt");
@@ -61,7 +53,6 @@ int main(int argc, char* argv[])
     Eigen::SparseMatrix<zono_float> Ab_expected = load_sparse_matrix(test_folder + "Ab.txt");
     Eigen::Vector<zono_float, -1> b_expected = load_vector(test_folder + "b.txt");
 
-    // correct equality constraints for normalization
     for (int i = 0; i < b_expected.size(); i++)
     {
         if (std::abs(b_expected(i) - Z->get_b()(i)) > 1e-3)
@@ -74,16 +65,17 @@ int main(int argc, char* argv[])
 
     const HybZono Z_expected(Gc_expected, Gb_expected, c_expected, Ac_expected, Ab_expected, b_expected);
 
-    // check that all matrices / vectors are approximately equal
-    bool passed = true;
-    passed &= Z->get_Gc().isApprox(Z_expected.get_Gc());
-    passed &= Z->get_Gb().isApprox(Z_expected.get_Gb());
-    passed &= Z->get_c().isApprox(Z_expected.get_c());
-    passed &= Z->get_Ac().isApprox(Z_expected.get_Ac());
-    passed &= Z->get_Ab().isApprox(Z_expected.get_Ab());
-    passed &= Z->get_b().isApprox(Z_expected.get_b());
+    EXPECT_TRUE(Z->get_Gc().isApprox(Z_expected.get_Gc())) << "Gc mismatch";
+    EXPECT_TRUE(Z->get_Gb().isApprox(Z_expected.get_Gb())) << "Gb mismatch";
+    EXPECT_TRUE(Z->get_c().isApprox(Z_expected.get_c()))   << "c mismatch";
+    EXPECT_TRUE(Z->get_Ac().isApprox(Z_expected.get_Ac())) << "Ac mismatch";
+    EXPECT_TRUE(Z->get_Ab().isApprox(Z_expected.get_Ab())) << "Ab mismatch";
+    EXPECT_TRUE(Z->get_b().isApprox(Z_expected.get_b()))   << "b mismatch";
+}
 
-    test_assert(passed, "Minkowski sum test failed: computed result does not match expected result");
-
-    return 0;
+int main(int argc, char* argv[])
+{
+    ::testing::InitGoogleTest(&argc, argv);
+    if (argc >= 2) g_test_data_dir = argv[1];
+    return RUN_ALL_TESTS();
 }

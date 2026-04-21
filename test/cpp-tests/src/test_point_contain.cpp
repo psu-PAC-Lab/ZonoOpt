@@ -3,34 +3,45 @@
 
 using namespace ZonoOpt;
 
-int main(int argc, char* argv[])
-{
-    // input: directory where unit test data resides
-    if (argc < 2)
-    {
-        std::cerr << "Usage: " << argv[0] << " <test data folder>" << std::endl;
-        return 1;
-    }
-    std::string test_folder = argv[1];
-    test_folder += "/point_contain/";
+static std::string g_test_data_dir;
 
-    // load in conzono
+TEST(PointContain, ContainsInternalPoint)
+{
+    ASSERT_FALSE(g_test_data_dir.empty()) << "Test data directory not set (pass path as argv[1])";
+    const std::string test_folder = g_test_data_dir + "/point_contain/";
+
     const Eigen::SparseMatrix<zono_float> G = load_sparse_matrix(test_folder + "G.txt");
     const Eigen::Vector<zono_float, -1> c = load_vector(test_folder + "c.txt");
-    const Eigen::SparseMatrix<zono_float>A = load_sparse_matrix(test_folder + "A.txt");
+    const Eigen::SparseMatrix<zono_float> A = load_sparse_matrix(test_folder + "A.txt");
     const Eigen::Vector<zono_float, -1> b = load_vector(test_folder + "b.txt");
 
     ConZono Z (G, c, A, b);
 
-    // load point in set
     const Eigen::Vector<zono_float, -1> x_c = load_vector(test_folder + "x_c.txt");
 
-    // load point not in set
+    EXPECT_TRUE(Z.contains_point(x_c)) << "Expected Z to contain x_c";
+}
+
+TEST(PointContain, RejectsExternalPoint)
+{
+    ASSERT_FALSE(g_test_data_dir.empty()) << "Test data directory not set (pass path as argv[1])";
+    const std::string test_folder = g_test_data_dir + "/point_contain/";
+
+    const Eigen::SparseMatrix<zono_float> G = load_sparse_matrix(test_folder + "G.txt");
+    const Eigen::Vector<zono_float, -1> c = load_vector(test_folder + "c.txt");
+    const Eigen::SparseMatrix<zono_float> A = load_sparse_matrix(test_folder + "A.txt");
+    const Eigen::Vector<zono_float, -1> b = load_vector(test_folder + "b.txt");
+
+    ConZono Z (G, c, A, b);
+
     const Eigen::Vector<zono_float, -1> x_n = load_vector(test_folder + "x_n.txt");
 
-    // check correct classification of containment
-    test_assert(Z.contains_point(x_c), "Expected Z to contain x_c");
-    test_assert(!Z.contains_point(x_n), "Expected Z to not contain x_n");
+    EXPECT_FALSE(Z.contains_point(x_n)) << "Expected Z to not contain x_n";
+}
 
-    return 0;
+int main(int argc, char* argv[])
+{
+    ::testing::InitGoogleTest(&argc, argv);
+    if (argc >= 2) g_test_data_dir = argv[1];
+    return RUN_ALL_TESTS();
 }

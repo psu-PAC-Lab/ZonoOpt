@@ -4,9 +4,8 @@
 
 using namespace ZonoOpt;
 
-int main()
+TEST(GetLeaves, LeavesCount)
 {
-    // make random conzonos
     constexpr int n_CZs = 20;
     constexpr int n = 10;
     constexpr int nV = 2 * n;
@@ -19,17 +18,16 @@ int main()
         CZs.push_back(vrep_2_conzono(V));
     }
 
-    // take union
     const auto U = union_of_many(CZs);
-
-    // minkowski sum
     const auto Z = minkowski_sum(*U, *U);
-
-    // get number of leaves
     const auto leaves = Z->get_leaves();
 
-    // check number of leaves is correct
-    test_assert(leaves.size() == n_CZs * n_CZs, "Expected " + std::to_string(n_CZs * n_CZs) + " leaves, got " + std::to_string(leaves.size()));
+    EXPECT_EQ(leaves.size(), static_cast<size_t>(n_CZs * n_CZs))
+        << "Expected " << n_CZs * n_CZs << " leaves, got " << leaves.size();
+}
 
-    return 0;
+int main(int argc, char* argv[])
+{
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

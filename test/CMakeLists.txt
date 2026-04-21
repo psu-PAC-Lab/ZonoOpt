@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.15)
 project(zonoopt_unit_tests)
 
+include(GoogleTest)
+
 function(create_test TEST_NAME SOURCE)
     add_executable(${TEST_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/cpp-tests/src/${SOURCE})
-    target_link_libraries(${TEST_NAME} PRIVATE ZonoOpt)
+    target_link_libraries(${TEST_NAME} PRIVATE ZonoOpt GTest::gtest)
     target_include_directories(${TEST_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cpp-tests/include)
     add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/test-data)
 endfunction()

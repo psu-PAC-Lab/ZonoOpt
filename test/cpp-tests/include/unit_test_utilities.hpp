@@ -2,6 +2,7 @@
 #define UNIT_TEST_UTILITIES_HPP_
 
 #include "ZonoOpt.hpp"
+#include <gtest/gtest.h>
 #include <fstream>
 #include <iostream>
 #include <random>
@@ -52,15 +53,6 @@ inline Eigen::Vector<zono_float, -1> load_vector(const std::string& filename)
         vec(i) = values[i];
     }
     return vec;
-}
-
-inline void test_assert(const bool assert_cond, const std::string& message = "")
-{
-    if (!assert_cond)
-    {
-        std::cerr << "Assertion failed: " <<  message << std::endl;
-        std::exit(1);
-    }
 }
 
 inline Eigen::SparseMatrix<zono_float> random_sparse_matrix(int m, int n, double density, zono_float val_min, zono_float val_max, std::mt19937& rand_gen)
