@@ -587,7 +587,7 @@ namespace ZonoOpt {
             contract_backward(A, b, constraints);
         }
 
-        return true; // constraints valid
+        return !this->is_empty(); // constraints valid
     }
 
     bool Box::contract_forward(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A,

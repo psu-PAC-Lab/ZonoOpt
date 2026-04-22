@@ -83,9 +83,9 @@ namespace ZonoOpt
         double run_time;
         std::stringstream ss;
 
-        auto factorize_lambda = [&, this]() -> void
+        auto factorize_lambda = [&, this](bool force) -> void
         {
-            if (!this->data->ldlt_data_M.factorized)
+            if (!this->data->ldlt_data_M.factorized || force)
             {
                 t0 = std::chrono::high_resolution_clock::now();
                 this->factorize_M();
@@ -97,7 +97,7 @@ namespace ZonoOpt
                     print_str(ss);
                 }
             }
-            if (!this->data->ldlt_data_AAT.factorized)
+            if (!this->data->ldlt_data_AAT.factorized || force)
             {
                 t0 = std::chrono::high_resolution_clock::now();
                 this->factorize_AAT();
@@ -113,7 +113,7 @@ namespace ZonoOpt
 
         try
         {
-            factorize_lambda();
+            factorize_lambda(false);
         }
         catch(const std::runtime_error& e)
         {
@@ -126,11 +126,11 @@ namespace ZonoOpt
                 this->data->n_cons = static_cast<int>(this->data->A.rows());
 
                 // retry factorization
-                factorize_lambda();
+                factorize_lambda(true);
             }
             else
             {
-                throw e;
+                throw;
             }
         }   
     }
