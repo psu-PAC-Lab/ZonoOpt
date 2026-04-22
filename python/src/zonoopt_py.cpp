@@ -34,6 +34,8 @@ PYBIND11_MODULE(_core, m)
         .def_readwrite("k_inf_check", &OptSettings::k_inf_check, "check infeasibility every k_inf_check iterations")
         .def_readwrite("inf_norm_conv", &OptSettings::inf_norm_conv, 
             "use infinity norm for convergence check (if false, scaled 2-norm is used)")
+        .def_readwrite("rank_deficient_qr_admm", &OptSettings::rank_deficient_qr_admm,
+            "apply QR factorization if problem A matrix is not full row rank")
         .def_readwrite("search_mode", &OptSettings::search_mode, 
             "0-> best first, 1-> best dive")
         .def_readwrite("polish", &OptSettings::polish, "flag to perform solution polishing")

@@ -169,6 +169,7 @@ namespace ZonoOpt
             ss << "  inf_norm_conv: " << (inf_norm_conv ? "true" : "false") << std::endl;
             ss << "  use_interval_contractor: " << (use_interval_contractor ? "true" : "false") << std::endl;
             ss << "  contractor_iter: " << contractor_iter << std::endl;
+            ss << "  rank_deficient_qr_admm: " << (rank_deficient_qr_admm ? "true" : "false") << std::endl;
             ss << "  search_mode: " << search_mode << std::endl;
             ss << "  polish: " << polish << std::endl;
             ss << "  eps_dual_search: " << eps_dual_search << std::endl;

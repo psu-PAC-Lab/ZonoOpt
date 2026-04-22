@@ -41,19 +41,31 @@ TEST(PointContain, RejectsExternalPoint)
 
 TEST(PointContain, SetNotFullDimensional)
 {
-    const std::string filename = g_test_data_dir + "/point_contain/Z_not_full_dim.json";
-    auto Z = from_json(filename);
-    auto Z_cr = Z->convex_relaxation();
-    auto Z_rr = Z_cr->remove_redundancy();
+    // non-full dimensional constrained zonotope
+    Eigen::Matrix<zono_float, 2, 3> G;
+    G << 1., 0., 1.,
+         0., 1., 1.;
+    Eigen::Vector<zono_float, 2> c;
+    c << 1., 2.;
+    Eigen::Matrix<zono_float, 1, 3> A;
+    A << 1., 0., 1.;
+    Eigen::Vector<zono_float, 1> b;
+    b << 0.5;
+    ConZono Z (G.sparseView(), c, A.sparseView(), b);
+
+    // point inside set
+    Eigen::Vector<zono_float, -1> x_inside (2);
+    x_inside << 1.5, 2.;
+
+    // point outside set
+    Eigen::Vector<zono_float, -1> x_outside (2);
+    x_outside << 1.7, 2.;
 
     // allow QR factorization for rank-deficient A in ADMM
     OptSettings settings;
     settings.rank_deficient_qr_admm = true;
-    settings.verbose = true;
-
-    // project c vector onto set
-    const Eigen::Vector<zono_float, -1> c_proj = Z_rr->project_point(Z_rr->get_c(), settings);
 
     // check that projected point is contained
-    EXPECT_TRUE(Z_rr->contains_point(c_proj, settings)) << "Expected convex relaxation to contain projected point";
+    EXPECT_TRUE(Z.contains_point(x_inside, settings)) << "Expected convex relaxation to contain projected point";
+    EXPECT_FALSE(Z.contains_point(x_outside, settings)) << "Expected convex relaxation to not contain projected point";
 }
