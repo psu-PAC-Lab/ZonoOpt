@@ -3,7 +3,7 @@
 
 using namespace ZonoOpt;
 
-static std::string g_test_data_dir;
+const std::string g_test_data_dir = TEST_DATA_DIR;
 
 TEST(PointContain, ContainsInternalPoint)
 {
@@ -37,11 +37,4 @@ TEST(PointContain, RejectsExternalPoint)
     const Eigen::Vector<zono_float, -1> x_n = load_vector(test_folder + "x_n.txt");
 
     EXPECT_FALSE(Z.contains_point(x_n)) << "Expected Z to not contain x_n";
-}
-
-int main(int argc, char* argv[])
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    if (argc >= 2) g_test_data_dir = argv[1];
-    return RUN_ALL_TESTS();
 }

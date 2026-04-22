@@ -73,9 +73,3 @@ TEST(IntervalArithmetic, FractionalExponent)
     a = Interval(-3., -0.5);
     EXPECT_THROW(a.pow(456./123.), std::domain_error);
 }
-
-int main(int argc, char* argv[])
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
