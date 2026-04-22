@@ -39,6 +39,20 @@ TEST(PointContain, RejectsExternalPoint)
     EXPECT_FALSE(Z.contains_point(x_n)) << "Expected Z to not contain x_n";
 }
 
+TEST(PointContain, SetNotFullDimensional)
+{
+    const std::string filename = g_test_data_dir + "/point_contain/Z_not_full_dim.json";
+    auto Z = from_json(filename);
+    auto Z_cr = Z->convex_relaxation();
+    auto Z_rr = Z_cr->remove_redundancy();
+
+    // default settings for now
+    OptSettings settings;
+
+    // check that center is contained
+    EXPECT_TRUE(Z_rr->contains_point(Z_rr->get_c(), settings)) << "Expected convex relaxation to contain its center";
+}
+
 int main(int argc, char* argv[])
 {
     ::testing::InitGoogleTest(&argc, argv);
