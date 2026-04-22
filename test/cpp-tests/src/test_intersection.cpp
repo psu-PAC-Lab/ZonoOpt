@@ -3,7 +3,7 @@
 
 using namespace ZonoOpt;
 
-static std::string g_test_data_dir;
+const std::string g_test_data_dir = TEST_DATA_DIR;
 
 TEST(Intersection, MatchesExpected)
 {
@@ -82,11 +82,4 @@ TEST(Intersection, MatchesExpected)
     EXPECT_TRUE(Z->get_Ac().isApprox(Z_expected.get_Ac())) << "Ac mismatch";
     EXPECT_TRUE(Z->get_Ab().isApprox(Z_expected.get_Ab())) << "Ab mismatch";
     EXPECT_TRUE(Z->get_b().isApprox(Z_expected.get_b()))   << "b mismatch";
-}
-
-int main(int argc, char* argv[])
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    if (argc >= 2) g_test_data_dir = argv[1];
-    return RUN_ALL_TESTS();
 }

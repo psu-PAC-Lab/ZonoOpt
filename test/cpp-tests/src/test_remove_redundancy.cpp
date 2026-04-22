@@ -5,7 +5,7 @@
 
 using namespace ZonoOpt;
 
-static std::string g_test_data_dir;
+const std::string g_test_data_dir = TEST_DATA_DIR;
 
 TEST(RemoveRedundancy, Case1_ConZonoSimplifiesToZono)
 {
@@ -242,11 +242,4 @@ TEST(RemoveRedundancy, RandomConZono100)
                 << "\n  Z before: " << Z << "\n  Z after: " << *Z_rr;
         }
     }
-}
-
-int main(int argc, char* argv[])
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    if (argc >= 2) g_test_data_dir = argv[1];
-    return RUN_ALL_TESTS();
 }

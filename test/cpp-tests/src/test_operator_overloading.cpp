@@ -267,9 +267,3 @@ TEST(OperatorOverloading, UnaryMinus)
     auto Z_op = -(*Z1);
     EXPECT_TRUE(check_equal(*Z_set, *Z_op)) << "Unary minus failed";
 }
-
-int main(int argc, char* argv[])
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}

@@ -134,9 +134,3 @@ TEST_F(JsonTest, EmptySet)
     EXPECT_TRUE(hz_eq(Z, *Z_read)) << ss.str();
     EXPECT_TRUE(Z_read->is_empty_set()) << "expected set to be of type EmptySet";
 }
-
-int main(int argc, char* argv[])
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}

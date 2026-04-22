@@ -3,7 +3,7 @@
 
 using namespace ZonoOpt;
 
-static std::string g_test_data_dir;
+const std::string g_test_data_dir = TEST_DATA_DIR;
 
 TEST(IsEmpty, FeasibleIsNotEmpty)
 {
@@ -33,11 +33,4 @@ TEST(IsEmpty, InfeasibleIsEmpty)
     const ConZono Zi (G, c, A, b);
 
     EXPECT_TRUE(Zi.is_empty()) << "Expected Zi to be empty";
-}
-
-int main(int argc, char* argv[])
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    if (argc >= 2) g_test_data_dir = argv[1];
-    return RUN_ALL_TESTS();
 }

@@ -25,9 +25,3 @@ TEST(GetLeaves, LeavesCount)
     EXPECT_EQ(leaves.size(), static_cast<size_t>(n_CZs * n_CZs))
         << "Expected " << n_CZs * n_CZs << " leaves, got " << leaves.size();
 }
-
-int main(int argc, char* argv[])
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}

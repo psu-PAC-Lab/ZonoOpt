@@ -3,7 +3,7 @@
 
 using namespace ZonoOpt;
 
-static std::string g_test_data_dir;
+const std::string g_test_data_dir = TEST_DATA_DIR;
 
 TEST(Overapproximation, ReduceOrder)
 {
@@ -82,11 +82,4 @@ TEST(Overapproximation, ConvexRelaxation)
     const auto Z_relax = Z->convex_relaxation();
 
     EXPECT_TRUE(Z_relax->contains_point(p_proj)) << "Convex relaxation does not contain projected point.";
-}
-
-int main(int argc, char* argv[])
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    if (argc >= 2) g_test_data_dir = argv[1];
-    return RUN_ALL_TESTS();
 }

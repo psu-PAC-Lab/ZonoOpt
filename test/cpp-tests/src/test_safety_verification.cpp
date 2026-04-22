@@ -45,9 +45,3 @@ TEST(SafetyVerification, IntersectionIsEmpty)
     EXPECT_TRUE(ZonoOpt::intersection(*X, *O)->is_empty())
         << "Expected intersection of X and O to be empty";
 }
-
-int main(int argc, char* argv[])
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}

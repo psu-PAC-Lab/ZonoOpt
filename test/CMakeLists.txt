@@ -5,9 +5,10 @@ include(GoogleTest)
 
 function(create_test TEST_NAME SOURCE)
     add_executable(${TEST_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/cpp-tests/src/${SOURCE})
-    target_link_libraries(${TEST_NAME} PRIVATE ZonoOpt GTest::gtest)
+    target_link_libraries(${TEST_NAME} PRIVATE ZonoOpt GTest::gtest_main)
     target_include_directories(${TEST_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cpp-tests/include)
-    add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/test-data)
+    target_compile_definitions(${TEST_NAME} PRIVATE TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/test-data")
+    gtest_discover_tests(${TEST_NAME})
 endfunction()
 
 # tests
