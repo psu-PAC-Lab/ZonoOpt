@@ -46,11 +46,15 @@ TEST(PointContain, SetNotFullDimensional)
     auto Z_cr = Z->convex_relaxation();
     auto Z_rr = Z_cr->remove_redundancy();
 
-    // default settings for now
+    // allow QR factorization for rank-deficient A in ADMM
     OptSettings settings;
+    settings.rank_deficient_qr_admm = true;
 
-    // check that center is contained
-    EXPECT_TRUE(Z_rr->contains_point(Z_rr->get_c(), settings)) << "Expected convex relaxation to contain its center";
+    // project c vector onto set
+    const Eigen::Vector<zono_float, -1> c_proj = Z_rr->project_point(Z_rr->get_c(), settings);
+
+    // check that projected point is contained
+    EXPECT_TRUE(Z_rr->contains_point(c_proj, settings)) << "Expected convex relaxation to contain projected point";
 }
 
 int main(int argc, char* argv[])

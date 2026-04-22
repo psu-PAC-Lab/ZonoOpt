@@ -60,6 +60,9 @@ namespace ZonoOpt
         /// number of interval contractor iterations
         int contractor_iter = 1;
 
+        /// apply QR factorization if problem A matrix is not full row rank
+        bool rank_deficient_qr_admm = false;
+
         // mixed integer settings
 
         /// 0: best first, 1: best dive
