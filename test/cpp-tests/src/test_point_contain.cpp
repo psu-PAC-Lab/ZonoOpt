@@ -3,7 +3,7 @@
 
 using namespace ZonoOpt;
 
-static std::string g_test_data_dir;
+const std::string g_test_data_dir = TEST_DATA_DIR;
 
 TEST(PointContain, ContainsInternalPoint)
 {
@@ -49,17 +49,11 @@ TEST(PointContain, SetNotFullDimensional)
     // allow QR factorization for rank-deficient A in ADMM
     OptSettings settings;
     settings.rank_deficient_qr_admm = true;
+    settings.verbose = true;
 
     // project c vector onto set
     const Eigen::Vector<zono_float, -1> c_proj = Z_rr->project_point(Z_rr->get_c(), settings);
 
     // check that projected point is contained
     EXPECT_TRUE(Z_rr->contains_point(c_proj, settings)) << "Expected convex relaxation to contain projected point";
-}
-
-int main(int argc, char* argv[])
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    if (argc >= 2) g_test_data_dir = argv[1];
-    return RUN_ALL_TESTS();
 }

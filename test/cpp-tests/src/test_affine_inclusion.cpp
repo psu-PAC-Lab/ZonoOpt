@@ -54,9 +54,3 @@ TEST(AffineInclusion, RandomExamples)
         EXPECT_TRUE(Z_inc->contains_point(Z_ub_zono.get_center())) << err_ss.str();
     }
 }
-
-int main(int argc, char* argv[])
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
