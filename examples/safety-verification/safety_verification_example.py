@@ -117,6 +117,7 @@ sol = zono.OptSolution()
 settings = zono.OptSettings()
 settings.k_inf_check = 1
 settings.rho = 1.
+settings.use_interval_contractor = False
 
 iter_arr = []
 soltime_arr = []

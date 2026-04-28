@@ -207,6 +207,7 @@ settings.rho = 1.
 settings.inf_norm_conv = False
 settings.eps_prim = 1e-2
 settings.eps_dual = 1e-2
+settings.use_interval_contractor = False
 
 # load in u data
 u_data = np.loadtxt('u_data.txt')

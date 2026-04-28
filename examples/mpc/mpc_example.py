@@ -232,6 +232,7 @@ class MPCProb:
         settings.rho = 1.
         settings.eps_prim = 1e-2
         settings.eps_dual = 1e-2
+        settings.use_interval_contractor = False
 
         ### Solve example ###
 
