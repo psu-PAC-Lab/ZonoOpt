@@ -99,52 +99,28 @@ namespace ZonoOpt {
 
     zono_float Box::width() const
     {
-        zono_float w = 0;
-        for (int i = 0; i < x_lb.size(); i++)
-        {
-            w = std::max(w, this->get_element(i).width());
-        }
-        return w;
+        return this->size() > 0 ? (x_ub - x_lb).maxCoeff() : 0;
     }
 
     Eigen::Vector<zono_float, -1> Box::center() const
     {
-        Eigen::Vector<zono_float, -1> c(this->size());
-        for (int i = 0; i < static_cast<int>(this->size()); i++)
-        {
-            c(i) = get_element(i).center();
-        }
-        return c;
+        return (x_lb + x_ub) * p5;
     }
 
     Box Box::radius() const
     {
-        Box out(this->size());
-        for (int i = 0; i < static_cast<int>(this->size()); i++)
-        {
-            out.set_element(i, get_element(i).radius());
-        }
-        return out;
+        const Eigen::Vector<zono_float, -1> r = (x_ub - x_lb) * p5;
+        return Box(-r, r);
     }
 
     bool Box::is_empty() const
     {
-        for (int i=0; i<static_cast<int>(this->size()); ++i)
-        {
-            if (get_element(i).is_empty())
-                return true;
-        }
-        return false;
+        return this->size() > 0 ? (x_lb.array() > x_ub.array()).any() : true;
     }
 
     bool Box::is_single_valued() const
     {
-        for (int i=0; i<static_cast<int>(this->size()); ++i)
-        {
-            if (!get_element(i).is_single_valued())
-                return false;
-        }
-        return true;
+        return this->size() > 0 ? (x_ub - x_lb).maxCoeff() < zono_eps : true;
     }
 
     Box Box::intersect(const Box& other) const
@@ -600,7 +576,8 @@ namespace ZonoOpt {
             Interval y(0, 0);
             for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(A, k); it; ++it)
             {
-                y += this->get_element(static_cast<int>(it.col()))*it.value();
+                const int col = static_cast<int>(it.col());
+                y += it.value() * Interval(x_lb(col), x_ub(col));
             }
 
             // check validity
@@ -617,23 +594,33 @@ namespace ZonoOpt {
         // loop through constraints
         for (const int k : constraints)
         {
-            for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it_outer(A, k); it_outer; ++it_outer)
+            // compute full row interval sum once — O(nnz_k)
+            Interval y(0, 0);
+            for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(A, k); it; ++it)
             {
-                auto x = Interval(b(k), b(k)); // init
-                const zono_float a_col = it_outer.value();
+                const int col = static_cast<int>(it.col());
+                y += it.value() * Interval(x_lb(col), x_ub(col));
+            }
+
+            // backward propagation: recover partial sum for each variable via y, then narrow
+            const Interval bk(b(k), b(k));
+            for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(A, k); it; ++it)
+            {
+                const int col = static_cast<int>(it.col());
+                const zono_float a_col = it.value();
                 if (std::abs(a_col) < zono_eps)
-                    continue; // skip zero coefficient
+                    continue;
 
-                for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it_inner(A, k); it_inner; ++it_inner)
-                {
-                    if (it_inner.col() != it_outer.col())
-                    {
-                        x += this->get_element(static_cast<int>(it_inner.col()))*(-it_inner.value());
-                    }
-                }
+                const Interval xj(x_lb(col), x_ub(col));
+                // partial = b(k) - sum of all terms except j = b(k) - (y - a_col * xj)
+                const Interval new_xj = xj.intersect((bk - y + a_col * xj) / a_col);
 
-                // update interval (use interval division with directed rounding to preserve soundness)
-                this->set_element(static_cast<int>(it_outer.col()), this->get_element(static_cast<int>(it_outer.col())).intersect(x / a_col));
+                // update running sum to reflect narrowed xj, preserving intra-row propagation
+                y -= a_col * xj;
+                y += a_col * new_xj;
+
+                x_lb(col) = new_xj.lower();
+                x_ub(col) = new_xj.upper();
             }
         }
     }
@@ -677,7 +664,7 @@ namespace ZonoOpt {
 
         // recurse if able
         depth++;
-        if (depth < max_depth && new_new_vars.empty())
+        if (depth < max_depth && !new_new_vars.empty())
             get_vars_cons(A, A_rm, constraints, vars, new_new_vars, depth, max_depth);
     }
 
