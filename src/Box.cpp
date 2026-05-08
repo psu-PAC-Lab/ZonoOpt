@@ -99,7 +99,7 @@ namespace ZonoOpt {
 
     zono_float Box::width() const
     {
-        return (x_ub - x_lb).maxCoeff();
+        return this->size() > 0 ? (x_ub - x_lb).maxCoeff() : 0;
     }
 
     Eigen::Vector<zono_float, -1> Box::center() const
@@ -115,12 +115,12 @@ namespace ZonoOpt {
 
     bool Box::is_empty() const
     {
-        return (x_lb.array() > x_ub.array()).any();
+        return this->size() > 0 ? (x_lb.array() > x_ub.array()).any() : true;
     }
 
     bool Box::is_single_valued() const
     {
-        return (x_ub - x_lb).maxCoeff() < zono_eps;
+        return this->size() > 0 ? (x_ub - x_lb).maxCoeff() < zono_eps : true;
     }
 
     Box Box::intersect(const Box& other) const
