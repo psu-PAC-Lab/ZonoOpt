@@ -34,7 +34,7 @@ jobs:
         run: pip install uv
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v3.5.0
+        uses: pypa/cibuildwheel@v3.2.0
         env:
           CIBW_BUILD_VERBOSITY: 3
           CIBW_ENVIRONMENT_MACOS: >
