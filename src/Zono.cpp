@@ -125,15 +125,15 @@ namespace ZonoOpt
         return {l, u};
     }
 
-    std::unique_ptr<Zono> Zono::reduce_order(const int n_o)
+    std::unique_ptr<Zono> Zono::reduce_order(int n_o)
     {
         // check validity
         if (n_o < this->n)
             throw std::invalid_argument("Zono reduce_order: desired order is less than dimension of set");
 
-        // trivial case
-        if (this->nG <= n_o)
-            return std::make_unique<Zono>(*this);
+        // if n_o > nG, truncate to nG and this function sorts the generators
+        if (n_o > this->nG)
+            n_o = this->nG;
 
         // convert to [-1,1] form
         if (this->zero_one_form) this->convert_form();
