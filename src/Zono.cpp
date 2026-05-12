@@ -363,48 +363,4 @@ namespace ZonoOpt
         // return zonotope
         return std::make_unique<Zono>(G, c, false);
     }
-
-    std::unique_ptr<Zono> Zono::zono_hull(Zono& Z1, Zono& Z2)
-    {
-        // input handling
-        const int n = Z1.n;
-        if (Z1.n != Z2.n)
-        {
-            throw std::invalid_argument("zono_hull: sets must have the same dimension.");
-        }
-
-        // make sure both sets are [-1, 1] form
-        if (Z1.zero_one_form)
-        {
-            Z1.convert_form();
-        }
-        if (Z2.zero_one_form)
-        {
-            Z2.convert_form();
-        }
-
-        // extract G and c as dense matrices
-        const bool p1 = Z1.nG >= Z2.nG; // true if Z1 has more generators than Z2
-        const Eigen::Matrix<zono_float, -1, -1> Gp = p1 ? Z1.G : Z2.G;
-        const Eigen::Vector<zono_float, -1> cp = p1 ? Z1.c : Z2.c;
-        const Eigen::Matrix<zono_float, -1, -1> Gm = p1 ? Z2.G : Z1.G;
-        const Eigen::Vector<zono_float, -1> cm = p1 ? Z2.c : Z1.c;
-
-        // compute the zonotope hull without remainder
-        const Eigen::Vector<zono_float, -1> c_hull = (cp + cm) / two;
-        Eigen::Matrix<zono_float, -1, -1> G_hull (n, Gp.cols() + Gm.cols() + 1);
-        for (int i=0; i<Gm.cols(); ++i)
-        {
-            G_hull.col(i) = (Gp.col(i) + Gm.col(i)) / two;
-        }
-        G_hull.col(Gm.cols()) = (cp - cm) / two;
-        int offset = Gm.cols() + 1;
-        for (int i=0; i<Gm.cols(); ++i)
-        {
-            G_hull.col(i + offset) = (Gp.col(i) - Gm.col(i)) / two;
-        }
-        offset += Gm.cols();
-        G_hull.block(0, offset, n, Gp.cols()-Gm.cols()) = Gp.block(0, Gm.cols(), n, Gp.cols()-Gm.cols());
-        return std::make_unique<Zono>(G_hull.sparseView(), c_hull, false);
-    }
 }

@@ -759,6 +759,7 @@ class HybZono
         bool rescale_generators(MI_Box& box); // returns false if empty set detected
         void remove_generators(const std::set<int>& idx_c, const std::set<int>& idx_b, MI_Box& box);
         void remove_fixed_vars(MI_Box& box);
+        static std::unique_ptr<Zono> zono_hull(Zono& Z1, Zono& Z2);
 };
 
 // forward delcarations

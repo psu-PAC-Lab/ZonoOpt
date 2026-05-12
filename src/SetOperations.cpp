@@ -770,7 +770,7 @@ namespace ZonoOpt
             {
                 throw std::invalid_argument("Convex hull: failed to cast first set to Zono.");
             }
-            std::unique_ptr<Zono> Z_hull = std::make_unique<Zono>(Z_hull_ptr->clone());
+            std::unique_ptr<Zono> Z_hull = std::make_unique<Zono>(*Z_hull_ptr);
             for (size_t i = 1; i < Zs_in.size(); ++i)
             {
                 Zono* Z_s_ptr = dynamic_cast<Zono*>(Zs_in[i].get());
@@ -778,7 +778,7 @@ namespace ZonoOpt
                 {
                     throw std::invalid_argument("Convex hull: failed to cast set to Zono.");
                 }
-                Z_hull = Zono::zono_hull(*Z_hull, *Z_s_ptr);
+                Z_hull = HybZono::zono_hull(*Z_hull, *Z_s_ptr);
             }
             return Z_hull;
         }

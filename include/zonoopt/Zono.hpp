@@ -108,11 +108,6 @@ namespace ZonoOpt
 
         zono_float do_support(const Eigen::Vector<zono_float, -1>& d, const OptSettings&,
                               std::shared_ptr<OptSolution>* sol, const WarmStartParams&) override;
-
-        friend std::unique_ptr<ConZono> convex_hull(const std::vector<std::shared_ptr<HybZono>>& Zs, bool exact);
-
-    private:
-        static std::unique_ptr<Zono> zono_hull(Zono& Z1, Zono& Z2);
     };
 
     // forward declarations
