@@ -3055,15 +3055,17 @@ PYBIND11_MODULE(_core, m)
             Specifically, each dimension of I corresponds to one of the Zi in the union. So for union_of_many({Z0, Z1, Z2}, true) with Z0, Z1, Z2 not intersecting,
             if a vector [z, i] is in union({Z0, Z1, Z2}) x I, then i = [1, 0, 0] if z is in Z0, etc.
         )pbdoc");
-    m.def("convex_hull", &convex_hull, py::arg("Zs"),
+    m.def("convex_hull", &convex_hull, py::arg("Zs"), py::arg("exact")=true,
         R"pbdoc(
             Computes the convex hull of several sets
 
             Computes convex hull of sets {Z0, Z1, ..., Zn}.
             If Zi is a hybrid zonotope, it must be sharp or this function will throw an error.
+            Zonotope outer approximations are computed using the method of Girard 2005, "Reachability of Uncertain Linear Systems Using Zonotopes".
 
             Args:
                 Zs (list[HybZono]): sets for which convex hull is to be computed.
+                exact (bool, optional): if false and all sets are zonotopes, a zonotope outer approximation is returned.
 
             Returns:
                 ConZono: constrained zonotop convex hull

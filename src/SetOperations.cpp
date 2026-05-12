@@ -739,22 +739,57 @@ namespace ZonoOpt
         return std::make_unique<HybZono>(Gc, Gb, c, Ac, Ab, b, true, sharp);
     }
 
-    std::unique_ptr<ConZono> convex_hull(const std::vector<std::shared_ptr<HybZono>>& Zs_in)
+    std::unique_ptr<ConZono> convex_hull(const std::vector<std::shared_ptr<HybZono>>& Zs_in, bool exact)
     {
-        // make sure all sets are sharp
+        // input handling
+        if (Zs_in.empty())
+        {
+            throw std::invalid_argument("Convex hull: input vector is empty.");
+        }
+
+        // make sure all sets are sharp and check if all are zonotopes
+        bool all_zonotopes = true;
         for (const auto& Z : Zs_in)
         {
             if (!Z->sharp)
             {
                 throw std::invalid_argument("Convex hull: all input sets must be sharp.");
             }
+            if (!Z->is_zono())
+            {
+                all_zonotopes = false;
+            }
         }
 
-        // get union
-        const std::unique_ptr<HybZono> Z_union = union_of_many(Zs_in, true);
+        // zonotope method
+        if (!exact && all_zonotopes)
+        {
+            // all casts should succeed because is_zono check passed
+            Zono* Z_hull_ptr = dynamic_cast<Zono*>(Zs_in[0].get());
+            if (!Z_hull_ptr)
+            {
+                throw std::invalid_argument("Convex hull: failed to cast first set to Zono.");
+            }
+            std::unique_ptr<Zono> Z_hull = std::make_unique<Zono>(Z_hull_ptr->clone());
+            for (size_t i = 1; i < Zs_in.size(); ++i)
+            {
+                Zono* Z_s_ptr = dynamic_cast<Zono*>(Zs_in[i].get());
+                if (!Z_s_ptr)
+                {
+                    throw std::invalid_argument("Convex hull: failed to cast set to Zono.");
+                }
+                Z_hull = Zono::zono_hull(*Z_hull, *Z_s_ptr);
+            }
+            return Z_hull;
+        }
+        else
+        {
+            // get union
+            const std::unique_ptr<HybZono> Z_union = union_of_many(Zs_in, true);
 
-        // take convex relaxation
-        return Z_union->convex_relaxation();
+            // take convex relaxation
+            return Z_union->convex_relaxation();
+        }
     }
 
     std::unique_ptr<HybZono> cartesian_product(const HybZono& Z1, HybZono& Z2)
