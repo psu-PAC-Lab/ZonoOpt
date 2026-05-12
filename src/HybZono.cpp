@@ -1463,29 +1463,56 @@ namespace ZonoOpt
             Z2.convert_form();
         }
 
-        // extract G and c as dense matrices
         const bool p1 = Z1.nG >= Z2.nG; // true if Z1 has more generators than Z2
-        const Eigen::Matrix<zono_float, -1, -1> Gp = p1 ? Z1.G : Z2.G;
-        const Eigen::Vector<zono_float, -1> cp = p1 ? Z1.c : Z2.c;
-        const Eigen::Matrix<zono_float, -1, -1> Gm = p1 ? Z2.G : Z1.G;
-        const Eigen::Vector<zono_float, -1> cm = p1 ? Z2.c : Z1.c;
+        const Eigen::SparseMatrix<zono_float>& Gp = p1 ? Z1.G : Z2.G;
+        const Eigen::Vector<zono_float, -1>& cp = p1 ? Z1.c : Z2.c;
+        const Eigen::SparseMatrix<zono_float>& Gm = p1 ? Z2.G : Z1.G;
+        const Eigen::Vector<zono_float, -1>& cm = p1 ? Z2.c : Z1.c;
 
-        // compute the zonotope hull without remainder
+        const int nGp = Gp.cols();
+        const int nGm = Gm.cols();
+
+        // Build G_hull triplets directly from sparse column iterators.
+        // Column layout: sum(0..nGm-1) | center(nGm) | diff(nGm+1..2*nGm) | tail_Gp(2*nGm+1..nGm+nGp)
+        // setFromTriplets sums repeated (row, col) entries, so we emit weighted triplets for each
+        // non-zero rather than accumulating into a dense buffer.
+        std::vector<Eigen::Triplet<zono_float>> triplets;
+        triplets.reserve(2 * (Gp.nonZeros() + Gm.nonZeros()) + n);
+
+        for (int i = 0; i < nGm; ++i)
+        {
+            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(Gp, i); it; ++it)
+            {
+                triplets.emplace_back(static_cast<int>(it.row()), i,           it.value() / two);
+                triplets.emplace_back(static_cast<int>(it.row()), nGm + 1 + i, it.value() / two);
+            }
+            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(Gm, i); it; ++it)
+            {
+                triplets.emplace_back(static_cast<int>(it.row()), i,           it.value() / two);
+                triplets.emplace_back(static_cast<int>(it.row()), nGm + 1 + i, -it.value() / two);
+            }
+        }
+
+        // Center column: (cp - cm) / 2
+        for (int r = 0; r < n; ++r)
+        {
+            const zono_float v = (cp(r) - cm(r)) / two;
+            if (v != zero)
+                triplets.emplace_back(r, nGm, v);
+        }
+
+        // Tail columns: remaining Gp generators copied directly
+        for (int i = nGm; i < nGp; ++i)
+        {
+            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(Gp, i); it; ++it)
+                triplets.emplace_back(static_cast<int>(it.row()), nGm + 1 + i, it.value());
+        }
+
+        Eigen::SparseMatrix<zono_float> G_hull(n, nGp + nGm + 1);
+        G_hull.setFromTriplets(triplets.begin(), triplets.end());
+
         const Eigen::Vector<zono_float, -1> c_hull = (cp + cm) / two;
-        Eigen::Matrix<zono_float, -1, -1> G_hull (n, Gp.cols() + Gm.cols() + 1);
-        for (int i=0; i<Gm.cols(); ++i)
-        {
-            G_hull.col(i) = (Gp.col(i) + Gm.col(i)) / two;
-        }
-        G_hull.col(Gm.cols()) = (cp - cm) / two;
-        int offset = Gm.cols() + 1;
-        for (int i=0; i<Gm.cols(); ++i)
-        {
-            G_hull.col(i + offset) = (Gp.col(i) - Gm.col(i)) / two;
-        }
-        offset += Gm.cols();
-        G_hull.block(0, offset, n, Gp.cols()-Gm.cols()) = Gp.block(0, Gm.cols(), n, Gp.cols()-Gm.cols());
-        return std::make_unique<Zono>(G_hull.sparseView(), c_hull, false);
+        return std::make_unique<Zono>(G_hull, c_hull, false);
     }
 
 }
