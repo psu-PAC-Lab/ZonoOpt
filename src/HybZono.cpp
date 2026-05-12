@@ -1444,4 +1444,75 @@ namespace ZonoOpt
         return union_of_many(hzs);
     }
 
+    std::unique_ptr<Zono> HybZono::zono_hull(Zono& Z1, Zono& Z2)
+    {
+        // input handling
+        const int n = Z1.n;
+        if (Z1.n != Z2.n)
+        {
+            throw std::invalid_argument("zono_hull: sets must have the same dimension.");
+        }
+
+        // make sure both sets are [-1, 1] form
+        if (Z1.zero_one_form)
+        {
+            Z1.convert_form();
+        }
+        if (Z2.zero_one_form)
+        {
+            Z2.convert_form();
+        }
+
+        const bool p1 = Z1.nG >= Z2.nG; // true if Z1 has more generators than Z2
+        const Eigen::SparseMatrix<zono_float>& Gp = p1 ? Z1.G : Z2.G;
+        const Eigen::Vector<zono_float, -1>& cp = p1 ? Z1.c : Z2.c;
+        const Eigen::SparseMatrix<zono_float>& Gm = p1 ? Z2.G : Z1.G;
+        const Eigen::Vector<zono_float, -1>& cm = p1 ? Z2.c : Z1.c;
+
+        const int nGp = Gp.cols();
+        const int nGm = Gm.cols();
+
+        // Build G_hull triplets directly from sparse column iterators.
+        // Column layout: sum(0..nGm-1) | center(nGm) | diff(nGm+1..2*nGm) | tail_Gp(2*nGm+1..nGm+nGp)
+        // setFromTriplets sums repeated (row, col) entries, so we emit weighted triplets for each
+        // non-zero rather than accumulating into a dense buffer.
+        std::vector<Eigen::Triplet<zono_float>> triplets;
+        triplets.reserve(2 * (Gp.nonZeros() + Gm.nonZeros()) + n);
+
+        for (int i = 0; i < nGm; ++i)
+        {
+            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(Gp, i); it; ++it)
+            {
+                triplets.emplace_back(static_cast<int>(it.row()), i,           it.value() / two);
+                triplets.emplace_back(static_cast<int>(it.row()), nGm + 1 + i, it.value() / two);
+            }
+            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(Gm, i); it; ++it)
+            {
+                triplets.emplace_back(static_cast<int>(it.row()), i,           it.value() / two);
+                triplets.emplace_back(static_cast<int>(it.row()), nGm + 1 + i, -it.value() / two);
+            }
+        }
+
+        // Center column: (cp - cm) / 2
+        for (int r = 0; r < n; ++r)
+        {
+            const zono_float v = (cp(r) - cm(r)) / two;
+            if (v != zero)
+                triplets.emplace_back(r, nGm, v);
+        }
+
+        // Tail columns: remaining Gp generators copied directly
+        for (int i = nGm; i < nGp; ++i)
+        {
+            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(Gp, i); it; ++it)
+                triplets.emplace_back(static_cast<int>(it.row()), nGm + 1 + i, it.value());
+        }
+
+        Eigen::SparseMatrix<zono_float> G_hull(n, nGp + nGm + 1);
+        G_hull.setFromTriplets(triplets.begin(), triplets.end());
+
+        const Eigen::Vector<zono_float, -1> c_hull = (cp + cm) / two;
+        return std::make_unique<Zono>(G_hull, c_hull, false);
+    }
+
 }

@@ -438,7 +438,7 @@ class HybZono
         friend std::unique_ptr<HybZono> halfspace_intersection(HybZono& Z, const Eigen::SparseMatrix<zono_float>& H, 
             const Eigen::Vector<zono_float, -1>& f, const Eigen::SparseMatrix<zono_float>& R);
         friend std::unique_ptr<HybZono> union_of_many(const std::vector<std::shared_ptr<HybZono>>& Zs, bool preserve_sharpness, bool expose_indicators);
-        friend std::unique_ptr<ConZono> convex_hull(const std::vector<std::shared_ptr<HybZono>>& Zs);
+        friend std::unique_ptr<ConZono> convex_hull(const std::vector<std::shared_ptr<HybZono>>& Zs, bool exact);
         friend std::unique_ptr<HybZono> cartesian_product(const HybZono& Z1, HybZono& Z2);
         friend std::unique_ptr<HybZono> constrain(HybZono& Z, const Eigen::SparseMatrix<zono_float>& H,
             const Eigen::Vector<zono_float, -1>& f, char direction, const Eigen::SparseMatrix<zono_float>& R);
@@ -759,7 +759,7 @@ class HybZono
         bool rescale_generators(MI_Box& box); // returns false if empty set detected
         void remove_generators(const std::set<int>& idx_c, const std::set<int>& idx_b, MI_Box& box);
         void remove_fixed_vars(MI_Box& box);
-
+        static std::unique_ptr<Zono> zono_hull(Zono& Z1, Zono& Z2);
 };
 
 // forward delcarations
@@ -885,13 +885,15 @@ std::unique_ptr<HybZono> union_of_many(const std::vector<std::shared_ptr<HybZono
  * @brief Computes convex hull of several sets
  *
  * @param Zs Sets for which convex hull is to be computed.
+ * @param exact If false and all sets are zonotopes, a zonotope outer approximation is returned.
  * @return constrained zonotope convex hull
  * @ingroup ZonoOpt_SetOperations
  *
  * Computes convex hull of sets {Z0, Z1, ..., Zn}.
  * If Zi is a hybrid zonotope, it must be sharp or this function will throw an error.
+ * Zonotope outer approximations are computed using the method of Girard 2005, "Reachability of Uncertain Linear Systems Using Zonotopes".
  */
-std::unique_ptr<ConZono> convex_hull(const std::vector<std::shared_ptr<HybZono>>& Zs);
+std::unique_ptr<ConZono> convex_hull(const std::vector<std::shared_ptr<HybZono>>& Zs, bool exact=true);
 
 /**
  * @brief Computes the Cartesian product of two sets Z1 and Z2.

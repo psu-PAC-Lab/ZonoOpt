@@ -14,7 +14,7 @@ var searchData=
   ['contract_5fhelper_11',['contract_helper',['../classZonoOpt_1_1MI__Box.html#a642311f369e873eb33a59b7da6da43d7',1,'ZonoOpt::MI_Box']]],
   ['contract_5fsubset_12',['contract_subset',['../classZonoOpt_1_1Box.html#a7e736d03bedfd3bf93e04fb30f3cd3c8',1,'ZonoOpt::Box']]],
   ['convert_5fform_13',['convert_form',['../classZonoOpt_1_1Point.html#a5baf25d14dc72d94c7d313e34c8451bf',1,'ZonoOpt::Point::convert_form()'],['../classZonoOpt_1_1Zono.html#adc0c5fcc9ead67a4968a2db144ee9a5d',1,'ZonoOpt::Zono::convert_form()'],['../classZonoOpt_1_1HybZono.html#a5566841a31499d793a1891e080ff7de9',1,'ZonoOpt::HybZono::convert_form()'],['../classZonoOpt_1_1ConZono.html#a626ff5fadc6560a8fed6aeb7e154435b',1,'ZonoOpt::ConZono::convert_form()']]],
-  ['convex_5fhull_14',['convex_hull',['../group__ZonoOpt__SetOperations.html#gadc3e32c919cba4298ed311dcba2819da',1,'ZonoOpt']]],
+  ['convex_5fhull_14',['convex_hull',['../group__ZonoOpt__SetOperations.html#ga8f45c506dd695a097f0f7ee39ae74d65',1,'ZonoOpt']]],
   ['convex_5frelaxation_15',['convex_relaxation',['../classZonoOpt_1_1HybZono.html#a924cb5116e31b275a44369ab057c48dd',1,'ZonoOpt::HybZono']]],
   ['conzono_16',['conzono',['../classZonoOpt_1_1ConZono.html#a420a12db1dd044c673421f2646afd07f',1,'ZonoOpt::ConZono::ConZono()'],['../classZonoOpt_1_1ConZono.html#a54359c0d81770e027eceaaa26c179cd2',1,'ZonoOpt::ConZono::ConZono(const Eigen::SparseMatrix&lt; zono_float &gt; &amp;G, const Eigen::Vector&lt; zono_float, -1 &gt; &amp;c, const Eigen::SparseMatrix&lt; zono_float &gt; &amp;A, const Eigen::Vector&lt; zono_float, -1 &gt; &amp;b, const bool zero_one_form=false)']]],
   ['cos_17',['cos',['../classZonoOpt_1_1Interval.html#ad7021bb884e142fd826e7067d65bfe9f',1,'ZonoOpt::Interval']]],

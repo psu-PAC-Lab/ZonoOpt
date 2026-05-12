@@ -1162,6 +1162,72 @@ def test_overapproximation():
     _test_convex_relaxation()
     print('Passed: Overapproximation')
 
+def test_zono_hull():
+
+    def _test_points_contained():
+        np.random.seed(0)
+        n = 10
+        density = 1.
+        val_min = -1.
+        val_max = 1.
+        Z1 = TestUtilities.random_zono(n, 30, density, val_min, val_max)
+        Z2 = TestUtilities.random_zono(n, 40, density, val_min, val_max)
+
+        # random offset
+        offset = np.random.uniform(-100., 100., n)
+        Z2 = Z2 + offset
+
+        # compute hull
+        Zs = [Z1, Z2]
+        U = zono.convex_hull(Zs, exact=False)
+
+        # check that points along line between centers are in set
+        assert U.contains_point(Z1.get_center()), 'Z1 center not contained in hull'
+        assert U.contains_point(Z2.get_center()), 'Z2 center not contained in hull'
+        assert U.contains_point((Z1.get_center() + Z2.get_center()) / 2), \
+            'midpoint between Z1 and Z2 centers not contained in hull'
+
+    def _test_several_sets():
+        np.random.seed(0)
+        n = 10
+        density = 1.
+        val_min = -1.
+        val_max = 1.
+        Zs = []
+        for _ in range(5):
+            Z = TestUtilities.random_zono(n, 30, density, val_min, val_max)
+            Zs.append(Z)
+
+        U = zono.convex_hull(Zs, exact=False)
+
+        # check that points in each zonotope are in the hull
+        for Z in Zs:
+            assert U.contains_point(Z.get_center()), 'Zonotope center not contained in hull'
+
+    def _test_inconsistent_dimensions():
+        np.random.seed(0)
+        n1 = 10
+        n2 = 15
+        density = 1.
+        val_min = -1.
+        val_max = 1.
+        Z1 = TestUtilities.random_zono(n1, 30, density, val_min, val_max)
+        Z2 = TestUtilities.random_zono(n2, 40, density, val_min, val_max)
+
+        Zs = [Z1, Z2]
+
+        # try to compute the convex hull - this should fail
+        try:
+            zono.convex_hull(Zs, exact=False)
+            raise AssertionError('Expected convex_hull to throw when input dimensions are inconsistent')
+        except ValueError:
+            pass
+
+    _test_points_contained()
+    _test_several_sets()
+    _test_inconsistent_dimensions()
+    print('Passed: Zono Hull')
+
 # run the unit tests
 test_vrep_2_hz()
 test_minkowski_sum()
@@ -1178,3 +1244,4 @@ test_constrain()
 test_json()
 test_remove_redundancy()
 test_overapproximation()
+test_zono_hull()

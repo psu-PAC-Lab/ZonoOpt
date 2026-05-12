@@ -1,10 +1,10 @@
 var searchData=
 [
   ['a_0',['A',['../classZonoOpt_1_1HybZono.html#ac0106a84ab134180cd9d69a486eeae37',1,'ZonoOpt::HybZono']]],
-  ['a_20note_20on_20version_20numbers_1',['A Note on Version Numbers',['../index.html#autotoc_md7',1,'']]],
-  ['ab_2',['Ab',['../classZonoOpt_1_1HybZono.html#add8e4efedf1eef31ae277c6ac2f176af',1,'ZonoOpt::HybZono']]],
-  ['abs_3',['abs',['../classZonoOpt_1_1Interval.html#a8d57e2a42d239c9d10d76c4e7bdf06ba',1,'ZonoOpt::Interval']]],
-  ['ac_4',['Ac',['../classZonoOpt_1_1HybZono.html#ae48c183302620c9b1ac298aaa60e7c40',1,'ZonoOpt::HybZono']]],
+  ['ab_1',['Ab',['../classZonoOpt_1_1HybZono.html#add8e4efedf1eef31ae277c6ac2f176af',1,'ZonoOpt::HybZono']]],
+  ['abs_2',['abs',['../classZonoOpt_1_1Interval.html#a8d57e2a42d239c9d10d76c4e7bdf06ba',1,'ZonoOpt::Interval']]],
+  ['ac_3',['Ac',['../classZonoOpt_1_1HybZono.html#ae48c183302620c9b1ac298aaa60e7c40',1,'ZonoOpt::HybZono']]],
+  ['additional_20notes_4',['Additional Notes',['../index.html#autotoc_md7',1,'']]],
   ['admm_2ecpp_5',['ADMM.cpp',['../ADMM_8cpp.html',1,'']]],
   ['admm_2ehpp_6',['ADMM.hpp',['../ADMM_8hpp.html',1,'']]],
   ['affine_5finclusion_7',['affine_inclusion',['../classZonoOpt_1_1HybZono.html#ae2a9e5c878b3278c69a2647528d3f3c5',1,'ZonoOpt::HybZono::affine_inclusion'],['../group__ZonoOpt__SetOperations.html#ga6c2526bc3acfd3cbe28f392041feea2d',1,'ZonoOpt::affine_inclusion()']]],

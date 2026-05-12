@@ -99,7 +99,7 @@ namespace ZonoOpt
         std::unique_ptr<ConZono> constraint_reduction() const override
         {
             return std::make_unique<Zono>(*this);
-        }
+        } 
 
     protected:
         bool do_is_empty(const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) const override;
