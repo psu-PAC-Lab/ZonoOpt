@@ -120,9 +120,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga74e540bb5cb3dee56069affcea646a25" id="r_ga74e540bb5cb3dee56069affcea646a25"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#ga74e540bb5cb3dee56069affcea646a25">ZonoOpt::union_of_many</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; &gt; &amp;Zs, bool preserve_sharpness=false, bool expose_indicators=false)</td></tr>
 <tr class="memdesc:ga74e540bb5cb3dee56069affcea646a25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes union of several sets.  <br /></td></tr>
 <tr class="separator:ga74e540bb5cb3dee56069affcea646a25"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadc3e32c919cba4298ed311dcba2819da" id="r_gadc3e32c919cba4298ed311dcba2819da"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1ConZono.html">ConZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#gadc3e32c919cba4298ed311dcba2819da">ZonoOpt::convex_hull</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; &gt; &amp;Zs)</td></tr>
-<tr class="memdesc:gadc3e32c919cba4298ed311dcba2819da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes convex hull of several sets.  <br /></td></tr>
-<tr class="separator:gadc3e32c919cba4298ed311dcba2819da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8f45c506dd695a097f0f7ee39ae74d65" id="r_ga8f45c506dd695a097f0f7ee39ae74d65"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1ConZono.html">ConZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#ga8f45c506dd695a097f0f7ee39ae74d65">ZonoOpt::convex_hull</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; &gt; &amp;Zs, bool exact=true)</td></tr>
+<tr class="memdesc:ga8f45c506dd695a097f0f7ee39ae74d65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes convex hull of several sets.  <br /></td></tr>
+<tr class="separator:ga8f45c506dd695a097f0f7ee39ae74d65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga21cab38a1787f36fc586e48204d4e797" id="r_ga21cab38a1787f36fc586e48204d4e797"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#ga21cab38a1787f36fc586e48204d4e797">ZonoOpt::cartesian_product</a> (const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z1, <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z2)</td></tr>
 <tr class="memdesc:ga21cab38a1787f36fc586e48204d4e797"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the Cartesian product of two sets Z1 and Z2.  <br /></td></tr>
 <tr class="separator:ga21cab38a1787f36fc586e48204d4e797"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -324,8 +324,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="gadc3e32c919cba4298ed311dcba2819da" name="gadc3e32c919cba4298ed311dcba2819da"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gadc3e32c919cba4298ed311dcba2819da">&#9670;&#160;</a></span>convex_hull()</h2>
+<a id="ga8f45c506dd695a097f0f7ee39ae74d65" name="ga8f45c506dd695a097f0f7ee39ae74d65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8f45c506dd695a097f0f7ee39ae74d65">&#9670;&#160;</a></span>convex_hull()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -334,8 +334,18 @@ Functions</h2></td></tr>
           <td class="memname">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1ConZono.html">ConZono</a> &gt; ZonoOpt::convex_hull </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt; &gt; &amp;&#160;</td>
-          <td class="paramname"><em>Zs</em></td><td>)</td>
+          <td class="paramname"><em>Zs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>exact</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -344,11 +354,12 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">Zs</td><td>Sets for which convex hull is to be computed. </td></tr>
+    <tr><td class="paramname">exact</td><td>If false and all sets are zonotopes, a zonotope outer approximation is returned. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>constrained zonotope convex hull</dd></dl>
-<p>Computes convex hull of sets {Z0, Z1, ..., Zn}. If Zi is a hybrid zonotope, it must be sharp or this function will throw an error. </p>
+<p>Computes convex hull of sets {Z0, Z1, ..., Zn}. If Zi is a hybrid zonotope, it must be sharp or this function will throw an error. Zonotope outer approximations are computed using the method of Girard 2005, "Reachability of Uncertain Linear Systems Using Zonotopes". </p>
 
 </div>
 </div>
