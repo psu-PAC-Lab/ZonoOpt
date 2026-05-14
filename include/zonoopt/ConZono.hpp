@@ -98,6 +98,28 @@ namespace ZonoOpt
         // display methods
         std::string print() const override;
 
+        // in-place operators (type-preserving overrides)
+        using HybZono::operator+=;  // restore vector and box overloads hidden by declarations below
+        using HybZono::operator*=;  // restore scalar overload hidden by declarations below
+
+        /**
+         * @brief In-place Minkowski sum (type-preserving: ConZono, Zono, or Point argument).
+         * Use operator+ for operations with HybZono, which return HybZono.
+         */
+        void operator+=(ConZono& other);
+
+        /** @brief Deleted: use operator+ instead — result type would be HybZono. */
+        void operator+=(HybZono& other) = delete;
+
+        /**
+         * @brief In-place Cartesian product (type-preserving: ConZono, Zono, or Point argument).
+         * Use operator* for operations with HybZono, which return HybZono.
+         */
+        void operator*=(ConZono& other);
+
+        /** @brief Deleted: use operator* instead — result type would be HybZono. */
+        void operator*=(HybZono& other) = delete;
+
     protected:
         OptSolution qp_opt(const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q,
                            zono_float c, const Eigen::SparseMatrix<zono_float>& A,

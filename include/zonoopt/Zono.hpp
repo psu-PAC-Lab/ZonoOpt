@@ -99,7 +99,29 @@ namespace ZonoOpt
         std::unique_ptr<ConZono> constraint_reduction() const override
         {
             return std::make_unique<Zono>(*this);
-        } 
+        }
+
+        // in-place operators (type-preserving overrides)
+        using HybZono::operator+=;  // restore vector and box overloads hidden by declarations below
+        using HybZono::operator*=;  // restore scalar overload hidden by declarations below
+
+        /**
+         * @brief In-place Minkowski sum (type-preserving: Zono or Point argument).
+         * Use operator+ for ConZono/HybZono arguments, which return a wider type.
+         */
+        void operator+=(Zono& other);
+
+        /** @brief Deleted: use operator+ instead — result type would be ConZono or HybZono. */
+        void operator+=(HybZono& other) = delete;
+
+        /**
+         * @brief In-place Cartesian product (type-preserving: Zono or Point argument).
+         * Use operator* for ConZono/HybZono arguments, which return a wider type.
+         */
+        void operator*=(Zono& other);
+
+        /** @brief Deleted: use operator* instead — result type would be ConZono or HybZono. */
+        void operator*=(HybZono& other) = delete;
 
     protected:
         bool do_is_empty(const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) const override;

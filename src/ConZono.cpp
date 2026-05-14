@@ -846,5 +846,14 @@ namespace ZonoOpt
         return std::make_unique<HybZono>(Gc, Gb, c, Ac, Ab, b, false, false);
     }
 
+    void ConZono::operator+=(ConZono& other)
+    {
+        static_cast<HybZono&>(*this) = *(*this + other);
+    }
+
+    void ConZono::operator*=(ConZono& other)
+    {
+        static_cast<HybZono&>(*this) = *(*this * other);
+    }
 
 }

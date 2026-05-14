@@ -364,4 +364,14 @@ namespace ZonoOpt
         // return zonotope
         return std::make_unique<Zono>(G, c, false);
     }
+
+    void Zono::operator+=(Zono& other)
+    {
+        static_cast<HybZono&>(*this) = *(*this + other);
+    }
+
+    void Zono::operator*=(Zono& other)
+    {
+        static_cast<HybZono&>(*this) = *(*this * other);
+    }
 }
