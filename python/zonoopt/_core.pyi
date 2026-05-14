@@ -1472,21 +1472,109 @@ class ConZono(HybZono):
             
         """
     @overload
-    def __iadd__(self, other: ConZono) -> ConZono: ...
+    def __iadd__(self, other: ConZono) -> ConZono:
+        '''__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.ConZono, other: zonoopt._core.ConZono) -> zonoopt._core.ConZono
+
+        2. __iadd__(self: zonoopt._core.ConZono, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.ConZono
+
+        3. __iadd__(self: zonoopt._core.ConZono, box: zonoopt._core.Box) -> zonoopt._core.ConZono
+
+        4. __iadd__(self: zonoopt._core.ConZono, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+        '''
     @overload
-    def __iadd__(self, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> ConZono: ...
+    def __iadd__(self, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> ConZono:
+        '''__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.ConZono, other: zonoopt._core.ConZono) -> zonoopt._core.ConZono
+
+        2. __iadd__(self: zonoopt._core.ConZono, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.ConZono
+
+        3. __iadd__(self: zonoopt._core.ConZono, box: zonoopt._core.Box) -> zonoopt._core.ConZono
+
+        4. __iadd__(self: zonoopt._core.ConZono, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+        '''
     @overload
-    def __iadd__(self, box: Box) -> ConZono: ...
+    def __iadd__(self, box: Box) -> ConZono:
+        '''__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.ConZono, other: zonoopt._core.ConZono) -> zonoopt._core.ConZono
+
+        2. __iadd__(self: zonoopt._core.ConZono, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.ConZono
+
+        3. __iadd__(self: zonoopt._core.ConZono, box: zonoopt._core.Box) -> zonoopt._core.ConZono
+
+        4. __iadd__(self: zonoopt._core.ConZono, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+        '''
     @overload
-    def __iadd__(self, other: HybZono) -> HybZono: ...
+    def __iadd__(self, other: HybZono) -> HybZono:
+        '''__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.ConZono, other: zonoopt._core.ConZono) -> zonoopt._core.ConZono
+
+        2. __iadd__(self: zonoopt._core.ConZono, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.ConZono
+
+        3. __iadd__(self: zonoopt._core.ConZono, box: zonoopt._core.Box) -> zonoopt._core.ConZono
+
+        4. __iadd__(self: zonoopt._core.ConZono, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+        '''
     @overload
-    def __imul__(self, f: typing.SupportsFloat | typing.SupportsIndex) -> ConZono: ...
+    def __imul__(self, f: typing.SupportsFloat | typing.SupportsIndex) -> ConZono:
+        """__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.ConZono, f: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.ConZono
+
+        2. __imul__(self: zonoopt._core.ConZono, other: zonoopt._core.ConZono) -> zonoopt._core.ConZono
+
+        3. __imul__(self: zonoopt._core.ConZono, box: zonoopt._core.Box) -> zonoopt._core.ConZono
+
+        4. __imul__(self: zonoopt._core.ConZono, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+        """
     @overload
-    def __imul__(self, other: ConZono) -> ConZono: ...
+    def __imul__(self, other: ConZono) -> ConZono:
+        """__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.ConZono, f: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.ConZono
+
+        2. __imul__(self: zonoopt._core.ConZono, other: zonoopt._core.ConZono) -> zonoopt._core.ConZono
+
+        3. __imul__(self: zonoopt._core.ConZono, box: zonoopt._core.Box) -> zonoopt._core.ConZono
+
+        4. __imul__(self: zonoopt._core.ConZono, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+        """
     @overload
-    def __imul__(self, box: Box) -> ConZono: ...
+    def __imul__(self, box: Box) -> ConZono:
+        """__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.ConZono, f: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.ConZono
+
+        2. __imul__(self: zonoopt._core.ConZono, other: zonoopt._core.ConZono) -> zonoopt._core.ConZono
+
+        3. __imul__(self: zonoopt._core.ConZono, box: zonoopt._core.Box) -> zonoopt._core.ConZono
+
+        4. __imul__(self: zonoopt._core.ConZono, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+        """
     @overload
-    def __imul__(self, other: HybZono) -> HybZono: ...
+    def __imul__(self, other: HybZono) -> HybZono:
+        """__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.ConZono, f: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.ConZono
+
+        2. __imul__(self: zonoopt._core.ConZono, other: zonoopt._core.ConZono) -> zonoopt._core.ConZono
+
+        3. __imul__(self: zonoopt._core.ConZono, box: zonoopt._core.Box) -> zonoopt._core.ConZono
+
+        4. __imul__(self: zonoopt._core.ConZono, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+        """
 
 class EmptySet(ConZono):
     """
@@ -1534,7 +1622,7 @@ class HybZono:
             
         '''
     def bounding_box(self, settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> Box:
-        """bounding_box(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x74fc4ce0c8b0>) -> zonoopt._core.Box
+        """bounding_box(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x75a178e10bb0>) -> zonoopt._core.Box
 
 
                         Computes a bounding box of the set object as a Box object.
@@ -1575,7 +1663,7 @@ class HybZono:
             
         '''
     def contains_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x74fc4cdd7bb0>) -> bool
+        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x75a178e0abb0>) -> bool
 
 
                         Checks whether the point x is contained in the set object.
@@ -1802,7 +1890,7 @@ class HybZono:
             
         """
     def is_empty(self, settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        """is_empty(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x74fc4ce0c1b0>) -> bool
+        """is_empty(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x75a178e19d70>) -> bool
 
 
                         Returns true if the set is provably empty, false otherwise.
@@ -1867,7 +1955,7 @@ class HybZono:
             
         """
     def optimize_over(self, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], c: typing.SupportsFloat | typing.SupportsIndex = ..., settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x74fc4cdfdb30>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x75a178e113f0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Solves optimization problem with quadratic objective over the current set
@@ -1887,7 +1975,7 @@ class HybZono:
             
         '''
     def project_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x74fc4cdf8530>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x75a178e21530>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Returns the projection of the point x onto the set object.
@@ -1940,7 +2028,7 @@ class HybZono:
             
         '''
     def support(self, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> float:
-        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x74fc4ce0c470>) -> float
+        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x75a178e197b0>) -> float
 
 
                         Computes support function of the set in the direction d.
@@ -5837,33 +5925,148 @@ class Point(Zono):
 
 
                         Reset point object with the given parameters.
-                
+
                         Args:
                             c (numpy.array): center vector
             
         '''
     @overload
-    def __iadd__(self, other: Point) -> Point: ...
+    def __iadd__(self, other: Point) -> Point:
+        '''__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.Point, other: zonoopt._core.Point) -> zonoopt._core.Point
+
+        2. __iadd__(self: zonoopt._core.Point, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Point
+
+        3. __iadd__(self: zonoopt._core.Point, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+        4. __iadd__(self: zonoopt._core.Point, box: zonoopt._core.Box) -> zonoopt._core.HybZono
+        '''
     @overload
-    def __iadd__(self, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> Point: ...
+    def __iadd__(self, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> Point:
+        '''__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.Point, other: zonoopt._core.Point) -> zonoopt._core.Point
+
+        2. __iadd__(self: zonoopt._core.Point, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Point
+
+        3. __iadd__(self: zonoopt._core.Point, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+        4. __iadd__(self: zonoopt._core.Point, box: zonoopt._core.Box) -> zonoopt._core.HybZono
+        '''
     @overload
-    def __iadd__(self, other: HybZono) -> HybZono: ...
+    def __iadd__(self, other: HybZono) -> HybZono:
+        '''__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.Point, other: zonoopt._core.Point) -> zonoopt._core.Point
+
+        2. __iadd__(self: zonoopt._core.Point, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Point
+
+        3. __iadd__(self: zonoopt._core.Point, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+        4. __iadd__(self: zonoopt._core.Point, box: zonoopt._core.Box) -> zonoopt._core.HybZono
+        '''
     @overload
-    def __iadd__(self, box: Box) -> HybZono: ...
+    def __iadd__(self, box: Box) -> HybZono:
+        '''__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.Point, other: zonoopt._core.Point) -> zonoopt._core.Point
+
+        2. __iadd__(self: zonoopt._core.Point, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Point
+
+        3. __iadd__(self: zonoopt._core.Point, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+        4. __iadd__(self: zonoopt._core.Point, box: zonoopt._core.Box) -> zonoopt._core.HybZono
+        '''
     @overload
-    def __isub__(self, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> Point: ...
+    def __imul__(self, f: typing.SupportsFloat | typing.SupportsIndex) -> Point:
+        """__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.Point, f: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Point
+
+        2. __imul__(self: zonoopt._core.Point, other: zonoopt._core.Point) -> zonoopt._core.Point
+
+        3. __imul__(self: zonoopt._core.Point, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+        4. __imul__(self: zonoopt._core.Point, box: zonoopt._core.Box) -> zonoopt._core.HybZono
+        """
     @overload
-    def __isub__(self, other: Zono) -> HybZono: ...
+    def __imul__(self, other: Point) -> Point:
+        """__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.Point, f: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Point
+
+        2. __imul__(self: zonoopt._core.Point, other: zonoopt._core.Point) -> zonoopt._core.Point
+
+        3. __imul__(self: zonoopt._core.Point, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+        4. __imul__(self: zonoopt._core.Point, box: zonoopt._core.Box) -> zonoopt._core.HybZono
+        """
     @overload
-    def __isub__(self, box: Box) -> HybZono: ...
+    def __imul__(self, other: HybZono) -> HybZono:
+        """__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.Point, f: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Point
+
+        2. __imul__(self: zonoopt._core.Point, other: zonoopt._core.Point) -> zonoopt._core.Point
+
+        3. __imul__(self: zonoopt._core.Point, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+        4. __imul__(self: zonoopt._core.Point, box: zonoopt._core.Box) -> zonoopt._core.HybZono
+        """
     @overload
-    def __imul__(self, f: typing.SupportsFloat | typing.SupportsIndex) -> Point: ...
+    def __imul__(self, box: Box) -> HybZono:
+        """__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.Point, f: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Point
+
+        2. __imul__(self: zonoopt._core.Point, other: zonoopt._core.Point) -> zonoopt._core.Point
+
+        3. __imul__(self: zonoopt._core.Point, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+        4. __imul__(self: zonoopt._core.Point, box: zonoopt._core.Box) -> zonoopt._core.HybZono
+        """
     @overload
-    def __imul__(self, other: Point) -> Point: ...
+    def __isub__(self, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> Point:
+        '''__isub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __isub__(self: zonoopt._core.Point, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Point
+
+        2. __isub__(self: zonoopt._core.Point, other: zonoopt._core.Zono) -> zonoopt._core.HybZono
+
+        3. __isub__(self: zonoopt._core.Point, box: zonoopt._core.Box) -> zonoopt._core.HybZono
+        '''
     @overload
-    def __imul__(self, other: HybZono) -> HybZono: ...
+    def __isub__(self, other: Zono) -> HybZono:
+        '''__isub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __isub__(self: zonoopt._core.Point, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Point
+
+        2. __isub__(self: zonoopt._core.Point, other: zonoopt._core.Zono) -> zonoopt._core.HybZono
+
+        3. __isub__(self: zonoopt._core.Point, box: zonoopt._core.Box) -> zonoopt._core.HybZono
+        '''
     @overload
-    def __imul__(self, box: Box) -> HybZono: ...
+    def __isub__(self, box: Box) -> HybZono:
+        '''__isub__(*args, **kwargs)
+        Overloaded function.
+
+        1. __isub__(self: zonoopt._core.Point, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Point
+
+        2. __isub__(self: zonoopt._core.Point, other: zonoopt._core.Zono) -> zonoopt._core.HybZono
+
+        3. __isub__(self: zonoopt._core.Point, box: zonoopt._core.Box) -> zonoopt._core.HybZono
+        '''
 
 class WarmStartParams:
     """
@@ -5957,21 +6160,109 @@ class Zono(ConZono):
             
         '''
     @overload
-    def __iadd__(self, other: Zono) -> Zono: ...
+    def __iadd__(self, other: Zono) -> Zono:
+        '''__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.Zono, other: zonoopt._core.Zono) -> zonoopt._core.Zono
+
+        2. __iadd__(self: zonoopt._core.Zono, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Zono
+
+        3. __iadd__(self: zonoopt._core.Zono, box: zonoopt._core.Box) -> zonoopt._core.Zono
+
+        4. __iadd__(self: zonoopt._core.Zono, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+        '''
     @overload
-    def __iadd__(self, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> Zono: ...
+    def __iadd__(self, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> Zono:
+        '''__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.Zono, other: zonoopt._core.Zono) -> zonoopt._core.Zono
+
+        2. __iadd__(self: zonoopt._core.Zono, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Zono
+
+        3. __iadd__(self: zonoopt._core.Zono, box: zonoopt._core.Box) -> zonoopt._core.Zono
+
+        4. __iadd__(self: zonoopt._core.Zono, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+        '''
     @overload
-    def __iadd__(self, box: Box) -> Zono: ...
+    def __iadd__(self, box: Box) -> Zono:
+        '''__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.Zono, other: zonoopt._core.Zono) -> zonoopt._core.Zono
+
+        2. __iadd__(self: zonoopt._core.Zono, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Zono
+
+        3. __iadd__(self: zonoopt._core.Zono, box: zonoopt._core.Box) -> zonoopt._core.Zono
+
+        4. __iadd__(self: zonoopt._core.Zono, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+        '''
     @overload
-    def __iadd__(self, other: HybZono) -> HybZono: ...
+    def __iadd__(self, other: HybZono) -> HybZono:
+        '''__iadd__(*args, **kwargs)
+        Overloaded function.
+
+        1. __iadd__(self: zonoopt._core.Zono, other: zonoopt._core.Zono) -> zonoopt._core.Zono
+
+        2. __iadd__(self: zonoopt._core.Zono, v: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> zonoopt._core.Zono
+
+        3. __iadd__(self: zonoopt._core.Zono, box: zonoopt._core.Box) -> zonoopt._core.Zono
+
+        4. __iadd__(self: zonoopt._core.Zono, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+        '''
     @overload
-    def __imul__(self, f: typing.SupportsFloat | typing.SupportsIndex) -> Zono: ...
+    def __imul__(self, f: typing.SupportsFloat | typing.SupportsIndex) -> Zono:
+        """__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.Zono, f: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Zono
+
+        2. __imul__(self: zonoopt._core.Zono, other: zonoopt._core.Zono) -> zonoopt._core.Zono
+
+        3. __imul__(self: zonoopt._core.Zono, box: zonoopt._core.Box) -> zonoopt._core.Zono
+
+        4. __imul__(self: zonoopt._core.Zono, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+        """
     @overload
-    def __imul__(self, other: Zono) -> Zono: ...
+    def __imul__(self, other: Zono) -> Zono:
+        """__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.Zono, f: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Zono
+
+        2. __imul__(self: zonoopt._core.Zono, other: zonoopt._core.Zono) -> zonoopt._core.Zono
+
+        3. __imul__(self: zonoopt._core.Zono, box: zonoopt._core.Box) -> zonoopt._core.Zono
+
+        4. __imul__(self: zonoopt._core.Zono, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+        """
     @overload
-    def __imul__(self, box: Box) -> Zono: ...
+    def __imul__(self, box: Box) -> Zono:
+        """__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.Zono, f: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Zono
+
+        2. __imul__(self: zonoopt._core.Zono, other: zonoopt._core.Zono) -> zonoopt._core.Zono
+
+        3. __imul__(self: zonoopt._core.Zono, box: zonoopt._core.Box) -> zonoopt._core.Zono
+
+        4. __imul__(self: zonoopt._core.Zono, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+        """
     @overload
-    def __imul__(self, other: HybZono) -> HybZono: ...
+    def __imul__(self, other: HybZono) -> HybZono:
+        """__imul__(*args, **kwargs)
+        Overloaded function.
+
+        1. __imul__(self: zonoopt._core.Zono, f: typing.SupportsFloat | typing.SupportsIndex) -> zonoopt._core.Zono
+
+        2. __imul__(self: zonoopt._core.Zono, other: zonoopt._core.Zono) -> zonoopt._core.Zono
+
+        3. __imul__(self: zonoopt._core.Zono, box: zonoopt._core.Box) -> zonoopt._core.Zono
+
+        4. __imul__(self: zonoopt._core.Zono, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+        """
 
 def affine_inclusion(Z: HybZono, R: IntervalMatrix, s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'] = ...) -> HybZono:
     '''affine_inclusion(Z: zonoopt._core.HybZono, R: zonoopt._core.IntervalMatrix, s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"] = array([], dtype=float64)) -> zonoopt._core.HybZono
