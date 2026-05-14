@@ -114,4 +114,14 @@ namespace ZonoOpt
             (*sol)->dual_residual = zero;
         }
     }
+
+    void Point::operator+=(Point& other)
+    {
+        static_cast<HybZono&>(*this) = *(*this + other);
+    }
+
+    void Point::operator*=(Point& other)
+    {
+        static_cast<HybZono&>(*this) = *(*this * other);
+    }
 }

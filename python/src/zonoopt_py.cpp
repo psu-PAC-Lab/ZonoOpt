@@ -2834,6 +2834,24 @@ PYBIND11_MODULE(_core, m)
                 Removes one constraint and one generator from the constrained zonotope.
                 The resulting set is an over-approximation of the original set.
             )pbdoc")
+        // __iadd__: type-preserving args modify in-place; wider types return new object (Python rebinds)
+        .def("__iadd__", [](ConZono& self, ConZono& other) { self += other; return &self; },
+            py::arg("other"), py::is_operator())
+        .def("__iadd__", [](ConZono& self, const Eigen::Vector<zono_float, -1>& v) { self += v; return &self; },
+            py::arg("v"), py::is_operator())
+        .def("__iadd__", [](ConZono& self, const Box& box) { self += box; return &self; },
+            py::arg("box"), py::is_operator())
+        .def("__iadd__", [](const ConZono& self, HybZono& other) { return self + other; },
+            py::arg("other"), py::is_operator())
+        // __imul__: type-preserving args modify in-place; wider types return new object
+        .def("__imul__", [](ConZono& self, zono_float f) { self *= f; return &self; },
+            py::arg("f"), py::is_operator())
+        .def("__imul__", [](ConZono& self, ConZono& other) { self *= other; return &self; },
+            py::arg("other"), py::is_operator())
+        .def("__imul__", [](ConZono& self, const Box& box) { self *= box; return &self; },
+            py::arg("box"), py::is_operator())
+        .def("__imul__", [](const ConZono& self, HybZono& other) { return self * other; },
+            py::arg("other"), py::is_operator())
     ;
 
     // zono class
@@ -2893,6 +2911,24 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     numpy.array: center vector
             )pbdoc")
+        // __iadd__: type-preserving args modify in-place; wider types return new object (Python rebinds)
+        .def("__iadd__", [](Zono& self, Zono& other) { self += other; return &self; },
+            py::arg("other"), py::is_operator())
+        .def("__iadd__", [](Zono& self, const Eigen::Vector<zono_float, -1>& v) { self += v; return &self; },
+            py::arg("v"), py::is_operator())
+        .def("__iadd__", [](Zono& self, const Box& box) { self += box; return &self; },
+            py::arg("box"), py::is_operator())
+        .def("__iadd__", [](const Zono& self, HybZono& other) { return self + other; },
+            py::arg("other"), py::is_operator())
+        // __imul__: type-preserving args modify in-place; wider types return new object
+        .def("__imul__", [](Zono& self, zono_float f) { self *= f; return &self; },
+            py::arg("f"), py::is_operator())
+        .def("__imul__", [](Zono& self, Zono& other) { self *= other; return &self; },
+            py::arg("other"), py::is_operator())
+        .def("__imul__", [](Zono& self, const Box& box) { self *= box; return &self; },
+            py::arg("box"), py::is_operator())
+        .def("__imul__", [](const Zono& self, HybZono& other) { return self * other; },
+            py::arg("other"), py::is_operator())
     ;
 
     // point class
@@ -2912,10 +2948,35 @@ PYBIND11_MODULE(_core, m)
         .def("set", &Point::set, "set point", py::arg("c"),
             R"pbdoc(
                 Reset point object with the given parameters.
-                
+
                 Args:
                     c (numpy.array): center vector
             )pbdoc")
+        // __iadd__: type-preserving args modify in-place; wider types return new object (Python rebinds)
+        .def("__iadd__", [](Point& self, Point& other) { self += other; return &self; },
+            py::arg("other"), py::is_operator())
+        .def("__iadd__", [](Point& self, const Eigen::Vector<zono_float, -1>& v) { self += v; return &self; },
+            py::arg("v"), py::is_operator())
+        .def("__iadd__", [](const Point& self, HybZono& other) { return self + other; },
+            py::arg("other"), py::is_operator())
+        .def("__iadd__", [](const Point& self, const Box& box) { return self + box; },
+            py::arg("box"), py::is_operator())
+        // __isub__: vector translation is in-place; Zono/Box Pontryagin diff returns new object
+        .def("__isub__", [](Point& self, const Eigen::Vector<zono_float, -1>& v) { self -= v; return &self; },
+            py::arg("v"), py::is_operator())
+        .def("__isub__", [](Point& self, Zono& other) { return self - other; },
+            py::arg("other"), py::is_operator())
+        .def("__isub__", [](Point& self, const Box& box) { return self - box; },
+            py::arg("box"), py::is_operator())
+        // __imul__: type-preserving args modify in-place; wider types return new object
+        .def("__imul__", [](Point& self, zono_float f) { self *= f; return &self; },
+            py::arg("f"), py::is_operator())
+        .def("__imul__", [](Point& self, Point& other) { self *= other; return &self; },
+            py::arg("other"), py::is_operator())
+        .def("__imul__", [](const Point& self, HybZono& other) { return self * other; },
+            py::arg("other"), py::is_operator())
+        .def("__imul__", [](const Point& self, const Box& box) { return self * box; },
+            py::arg("box"), py::is_operator())
     ;
 
     // empty set class

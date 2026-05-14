@@ -1,8 +1,80 @@
 #include "ZonoOpt.hpp"
 #include "unit_test_utilities.hpp"
 #include <cmath>
+#include <type_traits>
 
 using namespace ZonoOpt;
+
+// ---------------------------------------------------------------------------
+// SFINAE helpers: detect whether T op= U compiles (deleted → false)
+// ---------------------------------------------------------------------------
+template<typename T, typename U, typename = void>
+struct HasPlusAssign : std::false_type {};
+template<typename T, typename U>
+struct HasPlusAssign<T, U, std::void_t<decltype(std::declval<T&>() += std::declval<U&>())>>
+    : std::true_type {};
+
+template<typename T, typename U, typename = void>
+struct HasMulAssign : std::false_type {};
+template<typename T, typename U>
+struct HasMulAssign<T, U, std::void_t<decltype(std::declval<T&>() *= std::declval<U&>())>>
+    : std::true_type {};
+
+template<typename T, typename U, typename = void>
+struct HasSubAssign : std::false_type {};
+template<typename T, typename U>
+struct HasSubAssign<T, U, std::void_t<decltype(std::declval<T&>() -= std::declval<U&>())>>
+    : std::true_type {};
+
+// operator+= (Minkowski sum)
+// Point: only Point and Eigen::Vector are allowed
+static_assert(!HasPlusAssign<Point, HybZono>::value,  "Point += HybZono must not compile");
+static_assert(!HasPlusAssign<Point, ConZono>::value,  "Point += ConZono must not compile");
+static_assert(!HasPlusAssign<Point, Zono>::value,     "Point += Zono must not compile");
+static_assert(!HasPlusAssign<Point, Box>::value,      "Point += Box must not compile");
+static_assert( HasPlusAssign<Point, Point>::value,    "Point += Point must compile");
+static_assert( HasPlusAssign<Point, Eigen::VectorXd>::value, "Point += vector must compile");
+// Zono: Zono and Point allowed; ConZono and HybZono are not
+static_assert(!HasPlusAssign<Zono, HybZono>::value,   "Zono += HybZono must not compile");
+static_assert(!HasPlusAssign<Zono, ConZono>::value,   "Zono += ConZono must not compile");
+static_assert( HasPlusAssign<Zono, Zono>::value,      "Zono += Zono must compile");
+static_assert( HasPlusAssign<Zono, Point>::value,     "Zono += Point must compile");
+static_assert( HasPlusAssign<Zono, Eigen::VectorXd>::value,  "Zono += vector must compile");
+static_assert( HasPlusAssign<Zono, Box>::value,       "Zono += Box must compile");
+// ConZono: ConZono, Zono, Point allowed; HybZono is not
+static_assert(!HasPlusAssign<ConZono, HybZono>::value, "ConZono += HybZono must not compile");
+static_assert( HasPlusAssign<ConZono, ConZono>::value, "ConZono += ConZono must compile");
+static_assert( HasPlusAssign<ConZono, Zono>::value,   "ConZono += Zono must compile");
+static_assert( HasPlusAssign<ConZono, Point>::value,  "ConZono += Point must compile");
+static_assert( HasPlusAssign<ConZono, Box>::value,    "ConZono += Box must compile");
+
+// operator*= (Cartesian product / scalar)
+// Point: only Point and scalar allowed; Zono, ConZono, HybZono, Box are not
+static_assert(!HasMulAssign<Point, HybZono>::value,   "Point *= HybZono must not compile");
+static_assert(!HasMulAssign<Point, ConZono>::value,   "Point *= ConZono must not compile");
+static_assert(!HasMulAssign<Point, Zono>::value,      "Point *= Zono must not compile");
+static_assert(!HasMulAssign<Point, Box>::value,       "Point *= Box must not compile");
+static_assert( HasMulAssign<Point, Point>::value,     "Point *= Point must compile");
+static_assert( HasMulAssign<Point, zono_float>::value,"Point *= scalar must compile");
+// Zono: Zono and Point allowed; ConZono and HybZono are not
+static_assert(!HasMulAssign<Zono, HybZono>::value,    "Zono *= HybZono must not compile");
+static_assert(!HasMulAssign<Zono, ConZono>::value,    "Zono *= ConZono must not compile");
+static_assert( HasMulAssign<Zono, Zono>::value,       "Zono *= Zono must compile");
+static_assert( HasMulAssign<Zono, Point>::value,      "Zono *= Point must compile");
+static_assert( HasMulAssign<Zono, Box>::value,        "Zono *= Box must compile");
+static_assert( HasMulAssign<Zono, zono_float>::value, "Zono *= scalar must compile");
+// ConZono: ConZono, Zono, Point allowed; HybZono is not
+static_assert(!HasMulAssign<ConZono, HybZono>::value, "ConZono *= HybZono must not compile");
+static_assert( HasMulAssign<ConZono, ConZono>::value, "ConZono *= ConZono must compile");
+static_assert( HasMulAssign<ConZono, Zono>::value,    "ConZono *= Zono must compile");
+static_assert( HasMulAssign<ConZono, Point>::value,   "ConZono *= Point must compile");
+static_assert( HasMulAssign<ConZono, Box>::value,     "ConZono *= Box must compile");
+
+// operator-= (Pontryagin difference)
+// Point: only Eigen::Vector is allowed; Zono and Box are not
+static_assert(!HasSubAssign<Point, Zono>::value,      "Point -= Zono must not compile");
+static_assert(!HasSubAssign<Point, Box>::value,       "Point -= Box must not compile");
+static_assert( HasSubAssign<Point, Eigen::VectorXd>::value,  "Point -= vector must compile");
 
 static bool check_matrix_equal(const Eigen::MatrixXd& A, const Eigen::MatrixXd& B)
 {

@@ -767,6 +767,173 @@ def test_operator_overloading():
     Z_op = -Z1
     assert check_equal(Z_set, Z_op), "Unary minus failed"
 
+    # --- dynamic typing: augmented assignment promotes to the correct wider type ---
+
+    def make_conzono(c):
+        G = sparse.eye(2, format='csc')
+        A = sparse.csc_matrix(np.ones((1, 2)))
+        b = np.array([0.0])
+        return zono.ConZono(G, np.array(c, dtype=float), A, b)
+
+    def make_hybzono(c):
+        Gc = sparse.eye(2, format='csc')
+        Gb = sparse.eye(2, format='csc')
+        Ac = sparse.csc_matrix(np.zeros((1, 2)))
+        Ab = sparse.csc_matrix(np.zeros((1, 2)))
+        b  = np.array([0.0])
+        return zono.HybZono(Gc, Gb, np.array(c, dtype=float), Ac, Ab, b)
+
+    # Point += Point  → Point, in-place
+    p = zono.Point(np.array([1., 2.]))
+    p_id = id(p)
+    p += zono.Point(np.array([0.5, 0.5]))
+    assert p.is_point() and id(p) == p_id, "Point += Point: expected in-place Point"
+
+    # Point += Zono  → Zono (type promotion)
+    p = zono.Point(c3)
+    expected = zono.minkowski_sum(p, Z1)
+    p += Z1
+    assert p.is_zono(), "Point += Zono: expected in-place Zono"
+    assert check_equal(p, expected), "Point += Zono: result mismatch"
+
+    # Point += ConZono  → ConZono
+    p = zono.Point(c3)
+    cz = make_conzono([0., 0.])
+    expected = zono.minkowski_sum(p, cz)
+    p += cz
+    assert p.is_conzono(), "Point += ConZono: expected in-place ConZono"
+    assert check_equal(p, expected), "Point += ConZono: result mismatch"
+
+    # Point += HybZono  → HybZono
+    p = zono.Point(c3)
+    hz = make_hybzono([0., 0.])
+    p += hz
+    assert p.is_hybzono(), "Point += HybZono: expected in-place HybZono"
+
+    # Point += Box  → Zono
+    p = zono.Point(c3)
+    expected = zono.minkowski_sum(p, zono.interval_2_zono(box))
+    p += box
+    assert p.is_zono(), "Point += Box: expected in-place Zono"
+    assert check_equal(p, expected), "Point += Box: result mismatch"
+
+    # Zono += Zono  → Zono, in-place
+    z_op = Z1.copy()
+    z_id = id(z_op)
+    z_op += Z2
+    assert z_op.is_zono() and id(z_op) == z_id, "Zono += Zono: expected in-place Zono"
+
+    # Zono += Point  → Zono, in-place
+    z_op = Z1.copy()
+    z_id = id(z_op)
+    z_op += P3
+    assert z_op.is_zono() and id(z_op) == z_id, "Zono += Point: expected in-place Zono"
+
+    # Zono += ConZono  → ConZono (type promotion)
+    z_op = Z1.copy()
+    cz = make_conzono([0., 0.])
+    expected = zono.minkowski_sum(z_op, cz)
+    z_op += cz
+    assert z_op.is_conzono(), f"Zono += ConZono: expected ConZono, got {type(z_op).__name__}"
+    assert check_equal(z_op, expected), "Zono += ConZono: result mismatch"
+
+    # Zono += HybZono  → HybZono
+    z_op = Z1.copy()
+    hz = make_hybzono([0., 0.])
+    z_op += hz
+    assert z_op.is_hybzono(), f"Zono += HybZono: expected HybZono, got {type(z_op).__name__}"
+
+    # ConZono += ConZono  → ConZono, in-place
+    cz1 = make_conzono([1., 2.])
+    cz1_id = id(cz1)
+    cz1 += make_conzono([0., 0.])
+    assert cz1.is_conzono() and id(cz1) == cz1_id, "ConZono += ConZono: expected in-place ConZono"
+
+    # ConZono += Zono  → ConZono, in-place
+    cz1 = make_conzono([1., 2.])
+    cz1_id = id(cz1)
+    cz1 += Z1
+    assert cz1.is_conzono() and id(cz1) == cz1_id, "ConZono += Zono: expected in-place ConZono"
+
+    # ConZono += HybZono  → HybZono
+    cz1 = make_conzono([1., 2.])
+    hz = make_hybzono([0., 0.])
+    cz1 += hz
+    assert cz1.is_hybzono(), f"ConZono += HybZono: expected HybZono, got {type(cz1).__name__}"
+
+    # Point *= scalar  → Point, in-place
+    p = zono.Point(c3)
+    p_id = id(p)
+    p *= 2.0
+    assert p.is_point() and id(p) == p_id, "Point *= scalar: expected in-place Point"
+
+    # Point *= Point  → Point, in-place (Cartesian product: higher-dim point)
+    p = zono.Point(c3)
+    p_id = id(p)
+    p *= zono.Point(np.array([1., 2.]))
+    assert p.is_point() and id(p) == p_id, "Point *= Point: expected in-place Point"
+    assert p.get_n() == 4, f"Point *= Point: expected n=4, got {p.get_n()}"
+
+    # Point *= Zono  → Zono (type promotion via Cartesian product)
+    p = zono.Point(c3)
+    expected = zono.cartesian_product(p, Z1)
+    p *= Z1
+    assert p.is_zono(), f"Point *= Zono: expected Zono, got {type(p).__name__}"
+    assert check_equal(p, expected), "Point *= Zono: result mismatch"
+
+    # Point *= Box  → Zono (type promotion)
+    p = zono.Point(c3)
+    expected = zono.cartesian_product(p, zono.interval_2_zono(box))
+    p *= box
+    assert p.is_zono(), f"Point *= Box: expected Zono, got {type(p).__name__}"
+    assert check_equal(p, expected), "Point *= Box: result mismatch"
+
+    # Zono *= Zono  → Zono, in-place
+    z_op = Z1.copy()
+    z_id = id(z_op)
+    z_op *= Z2
+    assert z_op.is_zono() and id(z_op) == z_id, "Zono *= Zono: expected in-place Zono"
+
+    # Zono *= ConZono  → ConZono (type promotion)
+    z_op = Z1.copy()
+    cz = make_conzono([3., 4.])
+    z_op *= cz
+    assert z_op.is_conzono(), f"Zono *= ConZono: expected ConZono, got {type(z_op).__name__}"
+
+    # ConZono *= ConZono  → ConZono, in-place
+    cz1 = make_conzono([1., 2.])
+    cz1_id = id(cz1)
+    cz1 *= make_conzono([3., 4.])
+    assert cz1.is_conzono() and id(cz1) == cz1_id, "ConZono *= ConZono: expected in-place ConZono"
+
+    # ConZono *= HybZono  → HybZono
+    cz1 = make_conzono([1., 2.])
+    hz = make_hybzono([3., 4.])
+    cz1 *= hz
+    assert cz1.is_hybzono(), f"ConZono *= HybZono: expected HybZono, got {type(cz1).__name__}"
+
+    # Point -= vector  → Point, in-place
+    p = zono.Point(np.array([5., 6.]))
+    p_id = id(p)
+    p -= np.array([1., 2.])
+    assert p.is_point() and id(p) == p_id, "Point -= vector: expected in-place Point"
+    assert np.allclose(p.get_c(), [4., 4.]), f"Point -= vector: wrong center {p.get_c()}"
+
+    # Point -= Zono  → new object (type promotion, Pontryagin diff)
+    p = zono.Point(np.array([1., 2.]))
+    p_orig_id = id(p)
+    expected = zono.pontry_diff(p, Z2, exact=True)
+    p -= Z2
+    assert id(p) != p_orig_id, "Point -= Zono: should produce new object, not modify in-place"
+    assert p.get_n() == expected.get_n(), "Point -= Zono: n mismatch"
+    assert check_equal(p, expected), "Point -= Zono: result mismatch"
+
+    # Zono -= Zono  → Zono, in-place
+    z_op = Z1.copy()
+    z_id = id(z_op)
+    z_op -= Z2
+    assert z_op.is_zono() and id(z_op) == z_id, "Zono -= Zono: expected in-place Zono"
+
     # finish
     print('Passed: Operator Overloading')
 

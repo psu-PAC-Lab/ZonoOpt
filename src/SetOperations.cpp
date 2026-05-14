@@ -44,11 +44,11 @@ namespace ZonoOpt
         Eigen::Vector<zono_float, -1> c = R * Z.c + *s_ptr;
 
         // output correct type
-        if (Z.is_hybzono())
+        if (Gb.cols() > 0)
             return std::make_unique<HybZono>(Gc, Gb, c, Z.Ac, Z.Ab, Z.b, Z.zero_one_form);
-        else if (Z.is_conzono())
+        else if (Z.Ac.rows() > 0)
             return std::make_unique<ConZono>(Gc, c, Z.A, Z.b, Z.zero_one_form);
-        else if (Z.is_zono())
+        else if (Gc.cols() > 0)
             return std::make_unique<Zono>(Gc, c, Z.zero_one_form);
         else
             return std::make_unique<Point>(c);
@@ -202,12 +202,14 @@ namespace ZonoOpt
         b.segment(Z1.nC, Z2.nC) = Z2.b;
 
         // return correct output type
-        if (Z1.is_hybzono() || Z2.is_hybzono())
+        if (Gb.cols() > 0)
             return std::make_unique<HybZono>(Gc, Gb, c, Ac, Ab, b, Z1.zero_one_form);
-        else if (Z1.is_conzono() || Z2.is_conzono())
+        else if (Ac.rows() > 0)
             return std::make_unique<ConZono>(Gc, c, Ac, b, Z1.zero_one_form);
-        else
+        else if (Gc.cols() > 0)
             return std::make_unique<Zono>(Gc, c, Z1.zero_one_form);
+        else
+            return std::make_unique<Point>(c);
     }
 
     std::unique_ptr<HybZono> intersection(const HybZono& Z1, HybZono& Z2, const Eigen::SparseMatrix<zono_float>& R)
@@ -280,7 +282,7 @@ namespace ZonoOpt
         b.segment(Z1.nC + Z2.nC, R_ptr->rows()) = Z2.c - (*R_ptr) * Z1.c;
 
         // return correct output type
-        if (Z1.is_hybzono() || Z2.is_hybzono())
+        if (Gb.cols() > 0)
             return std::make_unique<HybZono>(Gc, Gb, c, Ac, Ab, b, Z1.zero_one_form);
         else
             return std::make_unique<ConZono>(Gc, c, Ac, b, Z1.zero_one_form);
@@ -842,11 +844,11 @@ namespace ZonoOpt
         b.segment(Z1.nC, Z2.nC) = Z2.b;
 
         // return correct output type
-        if (Z1.is_hybzono() || Z2.is_hybzono())
+        if (Gb.cols() > 0)
             return std::make_unique<HybZono>(Gc, Gb, c, Ac, Ab, b, Z1.zero_one_form);
-        else if (Z1.is_conzono() || Z2.is_conzono())
+        else if (Ac.rows() > 0)
             return std::make_unique<ConZono>(Gc, c, Ac, b, Z1.zero_one_form);
-        else if (Z1.is_zono() || Z2.is_zono())
+        else if (Gc.cols() > 0)
             return std::make_unique<Zono>(Gc, c, Z1.zero_one_form);
         else
             return std::make_unique<Point>(c);
@@ -962,7 +964,7 @@ namespace ZonoOpt
         b.segment(Z.nC, n_cons) = f - H * (*R_ptr) * Z.c - dm/two;
 
         // return correct output type
-        if (Z.is_hybzono())
+        if (Gb.cols() > 0)
             return std::make_unique<HybZono>(Gc, Gb, c, Ac, Ab, b, Z.zero_one_form, false);
         else
             return std::make_unique<ConZono>(Gc, c, Ac, b, Z.zero_one_form);

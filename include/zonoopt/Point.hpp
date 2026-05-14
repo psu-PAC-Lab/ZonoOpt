@@ -53,6 +53,41 @@ namespace ZonoOpt
         // display methods
         std::string print() const override;
 
+        // in-place operators (type-preserving overrides)
+        using HybZono::operator+=;  // restore vector overload hidden by declarations below
+        using HybZono::operator-=;  // restore vector overload hidden by declarations below
+        using HybZono::operator*=;  // restore scalar overload hidden by declarations below
+
+        /**
+         * @brief In-place Minkowski sum with another Point (translation).
+         * Use operator+ for Zono/ConZono/HybZono/Box arguments, which return a wider type.
+         */
+        void operator+=(Point& other);
+
+        /** @brief Deleted: use operator+ instead — result type would be Zono or wider. */
+        void operator+=(HybZono& other) = delete;
+
+        /** @brief Deleted: use operator+ instead — result type would be Zono. */
+        void operator+=(const Box& box) = delete;
+
+        /** @brief Deleted: use operator- instead — Point ⊖ Zono does not yield a Point. */
+        void operator-=(Zono& other) = delete;
+
+        /** @brief Deleted: use operator- instead — Point ⊖ Box does not yield a Point. */
+        void operator-=(const Box& box) = delete;
+
+        /**
+         * @brief In-place Cartesian product with another Point.
+         * Use operator* for Zono/ConZono/HybZono/Box arguments, which return a wider type.
+         */
+        void operator*=(Point& other);
+
+        /** @brief Deleted: use operator* instead — result type would be Zono or wider. */
+        void operator*=(HybZono& other) = delete;
+
+        /** @brief Deleted: use operator* instead — result type would be Zono. */
+        void operator*=(const Box& box) = delete;
+
         // do nothing methods
         std::unique_ptr<HybZono> remove_redundancy(int) const override { return std::unique_ptr<HybZono>(this->clone()); }
 
