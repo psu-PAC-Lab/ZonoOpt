@@ -1,0 +1,496 @@
+#include "zonoopt/GurobiSolver.hpp"
+#include "zonoopt/GurobiApi.hpp"
+
+#include <chrono>
+#include <limits>
+#include <vector>
+#include <string>
+#include <stdexcept>
+#include <utility>
+
+namespace ZonoOpt
+{
+namespace detail
+{
+
+namespace
+{
+
+// Gurobi status codes (from gurobi_c.h) — replicated here so we don't need Gurobi at compile time.
+constexpr int GRB_OPTIMAL         = 2;
+constexpr int GRB_INFEASIBLE      = 3;
+constexpr int GRB_INF_OR_UNBD     = 4;
+constexpr int GRB_SUBOPTIMAL      = 13;
+
+struct GurobiResult
+{
+    int status = 0;
+    double runtime = 0.0;
+    double objective = 0.0;
+    Eigen::VectorXd y;
+    bool got_solution = false;
+};
+
+template <typename T>
+Eigen::VectorXd to_double_vec(const Eigen::Vector<T, -1>& v)
+{
+    return v.template cast<double>();
+}
+
+template <typename T>
+Eigen::SparseMatrix<double, Eigen::RowMajor> to_double_rowmajor(const Eigen::SparseMatrix<T>& M)
+{
+    if (M.nonZeros() == 0)
+    {
+        return Eigen::SparseMatrix<double, Eigen::RowMajor>(M.rows(), M.cols());
+    }
+    Eigen::SparseMatrix<double> Md = M.template cast<double>();
+    return Eigen::SparseMatrix<double, Eigen::RowMajor>(Md);
+}
+
+/**
+ * Build a Gurobi model with the given QP/MIQP data and apply common settings.
+ * Returns ownership of the env and model so the caller can drive optimization
+ * and post-optimization attribute reads.
+ */
+struct PreparedModel
+{
+    GurobiApi::Env env;
+    GurobiApi::Model model;
+    int n = 0;
+};
+
+PreparedModel prepare_model(const Eigen::SparseMatrix<double, Eigen::RowMajor>& P_rm,
+                            const Eigen::VectorXd& q_d,
+                            const Eigen::SparseMatrix<double, Eigen::RowMajor>& A_rm,
+                            const Eigen::VectorXd& b_d,
+                            const Eigen::VectorXd& lb_d,
+                            const Eigen::VectorXd& ub_d,
+                            const std::vector<char>& vtype,
+                            const OptSettings& settings)
+{
+    GurobiApi& api = GurobiApi::instance();
+    if (!api.is_available())
+    {
+        throw std::runtime_error("Gurobi API is not available.");
+    }
+
+    PreparedModel pm;
+    pm.n = static_cast<int>(q_d.size());
+
+    pm.env = api.create_env("");
+    pm.model = api.create_model(pm.env, "zonoopt_model", pm.n,
+                                const_cast<double*>(q_d.data()),
+                                const_cast<double*>(lb_d.data()),
+                                const_cast<double*>(ub_d.data()),
+                                const_cast<char*>(vtype.data()));
+
+    api.set_int_param(pm.model, "OutputFlag", settings.verbose ? 1 : 0);
+    if (settings.t_max < std::numeric_limits<double>::max())
+    {
+        api.set_dbl_param(pm.model, "TimeLimit", static_cast<double>(settings.t_max));
+    }
+    if (settings.eps_r > 0)
+    {
+        api.set_dbl_param(pm.model, "MIPGap", static_cast<double>(settings.eps_r));
+    }
+    if (settings.eps_a > 0)
+    {
+        api.set_dbl_param(pm.model, "MIPGapAbs", static_cast<double>(settings.eps_a));
+    }
+    if (settings.n_threads_bnb > 0)
+    {
+        api.set_int_param(pm.model, "Threads", settings.n_threads_bnb);
+    }
+
+    for (int k = 0; k < A_rm.outerSize(); ++k)
+    {
+        std::vector<int> ind;
+        std::vector<double> val;
+        for (Eigen::SparseMatrix<double, Eigen::RowMajor>::InnerIterator it(A_rm, k); it; ++it)
+        {
+            ind.push_back(static_cast<int>(it.col()));
+            val.push_back(it.value());
+        }
+        if (!ind.empty())
+        {
+            api.add_constr(pm.model, static_cast<int>(ind.size()), ind.data(), val.data(),
+                           '=', b_d(k));
+        }
+    }
+
+    if (P_rm.nonZeros() > 0)
+    {
+        std::vector<int> qrow, qcol;
+        std::vector<double> qval;
+        qrow.reserve(P_rm.nonZeros());
+        qcol.reserve(P_rm.nonZeros());
+        qval.reserve(P_rm.nonZeros());
+        for (int k = 0; k < P_rm.outerSize(); ++k)
+        {
+            for (Eigen::SparseMatrix<double, Eigen::RowMajor>::InnerIterator it(P_rm, k); it; ++it)
+            {
+                if (it.col() > it.row()) continue;
+                const double v = (it.row() == it.col()) ? 0.5 * it.value() : it.value();
+                qrow.push_back(static_cast<int>(it.row()));
+                qcol.push_back(static_cast<int>(it.col()));
+                qval.push_back(v);
+            }
+        }
+        if (!qrow.empty())
+        {
+            api.add_qp_terms(pm.model, static_cast<int>(qrow.size()),
+                             qrow.data(), qcol.data(), qval.data());
+        }
+    }
+
+    return pm;
+}
+
+GurobiResult optimize_single(PreparedModel& pm)
+{
+    GurobiApi& api = GurobiApi::instance();
+    GurobiResult result;
+    result.y = Eigen::VectorXd::Zero(pm.n);
+
+    auto t_start = std::chrono::steady_clock::now();
+    api.optimize(pm.model);
+    auto t_end = std::chrono::steady_clock::now();
+    result.runtime = std::chrono::duration<double>(t_end - t_start).count();
+
+    api.get_int_attr(pm.model, "Status", result.status);
+
+    if (result.status == GRB_OPTIMAL || result.status == GRB_SUBOPTIMAL)
+    {
+        try
+        {
+            api.get_dbl_attr_array(pm.model, "X", 0, pm.n, result.y.data());
+            api.get_dbl_attr(pm.model, "ObjVal", result.objective);
+            result.got_solution = true;
+        }
+        catch (const std::exception&)
+        {
+            result.got_solution = false;
+        }
+    }
+
+    return result;
+}
+
+/**
+ * Drive Gurobi's solution pool to enumerate up to n_sols feasible solutions.
+ * Pool params: PoolSolutions, PoolSearchMode=2 (find n best).
+ */
+std::vector<GurobiResult> optimize_pool(PreparedModel& pm, int n_sols)
+{
+    GurobiApi& api = GurobiApi::instance();
+    std::vector<GurobiResult> results;
+
+    if (n_sols < 1) n_sols = 1;
+
+    api.set_int_param(pm.model, "PoolSolutions", n_sols);
+    api.set_int_param(pm.model, "PoolSearchMode", 2);
+
+    auto t_start = std::chrono::steady_clock::now();
+    api.optimize(pm.model);
+    auto t_end = std::chrono::steady_clock::now();
+    const double runtime = std::chrono::duration<double>(t_end - t_start).count();
+
+    int status = 0;
+    api.get_int_attr(pm.model, "Status", status);
+
+    if (status == GRB_INFEASIBLE || status == GRB_INF_OR_UNBD)
+    {
+        GurobiResult gr;
+        gr.status = status;
+        gr.runtime = runtime;
+        gr.y = Eigen::VectorXd::Zero(pm.n);
+        results.push_back(gr);
+        return results;
+    }
+
+    int sol_count = 0;
+    try
+    {
+        api.get_int_attr(pm.model, "SolCount", sol_count);
+    }
+    catch (const std::exception&)
+    {
+        sol_count = 0;
+    }
+
+    if (sol_count == 0)
+    {
+        GurobiResult gr;
+        gr.status = status;
+        gr.runtime = runtime;
+        gr.y = Eigen::VectorXd::Zero(pm.n);
+        results.push_back(gr);
+        return results;
+    }
+
+    for (int k = 0; k < sol_count; ++k)
+    {
+        GurobiResult gr;
+        gr.status = status;
+        gr.runtime = runtime;  // total optimization runtime; per-solution time is not separable
+        gr.y = Eigen::VectorXd::Zero(pm.n);
+
+        try
+        {
+            api.set_int_param(pm.model, "SolutionNumber", k);
+            api.get_dbl_attr_array(pm.model, "Xn", 0, pm.n, gr.y.data());
+            api.get_dbl_attr(pm.model, "PoolObjVal", gr.objective);
+            gr.got_solution = true;
+        }
+        catch (const std::exception&)
+        {
+            gr.got_solution = false;
+        }
+        results.push_back(gr);
+    }
+
+    return results;
+}
+
+OptSolution build_opt_solution(const GurobiResult& gr, const Eigen::Vector<zono_float, -1>& z,
+                               zono_float constant_offset)
+{
+    OptSolution sol;
+    sol.z = z;
+    sol.run_time = gr.runtime;
+    sol.iter = 0;
+
+    if (gr.status == GRB_INFEASIBLE || gr.status == GRB_INF_OR_UNBD)
+    {
+        sol.infeasible = true;
+        sol.converged = false;
+        sol.J = std::numeric_limits<zono_float>::infinity();
+    }
+    else if (gr.got_solution)
+    {
+        sol.infeasible = false;
+        sol.converged = (gr.status == GRB_OPTIMAL || gr.status == GRB_SUBOPTIMAL);
+        sol.J = static_cast<zono_float>(gr.objective) + constant_offset;
+    }
+    else
+    {
+        sol.infeasible = false;
+        sol.converged = false;
+        sol.J = -std::numeric_limits<zono_float>::infinity();
+    }
+    return sol;
+}
+
+/**
+ * Prepare the MIQP data: optionally applies the xi = M*y + s substitution when binary
+ * variables are in {-1, 1} form so Gurobi (which uses {0, 1} binaries) can solve in y-space.
+ * Outputs the row-major P, A, vectors, vtype, and the constant offset / transform info
+ * needed to recover xi from y after solving.
+ */
+struct MiqpPrep
+{
+    Eigen::SparseMatrix<double, Eigen::RowMajor> P_rm;
+    Eigen::SparseMatrix<double, Eigen::RowMajor> A_rm;
+    Eigen::VectorXd q_d;
+    Eigen::VectorXd b_d;
+    Eigen::VectorXd lb_d;
+    Eigen::VectorXd ub_d;
+    std::vector<char> vtype;
+    double const_shift = 0.0;
+    bool needs_transform = false;
+    int bin_start = 0;
+    int bin_count = 0;
+
+    Eigen::VectorXd recover_xi(const Eigen::VectorXd& y) const
+    {
+        if (!needs_transform) return y;
+        Eigen::VectorXd xi = y;
+        for (int i = bin_start; i < bin_start + bin_count; ++i)
+        {
+            xi(i) = 2.0 * y(i) - 1.0;
+        }
+        return xi;
+    }
+};
+
+MiqpPrep prep_miqp(const Eigen::SparseMatrix<zono_float>& P,
+                   const Eigen::Vector<zono_float, -1>& q,
+                   const Eigen::SparseMatrix<zono_float>& A,
+                   const Eigen::Vector<zono_float, -1>& b,
+                   const Eigen::Vector<zono_float, -1>& xi_lb,
+                   const Eigen::Vector<zono_float, -1>& xi_ub,
+                   int bin_start, int bin_count,
+                   bool zero_one_form)
+{
+    const int n = static_cast<int>(q.size());
+
+    Eigen::SparseMatrix<double> P_d = (P.nonZeros() > 0)
+                                        ? Eigen::SparseMatrix<double>(P.template cast<double>())
+                                        : Eigen::SparseMatrix<double>(n, n);
+    Eigen::SparseMatrix<double> A_d = (A.nonZeros() > 0)
+                                        ? Eigen::SparseMatrix<double>(A.template cast<double>())
+                                        : Eigen::SparseMatrix<double>(static_cast<int>(b.size()), n);
+    Eigen::VectorXd q_d  = to_double_vec(q);
+    Eigen::VectorXd b_d  = to_double_vec(b);
+    Eigen::VectorXd lb_d = to_double_vec(xi_lb);
+    Eigen::VectorXd ub_d = to_double_vec(xi_ub);
+
+    MiqpPrep out;
+    out.bin_start = bin_start;
+    out.bin_count = bin_count;
+    out.needs_transform = (bin_count > 0) && !zero_one_form;
+
+    if (out.needs_transform)
+    {
+        Eigen::VectorXd m_vec = Eigen::VectorXd::Ones(n);
+        Eigen::VectorXd s_vec = Eigen::VectorXd::Zero(n);
+        for (int i = bin_start; i < bin_start + bin_count; ++i)
+        {
+            m_vec(i) = 2.0;
+            s_vec(i) = -1.0;
+        }
+
+        Eigen::VectorXd P_s = (P_d.nonZeros() > 0) ? Eigen::VectorXd(P_d * s_vec) : Eigen::VectorXd::Zero(n);
+        Eigen::VectorXd new_q = m_vec.asDiagonal() * (P_s + q_d);
+        out.const_shift = 0.5 * s_vec.dot(P_s) + q_d.dot(s_vec);
+
+        if (P_d.nonZeros() > 0)
+        {
+            P_d = m_vec.asDiagonal() * P_d * m_vec.asDiagonal();
+        }
+        q_d = new_q;
+
+        if (A_d.nonZeros() > 0)
+        {
+            b_d = b_d - A_d * s_vec;
+            A_d = A_d * m_vec.asDiagonal();
+        }
+
+        for (int i = bin_start; i < bin_start + bin_count; ++i)
+        {
+            lb_d(i) = 0.0;
+            ub_d(i) = 1.0;
+        }
+    }
+
+    out.P_rm = (P_d.nonZeros() > 0)
+                  ? Eigen::SparseMatrix<double, Eigen::RowMajor>(P_d)
+                  : Eigen::SparseMatrix<double, Eigen::RowMajor>(n, n);
+    out.A_rm = (A_d.nonZeros() > 0)
+                  ? Eigen::SparseMatrix<double, Eigen::RowMajor>(A_d)
+                  : Eigen::SparseMatrix<double, Eigen::RowMajor>(static_cast<int>(b_d.size()), n);
+    out.q_d = std::move(q_d);
+    out.b_d = std::move(b_d);
+    out.lb_d = std::move(lb_d);
+    out.ub_d = std::move(ub_d);
+    out.vtype.assign(n, 'C');
+    for (int i = bin_start; i < bin_start + bin_count; ++i)
+    {
+        out.vtype[i] = 'B';
+    }
+
+    return out;
+}
+
+} // anonymous namespace
+
+bool gurobi_available()
+{
+    return GurobiApi::instance().is_available();
+}
+
+OptSolution solve_qp_gurobi(const Eigen::SparseMatrix<zono_float>& P,
+                            const Eigen::Vector<zono_float, -1>& q,
+                            zono_float c,
+                            const Eigen::SparseMatrix<zono_float>& A,
+                            const Eigen::Vector<zono_float, -1>& b,
+                            const Eigen::Vector<zono_float, -1>& xi_lb,
+                            const Eigen::Vector<zono_float, -1>& xi_ub,
+                            const OptSettings& settings)
+{
+    const int n = static_cast<int>(q.size());
+
+    Eigen::SparseMatrix<double, Eigen::RowMajor> P_rm = to_double_rowmajor(P);
+    Eigen::SparseMatrix<double, Eigen::RowMajor> A_rm = to_double_rowmajor(A);
+    Eigen::VectorXd q_d  = to_double_vec(q);
+    Eigen::VectorXd b_d  = to_double_vec(b);
+    Eigen::VectorXd lb_d = to_double_vec(xi_lb);
+    Eigen::VectorXd ub_d = to_double_vec(xi_ub);
+
+    std::vector<char> vtype(n, 'C');
+
+    PreparedModel pm = prepare_model(P_rm, q_d, A_rm, b_d, lb_d, ub_d, vtype, settings);
+    GurobiResult gr = optimize_single(pm);
+
+    Eigen::Vector<zono_float, -1> z = Eigen::Vector<zono_float, -1>::Zero(n);
+    if (gr.got_solution)
+    {
+        z = gr.y.cast<zono_float>();
+    }
+    return build_opt_solution(gr, z, c);
+}
+
+OptSolution solve_miqp_gurobi(const Eigen::SparseMatrix<zono_float>& P,
+                              const Eigen::Vector<zono_float, -1>& q,
+                              zono_float c,
+                              const Eigen::SparseMatrix<zono_float>& A,
+                              const Eigen::Vector<zono_float, -1>& b,
+                              const Eigen::Vector<zono_float, -1>& xi_lb,
+                              const Eigen::Vector<zono_float, -1>& xi_ub,
+                              int bin_start, int bin_count,
+                              bool zero_one_form,
+                              const OptSettings& settings)
+{
+    MiqpPrep prep = prep_miqp(P, q, A, b, xi_lb, xi_ub, bin_start, bin_count, zero_one_form);
+
+    PreparedModel pm = prepare_model(prep.P_rm, prep.q_d, prep.A_rm, prep.b_d,
+                                     prep.lb_d, prep.ub_d, prep.vtype, settings);
+    GurobiResult gr = optimize_single(pm);
+
+    const int n = static_cast<int>(q.size());
+    Eigen::Vector<zono_float, -1> z = Eigen::Vector<zono_float, -1>::Zero(n);
+    if (gr.got_solution)
+    {
+        Eigen::VectorXd xi = prep.recover_xi(gr.y);
+        z = xi.cast<zono_float>();
+    }
+    return build_opt_solution(gr, z, c + static_cast<zono_float>(prep.const_shift));
+}
+
+std::vector<OptSolution> solve_miqp_gurobi_multisol(const Eigen::SparseMatrix<zono_float>& P,
+                                                    const Eigen::Vector<zono_float, -1>& q,
+                                                    zono_float c,
+                                                    const Eigen::SparseMatrix<zono_float>& A,
+                                                    const Eigen::Vector<zono_float, -1>& b,
+                                                    const Eigen::Vector<zono_float, -1>& xi_lb,
+                                                    const Eigen::Vector<zono_float, -1>& xi_ub,
+                                                    int bin_start, int bin_count,
+                                                    bool zero_one_form,
+                                                    int n_sols,
+                                                    const OptSettings& settings)
+{
+    MiqpPrep prep = prep_miqp(P, q, A, b, xi_lb, xi_ub, bin_start, bin_count, zero_one_form);
+
+    PreparedModel pm = prepare_model(prep.P_rm, prep.q_d, prep.A_rm, prep.b_d,
+                                     prep.lb_d, prep.ub_d, prep.vtype, settings);
+    std::vector<GurobiResult> grs = optimize_pool(pm, n_sols);
+
+    const int n = static_cast<int>(q.size());
+    std::vector<OptSolution> sols;
+    sols.reserve(grs.size());
+    for (const auto& gr : grs)
+    {
+        Eigen::Vector<zono_float, -1> z = Eigen::Vector<zono_float, -1>::Zero(n);
+        if (gr.got_solution)
+        {
+            Eigen::VectorXd xi = prep.recover_xi(gr.y);
+            z = xi.cast<zono_float>();
+        }
+        sols.push_back(build_opt_solution(gr, z, c + static_cast<zono_float>(prep.const_shift)));
+    }
+    return sols;
+}
+
+} // namespace detail
+} // namespace ZonoOpt

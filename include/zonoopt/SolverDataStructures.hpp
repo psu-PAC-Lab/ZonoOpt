@@ -14,6 +14,7 @@
 
 #include <Eigen/Dense>
 #include <sstream>
+#include <string>
 
 namespace ZonoOpt
 {
@@ -125,6 +126,11 @@ namespace ZonoOpt
         /// rng seed for ADMM-FP
         unsigned int rng_seed = 0;
 
+        // external solver selection
+
+        /// optional external solver flag; "zonoopt" (default) = internal solver, "gurobi" = dynamically load Gurobi with silent fallback to internal solver if unavailable
+        std::string solver = "zonoopt";
+
         // validity check
         /**
          * @brief Checks whether settings struct is valid
@@ -187,6 +193,7 @@ namespace ZonoOpt
             ss << "  enable_rng_seed: " << (enable_rng_seed ? "true" : "false") << std::endl;
             ss << "  rng_seed: " << rng_seed << std::endl;
             ss << "  enable_restart_admm_fp: " << (enable_restart_admm_fp ? "true" : "false") << std::endl;
+            ss << "  solver: " << solver << std::endl;
             return ss.str();
         }
     };

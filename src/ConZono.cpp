@@ -1,4 +1,5 @@
 #include "ZonoOpt.hpp"
+#include "zonoopt/GurobiSolver.hpp"
 
 namespace ZonoOpt
 {
@@ -222,6 +223,15 @@ namespace ZonoOpt
             xi_lb.setConstant(-1);
         const Eigen::Vector<zono_float, -1> xi_ub = Eigen::Vector<zono_float, -1>::Ones(this->nG);
 
+        // Optional external solver dispatch — silent fallback to ADMM if Gurobi can't be loaded.
+        if (settings.solver == "gurobi" && detail::gurobi_available())
+        {
+            OptSolution sol = detail::solve_qp_gurobi(P, q, c, A, b, xi_lb, xi_ub, settings);
+            if (solution != nullptr)
+                *solution = std::make_shared<OptSolution>(sol);
+            return sol;
+        }
+
         const auto data = std::make_shared<ADMM_data>(P, q, A, b, xi_lb, xi_ub, c, settings);
         ADMM_solver solver(data);
 
@@ -272,6 +282,32 @@ namespace ZonoOpt
             xi_lb = -1.0 * Eigen::Vector<zono_float, -1>::Ones(this->nG);
 
         xi_ub = Eigen::Vector<zono_float, -1>::Ones(this->nG);
+
+        // External solver dispatch — silent fallback if Gurobi unavailable.
+        if (settings.solver == "gurobi" && detail::gurobi_available())
+        {
+            for (int i = 0; i < this->n; i++)
+            {
+                d.setZero();
+                d(i) = -1;
+                q = -this->G.transpose() * d;
+                OptSolution sol_neg = detail::solve_qp_gurobi(P, q, zero, this->A, this->b, xi_lb, xi_ub, settings);
+                if (sol_neg.infeasible)
+                    throw std::invalid_argument("Bounding box: Z is empty");
+                s_neg = -d.dot(this->G * sol_neg.z + this->c);
+
+                d.setZero();
+                d(i) = 1;
+                q = -this->G.transpose() * d;
+                OptSolution sol_pos = detail::solve_qp_gurobi(P, q, zero, this->A, this->b, xi_lb, xi_ub, settings);
+                if (sol_pos.infeasible)
+                    throw std::invalid_argument("Bounding box: Z is empty");
+                s_pos = d.dot(this->G * sol_pos.z + this->c);
+
+                box.set_element(i, Interval(s_neg, s_pos));
+            }
+            return box;
+        }
 
         // build ADMM object
         const auto data = std::make_shared<ADMM_data>(P, q, this->A, this->b, xi_lb, xi_ub, zero, settings);

@@ -1,4 +1,5 @@
 #include "ZonoOpt.hpp"
+#include "zonoopt/GurobiSolver.hpp"
 
 namespace ZonoOpt
 {
@@ -685,6 +686,17 @@ namespace ZonoOpt
             xi_lb.setConstant(-1);
         const Eigen::Vector<zono_float, -1> xi_ub = Eigen::Vector<zono_float, -1>::Ones(this->nG);
 
+        // External solver dispatch — silent fallback to internal solver if Gurobi unavailable.
+        if (settings.solver == "gurobi" && detail::gurobi_available())
+        {
+            OptSolution sol = detail::solve_miqp_gurobi(P, q, c, A, b, xi_lb, xi_ub,
+                                                        this->nGc, this->nGb,
+                                                        this->zero_one_form, settings);
+            if (solution != nullptr)
+                *solution = std::make_shared<OptSolution>(sol);
+            return sol;
+        }
+
         const auto admm_data = std::make_shared<ADMM_data>(P, q, A, b, xi_lb, xi_ub, c, settings);
 
         // mixed integer data
@@ -724,6 +736,18 @@ namespace ZonoOpt
         else
             xi_lb.setConstant(-1);
         const Eigen::Vector<zono_float, -1> xi_ub = Eigen::Vector<zono_float, -1>::Ones(this->nG);
+
+        // External solver dispatch — uses Gurobi's solution pool when available.
+        if (settings.solver == "gurobi" && detail::gurobi_available())
+        {
+            std::vector<OptSolution> sols = detail::solve_miqp_gurobi_multisol(
+                P, q, c, A, b, xi_lb, xi_ub,
+                this->nGc, this->nGb, this->zero_one_form,
+                n_sols, settings);
+            if (solution != nullptr && !sols.empty())
+                *solution = std::make_shared<OptSolution>(sols.back());
+            return sols;
+        }
 
         const auto admm_data = std::make_shared<ADMM_data>(P, q, A, b, xi_lb, xi_ub, c, settings);
 

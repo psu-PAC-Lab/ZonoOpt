@@ -69,6 +69,8 @@ PYBIND11_MODULE(_core, m)
             "enable rng seed for ADMM-FP")
         .def_readwrite("rng_seed", &OptSettings::rng_seed,
             "rng seed for ADMM-FP")
+        .def_readwrite("solver", &OptSettings::solver,
+            "optional external solver flag; 'zonoopt' (default) = internal solver, 'gurobi' = dynamically load Gurobi with silent fallback to internal solver if unavailable")
         .def("settings_valid", &OptSettings::settings_valid, "check whether settings struct is valid")
         .def("__repr__", &OptSettings::print,
             R"pbdoc(
