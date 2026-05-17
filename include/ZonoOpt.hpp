@@ -77,6 +77,7 @@ namespace ZonoOpt::detail
 #include "zonoopt/BranchAndBound.hpp"
 #include "zonoopt/Point.hpp"
 #include "zonoopt/SolverDataStructures.hpp"
+#include "zonoopt/GurobiSettings.hpp"
 #include "zonoopt/SparseMatrixUtilities.hpp"
 #include "zonoopt/Zono.hpp"
 #include "zonoopt/ZonoJson.hpp"

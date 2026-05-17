@@ -579,7 +579,7 @@ namespace ZonoOpt
 
     Eigen::Vector<zono_float, -1> HybZono::do_optimize_over(
         const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q, const zono_float c,
-        const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+        const SolverSettings& settings, std::shared_ptr<OptSolution>* solution,
         const WarmStartParams& warm_start_params) const
     {
         // check dimensions
@@ -603,7 +603,7 @@ namespace ZonoOpt
     }
 
     Eigen::Vector<zono_float, -1> HybZono::do_project_point(const Eigen::Vector<zono_float, -1>& x,
-                                                            const OptSettings& settings,
+                                                            const SolverSettings& settings,
                                                             std::shared_ptr<OptSolution>* solution,
                                                             const WarmStartParams& warm_start_params) const
     {
@@ -625,7 +625,7 @@ namespace ZonoOpt
         return this->G * sol.z + this->c;
     }
 
-    bool HybZono::do_is_empty(const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+    bool HybZono::do_is_empty(const SolverSettings& settings, std::shared_ptr<OptSolution>* solution,
                               const WarmStartParams&) const
     {
         // trivial case
@@ -646,7 +646,7 @@ namespace ZonoOpt
             return true;
     }
 
-    bool HybZono::do_contains_point(const Eigen::Vector<zono_float, -1>& x, const OptSettings& settings,
+    bool HybZono::do_contains_point(const Eigen::Vector<zono_float, -1>& x, const SolverSettings& settings,
                                     std::shared_ptr<OptSolution>* solution,
                                     const WarmStartParams& warm_start_params) const
     {
@@ -675,7 +675,7 @@ namespace ZonoOpt
     OptSolution HybZono::mi_opt(const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q,
                                 const zono_float c, const Eigen::SparseMatrix<zono_float>& A,
                                 const Eigen::Vector<zono_float, -1>& b,
-                                const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+                                const SolverSettings& settings, std::shared_ptr<OptSolution>* solution,
                                 const WarmStartParams& warm_start_params) const
     {
         // QP data
@@ -686,18 +686,29 @@ namespace ZonoOpt
             xi_lb.setConstant(-1);
         const Eigen::Vector<zono_float, -1> xi_ub = Eigen::Vector<zono_float, -1>::Ones(this->nG);
 
-        // External solver dispatch — silent fallback to internal solver if Gurobi unavailable.
-        if (settings.solver == "gurobi" && detail::gurobi_available())
+        // External solver dispatch — GurobiSettings routes to Gurobi; on load failure,
+        // silently fall back to internal solver with default OptSettings.
+        if (const auto* gs = dynamic_cast<const GurobiSettings*>(&settings))
         {
-            OptSolution sol = detail::solve_miqp_gurobi(P, q, c, A, b, xi_lb, xi_ub,
-                                                        this->nGc, this->nGb,
-                                                        this->zero_one_form, settings);
-            if (solution != nullptr)
-                *solution = std::make_shared<OptSolution>(sol);
-            return sol;
+            if (detail::gurobi_available())
+            {
+                OptSolution sol = detail::solve_miqp_gurobi(P, q, c, A, b, xi_lb, xi_ub,
+                                                            this->nGc, this->nGb,
+                                                            this->zero_one_form, *gs);
+                if (solution != nullptr)
+                    *solution = std::make_shared<OptSolution>(sol);
+                return sol;
+            }
+            // fall through to internal solver with default OptSettings
         }
 
-        const auto admm_data = std::make_shared<ADMM_data>(P, q, A, b, xi_lb, xi_ub, c, settings);
+        OptSettings default_opt;
+        const OptSettings& opt_settings =
+            (dynamic_cast<const OptSettings*>(&settings) != nullptr)
+                ? static_cast<const OptSettings&>(settings)
+                : default_opt;
+
+        const auto admm_data = std::make_shared<ADMM_data>(P, q, A, b, xi_lb, xi_ub, c, opt_settings);
 
         // mixed integer data
         MI_data mi_data;
@@ -726,7 +737,7 @@ namespace ZonoOpt
                                                       const Eigen::Vector<zono_float, -1>& q,
                                                       const zono_float c, const Eigen::SparseMatrix<zono_float>& A,
                                                       const Eigen::Vector<zono_float, -1>& b, int n_sols,
-                                                      const OptSettings& settings,
+                                                      const SolverSettings& settings,
                                                       std::shared_ptr<OptSolution>* solution) const
     {
         // ADMM data
@@ -737,19 +748,30 @@ namespace ZonoOpt
             xi_lb.setConstant(-1);
         const Eigen::Vector<zono_float, -1> xi_ub = Eigen::Vector<zono_float, -1>::Ones(this->nG);
 
-        // External solver dispatch — uses Gurobi's solution pool when available.
-        if (settings.solver == "gurobi" && detail::gurobi_available())
+        // External solver dispatch — GurobiSettings routes to Gurobi (solution pool); on load failure,
+        // silently fall back to internal solver with default OptSettings.
+        if (const auto* gs = dynamic_cast<const GurobiSettings*>(&settings))
         {
-            std::vector<OptSolution> sols = detail::solve_miqp_gurobi_multisol(
-                P, q, c, A, b, xi_lb, xi_ub,
-                this->nGc, this->nGb, this->zero_one_form,
-                n_sols, settings);
-            if (solution != nullptr && !sols.empty())
-                *solution = std::make_shared<OptSolution>(sols.back());
-            return sols;
+            if (detail::gurobi_available())
+            {
+                std::vector<OptSolution> sols = detail::solve_miqp_gurobi_multisol(
+                    P, q, c, A, b, xi_lb, xi_ub,
+                    this->nGc, this->nGb, this->zero_one_form,
+                    n_sols, *gs);
+                if (solution != nullptr && !sols.empty())
+                    *solution = std::make_shared<OptSolution>(sols.back());
+                return sols;
+            }
+            // fall through to internal solver with default OptSettings
         }
 
-        const auto admm_data = std::make_shared<ADMM_data>(P, q, A, b, xi_lb, xi_ub, c, settings);
+        OptSettings default_opt;
+        const OptSettings& opt_settings =
+            (dynamic_cast<const OptSettings*>(&settings) != nullptr)
+                ? static_cast<const OptSettings&>(settings)
+                : default_opt;
+
+        const auto admm_data = std::make_shared<ADMM_data>(P, q, A, b, xi_lb, xi_ub, c, opt_settings);
 
         // mixed integer data
         MI_data mi_data;
@@ -898,7 +920,7 @@ namespace ZonoOpt
 #endif
     }
 
-    std::vector<Eigen::Vector<zono_float, -1>> HybZono::get_bin_leaves(const OptSettings& settings,
+    std::vector<Eigen::Vector<zono_float, -1>> HybZono::get_bin_leaves(const SolverSettings& settings,
                                                                        std::shared_ptr<OptSolution>* solution,
                                                                        const int n_leaves) const
     {
@@ -921,19 +943,25 @@ namespace ZonoOpt
         return bin_leaves;
     }
 
-    std::vector<std::unique_ptr<ConZono>> HybZono::get_leaves(const bool remove_redundancy, const OptSettings& settings,
+    std::vector<std::unique_ptr<ConZono>> HybZono::get_leaves(const bool remove_redundancy, const SolverSettings& settings,
                                              std::shared_ptr<OptSolution>* solution, const int n_leaves,
                                              const int contractor_iter) const
     {
-        // allocate all threads to branch and bound and use best dive search strategy
-        OptSettings settings_get_leaves = settings;
-        settings_get_leaves.n_threads_bnb += settings.n_threads_admm_fp;
-        settings_get_leaves.n_threads_admm_fp = 0;
-        settings_get_leaves.search_mode = 1;
-
-        // get leaves as conzonos
-        const std::vector<Eigen::Vector<zono_float, -1>> bin_leaves = this->get_bin_leaves(
-            settings_get_leaves, solution, n_leaves);
+        // For the internal solver, allocate all threads to branch and bound and use best-dive search.
+        // For external solvers (e.g., Gurobi), pass settings through unchanged.
+        std::vector<Eigen::Vector<zono_float, -1>> bin_leaves;
+        if (const auto* opt_ptr = dynamic_cast<const OptSettings*>(&settings))
+        {
+            OptSettings settings_get_leaves = *opt_ptr;
+            settings_get_leaves.n_threads_bnb += opt_ptr->n_threads_admm_fp;
+            settings_get_leaves.n_threads_admm_fp = 0;
+            settings_get_leaves.search_mode = 1;
+            bin_leaves = this->get_bin_leaves(settings_get_leaves, solution, n_leaves);
+        }
+        else
+        {
+            bin_leaves = this->get_bin_leaves(settings, solution, n_leaves);
+        }
         std::vector<std::unique_ptr<ConZono>> leaves;
         for (auto& xi_b : bin_leaves)
         {
@@ -1122,7 +1150,7 @@ namespace ZonoOpt
         return std::make_unique<HybZono>(Gc, Gb, c, Ac, Ab, b, true, true);
     }
 
-    zono_float HybZono::do_support(const Eigen::Vector<zono_float, -1>& d, const OptSettings& settings,
+    zono_float HybZono::do_support(const Eigen::Vector<zono_float, -1>& d, const SolverSettings& settings,
                                    std::shared_ptr<OptSolution>* solution, const WarmStartParams& warm_start_params)
     {
         // check dimensions
@@ -1153,7 +1181,7 @@ namespace ZonoOpt
             return d.dot(this->G * sol.z + this->c);
     }
 
-    Box HybZono::do_bounding_box(const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+    Box HybZono::do_bounding_box(const SolverSettings& settings, std::shared_ptr<OptSolution>* solution,
                                  const WarmStartParams& warm_start_params)
     {
         // if sharp, compute from convex relaxation
@@ -1223,7 +1251,7 @@ namespace ZonoOpt
     }
 
     std::unique_ptr<HybZono> HybZono::do_complement(const zono_float delta_m, const bool remove_redundancy,
-                                                    const OptSettings& settings,
+                                                    const SolverSettings& settings,
                                                     std::shared_ptr<OptSolution>* solution, const int n_leaves,
                                                     const int contractor_iter)
     {

@@ -124,35 +124,35 @@ namespace ZonoOpt
         OptSolution qp_opt(const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q,
                            zono_float c, const Eigen::SparseMatrix<zono_float>& A,
                            const Eigen::Vector<zono_float, -1>& b,
-                           const OptSettings& settings = OptSettings(),
+                           const SolverSettings& settings = OptSettings(),
                            std::shared_ptr<OptSolution>* solution = nullptr,
                            const WarmStartParams& warm_start_params = WarmStartParams()) const;
 
         Eigen::Vector<zono_float, -1> do_optimize_over(
             const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q, const zono_float c,
-            const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+            const SolverSettings& settings, std::shared_ptr<OptSolution>* solution,
             const WarmStartParams&) const override;
 
         Eigen::Vector<zono_float, -1> do_project_point(const Eigen::Vector<zono_float, -1>& x,
-                                                       const OptSettings& settings,
+                                                       const SolverSettings& settings,
                                                        std::shared_ptr<OptSolution>* solution,
                                                        const WarmStartParams& warm_start_params) const override;
 
-        bool do_is_empty(const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+        bool do_is_empty(const SolverSettings& settings, std::shared_ptr<OptSolution>* solution,
                          const WarmStartParams& warm_start_params) const override;
 
-        zono_float do_support(const Eigen::Vector<zono_float, -1>& d, const OptSettings& settings,
+        zono_float do_support(const Eigen::Vector<zono_float, -1>& d, const SolverSettings& settings,
                               std::shared_ptr<OptSolution>* solution,
                               const WarmStartParams& warm_start_params) override;
 
-        bool do_contains_point(const Eigen::Vector<zono_float, -1>& x, const OptSettings& settings,
+        bool do_contains_point(const Eigen::Vector<zono_float, -1>& x, const SolverSettings& settings,
                                std::shared_ptr<OptSolution>* solution,
                                const WarmStartParams& warm_start_params) const override;
 
-        Box do_bounding_box(const OptSettings& settings, std::shared_ptr<OptSolution>*,
+        Box do_bounding_box(const SolverSettings& settings, std::shared_ptr<OptSolution>*,
                             const WarmStartParams& warm_start_params) override;
 
-        std::unique_ptr<HybZono> do_complement(zono_float delta_m, bool, const OptSettings&,
+        std::unique_ptr<HybZono> do_complement(zono_float delta_m, bool, const SolverSettings&,
                                                std::shared_ptr<OptSolution>*, int, int) override;
     };
 

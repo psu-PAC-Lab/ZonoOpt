@@ -124,11 +124,11 @@ namespace ZonoOpt
         void operator*=(HybZono& other) = delete;
 
     protected:
-        bool do_is_empty(const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) const override;
+        bool do_is_empty(const SolverSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) const override;
 
-        Box do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) override;
+        Box do_bounding_box(const SolverSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) override;
 
-        zono_float do_support(const Eigen::Vector<zono_float, -1>& d, const OptSettings&,
+        zono_float do_support(const Eigen::Vector<zono_float, -1>& d, const SolverSettings&,
                               std::shared_ptr<OptSolution>* sol, const WarmStartParams&) override;
     };
 

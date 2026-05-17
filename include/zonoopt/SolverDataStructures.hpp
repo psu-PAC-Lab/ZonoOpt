@@ -19,10 +19,27 @@
 namespace ZonoOpt
 {
     /**
-     * @brief Settings for optimization routines in ZonoOpt library.
+     * @brief Abstract base for all solver settings.
+     *
+     * The dynamic type of the SolverSettings instance passed to ZonoOpt's optimization
+     * routines selects which solver backend is used:
+     *   - OptSettings      → internal ADMM / branch-and-bound (default)
+     *   - GurobiSettings   → dynamically-loaded Gurobi; silent fallback to OptSettings()
+     *                        if Gurobi cannot be loaded at runtime
+     *
+     * Derived classes only need a virtual destructor so RTTI / dynamic_cast can identify
+     * them at the dispatch site.
+     */
+    struct SolverSettings
+    {
+        virtual ~SolverSettings() = default;
+    };
+
+    /**
+     * @brief Settings for the internal ZonoOpt ADMM / branch-and-bound solver.
      *
      */
-    struct OptSettings
+    struct OptSettings : SolverSettings
     {
         // general settings
 
@@ -126,11 +143,6 @@ namespace ZonoOpt
         /// rng seed for ADMM-FP
         unsigned int rng_seed = 0;
 
-        // external solver selection
-
-        /// optional external solver flag; "zonoopt" (default) = internal solver, "gurobi" = dynamically load Gurobi with silent fallback to internal solver if unavailable
-        std::string solver = "zonoopt";
-
         // validity check
         /**
          * @brief Checks whether settings struct is valid
@@ -193,7 +205,6 @@ namespace ZonoOpt
             ss << "  enable_rng_seed: " << (enable_rng_seed ? "true" : "false") << std::endl;
             ss << "  rng_seed: " << rng_seed << std::endl;
             ss << "  enable_restart_admm_fp: " << (enable_restart_admm_fp ? "true" : "false") << std::endl;
-            ss << "  solver: " << solver << std::endl;
             return ss.str();
         }
     };

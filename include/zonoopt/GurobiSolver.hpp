@@ -5,6 +5,7 @@
 #include "Eigen/Sparse"
 
 #include "SolverDataStructures.hpp"
+#include "GurobiSettings.hpp"
 
 namespace ZonoOpt
 {
@@ -38,7 +39,7 @@ OptSolution solve_qp_gurobi(const Eigen::SparseMatrix<zono_float>& P,
                             const Eigen::Vector<zono_float, -1>& b,
                             const Eigen::Vector<zono_float, -1>& xi_lb,
                             const Eigen::Vector<zono_float, -1>& xi_ub,
-                            const OptSettings& settings);
+                            const GurobiSettings& settings);
 
 /**
  * @brief Solve the MIQP that backs HybZono::mi_opt using Gurobi.
@@ -65,7 +66,7 @@ OptSolution solve_miqp_gurobi(const Eigen::SparseMatrix<zono_float>& P,
                               const Eigen::Vector<zono_float, -1>& xi_ub,
                               int bin_start, int bin_count,
                               bool zero_one_form,
-                              const OptSettings& settings);
+                              const GurobiSettings& settings);
 
 /**
  * @brief Enumerate up to n_sols MIQP solutions using Gurobi's solution pool.
@@ -84,7 +85,7 @@ std::vector<OptSolution> solve_miqp_gurobi_multisol(const Eigen::SparseMatrix<zo
                                                     int bin_start, int bin_count,
                                                     bool zero_one_form,
                                                     int n_sols,
-                                                    const OptSettings& settings);
+                                                    const GurobiSettings& settings);
 
 } // namespace detail
 } // namespace ZonoOpt

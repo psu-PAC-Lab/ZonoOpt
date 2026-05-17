@@ -20,7 +20,11 @@ PYBIND11_MODULE(_core, m)
     )pbdoc";
 
     // solver settings and solution classes
-    py::class_<OptSettings>(m, "OptSettings", "Settings for optimization routines in ZonoOpt library.")
+    py::class_<SolverSettings>(m, "SolverSettings",
+        "Abstract base class for ZonoOpt solver settings. Pass an OptSettings or GurobiSettings instance to "
+        "ZonoOpt's optimization methods — the dynamic type selects the solver backend.");
+
+    py::class_<OptSettings, SolverSettings>(m, "OptSettings", "Settings for the internal ZonoOpt ADMM / branch-and-bound solver.")
         .def(py::init())
         .def_readwrite("verbose", &OptSettings::verbose, "display optimization progress")
         .def_readwrite("verbosity_interval", &OptSettings::verbosity_interval, "print every verbose_interval iterations")
@@ -69,8 +73,6 @@ PYBIND11_MODULE(_core, m)
             "enable rng seed for ADMM-FP")
         .def_readwrite("rng_seed", &OptSettings::rng_seed,
             "rng seed for ADMM-FP")
-        .def_readwrite("solver", &OptSettings::solver,
-            "optional external solver flag; 'zonoopt' (default) = internal solver, 'gurobi' = dynamically load Gurobi with silent fallback to internal solver if unavailable")
         .def("settings_valid", &OptSettings::settings_valid, "check whether settings struct is valid")
         .def("__repr__", &OptSettings::print,
             R"pbdoc(
@@ -86,6 +88,35 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     OptSettings: copy of settings
+            )pbdoc")
+    ;
+
+    py::class_<GurobiSettings, SolverSettings>(m, "GurobiSettings",
+        "Settings for the dynamically-loaded Gurobi solver backend. Pass to ZonoOpt's optimization methods "
+        "to route through Gurobi; if Gurobi cannot be dynamically loaded, the library silently falls back "
+        "to the internal solver with default OptSettings.")
+        .def(py::init())
+        .def_readwrite("verbose", &GurobiSettings::verbose, "display Gurobi output (Gurobi's OutputFlag parameter)")
+        .def_readwrite("t_max", &GurobiSettings::t_max, "max wall-clock time in seconds (Gurobi's TimeLimit parameter)")
+        .def_readwrite("mip_gap", &GurobiSettings::mip_gap, "relative MIP optimality gap (Gurobi's MIPGap parameter)")
+        .def_readwrite("mip_gap_abs", &GurobiSettings::mip_gap_abs, "absolute MIP optimality gap (Gurobi's MIPGapAbs parameter)")
+        .def_readwrite("threads", &GurobiSettings::threads, "number of threads; 0 = Gurobi default (typically all cores)")
+        .def_readwrite("max_pool_solutions", &GurobiSettings::max_pool_solutions,
+            "max number of MIP solutions in mi_opt_multisol via Gurobi's solution pool")
+        .def_readwrite("log_file", &GurobiSettings::log_file, "optional path to a Gurobi log file; empty disables file logging")
+        .def("__repr__", &GurobiSettings::print,
+            R"pbdoc(
+                Displays settings as a string
+
+                Returns:
+                    str: string
+            )pbdoc")
+        .def("copy", [](const GurobiSettings& self) -> GurobiSettings { return self; },
+            R"pbdoc(
+                Copy settings object
+
+                Returns:
+                    GurobiSettings: copy of settings
             )pbdoc")
     ;
 
@@ -2212,7 +2243,7 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
         .def("optimize_over", [](const HybZono& self, const Eigen::SparseMatrix<zono_float> &P,
             const Eigen::Vector<zono_float, -1> &q, zono_float c,
-            const OptSettings &settings, OptSolution* solution,
+            const SolverSettings &settings, OptSolution* solution,
             const WarmStartParams& warm_start_params)-> Eigen::Vector<zono_float, -1>
             {
                 auto sol_shared = std::make_shared<OptSolution>();
@@ -2241,7 +2272,7 @@ PYBIND11_MODULE(_core, m)
                 Solves optimization problem of the form min 0.5*z^T*P*z + q^T*z + c where z is a vector in the current set
             )pbdoc")
         .def("project_point", [](const HybZono& self, const Eigen::Vector<zono_float, -1> &x,
-            const OptSettings &settings, OptSolution* solution,
+            const SolverSettings &settings, OptSolution* solution,
             const WarmStartParams& warm_start_params) -> Eigen::Vector<zono_float, -1>
             {
                 auto sol_shared = std::make_shared<OptSolution>();
@@ -2264,7 +2295,7 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     numpy.array: point z in the current set
             )pbdoc")
-        .def("is_empty", [](const HybZono& self, const OptSettings &settings,
+        .def("is_empty", [](const HybZono& self, const SolverSettings &settings,
             OptSolution* solution, const WarmStartParams& warm_start_params) -> bool
             {
                 auto sol_shared = std::make_shared<OptSolution>();
@@ -2287,7 +2318,7 @@ PYBIND11_MODULE(_core, m)
                     bool: flag indicating whether set is provably empty
             )pbdoc")
         .def("support", [](HybZono& self, const Eigen::Vector<zono_float, -1> &d,
-            const OptSettings &settings, OptSolution* solution,
+            const SolverSettings &settings, OptSolution* solution,
             const WarmStartParams& warm_start_params) -> zono_float
             {
                 auto sol_shared = std::make_shared<OptSolution>();
@@ -2313,7 +2344,7 @@ PYBIND11_MODULE(_core, m)
                 Solves max_{z in Z} <z, d> where <., .> is the inner product
             )pbdoc")
         .def("contains_point", [](const HybZono& self, const Eigen::Vector<zono_float, -1> &x,
-            const OptSettings &settings, OptSolution* solution,
+            const SolverSettings &settings, OptSolution* solution,
             const WarmStartParams& warm_start_params) -> bool
             {
                 auto sol_shared = std::make_shared<OptSolution>();
@@ -2340,7 +2371,7 @@ PYBIND11_MODULE(_core, m)
                 Will return false only if an infeasibility certificate is found, i.e., false negatives are not possible.
             )pbdoc")
         .def("bounding_box", [](HybZono& self,
-            const OptSettings &settings, OptSolution* solution,
+            const SolverSettings &settings, OptSolution* solution,
             const WarmStartParams& warm_start_params) -> Box
             {
                 auto sol_shared = std::make_shared<OptSolution>();
@@ -2375,7 +2406,7 @@ PYBIND11_MODULE(_core, m)
                 If the set is sharp, the convex relaxation is the convex hull.
             )pbdoc")
         .def("get_leaves", [](const HybZono& self, bool remove_redundancy,
-            const OptSettings &settings, OptSolution* solution,
+            const SolverSettings &settings, OptSolution* solution,
             int n_leaves, int contractor_iter) -> std::vector<std::unique_ptr<ConZono>>
             {
                 auto sol_shared = std::make_shared<OptSolution>();
@@ -2407,7 +2438,7 @@ PYBIND11_MODULE(_core, m)
                 for ADMM-FP, these will instead be used for branch and bound search.
             )pbdoc")
         .def("complement", [](HybZono& self, zono_float delta_m,
-            bool remove_redundancy, const OptSettings &settings, OptSolution* solution,
+            bool remove_redundancy, const SolverSettings &settings, OptSolution* solution,
             int n_leaves, int contractor_iter) -> std::unique_ptr<HybZono>
             {
                 auto sol_shared = std::make_shared<OptSolution>();
@@ -3159,7 +3190,7 @@ PYBIND11_MODULE(_core, m)
                 HybZono: zonotopic set
         )pbdoc");
     m.def("set_diff", [](const HybZono& Z1, HybZono& Z2, zono_float delta_m,
-            bool remove_redundancy, const OptSettings &settings, OptSolution* solution,
+            bool remove_redundancy, const SolverSettings &settings, OptSolution* solution,
             int n_leaves, int contractor_iter) -> std::unique_ptr<HybZono>
             {
                 auto sol_shared = std::make_shared<OptSolution>();

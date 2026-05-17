@@ -1,6 +1,7 @@
 #include "zonoopt/GurobiSolver.hpp"
 #include "zonoopt/GurobiApi.hpp"
 
+#include <algorithm>
 #include <chrono>
 #include <limits>
 #include <vector>
@@ -67,7 +68,7 @@ PreparedModel prepare_model(const Eigen::SparseMatrix<double, Eigen::RowMajor>& 
                             const Eigen::VectorXd& lb_d,
                             const Eigen::VectorXd& ub_d,
                             const std::vector<char>& vtype,
-                            const OptSettings& settings)
+                            const GurobiSettings& settings)
 {
     GurobiApi& api = GurobiApi::instance();
     if (!api.is_available())
@@ -78,7 +79,7 @@ PreparedModel prepare_model(const Eigen::SparseMatrix<double, Eigen::RowMajor>& 
     PreparedModel pm;
     pm.n = static_cast<int>(q_d.size());
 
-    pm.env = api.create_env("");
+    pm.env = api.create_env(settings.log_file);
     pm.model = api.create_model(pm.env, "zonoopt_model", pm.n,
                                 const_cast<double*>(q_d.data()),
                                 const_cast<double*>(lb_d.data()),
@@ -88,19 +89,19 @@ PreparedModel prepare_model(const Eigen::SparseMatrix<double, Eigen::RowMajor>& 
     api.set_int_param(pm.model, "OutputFlag", settings.verbose ? 1 : 0);
     if (settings.t_max < std::numeric_limits<double>::max())
     {
-        api.set_dbl_param(pm.model, "TimeLimit", static_cast<double>(settings.t_max));
+        api.set_dbl_param(pm.model, "TimeLimit", settings.t_max);
     }
-    if (settings.eps_r > 0)
+    if (settings.mip_gap > 0)
     {
-        api.set_dbl_param(pm.model, "MIPGap", static_cast<double>(settings.eps_r));
+        api.set_dbl_param(pm.model, "MIPGap", settings.mip_gap);
     }
-    if (settings.eps_a > 0)
+    if (settings.mip_gap_abs > 0)
     {
-        api.set_dbl_param(pm.model, "MIPGapAbs", static_cast<double>(settings.eps_a));
+        api.set_dbl_param(pm.model, "MIPGapAbs", settings.mip_gap_abs);
     }
-    if (settings.n_threads_bnb > 0)
+    if (settings.threads > 0)
     {
-        api.set_int_param(pm.model, "Threads", settings.n_threads_bnb);
+        api.set_int_param(pm.model, "Threads", settings.threads);
     }
 
     for (int k = 0; k < A_rm.outerSize(); ++k)
@@ -407,7 +408,7 @@ OptSolution solve_qp_gurobi(const Eigen::SparseMatrix<zono_float>& P,
                             const Eigen::Vector<zono_float, -1>& b,
                             const Eigen::Vector<zono_float, -1>& xi_lb,
                             const Eigen::Vector<zono_float, -1>& xi_ub,
-                            const OptSettings& settings)
+                            const GurobiSettings& settings)
 {
     const int n = static_cast<int>(q.size());
 
@@ -440,7 +441,7 @@ OptSolution solve_miqp_gurobi(const Eigen::SparseMatrix<zono_float>& P,
                               const Eigen::Vector<zono_float, -1>& xi_ub,
                               int bin_start, int bin_count,
                               bool zero_one_form,
-                              const OptSettings& settings)
+                              const GurobiSettings& settings)
 {
     MiqpPrep prep = prep_miqp(P, q, A, b, xi_lb, xi_ub, bin_start, bin_count, zero_one_form);
 
@@ -468,13 +469,14 @@ std::vector<OptSolution> solve_miqp_gurobi_multisol(const Eigen::SparseMatrix<zo
                                                     int bin_start, int bin_count,
                                                     bool zero_one_form,
                                                     int n_sols,
-                                                    const OptSettings& settings)
+                                                    const GurobiSettings& settings)
 {
     MiqpPrep prep = prep_miqp(P, q, A, b, xi_lb, xi_ub, bin_start, bin_count, zero_one_form);
 
     PreparedModel pm = prepare_model(prep.P_rm, prep.q_d, prep.A_rm, prep.b_d,
                                      prep.lb_d, prep.ub_d, prep.vtype, settings);
-    std::vector<GurobiResult> grs = optimize_pool(pm, n_sols);
+    const int capped_n_sols = std::min(n_sols, settings.max_pool_solutions);
+    std::vector<GurobiResult> grs = optimize_pool(pm, capped_n_sols);
 
     const int n = static_cast<int>(q.size());
     std::vector<OptSolution> sols;

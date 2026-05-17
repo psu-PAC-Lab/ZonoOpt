@@ -40,14 +40,14 @@ namespace ZonoOpt
 
     Eigen::Vector<zono_float, -1> EmptySet::do_optimize_over(
         const Eigen::SparseMatrix<zono_float>&, const Eigen::Vector<zono_float, -1>&, zono_float,
-        const OptSettings&, std::shared_ptr<OptSolution>* sol,
+        const SolverSettings&, std::shared_ptr<OptSolution>* sol,
         const WarmStartParams&) const
     {
         make_default_solution(sol);
         return Eigen::Vector<zono_float, -1>::Constant(this->n, std::numeric_limits<zono_float>::quiet_NaN());
     }
 
-    Eigen::Vector<zono_float, -1> EmptySet::do_project_point(const Eigen::Vector<zono_float, -1>&, const OptSettings&,
+    Eigen::Vector<zono_float, -1> EmptySet::do_project_point(const Eigen::Vector<zono_float, -1>&, const SolverSettings&,
                                                              std::shared_ptr<OptSolution>* sol,
                                                              const WarmStartParams&) const
     {
@@ -55,7 +55,7 @@ namespace ZonoOpt
         return Eigen::Vector<zono_float, -1>::Constant(this->n, std::numeric_limits<zono_float>::quiet_NaN());
     }
 
-    zono_float EmptySet::do_support(const Eigen::Vector<zono_float, -1>&, const OptSettings&,
+    zono_float EmptySet::do_support(const Eigen::Vector<zono_float, -1>&, const SolverSettings&,
                                     std::shared_ptr<OptSolution>* sol,
                                     const WarmStartParams&)
     {
@@ -63,7 +63,7 @@ namespace ZonoOpt
         return std::numeric_limits<zono_float>::quiet_NaN();
     }
 
-    bool EmptySet::do_contains_point(const Eigen::Vector<zono_float, -1>&, const OptSettings&,
+    bool EmptySet::do_contains_point(const Eigen::Vector<zono_float, -1>&, const SolverSettings&,
                                      std::shared_ptr<OptSolution>* sol,
                                      const WarmStartParams&) const
     {
@@ -71,7 +71,7 @@ namespace ZonoOpt
         return false;
     }
 
-    Box EmptySet::do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&)
+    Box EmptySet::do_bounding_box(const SolverSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&)
     {
         const Eigen::Vector<zono_float, -1> x_l = Eigen::Vector<zono_float, -1>::Constant(
             this->n, std::numeric_limits<zono_float>::infinity());
@@ -81,13 +81,13 @@ namespace ZonoOpt
         return {x_l, x_u};
     }
 
-    bool EmptySet::do_is_empty(const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) const
+    bool EmptySet::do_is_empty(const SolverSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) const
     {
         make_default_solution(sol);
         return true;
     }
 
-    std::unique_ptr<HybZono> EmptySet::do_complement(zono_float delta_m, bool, const OptSettings&,
+    std::unique_ptr<HybZono> EmptySet::do_complement(zono_float delta_m, bool, const SolverSettings&,
                                                      std::shared_ptr<OptSolution>* sol,
                                                      int, int)
     {

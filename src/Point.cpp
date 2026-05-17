@@ -47,7 +47,7 @@ namespace ZonoOpt
 
     Eigen::Vector<zono_float, -1> Point::do_optimize_over(
         const Eigen::SparseMatrix<zono_float>&, const Eigen::Vector<zono_float, -1>&, zono_float,
-        const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) const
+        const SolverSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) const
     {
         make_default_solution(sol);
 
@@ -55,7 +55,7 @@ namespace ZonoOpt
     }
 
     Eigen::Vector<zono_float, -1> Point::do_project_point(const Eigen::Vector<zono_float, -1>& x,
-                                                          const OptSettings&, std::shared_ptr<OptSolution>* sol,
+                                                          const SolverSettings&, std::shared_ptr<OptSolution>* sol,
                                                           const WarmStartParams&) const
     {
         // check dimensions
@@ -70,7 +70,7 @@ namespace ZonoOpt
     }
 
     zono_float Point::do_support(const Eigen::Vector<zono_float, -1>& d,
-                                 const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&)
+                                 const SolverSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&)
     {
         // check dimensions
         if (this->n != d.size())
@@ -84,7 +84,7 @@ namespace ZonoOpt
     }
 
     bool Point::do_contains_point(const Eigen::Vector<zono_float, -1>& x,
-                                  const OptSettings&, std::shared_ptr<OptSolution>* sol,
+                                  const SolverSettings&, std::shared_ptr<OptSolution>* sol,
                                   const WarmStartParams&) const
     {
         if (this->n != x.size())
@@ -96,7 +96,7 @@ namespace ZonoOpt
         return dist < zono_eps;
     }
 
-    Box Point::do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&)
+    Box Point::do_bounding_box(const SolverSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&)
     {
         make_default_solution(sol);
 

@@ -90,7 +90,7 @@ namespace ZonoOpt
 
     Eigen::Vector<zono_float, -1> ConZono::do_optimize_over(
         const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q, const zono_float c,
-        const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+        const SolverSettings& settings, std::shared_ptr<OptSolution>* solution,
         const WarmStartParams& warm_start_params) const
     {
         // check dimensions
@@ -116,7 +116,7 @@ namespace ZonoOpt
     }
 
     Eigen::Vector<zono_float, -1> ConZono::do_project_point(const Eigen::Vector<zono_float, -1>& x,
-                                                            const OptSettings& settings,
+                                                            const SolverSettings& settings,
                                                             std::shared_ptr<OptSolution>* solution,
                                                             const WarmStartParams& warm_start_params) const
     {
@@ -140,7 +140,7 @@ namespace ZonoOpt
             return this->G * sol.z + this->c;
     }
 
-    bool ConZono::do_is_empty(const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+    bool ConZono::do_is_empty(const SolverSettings& settings, std::shared_ptr<OptSolution>* solution,
                               const WarmStartParams& warm_start_params) const
     {
         // trivial case
@@ -160,7 +160,7 @@ namespace ZonoOpt
     }
 
     zono_float ConZono::do_support(const Eigen::Vector<zono_float, -1>& d,
-                                   const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+                                   const SolverSettings& settings, std::shared_ptr<OptSolution>* solution,
                                    const WarmStartParams& warm_start_params)
     {
         // check dimensions
@@ -184,7 +184,7 @@ namespace ZonoOpt
     }
 
     bool ConZono::do_contains_point(const Eigen::Vector<zono_float, -1>& x,
-                                    const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+                                    const SolverSettings& settings, std::shared_ptr<OptSolution>* solution,
                                     const WarmStartParams& warm_start_params) const
     {
         // check dimensions
@@ -212,7 +212,7 @@ namespace ZonoOpt
     OptSolution ConZono::qp_opt(const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q,
                                 const zono_float c, const Eigen::SparseMatrix<zono_float>& A,
                                 const Eigen::Vector<zono_float, -1>& b,
-                                const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+                                const SolverSettings& settings, std::shared_ptr<OptSolution>* solution,
                                 const WarmStartParams& warm_start_params) const
     {
         // setup QP
@@ -223,16 +223,29 @@ namespace ZonoOpt
             xi_lb.setConstant(-1);
         const Eigen::Vector<zono_float, -1> xi_ub = Eigen::Vector<zono_float, -1>::Ones(this->nG);
 
-        // Optional external solver dispatch — silent fallback to ADMM if Gurobi can't be loaded.
-        if (settings.solver == "gurobi" && detail::gurobi_available())
+        // External solver dispatch — GurobiSettings selects Gurobi; on failure to load,
+        // silently fall back to internal solver with default OptSettings.
+        if (const auto* gs = dynamic_cast<const GurobiSettings*>(&settings))
         {
-            OptSolution sol = detail::solve_qp_gurobi(P, q, c, A, b, xi_lb, xi_ub, settings);
-            if (solution != nullptr)
-                *solution = std::make_shared<OptSolution>(sol);
-            return sol;
+            if (detail::gurobi_available())
+            {
+                OptSolution sol = detail::solve_qp_gurobi(P, q, c, A, b, xi_lb, xi_ub, *gs);
+                if (solution != nullptr)
+                    *solution = std::make_shared<OptSolution>(sol);
+                return sol;
+            }
+            // fall through with default OptSettings for ADMM
         }
 
-        const auto data = std::make_shared<ADMM_data>(P, q, A, b, xi_lb, xi_ub, c, settings);
+        // Resolve OptSettings for the internal ADMM solver: use the passed-in one when applicable,
+        // otherwise default-construct.
+        OptSettings default_opt;
+        const OptSettings& opt_settings =
+            (dynamic_cast<const OptSettings*>(&settings) != nullptr)
+                ? static_cast<const OptSettings&>(settings)
+                : default_opt;
+
+        const auto data = std::make_shared<ADMM_data>(P, q, A, b, xi_lb, xi_ub, c, opt_settings);
         ADMM_solver solver(data);
 
         // warm start if applicable
@@ -252,7 +265,7 @@ namespace ZonoOpt
     }
 
     // bounding box
-    Box ConZono::do_bounding_box(const OptSettings& settings, std::shared_ptr<OptSolution>*,
+    Box ConZono::do_bounding_box(const SolverSettings& settings, std::shared_ptr<OptSolution>*,
                                  const WarmStartParams& warm_start_params)
     {
         // make sure dimension is at least 1
@@ -283,34 +296,46 @@ namespace ZonoOpt
 
         xi_ub = Eigen::Vector<zono_float, -1>::Ones(this->nG);
 
-        // External solver dispatch — silent fallback if Gurobi unavailable.
-        if (settings.solver == "gurobi" && detail::gurobi_available())
+        // External solver dispatch — GurobiSettings routes to Gurobi; on load failure,
+        // silently fall back to internal solver with default OptSettings.
+        if (const auto* gs = dynamic_cast<const GurobiSettings*>(&settings))
         {
-            for (int i = 0; i < this->n; i++)
+            if (detail::gurobi_available())
             {
-                d.setZero();
-                d(i) = -1;
-                q = -this->G.transpose() * d;
-                OptSolution sol_neg = detail::solve_qp_gurobi(P, q, zero, this->A, this->b, xi_lb, xi_ub, settings);
-                if (sol_neg.infeasible)
-                    throw std::invalid_argument("Bounding box: Z is empty");
-                s_neg = -d.dot(this->G * sol_neg.z + this->c);
+                for (int i = 0; i < this->n; i++)
+                {
+                    d.setZero();
+                    d(i) = -1;
+                    q = -this->G.transpose() * d;
+                    OptSolution sol_neg = detail::solve_qp_gurobi(P, q, zero, this->A, this->b, xi_lb, xi_ub, *gs);
+                    if (sol_neg.infeasible)
+                        throw std::invalid_argument("Bounding box: Z is empty");
+                    s_neg = -d.dot(this->G * sol_neg.z + this->c);
 
-                d.setZero();
-                d(i) = 1;
-                q = -this->G.transpose() * d;
-                OptSolution sol_pos = detail::solve_qp_gurobi(P, q, zero, this->A, this->b, xi_lb, xi_ub, settings);
-                if (sol_pos.infeasible)
-                    throw std::invalid_argument("Bounding box: Z is empty");
-                s_pos = d.dot(this->G * sol_pos.z + this->c);
+                    d.setZero();
+                    d(i) = 1;
+                    q = -this->G.transpose() * d;
+                    OptSolution sol_pos = detail::solve_qp_gurobi(P, q, zero, this->A, this->b, xi_lb, xi_ub, *gs);
+                    if (sol_pos.infeasible)
+                        throw std::invalid_argument("Bounding box: Z is empty");
+                    s_pos = d.dot(this->G * sol_pos.z + this->c);
 
-                box.set_element(i, Interval(s_neg, s_pos));
+                    box.set_element(i, Interval(s_neg, s_pos));
+                }
+                return box;
             }
-            return box;
+            // fall through to internal solver with default OptSettings
         }
 
+        // Resolve OptSettings for the internal ADMM solver.
+        OptSettings default_opt;
+        const OptSettings& opt_settings =
+            (dynamic_cast<const OptSettings*>(&settings) != nullptr)
+                ? static_cast<const OptSettings&>(settings)
+                : default_opt;
+
         // build ADMM object
-        const auto data = std::make_shared<ADMM_data>(P, q, this->A, this->b, xi_lb, xi_ub, zero, settings);
+        const auto data = std::make_shared<ADMM_data>(P, q, this->A, this->b, xi_lb, xi_ub, zero, opt_settings);
         ADMM_solver solver(data);
 
         // check if warm start is valid
@@ -654,7 +679,7 @@ namespace ZonoOpt
         return std::make_unique<ConZono>(G, c, A, b, true);
     }
 
-    std::unique_ptr<HybZono> ConZono::do_complement(const zono_float delta_m, bool, const OptSettings&,
+    std::unique_ptr<HybZono> ConZono::do_complement(const zono_float delta_m, bool, const SolverSettings&,
                                                     std::shared_ptr<OptSolution>*, int, int)
     {
         // make sure in [-1,1] form
