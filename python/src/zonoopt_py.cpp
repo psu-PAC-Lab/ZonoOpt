@@ -9,11 +9,14 @@ namespace py = pybind11;
 #include "ZonoOpt.hpp"
 using namespace ZonoOpt;
 
-// Make the GurobiSettings escape-hatch maps opaque so .def_readwrite returns a
+// Make the Gurobi/SCIP escape-hatch maps opaque so .def_readwrite returns a
 // reference-semantics proxy (in-place mutation propagates back to the C++ object).
 PYBIND11_MAKE_OPAQUE(std::map<std::string, int>);
 PYBIND11_MAKE_OPAQUE(std::map<std::string, double>);
 PYBIND11_MAKE_OPAQUE(std::map<std::string, std::string>);
+PYBIND11_MAKE_OPAQUE(std::map<std::string, bool>);
+PYBIND11_MAKE_OPAQUE(std::map<std::string, long long>);
+PYBIND11_MAKE_OPAQUE(std::map<std::string, char>);
 
 namespace {
 // Resolve a `settings` parameter from the Python side. None falls through to the
@@ -39,10 +42,13 @@ PYBIND11_MODULE(_core, m)
         Robbins, J.A., Siefert, J.A., and Pangborn, H.C., "Sparsity-Promoting Reachability Analysis and Optimization of Constrained Zonotopes," 2025.**
     )pbdoc";
 
-    // Bound map types for GurobiSettings escape hatches (Python dict-like with reference semantics).
+    // Bound map types for Gurobi/SCIP escape hatches (Python dict-like with reference semantics).
     py::bind_map<std::map<std::string, int>>(m, "_GurobiIntParams");
     py::bind_map<std::map<std::string, double>>(m, "_GurobiDblParams");
     py::bind_map<std::map<std::string, std::string>>(m, "_GurobiStrParams");
+    py::bind_map<std::map<std::string, bool>>(m, "_SCIPBoolParams");
+    py::bind_map<std::map<std::string, long long>>(m, "_SCIPLongintParams");
+    py::bind_map<std::map<std::string, char>>(m, "_SCIPCharParams");
 
     // solver settings and solution classes
     py::class_<SolverSettings>(m, "SolverSettings",
@@ -173,6 +179,58 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     GurobiSettings: copy of settings
+            )pbdoc")
+    ;
+
+    py::class_<SCIPSettings, SolverSettings>(m, "SCIPSettings",
+        "Settings for the dynamically-loaded SCIP solver backend. Every typed field is Optional; "
+        "leave it as None to use SCIP's default. For SCIP parameters not exposed as typed fields, "
+        "use the bool/int/longint/real/char/str_params dicts keyed by SCIP's documented parameter "
+        "name (e.g., 'limits/time', 'numerics/feastol'). If SCIP cannot be dynamically loaded, the "
+        "library silently falls back to the internal solver with default OptSettings.\n\n"
+        "Reference: https://www.scipopt.org/doc/html/PARAMETERS.php")
+        .def(py::init())
+        // Limits
+        .def_readwrite("TimeLimit",     &SCIPSettings::TimeLimit,     "wall-clock time limit in seconds ('limits/time')")
+        .def_readwrite("MemLimit",      &SCIPSettings::MemLimit,      "memory limit in MB ('limits/memory')")
+        .def_readwrite("SolutionLimit", &SCIPSettings::SolutionLimit, "stop after this many MIP solutions ('limits/solutions')")
+        .def_readwrite("NodeLimit",     &SCIPSettings::NodeLimit,     "max branch-and-bound nodes ('limits/nodes')")
+        // Tolerances
+        .def_readwrite("MIPGap",         &SCIPSettings::MIPGap,         "relative MIP optimality gap ('limits/gap')")
+        .def_readwrite("MIPGapAbs",      &SCIPSettings::MIPGapAbs,      "absolute MIP optimality gap ('limits/absgap')")
+        .def_readwrite("FeasibilityTol", &SCIPSettings::FeasibilityTol, "feasibility tolerance ('numerics/feastol')")
+        // Behavior
+        .def_readwrite("Threads", &SCIPSettings::Threads, "worker threads ('parallel/maxnthreads')")
+        .def_readwrite("Seed",    &SCIPSettings::Seed,    "random seed shift ('randomization/randomseedshift')")
+        // Display
+        .def_readwrite("VerbLevel", &SCIPSettings::VerbLevel,
+            "verbosity 0..5 ('display/verblevel'); 0 = silent. SCIP default is 4 but ZonoOpt defaults to silent unless set.")
+        // Escape-hatch maps
+        .def_readwrite("bool_params",    &SCIPSettings::bool_params,
+            "dict[str, bool]: SCIP bool parameters by name (e.g., 'misc/usesymmetry')")
+        .def_readwrite("int_params",     &SCIPSettings::int_params,
+            "dict[str, int]: SCIP int parameters by name")
+        .def_readwrite("longint_params", &SCIPSettings::longint_params,
+            "dict[str, int]: SCIP long-int parameters by name (e.g., 'limits/nodes')")
+        .def_readwrite("real_params",    &SCIPSettings::real_params,
+            "dict[str, float]: SCIP real parameters by name (e.g., 'numerics/dualfeastol')")
+        .def_readwrite("char_params",    &SCIPSettings::char_params,
+            "dict[str, str]: SCIP char parameters by name (single-character values)")
+        .def_readwrite("str_params",     &SCIPSettings::str_params,
+            "dict[str, str]: SCIP string parameters by name")
+        .def("__repr__", &SCIPSettings::print,
+            R"pbdoc(
+                Displays the parameters that have been explicitly set.
+
+                Returns:
+                    str: string
+            )pbdoc")
+        .def("copy", [](const SCIPSettings& self) -> SCIPSettings { return self; },
+            R"pbdoc(
+                Copy settings object
+
+                Returns:
+                    SCIPSettings: copy of settings
             )pbdoc")
     ;
 

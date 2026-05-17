@@ -238,43 +238,59 @@ void GurobiApi::set_str_param(Model& model, const std::string& param_name, const
 GurobiApi::GurobiApi()
 {
     ZonoOptLibHandle h = load_library();
-    if (h)
+    if (!h)
     {
-        auto deleter = [](void* p) {
-            if (!p) return;
+        _unavailable_reason = "Gurobi shared library could not be located (try setting GUROBI_HOME).";
+        return;
+    }
+
+    auto deleter = [](void* p) {
+        if (!p) return;
 #ifdef _WIN32
-            FreeLibrary(static_cast<ZonoOptLibHandle>(p));
+        FreeLibrary(static_cast<ZonoOptLibHandle>(p));
 #else
-            dlclose(p);
+        dlclose(p);
 #endif
-        };
+    };
 
-        _lib_ptr = LibPtr(static_cast<void*>(h), deleter);
+    _lib_ptr = LibPtr(static_cast<void*>(h), deleter);
 
-        GRBloadenv         = (GRBloadenv_t)         ZONOOPT_GET_SYMBOL(h, "GRBloadenv");
-        GRBnewmodel        = (GRBnewmodel_t)        ZONOOPT_GET_SYMBOL(h, "GRBnewmodel");
-        GRBfreeenv         = (GRBfreeenv_t)         ZONOOPT_GET_SYMBOL(h, "GRBfreeenv");
-        GRBfreemodel       = (GRBfreemodel_t)       ZONOOPT_GET_SYMBOL(h, "GRBfreemodel");
-        GRBaddconstr       = (GRBaddconstr_t)       ZONOOPT_GET_SYMBOL(h, "GRBaddconstr");
-        GRBoptimize        = (GRBoptimize_t)        ZONOOPT_GET_SYMBOL(h, "GRBoptimize");
-        GRBgetdblattrarray = (GRBgetdblattrarray_t) ZONOOPT_GET_SYMBOL(h, "GRBgetdblattrarray");
-        GRBaddqpterms      = (GRBaddqpterms_t)      ZONOOPT_GET_SYMBOL(h, "GRBaddqpterms");
-        GRBupdatemodel     = (GRBupdatemodel_t)     ZONOOPT_GET_SYMBOL(h, "GRBupdatemodel");
-        GRBgetintattr      = (GRBgetintattr_t)      ZONOOPT_GET_SYMBOL(h, "GRBgetintattr");
-        GRBgetdblattr      = (GRBgetdblattr_t)      ZONOOPT_GET_SYMBOL(h, "GRBgetdblattr");
-        GRBsetintparam     = (GRBsetintparam_t)     ZONOOPT_GET_SYMBOL(h, "GRBsetintparam");
-        GRBsetdblparam     = (GRBsetdblparam_t)     ZONOOPT_GET_SYMBOL(h, "GRBsetdblparam");
-        GRBsetstrparam     = (GRBsetstrparam_t)     ZONOOPT_GET_SYMBOL(h, "GRBsetstrparam");
-        GRBgetenv          = (GRBgetenv_t)          ZONOOPT_GET_SYMBOL(h, "GRBgetenv");
-        GRBemptyenv        = (GRBemptyenv_t)        ZONOOPT_GET_SYMBOL(h, "GRBemptyenv");
-        GRBstartenv        = (GRBstartenv_t)        ZONOOPT_GET_SYMBOL(h, "GRBstartenv");
+    GRBloadenv         = (GRBloadenv_t)         ZONOOPT_GET_SYMBOL(h, "GRBloadenv");
+    GRBnewmodel        = (GRBnewmodel_t)        ZONOOPT_GET_SYMBOL(h, "GRBnewmodel");
+    GRBfreeenv         = (GRBfreeenv_t)         ZONOOPT_GET_SYMBOL(h, "GRBfreeenv");
+    GRBfreemodel       = (GRBfreemodel_t)       ZONOOPT_GET_SYMBOL(h, "GRBfreemodel");
+    GRBaddconstr       = (GRBaddconstr_t)       ZONOOPT_GET_SYMBOL(h, "GRBaddconstr");
+    GRBoptimize        = (GRBoptimize_t)        ZONOOPT_GET_SYMBOL(h, "GRBoptimize");
+    GRBgetdblattrarray = (GRBgetdblattrarray_t) ZONOOPT_GET_SYMBOL(h, "GRBgetdblattrarray");
+    GRBaddqpterms      = (GRBaddqpterms_t)      ZONOOPT_GET_SYMBOL(h, "GRBaddqpterms");
+    GRBupdatemodel     = (GRBupdatemodel_t)     ZONOOPT_GET_SYMBOL(h, "GRBupdatemodel");
+    GRBgetintattr      = (GRBgetintattr_t)      ZONOOPT_GET_SYMBOL(h, "GRBgetintattr");
+    GRBgetdblattr      = (GRBgetdblattr_t)      ZONOOPT_GET_SYMBOL(h, "GRBgetdblattr");
+    GRBsetintparam     = (GRBsetintparam_t)     ZONOOPT_GET_SYMBOL(h, "GRBsetintparam");
+    GRBsetdblparam     = (GRBsetdblparam_t)     ZONOOPT_GET_SYMBOL(h, "GRBsetdblparam");
+    GRBsetstrparam     = (GRBsetstrparam_t)     ZONOOPT_GET_SYMBOL(h, "GRBsetstrparam");
+    GRBversion         = (GRBversion_t)         ZONOOPT_GET_SYMBOL(h, "GRBversion");
+    GRBgetenv          = (GRBgetenv_t)          ZONOOPT_GET_SYMBOL(h, "GRBgetenv");
+    GRBemptyenv        = (GRBemptyenv_t)        ZONOOPT_GET_SYMBOL(h, "GRBemptyenv");
+    GRBstartenv        = (GRBstartenv_t)        ZONOOPT_GET_SYMBOL(h, "GRBstartenv");
 
-        // require all essentials to be resolved; otherwise treat as unavailable
-        if (!GRBloadenv || !GRBnewmodel || !GRBfreeenv || !GRBfreemodel || !GRBaddconstr ||
-            !GRBoptimize || !GRBgetdblattrarray || !GRBgetintattr)
-        {
-            _lib_ptr.reset();
-        }
+    // require all essentials to be resolved; otherwise treat as unavailable
+    if (!GRBloadenv || !GRBnewmodel || !GRBfreeenv || !GRBfreemodel || !GRBaddconstr ||
+        !GRBoptimize || !GRBgetdblattrarray || !GRBgetintattr || !GRBversion)
+    {
+        _lib_ptr.reset();
+        _unavailable_reason = "Gurobi shared library is missing one or more required symbols "
+                              "(library may be too old or incomplete).";
+        return;
+    }
+
+    GRBversion(&gurobi_major, &gurobi_minor, &gurobi_tech);
+    if (gurobi_major < MIN_GUROBI_MAJOR)
+    {
+        _lib_ptr.reset();
+        _unavailable_reason = "Loaded Gurobi " + std::to_string(gurobi_major) + "." +
+                              std::to_string(gurobi_minor) + " is too old; Gurobi " +
+                              std::to_string(MIN_GUROBI_MAJOR) + " or newer is required.";
     }
 }
 

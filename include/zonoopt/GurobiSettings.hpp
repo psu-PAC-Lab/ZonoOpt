@@ -26,9 +26,13 @@
 
 namespace ZonoOpt
 {
-    // Forward declaration so GurobiSettings can check availability inline without
+    // Forward declarations so GurobiSettings can check availability inline without
     // pulling in GurobiSolver.hpp (which depends on this file).
-    namespace detail { bool gurobi_available(); }
+    namespace detail
+    {
+        bool gurobi_available();
+        const std::string& gurobi_unavailable_reason();
+    }
 
     /**
      * @brief Settings for the dynamically-loaded Gurobi solver backend.
@@ -94,9 +98,7 @@ namespace ZonoOpt
         {
             if (!detail::gurobi_available())
             {
-                throw std::runtime_error(
-                    "GurobiSettings: Gurobi shared library could not be dynamically loaded. "
-                    "Verify GUROBI_HOME or that the Gurobi runtime is on the dynamic linker's search path.");
+                throw std::runtime_error("GurobiSettings: " + detail::gurobi_unavailable_reason());
             }
         }
 

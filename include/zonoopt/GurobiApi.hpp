@@ -47,6 +47,7 @@ public:
     typedef int (*GRBsetintparam_t)(void*, const char*, int);
     typedef int (*GRBsetdblparam_t)(void*, const char*, double);
     typedef int (*GRBsetstrparam_t)(void*, const char*, const char*);
+    typedef void (*GRBversion_t)(int*, int*, int*);
     typedef void* (*GRBgetenv_t)(void*);
     typedef int (*GRBemptyenv_t)(void**);
     typedef int (*GRBstartenv_t)(void*);
@@ -66,6 +67,7 @@ public:
     GRBsetintparam_t GRBsetintparam = nullptr;
     GRBsetdblparam_t GRBsetdblparam = nullptr;
     GRBsetstrparam_t GRBsetstrparam = nullptr;
+    GRBversion_t GRBversion = nullptr;
     GRBgetenv_t GRBgetenv = nullptr;
     GRBemptyenv_t GRBemptyenv = nullptr;
     GRBstartenv_t GRBstartenv = nullptr;
@@ -74,6 +76,17 @@ public:
     static GurobiApi& instance();
 
     bool is_available() const { return _lib_ptr != nullptr; }
+
+    /// If is_available() is false, returns a short explanation of why
+    /// (e.g., "library not found", "Gurobi version too old"). Empty when available.
+    const std::string& unavailable_reason() const { return _unavailable_reason; }
+
+    int gurobi_major = 0;
+    int gurobi_minor = 0;
+    int gurobi_tech  = 0;
+
+    /// Minimum supported Gurobi major version.
+    static constexpr int MIN_GUROBI_MAJOR = 9;
 
     // model and environment
     Env create_env(const std::string& log = "");
@@ -95,6 +108,7 @@ public:
 
 private:
     LibPtr _lib_ptr = nullptr;
+    std::string _unavailable_reason;
     GurobiApi();
     ~GurobiApi() = default;
     GurobiApi(const GurobiApi&) = delete;

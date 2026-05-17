@@ -436,6 +436,11 @@ bool gurobi_available()
     return GurobiApi::instance().is_available();
 }
 
+const std::string& gurobi_unavailable_reason()
+{
+    return GurobiApi::instance().unavailable_reason();
+}
+
 OptSolution solve_qp_gurobi(const Eigen::SparseMatrix<zono_float>& P,
                             const Eigen::Vector<zono_float, -1>& q,
                             zono_float c,

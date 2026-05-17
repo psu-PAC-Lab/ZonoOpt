@@ -151,6 +151,8 @@ set(SOURCE_FILES
     src/ZonoJson.cpp
     src/GurobiApi.cpp
     src/GurobiSolver.cpp
+    src/SCIPApi.cpp
+    src/SCIPSolver.cpp
 )
 
 # build

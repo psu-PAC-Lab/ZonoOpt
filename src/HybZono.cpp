@@ -1,5 +1,6 @@
 #include "ZonoOpt.hpp"
 #include "zonoopt/GurobiSolver.hpp"
+#include "zonoopt/SCIPSolver.hpp"
 
 namespace ZonoOpt
 {
@@ -686,8 +687,8 @@ namespace ZonoOpt
             xi_lb.setConstant(-1);
         const Eigen::Vector<zono_float, -1> xi_ub = Eigen::Vector<zono_float, -1>::Ones(this->nG);
 
-        // External solver dispatch — GurobiSettings routes to Gurobi; on load failure,
-        // silently fall back to internal solver with default OptSettings.
+        // External solver dispatch — Gurobi/SCIP routed by dynamic type; on load
+        // failure, silently fall back to internal solver with default OptSettings.
         if (const auto* gs = dynamic_cast<const GurobiSettings*>(&settings))
         {
             if (detail::gurobi_available())
@@ -695,6 +696,19 @@ namespace ZonoOpt
                 OptSolution sol = detail::solve_miqp_gurobi(P, q, c, A, b, xi_lb, xi_ub,
                                                             this->nGc, this->nGb,
                                                             this->zero_one_form, *gs);
+                if (solution != nullptr)
+                    *solution = std::make_shared<OptSolution>(sol);
+                return sol;
+            }
+            // fall through to internal solver with default OptSettings
+        }
+        if (const auto* ss = dynamic_cast<const SCIPSettings*>(&settings))
+        {
+            if (detail::scip_available())
+            {
+                OptSolution sol = detail::solve_miqp_scip(P, q, c, A, b, xi_lb, xi_ub,
+                                                          this->nGc, this->nGb,
+                                                          this->zero_one_form, *ss);
                 if (solution != nullptr)
                     *solution = std::make_shared<OptSolution>(sol);
                 return sol;
@@ -748,8 +762,9 @@ namespace ZonoOpt
             xi_lb.setConstant(-1);
         const Eigen::Vector<zono_float, -1> xi_ub = Eigen::Vector<zono_float, -1>::Ones(this->nG);
 
-        // External solver dispatch — GurobiSettings routes to Gurobi (solution pool); on load failure,
-        // silently fall back to internal solver with default OptSettings.
+        // External solver dispatch — Gurobi/SCIP routed by dynamic type (each uses
+        // its native solution-pool mechanism); on load failure, silently fall back
+        // to the internal solver with default OptSettings.
         if (const auto* gs = dynamic_cast<const GurobiSettings*>(&settings))
         {
             if (detail::gurobi_available())
@@ -758,6 +773,20 @@ namespace ZonoOpt
                     P, q, c, A, b, xi_lb, xi_ub,
                     this->nGc, this->nGb, this->zero_one_form,
                     n_sols, *gs);
+                if (solution != nullptr && !sols.empty())
+                    *solution = std::make_shared<OptSolution>(sols.back());
+                return sols;
+            }
+            // fall through to internal solver with default OptSettings
+        }
+        if (const auto* ss = dynamic_cast<const SCIPSettings*>(&settings))
+        {
+            if (detail::scip_available())
+            {
+                std::vector<OptSolution> sols = detail::solve_miqp_scip_multisol(
+                    P, q, c, A, b, xi_lb, xi_ub,
+                    this->nGc, this->nGb, this->zero_one_form,
+                    n_sols, *ss);
                 if (solution != nullptr && !sols.empty())
                     *solution = std::make_shared<OptSolution>(sols.back());
                 return sols;
