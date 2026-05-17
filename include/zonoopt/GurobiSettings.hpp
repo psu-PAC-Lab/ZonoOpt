@@ -4,9 +4,20 @@
 /**
  * @file GurobiSettings.hpp
  * @brief Settings for the dynamically-loaded Gurobi solver backend.
+ *
+ * Hybrid design: commonly-used parameters are exposed as typed std::optional fields
+ * (great IDE / autocompletion / docs), and rare parameters can be set via the
+ * int_params / dbl_params / str_params escape-hatch maps keyed by Gurobi's
+ * documented parameter name.
+ *
+ * Any field/map entry left unset (nullopt / absent) is not applied to the model,
+ * leaving Gurobi's own default in place.
+ *
+ * Full parameter list and meanings: https://docs.gurobi.com/projects/optimizer/en/current/reference/parameters.html
  */
 
-#include <limits>
+#include <map>
+#include <optional>
 #include <sstream>
 #include <string>
 
@@ -15,51 +26,101 @@
 namespace ZonoOpt
 {
     /**
-     * @brief Settings for the Gurobi solver backend.
+     * @brief Settings for the dynamically-loaded Gurobi solver backend.
      *
-     * Passing a GurobiSettings instance to a ZonoOpt optimization routine causes the
-     * library to attempt dynamic loading of Gurobi and solve via Gurobi's API. If the
-     * Gurobi shared library cannot be loaded at runtime, the library silently falls
-     * back to the internal ZonoOpt solver with default OptSettings.
+     * Pass an instance to a ZonoOpt optimization method to route through Gurobi.
+     * If the Gurobi shared library cannot be loaded at runtime, the library silently
+     * falls back to the internal solver with default OptSettings.
      */
     struct GurobiSettings : SolverSettings
     {
-        /// display Gurobi output (maps to Gurobi's OutputFlag parameter)
-        bool verbose = false;
+        // ---- Termination ----
+        std::optional<double> TimeLimit;      ///< wall-clock time limit in seconds
+        std::optional<double> WorkLimit;      ///< deterministic work limit
+        std::optional<double> MemLimit;       ///< memory limit in GB
+        std::optional<int>    SolutionLimit;  ///< stop after this many MIP solutions
 
-        /// max wall-clock time for optimization in seconds (Gurobi's TimeLimit parameter)
-        double t_max = std::numeric_limits<double>::max();
+        // ---- Tolerances ----
+        std::optional<double> MIPGap;         ///< relative MIP optimality gap
+        std::optional<double> MIPGapAbs;      ///< absolute MIP optimality gap
+        std::optional<double> FeasibilityTol; ///< constraint feasibility tolerance
+        std::optional<double> OptimalityTol;  ///< dual feasibility tolerance
+        std::optional<double> IntFeasTol;     ///< integer feasibility tolerance
 
-        /// relative MIP optimality gap (Gurobi's MIPGap parameter)
-        double mip_gap = 1e-4;
+        // ---- Algorithm selection / behavior ----
+        std::optional<int>    Method;         ///< root-node algorithm: -1 auto, 0..5
+        std::optional<int>    Presolve;       ///< -1 auto, 0 off, 1 conservative, 2 aggressive
+        std::optional<int>    Cuts;           ///< global cut aggressiveness: -1..3
+        std::optional<int>    MIPFocus;       ///< 0 default, 1 feasibility, 2 optimality, 3 bound
+        std::optional<int>    NumericFocus;   ///< 0..3 numerical-care knob
+        std::optional<double> Heuristics;     ///< MIP heuristics effort (0..1)
+        std::optional<int>    Threads;        ///< worker thread count; 0 = auto
+        std::optional<int>    Seed;           ///< random seed
 
-        /// absolute MIP optimality gap (Gurobi's MIPGapAbs parameter)
-        double mip_gap_abs = 1e-10;
+        // ---- Solution pool (used by mi_opt_multisol) ----
+        std::optional<int>    PoolSolutions;
+        std::optional<int>    PoolSearchMode;
+        std::optional<double> PoolGap;
+        std::optional<double> PoolGapAbs;
 
-        /// number of threads (Gurobi's Threads parameter); 0 = Gurobi's default (typically all cores)
-        int threads = 0;
+        // ---- Logging ----
+        std::optional<int>         OutputFlag; ///< 0 silent, 1 verbose (Gurobi default 1)
+        std::optional<int>         LogToConsole;
+        std::optional<std::string> LogFile;
 
-        /// max number of MIP solutions to return in mi_opt_multisol via Gurobi's solution pool
-        /// (caps the per-call PoolSolutions; the n_sols argument also caps it)
-        int max_pool_solutions = std::numeric_limits<int>::max();
-
-        /// optional path to a Gurobi log file; empty disables file logging
-        std::string log_file = "";
+        // ---- Escape hatch for any Gurobi parameter not exposed above ----
+        // Keys are the documented Gurobi parameter names, e.g.,
+        //   int_params["BarIterLimit"] = 500;
+        //   dbl_params["NodefileStart"] = 0.5;
+        //   str_params["WLSAccessID"] = "...";
+        // See https://docs.gurobi.com/projects/optimizer/en/current/reference/parameters.html
+        std::map<std::string, int>         int_params;
+        std::map<std::string, double>      dbl_params;
+        std::map<std::string, std::string> str_params;
 
         /**
-         * @brief displays settings as string
+         * @brief displays the parameters that have been explicitly set
          */
         std::string print() const
         {
             std::stringstream ss;
-            ss << "GurobiSettings:" << std::endl;
-            ss << "  verbose: " << (verbose ? "true" : "false") << std::endl;
-            ss << "  t_max: " << t_max << std::endl;
-            ss << "  mip_gap: " << mip_gap << std::endl;
-            ss << "  mip_gap_abs: " << mip_gap_abs << std::endl;
-            ss << "  threads: " << threads << std::endl;
-            ss << "  max_pool_solutions: " << max_pool_solutions << std::endl;
-            ss << "  log_file: " << log_file << std::endl;
+            ss << "GurobiSettings (unset fields use Gurobi defaults):\n";
+            auto opt_int = [&](const char* n, const std::optional<int>& v)         { if (v) ss << "  " << n << " = " << *v << "\n"; };
+            auto opt_dbl = [&](const char* n, const std::optional<double>& v)      { if (v) ss << "  " << n << " = " << *v << "\n"; };
+            auto opt_str = [&](const char* n, const std::optional<std::string>& v) { if (v) ss << "  " << n << " = \"" << *v << "\"\n"; };
+
+            opt_dbl("TimeLimit", TimeLimit);
+            opt_dbl("WorkLimit", WorkLimit);
+            opt_dbl("MemLimit", MemLimit);
+            opt_int("SolutionLimit", SolutionLimit);
+
+            opt_dbl("MIPGap", MIPGap);
+            opt_dbl("MIPGapAbs", MIPGapAbs);
+            opt_dbl("FeasibilityTol", FeasibilityTol);
+            opt_dbl("OptimalityTol", OptimalityTol);
+            opt_dbl("IntFeasTol", IntFeasTol);
+
+            opt_int("Method", Method);
+            opt_int("Presolve", Presolve);
+            opt_int("Cuts", Cuts);
+            opt_int("MIPFocus", MIPFocus);
+            opt_int("NumericFocus", NumericFocus);
+            opt_dbl("Heuristics", Heuristics);
+            opt_int("Threads", Threads);
+            opt_int("Seed", Seed);
+
+            opt_int("PoolSolutions", PoolSolutions);
+            opt_int("PoolSearchMode", PoolSearchMode);
+            opt_dbl("PoolGap", PoolGap);
+            opt_dbl("PoolGapAbs", PoolGapAbs);
+
+            opt_int("OutputFlag", OutputFlag);
+            opt_int("LogToConsole", LogToConsole);
+            opt_str("LogFile", LogFile);
+
+            for (const auto& kv : int_params) ss << "  [int] "  << kv.first << " = " << kv.second << "\n";
+            for (const auto& kv : dbl_params) ss << "  [dbl] "  << kv.first << " = " << kv.second << "\n";
+            for (const auto& kv : str_params) ss << "  [str] "  << kv.first << " = \"" << kv.second << "\"\n";
             return ss.str();
         }
     };

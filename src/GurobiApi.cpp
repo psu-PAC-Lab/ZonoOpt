@@ -213,6 +213,28 @@ void GurobiApi::set_dbl_param(Model& model, const std::string& param_name, doubl
     }
 }
 
+void GurobiApi::set_str_param(Model& model, const std::string& param_name, const std::string& value)
+{
+    if (!model || !this->GRBsetstrparam || !this->GRBgetenv)
+    {
+        throw std::runtime_error("Model is null or GRBsetstrparam/GRBgetenv not available.");
+    }
+
+    void* model_env = this->GRBgetenv(model.get());
+    if (!model_env)
+    {
+        throw std::runtime_error("Failed to get model environment.");
+    }
+
+    int err = this->GRBsetstrparam(model_env, param_name.c_str(), value.c_str());
+
+    if (err)
+    {
+        throw std::runtime_error("Failed to set string parameter '" + param_name + "'. Error code: " +
+                                 std::to_string(err));
+    }
+}
+
 GurobiApi::GurobiApi()
 {
     ZonoOptLibHandle h = load_library();
@@ -242,6 +264,7 @@ GurobiApi::GurobiApi()
         GRBgetdblattr      = (GRBgetdblattr_t)      ZONOOPT_GET_SYMBOL(h, "GRBgetdblattr");
         GRBsetintparam     = (GRBsetintparam_t)     ZONOOPT_GET_SYMBOL(h, "GRBsetintparam");
         GRBsetdblparam     = (GRBsetdblparam_t)     ZONOOPT_GET_SYMBOL(h, "GRBsetdblparam");
+        GRBsetstrparam     = (GRBsetstrparam_t)     ZONOOPT_GET_SYMBOL(h, "GRBsetstrparam");
         GRBgetenv          = (GRBgetenv_t)          ZONOOPT_GET_SYMBOL(h, "GRBgetenv");
         GRBemptyenv        = (GRBemptyenv_t)        ZONOOPT_GET_SYMBOL(h, "GRBemptyenv");
         GRBstartenv        = (GRBstartenv_t)        ZONOOPT_GET_SYMBOL(h, "GRBstartenv");

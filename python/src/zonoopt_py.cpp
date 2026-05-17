@@ -1,12 +1,19 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/eigen.h>
 #include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
 namespace py = pybind11;
 
 #define IS_PYTHON_ENV
 #define zono_float double
 #include "ZonoOpt.hpp"
 using namespace ZonoOpt;
+
+// Make the GurobiSettings escape-hatch maps opaque so .def_readwrite returns a
+// reference-semantics proxy (in-place mutation propagates back to the C++ object).
+PYBIND11_MAKE_OPAQUE(std::map<std::string, int>);
+PYBIND11_MAKE_OPAQUE(std::map<std::string, double>);
+PYBIND11_MAKE_OPAQUE(std::map<std::string, std::string>);
 
 PYBIND11_MODULE(_core, m)
 {
@@ -18,6 +25,11 @@ PYBIND11_MODULE(_core, m)
         More information about ZonoOpt can be found in the the following publication. Please cite this if you publish work based on ZonoOpt: 
         Robbins, J.A., Siefert, J.A., and Pangborn, H.C., "Sparsity-Promoting Reachability Analysis and Optimization of Constrained Zonotopes," 2025.**
     )pbdoc";
+
+    // Bound map types for GurobiSettings escape hatches (Python dict-like with reference semantics).
+    py::bind_map<std::map<std::string, int>>(m, "_GurobiIntParams");
+    py::bind_map<std::map<std::string, double>>(m, "_GurobiDblParams");
+    py::bind_map<std::map<std::string, std::string>>(m, "_GurobiStrParams");
 
     // solver settings and solution classes
     py::class_<SolverSettings>(m, "SolverSettings",
@@ -92,21 +104,52 @@ PYBIND11_MODULE(_core, m)
     ;
 
     py::class_<GurobiSettings, SolverSettings>(m, "GurobiSettings",
-        "Settings for the dynamically-loaded Gurobi solver backend. Pass to ZonoOpt's optimization methods "
-        "to route through Gurobi; if Gurobi cannot be dynamically loaded, the library silently falls back "
-        "to the internal solver with default OptSettings.")
+        "Settings for the dynamically-loaded Gurobi solver backend. Every typed field is Optional; "
+        "leave it as None to use Gurobi's default. For Gurobi parameters not exposed as typed fields, "
+        "use int_params / dbl_params / str_params (keyed by Gurobi's documented parameter name). "
+        "If Gurobi cannot be dynamically loaded, the library silently falls back to the internal "
+        "solver with default OptSettings.\n\n"
+        "Reference: https://docs.gurobi.com/projects/optimizer/en/current/reference/parameters.html")
         .def(py::init())
-        .def_readwrite("verbose", &GurobiSettings::verbose, "display Gurobi output (Gurobi's OutputFlag parameter)")
-        .def_readwrite("t_max", &GurobiSettings::t_max, "max wall-clock time in seconds (Gurobi's TimeLimit parameter)")
-        .def_readwrite("mip_gap", &GurobiSettings::mip_gap, "relative MIP optimality gap (Gurobi's MIPGap parameter)")
-        .def_readwrite("mip_gap_abs", &GurobiSettings::mip_gap_abs, "absolute MIP optimality gap (Gurobi's MIPGapAbs parameter)")
-        .def_readwrite("threads", &GurobiSettings::threads, "number of threads; 0 = Gurobi default (typically all cores)")
-        .def_readwrite("max_pool_solutions", &GurobiSettings::max_pool_solutions,
-            "max number of MIP solutions in mi_opt_multisol via Gurobi's solution pool")
-        .def_readwrite("log_file", &GurobiSettings::log_file, "optional path to a Gurobi log file; empty disables file logging")
+        // Termination
+        .def_readwrite("TimeLimit",     &GurobiSettings::TimeLimit,     "wall-clock time limit in seconds")
+        .def_readwrite("WorkLimit",     &GurobiSettings::WorkLimit,     "deterministic work limit")
+        .def_readwrite("MemLimit",      &GurobiSettings::MemLimit,      "memory limit in GB")
+        .def_readwrite("SolutionLimit", &GurobiSettings::SolutionLimit, "stop after this many MIP solutions")
+        // Tolerances
+        .def_readwrite("MIPGap",         &GurobiSettings::MIPGap,         "relative MIP optimality gap")
+        .def_readwrite("MIPGapAbs",      &GurobiSettings::MIPGapAbs,      "absolute MIP optimality gap")
+        .def_readwrite("FeasibilityTol", &GurobiSettings::FeasibilityTol, "constraint feasibility tolerance")
+        .def_readwrite("OptimalityTol",  &GurobiSettings::OptimalityTol,  "dual feasibility tolerance")
+        .def_readwrite("IntFeasTol",     &GurobiSettings::IntFeasTol,     "integer feasibility tolerance")
+        // Algorithm / behavior
+        .def_readwrite("Method",       &GurobiSettings::Method,       "root-node algorithm: -1 auto, 0..5")
+        .def_readwrite("Presolve",     &GurobiSettings::Presolve,     "-1 auto, 0 off, 1 conservative, 2 aggressive")
+        .def_readwrite("Cuts",         &GurobiSettings::Cuts,         "global cut aggressiveness: -1..3")
+        .def_readwrite("MIPFocus",     &GurobiSettings::MIPFocus,     "0 default, 1 feasibility, 2 optimality, 3 bound")
+        .def_readwrite("NumericFocus", &GurobiSettings::NumericFocus, "0..3 numerical-care knob")
+        .def_readwrite("Heuristics",   &GurobiSettings::Heuristics,   "MIP heuristics effort, 0..1")
+        .def_readwrite("Threads",      &GurobiSettings::Threads,      "worker thread count; 0 = Gurobi auto")
+        .def_readwrite("Seed",         &GurobiSettings::Seed,         "random seed")
+        // Solution pool
+        .def_readwrite("PoolSolutions",  &GurobiSettings::PoolSolutions,  "size of the MIP solution pool")
+        .def_readwrite("PoolSearchMode", &GurobiSettings::PoolSearchMode, "0 default, 1 n diverse, 2 n best")
+        .def_readwrite("PoolGap",        &GurobiSettings::PoolGap,        "relative gap for pool solutions")
+        .def_readwrite("PoolGapAbs",     &GurobiSettings::PoolGapAbs,     "absolute gap for pool solutions")
+        // Logging
+        .def_readwrite("OutputFlag",   &GurobiSettings::OutputFlag,   "0 silent, 1 verbose (Gurobi default 1)")
+        .def_readwrite("LogToConsole", &GurobiSettings::LogToConsole, "log to console flag")
+        .def_readwrite("LogFile",      &GurobiSettings::LogFile,      "Gurobi log file path")
+        // Escape hatch
+        .def_readwrite("int_params", &GurobiSettings::int_params,
+            "dict[str, int]: Gurobi int parameters not in the typed fields above, keyed by Gurobi parameter name")
+        .def_readwrite("dbl_params", &GurobiSettings::dbl_params,
+            "dict[str, float]: Gurobi double parameters not in the typed fields above, keyed by Gurobi parameter name")
+        .def_readwrite("str_params", &GurobiSettings::str_params,
+            "dict[str, str]: Gurobi string parameters not in the typed fields above, keyed by Gurobi parameter name")
         .def("__repr__", &GurobiSettings::print,
             R"pbdoc(
-                Displays settings as a string
+                Displays the parameters that have been explicitly set.
 
                 Returns:
                     str: string

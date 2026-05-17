@@ -61,6 +61,52 @@ struct PreparedModel
     int n = 0;
 };
 
+void apply_gurobi_settings(GurobiApi& api, GurobiApi::Model& model, const GurobiSettings& s)
+{
+    auto apply_int = [&](const char* name, const std::optional<int>& v)         { if (v) api.set_int_param(model, name, *v); };
+    auto apply_dbl = [&](const char* name, const std::optional<double>& v)      { if (v) api.set_dbl_param(model, name, *v); };
+    auto apply_str = [&](const char* name, const std::optional<std::string>& v) { if (v) api.set_str_param(model, name, *v); };
+
+    // Termination
+    apply_dbl("TimeLimit", s.TimeLimit);
+    apply_dbl("WorkLimit", s.WorkLimit);
+    apply_dbl("MemLimit",  s.MemLimit);
+    apply_int("SolutionLimit", s.SolutionLimit);
+
+    // Tolerances
+    apply_dbl("MIPGap",         s.MIPGap);
+    apply_dbl("MIPGapAbs",      s.MIPGapAbs);
+    apply_dbl("FeasibilityTol", s.FeasibilityTol);
+    apply_dbl("OptimalityTol",  s.OptimalityTol);
+    apply_dbl("IntFeasTol",     s.IntFeasTol);
+
+    // Algorithm / behavior
+    apply_int("Method",       s.Method);
+    apply_int("Presolve",     s.Presolve);
+    apply_int("Cuts",         s.Cuts);
+    apply_int("MIPFocus",     s.MIPFocus);
+    apply_int("NumericFocus", s.NumericFocus);
+    apply_dbl("Heuristics",   s.Heuristics);
+    apply_int("Threads",      s.Threads);
+    apply_int("Seed",         s.Seed);
+
+    // Solution pool
+    apply_int("PoolSolutions",  s.PoolSolutions);
+    apply_int("PoolSearchMode", s.PoolSearchMode);
+    apply_dbl("PoolGap",        s.PoolGap);
+    apply_dbl("PoolGapAbs",     s.PoolGapAbs);
+
+    // Logging
+    apply_int("OutputFlag",   s.OutputFlag);
+    apply_int("LogToConsole", s.LogToConsole);
+    apply_str("LogFile",      s.LogFile);
+
+    // Escape-hatch maps for any parameter not exposed above.
+    for (const auto& kv : s.int_params) api.set_int_param(model, kv.first, kv.second);
+    for (const auto& kv : s.dbl_params) api.set_dbl_param(model, kv.first, kv.second);
+    for (const auto& kv : s.str_params) api.set_str_param(model, kv.first, kv.second);
+}
+
 PreparedModel prepare_model(const Eigen::SparseMatrix<double, Eigen::RowMajor>& P_rm,
                             const Eigen::VectorXd& q_d,
                             const Eigen::SparseMatrix<double, Eigen::RowMajor>& A_rm,
@@ -79,30 +125,16 @@ PreparedModel prepare_model(const Eigen::SparseMatrix<double, Eigen::RowMajor>& 
     PreparedModel pm;
     pm.n = static_cast<int>(q_d.size());
 
-    pm.env = api.create_env(settings.log_file);
+    // LogFile is special: GRBloadenv takes the log filename directly so the env logs
+    // creation messages too. We also re-apply it via set_str_param below for parity.
+    pm.env = api.create_env(settings.LogFile.value_or(""));
     pm.model = api.create_model(pm.env, "zonoopt_model", pm.n,
                                 const_cast<double*>(q_d.data()),
                                 const_cast<double*>(lb_d.data()),
                                 const_cast<double*>(ub_d.data()),
                                 const_cast<char*>(vtype.data()));
 
-    api.set_int_param(pm.model, "OutputFlag", settings.verbose ? 1 : 0);
-    if (settings.t_max < std::numeric_limits<double>::max())
-    {
-        api.set_dbl_param(pm.model, "TimeLimit", settings.t_max);
-    }
-    if (settings.mip_gap > 0)
-    {
-        api.set_dbl_param(pm.model, "MIPGap", settings.mip_gap);
-    }
-    if (settings.mip_gap_abs > 0)
-    {
-        api.set_dbl_param(pm.model, "MIPGapAbs", settings.mip_gap_abs);
-    }
-    if (settings.threads > 0)
-    {
-        api.set_int_param(pm.model, "Threads", settings.threads);
-    }
+    apply_gurobi_settings(api, pm.model, settings);
 
     for (int k = 0; k < A_rm.outerSize(); ++k)
     {
@@ -180,9 +212,12 @@ GurobiResult optimize_single(PreparedModel& pm)
 
 /**
  * Drive Gurobi's solution pool to enumerate up to n_sols feasible solutions.
- * Pool params: PoolSolutions, PoolSearchMode=2 (find n best).
+ *
+ * The caller's request for n_sols overrides whatever PoolSolutions value was already
+ * applied from settings. PoolSearchMode is set to 2 (find n best) unless the caller's
+ * settings already specified a non-default value via prepare_model.
  */
-std::vector<GurobiResult> optimize_pool(PreparedModel& pm, int n_sols)
+std::vector<GurobiResult> optimize_pool(PreparedModel& pm, int n_sols, int pool_search_mode)
 {
     GurobiApi& api = GurobiApi::instance();
     std::vector<GurobiResult> results;
@@ -190,7 +225,7 @@ std::vector<GurobiResult> optimize_pool(PreparedModel& pm, int n_sols)
     if (n_sols < 1) n_sols = 1;
 
     api.set_int_param(pm.model, "PoolSolutions", n_sols);
-    api.set_int_param(pm.model, "PoolSearchMode", 2);
+    api.set_int_param(pm.model, "PoolSearchMode", pool_search_mode);
 
     auto t_start = std::chrono::steady_clock::now();
     api.optimize(pm.model);
@@ -475,8 +510,13 @@ std::vector<OptSolution> solve_miqp_gurobi_multisol(const Eigen::SparseMatrix<zo
 
     PreparedModel pm = prepare_model(prep.P_rm, prep.q_d, prep.A_rm, prep.b_d,
                                      prep.lb_d, prep.ub_d, prep.vtype, settings);
-    const int capped_n_sols = std::min(n_sols, settings.max_pool_solutions);
-    std::vector<GurobiResult> grs = optimize_pool(pm, capped_n_sols);
+    // If the user explicitly capped PoolSolutions, respect it; otherwise honor n_sols.
+    const int capped_n_sols = settings.PoolSolutions
+        ? std::min(n_sols, *settings.PoolSolutions)
+        : n_sols;
+    // Default to PoolSearchMode = 2 ("find n best") unless the user requested otherwise.
+    const int pool_search_mode = settings.PoolSearchMode.value_or(2);
+    std::vector<GurobiResult> grs = optimize_pool(pm, capped_n_sols, pool_search_mode);
 
     const int n = static_cast<int>(q.size());
     std::vector<OptSolution> sols;

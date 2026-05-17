@@ -46,6 +46,7 @@ public:
     typedef int (*GRBgetdblattrarray_t)(void*, const char*, int, int, double*);
     typedef int (*GRBsetintparam_t)(void*, const char*, int);
     typedef int (*GRBsetdblparam_t)(void*, const char*, double);
+    typedef int (*GRBsetstrparam_t)(void*, const char*, const char*);
     typedef void* (*GRBgetenv_t)(void*);
     typedef int (*GRBemptyenv_t)(void**);
     typedef int (*GRBstartenv_t)(void*);
@@ -64,6 +65,7 @@ public:
     GRBgetdblattrarray_t GRBgetdblattrarray = nullptr;
     GRBsetintparam_t GRBsetintparam = nullptr;
     GRBsetdblparam_t GRBsetdblparam = nullptr;
+    GRBsetstrparam_t GRBsetstrparam = nullptr;
     GRBgetenv_t GRBgetenv = nullptr;
     GRBemptyenv_t GRBemptyenv = nullptr;
     GRBstartenv_t GRBstartenv = nullptr;
@@ -89,6 +91,7 @@ public:
     void get_dbl_attr_array(Model& model, const std::string& attr_name, int start, int len, double* arr_out);
     void set_int_param(Model& model, const std::string& param_name, int value);
     void set_dbl_param(Model& model, const std::string& param_name, double value);
+    void set_str_param(Model& model, const std::string& param_name, const std::string& value);
 
 private:
     LibPtr _lib_ptr = nullptr;
