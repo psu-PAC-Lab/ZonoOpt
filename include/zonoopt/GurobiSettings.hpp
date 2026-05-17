@@ -19,12 +19,17 @@
 #include <map>
 #include <optional>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 
 #include "SolverDataStructures.hpp"
 
 namespace ZonoOpt
 {
+    // Forward declaration so GurobiSettings can check availability inline without
+    // pulling in GurobiSolver.hpp (which depends on this file).
+    namespace detail { bool gurobi_available(); }
+
     /**
      * @brief Settings for the dynamically-loaded Gurobi solver backend.
      *
@@ -77,6 +82,23 @@ namespace ZonoOpt
         std::map<std::string, int>         int_params;
         std::map<std::string, double>      dbl_params;
         std::map<std::string, std::string> str_params;
+
+        // polymorphic copy
+        std::unique_ptr<SolverSettings> clone() const override
+        {
+            return std::make_unique<GurobiSettings>(*this);
+        }
+
+        // throws if the Gurobi shared library cannot be dynamically loaded
+        void verify_available() const override
+        {
+            if (!detail::gurobi_available())
+            {
+                throw std::runtime_error(
+                    "GurobiSettings: Gurobi shared library could not be dynamically loaded. "
+                    "Verify GUROBI_HOME or that the Gurobi runtime is on the dynamic linker's search path.");
+            }
+        }
 
         /**
          * @brief displays the parameters that have been explicitly set

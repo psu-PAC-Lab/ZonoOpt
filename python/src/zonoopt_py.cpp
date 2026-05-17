@@ -15,6 +15,19 @@ PYBIND11_MAKE_OPAQUE(std::map<std::string, int>);
 PYBIND11_MAKE_OPAQUE(std::map<std::string, double>);
 PYBIND11_MAKE_OPAQUE(std::map<std::string, std::string>);
 
+namespace {
+// Resolve a `settings` parameter from the Python side. None falls through to the
+// program-wide default installed via set_default_solver_settings (or the initial
+// OptSettings() if the user never called that). pybind11 evaluates py::arg defaults
+// once at module-import time, so we cannot use `py::arg = get_default_solver_settings()`
+// directly — we accept py::object and look up the current default per call.
+const SolverSettings& resolve_solver_settings(const py::object& obj)
+{
+    if (obj.is_none()) return get_default_solver_settings();
+    return obj.cast<const SolverSettings&>();
+}
+} // anonymous namespace
+
 PYBIND11_MODULE(_core, m)
 {
     m.doc() = R"pbdoc(
@@ -2286,9 +2299,10 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
         .def("optimize_over", [](const HybZono& self, const Eigen::SparseMatrix<zono_float> &P,
             const Eigen::Vector<zono_float, -1> &q, zono_float c,
-            const SolverSettings &settings, OptSolution* solution,
+            py::object settings_obj, OptSolution* solution,
             const WarmStartParams& warm_start_params)-> Eigen::Vector<zono_float, -1>
             {
+                const SolverSettings& settings = resolve_solver_settings(settings_obj);
                 auto sol_shared = std::make_shared<OptSolution>();
                 auto z = self.optimize_over(P, q, c, settings, &sol_shared, warm_start_params);
                 if (solution)
@@ -2296,7 +2310,7 @@ PYBIND11_MODULE(_core, m)
                 return z;
             },
             "optimize over", py::arg("P"), py::arg("q"), py::arg("c")=0,
-            py::arg("settings")=OptSettings(), py::arg("solution")=nullptr,
+            py::arg("settings")=py::none(), py::arg("solution")=nullptr,
             py::arg("warm_start_params")=WarmStartParams(),
             R"pbdoc(
                 Solves optimization problem with quadratic objective over the current set
@@ -2315,16 +2329,17 @@ PYBIND11_MODULE(_core, m)
                 Solves optimization problem of the form min 0.5*z^T*P*z + q^T*z + c where z is a vector in the current set
             )pbdoc")
         .def("project_point", [](const HybZono& self, const Eigen::Vector<zono_float, -1> &x,
-            const SolverSettings &settings, OptSolution* solution,
+            py::object settings_obj, OptSolution* solution,
             const WarmStartParams& warm_start_params) -> Eigen::Vector<zono_float, -1>
             {
+                const SolverSettings& settings = resolve_solver_settings(settings_obj);
                 auto sol_shared = std::make_shared<OptSolution>();
                 auto z = self.project_point(x, settings, &sol_shared, warm_start_params);
                 if (solution)
                     *solution = *sol_shared;
                 return z;
             },
-            py::arg("x"), py::arg("settings")=OptSettings(),
+            py::arg("x"), py::arg("settings")=py::none(),
             py::arg("solution")=nullptr, py::arg("warm_start_params")=WarmStartParams(),
             R"pbdoc(
                 Returns the projection of the point x onto the set object.
@@ -2338,16 +2353,17 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     numpy.array: point z in the current set
             )pbdoc")
-        .def("is_empty", [](const HybZono& self, const SolverSettings &settings,
+        .def("is_empty", [](const HybZono& self, py::object settings_obj,
             OptSolution* solution, const WarmStartParams& warm_start_params) -> bool
             {
+                const SolverSettings& settings = resolve_solver_settings(settings_obj);
                 auto sol_shared = std::make_shared<OptSolution>();
                 const bool empty = self.is_empty(settings, &sol_shared, warm_start_params);
                 if (solution)
                     *solution = *sol_shared;
                 return empty;
             },
-            py::arg("settings")=OptSettings(),
+            py::arg("settings")=py::none(),
             py::arg("solution")=nullptr, py::arg("warm_start_params")=WarmStartParams(),
             R"pbdoc(
                 Returns true if the set is provably empty, false otherwise.
@@ -2361,16 +2377,17 @@ PYBIND11_MODULE(_core, m)
                     bool: flag indicating whether set is provably empty
             )pbdoc")
         .def("support", [](HybZono& self, const Eigen::Vector<zono_float, -1> &d,
-            const SolverSettings &settings, OptSolution* solution,
+            py::object settings_obj, OptSolution* solution,
             const WarmStartParams& warm_start_params) -> zono_float
             {
+                const SolverSettings& settings = resolve_solver_settings(settings_obj);
                 auto sol_shared = std::make_shared<OptSolution>();
                 const zono_float s = self.support(d, settings, &sol_shared, warm_start_params);
                 if (solution)
                     *solution = *sol_shared;
                 return s;
             },
-            py::arg("d"), py::arg("settings")=OptSettings(),
+            py::arg("d"), py::arg("settings")=py::none(),
             py::arg("solution")=nullptr, py::arg("warm_start_params")=WarmStartParams(),
             R"pbdoc(
                 Computes support function of the set in the direction d.
@@ -2387,16 +2404,17 @@ PYBIND11_MODULE(_core, m)
                 Solves max_{z in Z} <z, d> where <., .> is the inner product
             )pbdoc")
         .def("contains_point", [](const HybZono& self, const Eigen::Vector<zono_float, -1> &x,
-            const SolverSettings &settings, OptSolution* solution,
+            py::object settings_obj, OptSolution* solution,
             const WarmStartParams& warm_start_params) -> bool
             {
+                const SolverSettings& settings = resolve_solver_settings(settings_obj);
                 auto sol_shared = std::make_shared<OptSolution>();
                 const bool contains = self.contains_point(x, settings, &sol_shared, warm_start_params);
                 if (solution)
                     *solution = *sol_shared;
                 return contains;
             },
-            py::arg("x"), py::arg("settings")=OptSettings(),
+            py::arg("x"), py::arg("settings")=py::none(),
             py::arg("solution")=nullptr, py::arg("warm_start_params")=WarmStartParams(),
             R"pbdoc(
                 Checks whether the point x is contained in the set object.
@@ -2414,16 +2432,17 @@ PYBIND11_MODULE(_core, m)
                 Will return false only if an infeasibility certificate is found, i.e., false negatives are not possible.
             )pbdoc")
         .def("bounding_box", [](HybZono& self,
-            const SolverSettings &settings, OptSolution* solution,
+            py::object settings_obj, OptSolution* solution,
             const WarmStartParams& warm_start_params) -> Box
             {
+                const SolverSettings& settings = resolve_solver_settings(settings_obj);
                 auto sol_shared = std::make_shared<OptSolution>();
                 const Box bb = self.bounding_box(settings, &sol_shared, warm_start_params);
                 if (solution)
                     *solution = *sol_shared;
                 return bb;
             },
-            py::arg("settings")=OptSettings(),
+            py::arg("settings")=py::none(),
             py::arg("solution")=nullptr, py::arg("warm_start_params")=WarmStartParams(),
             R"pbdoc(
                 Computes a bounding box of the set object as a Box object.
@@ -2449,16 +2468,17 @@ PYBIND11_MODULE(_core, m)
                 If the set is sharp, the convex relaxation is the convex hull.
             )pbdoc")
         .def("get_leaves", [](const HybZono& self, bool remove_redundancy,
-            const SolverSettings &settings, OptSolution* solution,
+            py::object settings_obj, OptSolution* solution,
             int n_leaves, int contractor_iter) -> std::vector<std::unique_ptr<ConZono>>
             {
+                const SolverSettings& settings = resolve_solver_settings(settings_obj);
                 auto sol_shared = std::make_shared<OptSolution>();
                 auto leaves = self.get_leaves(remove_redundancy, settings, &sol_shared, n_leaves, contractor_iter);
                 if (solution)
                     *solution = *sol_shared;
                 return leaves;
             },
-            py::arg("remove_redundancy")=false, py::arg("settings")=OptSettings(), py::arg("solution")=nullptr,
+            py::arg("remove_redundancy")=false, py::arg("settings")=py::none(), py::arg("solution")=nullptr,
             py::arg("n_leaves")=std::numeric_limits<int>::max(), py::arg("contractor_iter")=100, 
             R"pbdoc(
                 Computes individual constrained zonotopes whose union is the hybrid zonotope object.
@@ -2481,16 +2501,17 @@ PYBIND11_MODULE(_core, m)
                 for ADMM-FP, these will instead be used for branch and bound search.
             )pbdoc")
         .def("complement", [](HybZono& self, zono_float delta_m,
-            bool remove_redundancy, const SolverSettings &settings, OptSolution* solution,
+            bool remove_redundancy, py::object settings_obj, OptSolution* solution,
             int n_leaves, int contractor_iter) -> std::unique_ptr<HybZono>
             {
+                const SolverSettings& settings = resolve_solver_settings(settings_obj);
                 auto sol_shared = std::make_shared<OptSolution>();
                 auto Z = self.complement(delta_m, remove_redundancy, settings, &sol_shared, n_leaves, contractor_iter);
                 if (solution)
                     *solution = *sol_shared;
                 return Z;
             },
-            py::arg("delta_m")=100, py::arg("remove_redundancy")=true, py::arg("settings")=OptSettings(),
+            py::arg("delta_m")=100, py::arg("remove_redundancy")=true, py::arg("settings")=py::none(),
             py::arg("solution")=nullptr, py::arg("n_leaves")=std::numeric_limits<int>::max(), py::arg("contractor_iter")=100,
             R"pbdoc(
             Computes the complement of the set Z.
@@ -3233,9 +3254,10 @@ PYBIND11_MODULE(_core, m)
                 HybZono: zonotopic set
         )pbdoc");
     m.def("set_diff", [](const HybZono& Z1, HybZono& Z2, zono_float delta_m,
-            bool remove_redundancy, const SolverSettings &settings, OptSolution* solution,
+            bool remove_redundancy, py::object settings_obj, OptSolution* solution,
             int n_leaves, int contractor_iter) -> std::unique_ptr<HybZono>
             {
+                const SolverSettings& settings = resolve_solver_settings(settings_obj);
                 auto sol_shared = std::make_shared<OptSolution>();
                 auto Z = set_diff(Z1, Z2, delta_m, remove_redundancy, settings, &sol_shared, n_leaves, contractor_iter);
                 if (solution)
@@ -3243,7 +3265,7 @@ PYBIND11_MODULE(_core, m)
                 return Z;
             },
             py::arg("Z1"), py::arg("Z2"), py::arg("delta_m")=100, py::arg("remove_redundancy")=true,
-            py::arg("settings")=OptSettings(), py::arg("solution")=nullptr, py::arg("n_leaves")=std::numeric_limits<int>::max(), py::arg("contractor_iter")=10,
+            py::arg("settings")=py::none(), py::arg("solution")=nullptr, py::arg("n_leaves")=std::numeric_limits<int>::max(), py::arg("contractor_iter")=10,
             R"pbdoc(
             Set difference Z1 \\ Z2
 
@@ -3348,5 +3370,40 @@ PYBIND11_MODULE(_core, m)
 
             Returns:
                 HybZono: deserialized zonotopic set
+        )pbdoc");
+
+    // ---- Program-wide default solver settings --------------------------------
+    m.def("set_default_solver_settings", &set_default_solver_settings, py::arg("settings"),
+        R"pbdoc(
+            Set the program-wide default solver settings.
+
+            After calling this, any ZonoOpt optimization method invoked without an explicit
+            `settings` argument will use a polymorphic copy of `settings` as the default.
+            Use this to switch the entire library to a different solver backend (e.g., Gurobi)
+            with a single call, without passing settings to every optimization method.
+
+            Args:
+                settings (SolverSettings): an OptSettings or GurobiSettings instance.
+
+            Raises:
+                RuntimeError: if the selected solver cannot be initialized (e.g., a
+                    GurobiSettings is passed but the Gurobi shared library cannot be
+                    dynamically loaded). The previous default is left unchanged.
+
+            Example:
+                >>> zono.set_default_solver_settings(zono.GurobiSettings())
+                >>> Z.support(d)   # now uses Gurobi by default
+        )pbdoc");
+
+    m.def("get_default_solver_settings", &get_default_solver_settings,
+        py::return_value_policy::reference,
+        R"pbdoc(
+            Return a reference to the current program-wide default solver settings.
+
+            The returned object is the same instance held by the library; it remains valid
+            until set_default_solver_settings is called again.
+
+            Returns:
+                SolverSettings: the current default (OptSettings on a fresh program).
         )pbdoc");
 }

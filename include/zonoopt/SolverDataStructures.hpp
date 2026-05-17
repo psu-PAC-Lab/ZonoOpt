@@ -13,6 +13,7 @@
  */
 
 #include <Eigen/Dense>
+#include <memory>
 #include <sstream>
 #include <string>
 
@@ -27,12 +28,27 @@ namespace ZonoOpt
      *   - GurobiSettings   → dynamically-loaded Gurobi; silent fallback to OptSettings()
      *                        if Gurobi cannot be loaded at runtime
      *
-     * Derived classes only need a virtual destructor so RTTI / dynamic_cast can identify
-     * them at the dispatch site.
+     * Derived classes implement clone() so the program-wide default settings can hold
+     * a polymorphic copy (see get_default_solver_settings / set_default_solver_settings).
      */
     struct SolverSettings
     {
         virtual ~SolverSettings() = default;
+
+        /**
+         * @brief Polymorphic copy. Must be overridden by every concrete subclass.
+         */
+        virtual std::unique_ptr<SolverSettings> clone() const = 0;
+
+        /**
+         * @brief Verify the solver backend selected by this settings type is usable.
+         *
+         * Called by set_default_solver_settings(); should throw std::runtime_error if
+         * the backend cannot be initialized (e.g., GurobiSettings throws if the Gurobi
+         * library cannot be dynamically loaded). Default implementation is a no-op,
+         * appropriate for the internal solver which is always available.
+         */
+        virtual void verify_available() const {}
     };
 
     /**
@@ -142,6 +158,12 @@ namespace ZonoOpt
 
         /// rng seed for ADMM-FP
         unsigned int rng_seed = 0;
+
+        // polymorphic copy
+        std::unique_ptr<SolverSettings> clone() const override
+        {
+            return std::make_unique<OptSettings>(*this);
+        }
 
         // validity check
         /**
@@ -275,6 +297,56 @@ namespace ZonoOpt
             return ss.str();
         }
     };
+
+    // ---- Program-wide default solver settings -------------------------------
+    //
+    // ZonoOpt's optimization methods take a SolverSettings argument whose default
+    // is whatever set_default_solver_settings() last installed. This lets a user
+    // switch the entire library to (e.g.) Gurobi by calling
+    //     set_default_solver_settings(GurobiSettings{});
+    // once at program startup, instead of passing GurobiSettings to every call.
+    //
+    // Initial default is OptSettings() (internal ADMM/branch-and-bound).
+    //
+    // Not thread-safe: set_default_solver_settings should be called from a single
+    // thread at startup before parallel optimization begins. Existing const
+    // SolverSettings& references obtained from get_default_solver_settings() are
+    // invalidated by a subsequent set_default_solver_settings() call.
+
+    namespace detail
+    {
+        inline std::unique_ptr<SolverSettings>& default_settings_storage()
+        {
+            static std::unique_ptr<SolverSettings> p = std::make_unique<OptSettings>();
+            return p;
+        }
+    } // namespace detail
+
+    /**
+     * @brief Returns a reference to the current program-wide default solver settings.
+     *
+     * The returned reference is valid until the next call to set_default_solver_settings().
+     */
+    inline const SolverSettings& get_default_solver_settings()
+    {
+        return *detail::default_settings_storage();
+    }
+
+    /**
+     * @brief Replaces the program-wide default solver settings with a polymorphic copy of `settings`.
+     *
+     * After this call, any ZonoOpt optimization method invoked without an explicit
+     * settings argument will use a freshly resolved reference to the new default.
+     *
+     * @throws std::runtime_error if the backend selected by `settings` cannot be
+     *         initialized (e.g., a GurobiSettings whose Gurobi library cannot be
+     *         dynamically loaded). The existing default is left unchanged on throw.
+     */
+    inline void set_default_solver_settings(const SolverSettings& settings)
+    {
+        settings.verify_available();
+        detail::default_settings_storage() = settings.clone();
+    }
 } // end namespace ZonoOpt
 
 #endif
