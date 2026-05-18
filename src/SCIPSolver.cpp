@@ -618,8 +618,8 @@ std::vector<OptSolution> solve_miqp_scip_multisol(const Eigen::SparseMatrix<zono
     // Cap requested count at 2^bin_count (the maximum number of distinct binary assignments).
     {
         const int max_combinations =
-            (bin_count < 31) ? (1 << bin_count) : std::numeric_limits<int>::max();
-        n_sols = std::min(n_sols, max_combinations);
+            (bin_count < 31) ? (1 << bin_count) : (std::numeric_limits<int>::max)();
+        n_sols = (std::min)(n_sols, max_combinations);
     }
 
     // Pure feasibility model: zero out the quadratic objective so the count handler

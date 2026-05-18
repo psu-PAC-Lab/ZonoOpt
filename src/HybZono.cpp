@@ -271,7 +271,7 @@ namespace ZonoOpt
                 {
                     for (Eigen::SparseMatrix<zono_float>::InnerIterator it(M, k); it; ++it)
                     {
-                        triplets.emplace_back(it.row(), it.col()-col_adj, it.value());
+                        triplets.emplace_back(static_cast<int>(it.row()), static_cast<int>(it.col())-col_adj, it.value());
                     }
                 }
             }
@@ -331,7 +331,7 @@ namespace ZonoOpt
                 {
                     for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(M, k); it; ++it)
                     {
-                        triplets.emplace_back(it.row()-row_adj, it.col(), it.value());
+                        triplets.emplace_back(static_cast<int>(it.row())-row_adj, static_cast<int>(it.col()), it.value());
                     }
                 }
             }

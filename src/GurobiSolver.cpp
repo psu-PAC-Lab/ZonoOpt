@@ -556,7 +556,7 @@ std::vector<OptSolution> solve_miqp_gurobi_multisol(const Eigen::SparseMatrix<zo
                                      prep.lb_d, prep.ub_d, prep.vtype, settings);
     // If the user explicitly capped PoolSolutions, respect it; otherwise honor n_sols.
     const int capped_n_sols = settings.PoolSolutions
-        ? std::min(n_sols, *settings.PoolSolutions)
+        ? (std::min)(n_sols, *settings.PoolSolutions)
         : n_sols;
     // Default to PoolSearchMode = 2 ("find n best") unless the user requested otherwise.
     const int pool_search_mode = settings.PoolSearchMode.value_or(2);
