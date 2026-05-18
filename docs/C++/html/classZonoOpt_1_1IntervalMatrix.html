@@ -399,6 +399,12 @@ Friends</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if mat_lb and mat_ub do not have the same dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -510,6 +516,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if mat is contained in the interval matrix, false otherwise </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if mat does not have the same dimensions as this interval matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -537,6 +549,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if other is contained in this, false otherwise </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -585,6 +603,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -612,6 +636,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -679,6 +709,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -706,6 +742,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>resulting box </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if box's size does not match this matrix's column count. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -733,6 +775,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if A's row count does not match this matrix's column count. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -760,6 +808,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if A's row count does not match this matrix's column count. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -787,6 +841,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>resulting box </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if v's size does not match this matrix's column count. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -841,6 +901,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if other's row count does not match this matrix's column count. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -917,6 +983,12 @@ Friends</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">other</td><td>rhs interval matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if other's row count does not match this matrix's column count. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1000,6 +1072,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1076,6 +1154,12 @@ Friends</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">other</td><td>rhs interval matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1179,6 +1263,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1255,6 +1345,12 @@ Friends</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">other</td><td>rhs interval matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1498,6 +1594,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classZonoOpt_1_1IntervalMatrix.html" title="Class for interval matrices (i.e., every element of the matrix is an interval)">IntervalMatrix</a> </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1675,6 +1777,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if A's column count does not match B's row count. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1721,6 +1829,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>resulting interval matrix </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if A's column count does not match B's row count. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

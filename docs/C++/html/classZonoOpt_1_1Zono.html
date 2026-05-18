@@ -551,6 +551,12 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if G and c have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -634,7 +640,13 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Execute constraint reduction algorithm from Scott et. al. 2016. </p>
 <dl class="section return"><dt>Returns</dt><dd>Over-approximated constrained zonotope</dd></dl>
-<p>Removes one constraint and one generator from the constrained zonotope. The resulting set is an over-approximation of the original set. </p>
+<p>Removes one constraint and one generator from the constrained zonotope. The resulting set is an over-approximation of the original set.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>if no valid constraint can be found to remove. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 <p>Reimplemented from <a class="el" href="classZonoOpt_1_1ConZono.html#abbce2835b8112c20c5af09cc109cd33e">ZonoOpt::ConZono</a>.</p>
 
@@ -998,6 +1010,12 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if box does not have the same dimension as this set. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1024,6 +1042,12 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if v does not have the same dimension as this set. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1047,6 +1071,12 @@ Additional Inherited Members</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">other</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have different dimensions. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1154,6 +1184,13 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>zonotope with order n_o </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if n_o is less than the dimension of the set. </td></tr>
+    <tr><td class="paramname">std::runtime_error</td><td>if the underlying constraint reduction does not return a zonotope (internal error). </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1195,6 +1232,12 @@ Additional Inherited Members</h2></td></tr>
     <tr><td class="paramname">G</td><td>generator matrix </td></tr>
     <tr><td class="paramname">c</td><td>center </td></tr>
     <tr><td class="paramname">zero_one_form</td><td>true if set is in 0-1 form </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if G and c have inconsistent dimensions. </td></tr>
   </table>
   </dd>
 </dl>

@@ -206,6 +206,7 @@ public:
     };
 
     /// Create a new SCIP environment with default plugins registered.
+    /// @throws std::runtime_error if the SCIP API is not available or SCIP environment creation fails.
     Scip create_scip();
 
 private:

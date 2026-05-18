@@ -1,6 +1,12 @@
 #ifndef ZONOOPT_GUROBI_API_HPP_
 #define ZONOOPT_GUROBI_API_HPP_
 
+/**
+ * @file GurobiApi.hpp
+ * @brief C++ interface to the Gurobi optimization solver via dynamic loading.
+ * 
+ */
+
 #ifdef _WIN32
     #include <windows.h>
     typedef HMODULE ZonoOptLibHandle;

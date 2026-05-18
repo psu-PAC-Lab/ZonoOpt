@@ -1,6 +1,12 @@
 #ifndef ZONOOPT_SCIP_SOLVER_HPP_
 #define ZONOOPT_SCIP_SOLVER_HPP_
 
+/**
+ * @file SCIPSolver.hpp
+ * @brief C++ interface to the SCIP optimization solver via dynamic loading.
+ * 
+ */
+
 #include "Eigen/Dense"
 #include "Eigen/Sparse"
 
@@ -27,6 +33,8 @@ bool scip_available();
  * objective is modeled via the standard epigraph reformulation: add auxiliary
  * variable t and the quadratic constraint 0.5 * xi^T P xi - t <= 0, then minimize
  * q^T xi + t (constant c is added back to OptSolution::J).
+ *
+ * @throws std::runtime_error if the SCIP API is unavailable or a fatal SCIP API error occurs during model construction or solve.
  */
 OptSolution solve_qp_scip(const Eigen::SparseMatrix<zono_float>& P,
                           const Eigen::Vector<zono_float, -1>& q,
@@ -43,6 +51,8 @@ OptSolution solve_qp_scip(const Eigen::SparseMatrix<zono_float>& P,
  * Identical formulation to solve_qp_scip but variables in [bin_start, bin_start+bin_count)
  * are restricted to {0, 1}. When zero_one_form is false, the substitution
  * xi_i = 2*y_i - 1 is applied internally and undone after solving.
+ *
+ * @throws std::runtime_error if the SCIP API is unavailable or a fatal SCIP API error occurs during model construction or solve.
  */
 OptSolution solve_miqp_scip(const Eigen::SparseMatrix<zono_float>& P,
                             const Eigen::Vector<zono_float, -1>& q,
@@ -63,6 +73,8 @@ OptSolution solve_miqp_scip(const Eigen::SparseMatrix<zono_float>& P,
  * the storage and return one OptSolution per stored solution, ordered best-first by
  * SCIP's internal ranking. Note: these are "feasible solutions found during search",
  * not a "find n best" enumeration — same semantics as ZonoOpt's internal multisol.
+ *
+ * @throws std::runtime_error if the SCIP API is unavailable or a fatal SCIP API error occurs during model construction or solve.
  */
 std::vector<OptSolution> solve_miqp_scip_multisol(const Eigen::SparseMatrix<zono_float>& P,
                                                   const Eigen::Vector<zono_float, -1>& q,

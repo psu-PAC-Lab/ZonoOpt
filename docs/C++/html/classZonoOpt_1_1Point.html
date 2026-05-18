@@ -679,7 +679,13 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Execute constraint reduction algorithm from Scott et. al. 2016. </p>
 <dl class="section return"><dt>Returns</dt><dd>Over-approximated constrained zonotope</dd></dl>
-<p>Removes one constraint and one generator from the constrained zonotope. The resulting set is an over-approximation of the original set. </p>
+<p>Removes one constraint and one generator from the constrained zonotope. The resulting set is an over-approximation of the original set.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>if no valid constraint can be found to remove. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 <p>Reimplemented from <a class="el" href="classZonoOpt_1_1ConZono.html#abbce2835b8112c20c5af09cc109cd33e">ZonoOpt::ConZono</a>.</p>
 
@@ -1148,6 +1154,12 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if box does not have the same dimension as this set. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1202,6 +1214,12 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if v does not have the same dimension as this set. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1225,6 +1243,12 @@ Additional Inherited Members</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">other</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have different dimensions. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1302,6 +1326,12 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if box does not have the same dimension as this set. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1356,6 +1386,12 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if v does not have the same dimension as this set. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1379,6 +1415,12 @@ Additional Inherited Members</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">other</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have different dimensions. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1474,7 +1516,13 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>set with redundancies removed</dd></dl>
-<p>This method uses an interval contractor to detect generators that can be removed. Constrained zonotopes with separable constraints and generators in the form [g0 0 0 ...]^T * xi + c, a^T * xi = b are simplified. Additionally, any linearly dependent rows of the constraint matrix A are removed. If the linearly dependent constraints are not consistent (e.g., if A = [1, 0.1; 1, 0.1] and b = [1; 0.8]), the returned set is not equivalent to the original set. Unused factors are also removed. </p>
+<p>This method uses an interval contractor to detect generators that can be removed. Constrained zonotopes with separable constraints and generators in the form [g0 0 0 ...]^T * xi + c, a^T * xi = b are simplified. Additionally, any linearly dependent rows of the constraint matrix A are removed. If the linearly dependent constraints are not consistent (e.g., if A = [1, 0.1; 1, 0.1] and b = [1; 0.8]), the returned set is not equivalent to the original set. Unused factors are also removed.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>if redundancy removal fails internally (should not occur in normal use). </td></tr>
+  </table>
+  </dd>
+</dl>
 
 <p>Reimplemented from <a class="el" href="classZonoOpt_1_1HybZono.html#af1a5102a6ee696b6984bdeeab5a3eb85">ZonoOpt::HybZono</a>.</p>
 

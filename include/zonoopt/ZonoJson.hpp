@@ -26,6 +26,7 @@ namespace ZonoOpt
      * @param Z zonotopic set
      * @param filename the name of the JSON file to write to
      * @ingroup ZonoOpt_SetupFunctions
+     * @throws std::runtime_error if Z is an unrecognized set type or the file cannot be opened for writing.
      */
     void to_json(const HybZono& Z, const std::string& filename);
 
@@ -35,6 +36,8 @@ namespace ZonoOpt
      * @param filename The name of the JSON file to read from
      * @return zonotopic set
      * @ingroup ZonoOpt_SetupFunctions
+     * @throws std::runtime_error if the file cannot be opened or the JSON contains an unrecognized set type.
+     * @throws std::invalid_argument if the JSON contains malformed triplet data (e.g., mismatched triplet vector sizes or out-of-range indices).
      */
     std::unique_ptr<HybZono> from_json(const std::string& filename);
 

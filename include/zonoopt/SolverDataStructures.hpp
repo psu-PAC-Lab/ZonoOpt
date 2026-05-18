@@ -47,6 +47,8 @@ namespace ZonoOpt
          * the backend cannot be initialized (e.g., GurobiSettings throws if the Gurobi
          * library cannot be dynamically loaded). Default implementation is a no-op,
          * appropriate for the internal solver which is always available.
+         *
+         * @throws std::runtime_error if the backend cannot be initialized (subclass implementations only; the default no-op does not throw).
          */
         virtual void verify_available() const {}
     };

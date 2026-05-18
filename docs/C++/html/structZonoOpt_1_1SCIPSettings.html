@@ -182,8 +182,7 @@ Public Attributes</h2></td></tr>
 <div class="textblock"><p>Settings for the dynamically-loaded SCIP solver backend. </p>
 <p>Pass an instance to a <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> optimization method to route through SCIP. If the SCIP shared library cannot be loaded at runtime, set_default_solver_settings with a <a class="el" href="structZonoOpt_1_1SCIPSettings.html" title="Settings for the dynamically-loaded SCIP solver backend.">SCIPSettings</a> throws std::runtime_error; per-call passes silently fall back to the internal solver.</p>
 <p>Notes:</p><ul>
-<li>SCIP's objective is linear by definition. Quadratic objectives are modeled via an epigraph reformulation (auxiliary variable + quadratic constraint), transparent to the caller.</li>
-<li>mi_opt_multisol with <a class="el" href="structZonoOpt_1_1SCIPSettings.html" title="Settings for the dynamically-loaded SCIP solver backend.">SCIPSettings</a> falls back to the internal branch-and-bound solver; SCIP's natural solution pool semantics don't match Gurobi's "find n best / n diverse" mode well. </li>
+<li>SCIP's objective is linear by definition. Quadratic objectives are modeled via an epigraph reformulation (auxiliary variable + quadratic constraint), transparent to the caller. </li>
 </ul>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="ade3f084cb192935f1b7eda4eecedd33a" name="ade3f084cb192935f1b7eda4eecedd33a"></a>
@@ -264,7 +263,13 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Verify the solver backend selected by this settings type is usable. </p>
-<p>Called by <a class="el" href="namespaceZonoOpt.html#ad08051d5c7e92b4a60834bd510d627df" title="Replaces the program-wide default solver settings with a polymorphic copy of settings.">set_default_solver_settings()</a>; should throw std::runtime_error if the backend cannot be initialized (e.g., <a class="el" href="structZonoOpt_1_1GurobiSettings.html" title="Settings for the dynamically-loaded Gurobi solver backend.">GurobiSettings</a> throws if the Gurobi library cannot be dynamically loaded). Default implementation is a no-op, appropriate for the internal solver which is always available. </p>
+<p>Called by <a class="el" href="namespaceZonoOpt.html#ad08051d5c7e92b4a60834bd510d627df" title="Replaces the program-wide default solver settings with a polymorphic copy of settings.">set_default_solver_settings()</a>; should throw std::runtime_error if the backend cannot be initialized (e.g., <a class="el" href="structZonoOpt_1_1GurobiSettings.html" title="Settings for the dynamically-loaded Gurobi solver backend.">GurobiSettings</a> throws if the Gurobi library cannot be dynamically loaded). Default implementation is a no-op, appropriate for the internal solver which is always available.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>if the backend cannot be initialized (subclass implementations only; the default no-op does not throw). </td></tr>
+  </table>
+  </dd>
+</dl>
 
 <p>Reimplemented from <a class="el" href="structZonoOpt_1_1SolverSettings.html#a379f2277e9c9818213b9378d7828ccb0">ZonoOpt::SolverSettings</a>.</p>
 

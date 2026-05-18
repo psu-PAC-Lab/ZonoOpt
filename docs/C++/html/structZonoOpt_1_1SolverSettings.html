@@ -210,7 +210,13 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Verify the solver backend selected by this settings type is usable. </p>
-<p>Called by <a class="el" href="namespaceZonoOpt.html#ad08051d5c7e92b4a60834bd510d627df" title="Replaces the program-wide default solver settings with a polymorphic copy of settings.">set_default_solver_settings()</a>; should throw std::runtime_error if the backend cannot be initialized (e.g., <a class="el" href="structZonoOpt_1_1GurobiSettings.html" title="Settings for the dynamically-loaded Gurobi solver backend.">GurobiSettings</a> throws if the Gurobi library cannot be dynamically loaded). Default implementation is a no-op, appropriate for the internal solver which is always available. </p>
+<p>Called by <a class="el" href="namespaceZonoOpt.html#ad08051d5c7e92b4a60834bd510d627df" title="Replaces the program-wide default solver settings with a polymorphic copy of settings.">set_default_solver_settings()</a>; should throw std::runtime_error if the backend cannot be initialized (e.g., <a class="el" href="structZonoOpt_1_1GurobiSettings.html" title="Settings for the dynamically-loaded Gurobi solver backend.">GurobiSettings</a> throws if the Gurobi library cannot be dynamically loaded). Default implementation is a no-op, appropriate for the internal solver which is always available.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>if the backend cannot be initialized (subclass implementations only; the default no-op does not throw). </td></tr>
+  </table>
+  </dd>
+</dl>
 
 <p>Reimplemented in <a class="el" href="structZonoOpt_1_1GurobiSettings.html#a41d43ab60642db55a41e7944efcfaf96">ZonoOpt::GurobiSettings</a>, and <a class="el" href="structZonoOpt_1_1SCIPSettings.html#ad3545a980ff49aa6064c7a3f0d7535c3">ZonoOpt::SCIPSettings</a>.</p>
 

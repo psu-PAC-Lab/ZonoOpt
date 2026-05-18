@@ -157,6 +157,7 @@ namespace ZonoOpt
             /**
              * @brief Optional pre-factorization of problem matrices.
              *
+             * @throws std::runtime_error if factorization fails (typically because A is not full row rank).
              */
             virtual void factorize();
 
@@ -165,6 +166,8 @@ namespace ZonoOpt
              *
              * @param stop
              * @return OptSolution
+             * @throws std::invalid_argument if problem data dimensions are inconsistent.
+             * @throws std::runtime_error if matrix factorization fails (e.g., A not full row rank).
              */
             OptSolution solve(std::atomic<bool>* stop);
 

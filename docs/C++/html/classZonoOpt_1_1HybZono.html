@@ -548,6 +548,12 @@ Friends</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if Gc, Gb, c, Ac, Ab, and b have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -627,7 +633,13 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a> Z_bb</dd></dl>
-<p>In general, solves 2*n support optimizations where n is the set dimension to compute a bounding box. </p>
+<p>In general, solves 2*n support optimizations where n is the set dimension to compute a bounding box.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if the set is empty. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -731,7 +743,13 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Hybrid zonotope complement of the given set</dd></dl>
-<p>Computes the complement according to the method of Bird and Jain: "Unions and Complements of Hybrid Zonotopes" delta_m is a parameter that defines the set over which the complement is defined. For a constrained zonotope, the complement is restricted to the set X = {G \xi + c | A \xi = b, \xi \in [-1-delta_m, 1+delta+m]^{nG}}. </p>
+<p>Computes the complement according to the method of Bird and Jain: "Unions and Complements of Hybrid Zonotopes" delta_m is a parameter that defines the set over which the complement is defined. For a constrained zonotope, the complement is restricted to the set X = {G \xi + c | A \xi = b, \xi \in [-1-delta_m, 1+delta+m]^{nG}}.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>if the set is empty. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -791,7 +809,13 @@ Friends</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>False positives are possible; will return true if the optimization converges within the specified tolerances. Will return false only if an infeasibility certificate is found, i.e., false negatives are not possible. </p>
+<p>False positives are possible; will return true if the optimization converges within the specified tolerances. Will return false only if an infeasibility certificate is found, i.e., false negatives are not possible.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if x does not have the same dimension as the set. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2048,6 +2072,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2234,6 +2264,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if box does not have the same dimension as this set. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2261,6 +2297,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if v does not have the same dimension as this set. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2288,6 +2330,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have different dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2311,6 +2359,12 @@ Friends</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">box</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if box does not have the same dimension as this set. </td></tr>
   </table>
   </dd>
 </dl>
@@ -2340,6 +2394,12 @@ Friends</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if v does not have the same dimension as this set. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2363,6 +2423,12 @@ Friends</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">other</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have different dimensions. </td></tr>
   </table>
   </dd>
 </dl>
@@ -2413,6 +2479,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if box does not have the same dimension as this set. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2440,6 +2512,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if v does not have the same dimension as this set. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2467,6 +2545,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have different dimensions, or if the inexact difference is requested with a hybrid-zonotope minuend. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2490,6 +2574,12 @@ Friends</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">box</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if box does not have the same dimension as this set. </td></tr>
   </table>
   </dd>
 </dl>
@@ -2519,6 +2609,12 @@ Friends</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if v does not have the same dimension as this set. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2542,6 +2638,12 @@ Friends</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">other</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have different dimensions. </td></tr>
   </table>
   </dd>
 </dl>
@@ -2572,6 +2674,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have different dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2646,7 +2754,13 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>point z in the current set</dd></dl>
-<p>Solves optimization problem of the form min 0.5*z^T*P*z + q^T*z + c where z is a vector in the current set </p>
+<p>Solves optimization problem of the form min 0.5*z^T*P*z + q^T*z + c where z is a vector in the current set</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if P, q, or c have inconsistent dimensions with the set. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2735,6 +2849,13 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>point z in the current set </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if x does not have the same dimension as the set. </td></tr>
+    <tr><td class="paramname">std::runtime_error</td><td>if the projection problem is infeasible (e.g., the set is empty). </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2806,7 +2927,13 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>set with redundancies removed</dd></dl>
-<p>This method uses an interval contractor to detect generators that can be removed. Constrained zonotopes with separable constraints and generators in the form [g0 0 0 ...]^T * xi + c, a^T * xi = b are simplified. Additionally, any linearly dependent rows of the constraint matrix A are removed. If the linearly dependent constraints are not consistent (e.g., if A = [1, 0.1; 1, 0.1] and b = [1; 0.8]), the returned set is not equivalent to the original set. Unused factors are also removed. </p>
+<p>This method uses an interval contractor to detect generators that can be removed. Constrained zonotopes with separable constraints and generators in the form [g0 0 0 ...]^T * xi + c, a^T * xi = b are simplified. Additionally, any linearly dependent rows of the constraint matrix A are removed. If the linearly dependent constraints are not consistent (e.g., if A = [1, 0.1; 1, 0.1] and b = [1; 0.8]), the returned set is not equivalent to the original set. Unused factors are also removed.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>if redundancy removal fails internally (should not occur in normal use). </td></tr>
+  </table>
+  </dd>
+</dl>
 
 <p>Reimplemented in <a class="el" href="classZonoOpt_1_1Point.html#a4aeeab49744e090529df98044a562e48">ZonoOpt::Point</a>.</p>
 
@@ -2888,6 +3015,12 @@ Friends</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if Gc, Gb, c, Ac, Ab, and b have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2948,7 +3081,13 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>support</dd></dl>
-<p>Solves max_{z in Z} &lt;z, d&gt; where &lt;., .&gt; is the inner product </p>
+<p>Solves max_{z in Z} &lt;z, d&gt; where &lt;., .&gt; is the inner product</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if d does not have the same dimension as the set, or if the support problem is infeasible. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -3003,7 +3142,13 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
-<p>This computes an over-approximation of the affine map using the method of Rego et. al. (2020) "Guaranteed methods based on constrained zonotopes for set-valued state estimation of nonlinear discrete-time systems" The SVD-based zonotope over-approximation method is used in this function when Z is a constrained zonotope. When Z is a hybrid zonotope, the convex relaxation is used to produce a constrained zonotope, and then the SVD-based method is applied. </p>
+<p>This computes an over-approximation of the affine map using the method of Rego et. al. (2020) "Guaranteed methods based on constrained zonotopes for set-valued state estimation of nonlinear discrete-time systems" The SVD-based zonotope over-approximation method is used in this function when Z is a constrained zonotope. When Z is a hybrid zonotope, the convex relaxation is used to produce a constrained zonotope, and then the SVD-based method is applied.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if R, s, and Z have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -3056,7 +3201,13 @@ Friends</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>zonotopic set </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if R, s, and Z have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -3169,7 +3320,13 @@ Friends</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>zonotopic set </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if direction is not one of '&lt;', '&gt;', '=', or if Z, H, f, and R have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -3216,7 +3373,13 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>constrained zonotope convex hull</dd></dl>
-<p>Computes convex hull of sets {Z0, Z1, ..., Zn}. If Zi is a hybrid zonotope, it must be sharp or this function will throw an error. Zonotope outer approximations are computed using the method of Girard 2005, "Reachability of Uncertain Linear Systems Using Zonotopes". </p>
+<p>Computes convex hull of sets {Z0, Z1, ..., Zn}. If Zi is a hybrid zonotope, it must be sharp or this function will throw an error. Zonotope outer approximations are computed using the method of Girard 2005, "Reachability of Uncertain Linear Systems Using Zonotopes".</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if Zs is empty, if any member is a non-sharp hybrid zonotope, or if the outer-approximation path encounters a non-zonotope input. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -3277,7 +3440,13 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
-<p>Calls constrain with '&lt;' </p>
+<p>Calls constrain with '&lt;'</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if Z, H, f, and R have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -3330,7 +3499,13 @@ Friends</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>zonotopic set </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if Z1, Z2, and R have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -3383,7 +3558,13 @@ Friends</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>zonotopic set </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if Z2.n does not match the number of dimensions, or if any entry in dims is not a valid dimension of Z1. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -3429,7 +3610,13 @@ Friends</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>zonotopic set </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if Z1 and Z2 have different dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -3522,6 +3709,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if R's column count does not match Z's dimension. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -3568,6 +3761,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if R's column count does not match Z's dimension. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -3614,6 +3813,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if R's column count does not match Z's dimension. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -3706,6 +3911,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if box does not have the same dimension as Z. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -3752,6 +3963,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;HybZono&gt; </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if v does not have the same dimension as Z. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -3850,7 +4067,14 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
-<p>For inner approximations (exact = false), the algorithm from Vinod et. al. 2025 is used. Note that this algorithm is exact when the minuend is a constrained zonotope and the matrix [G;A] is invertible. Exact Pontryagin difference can only be computed when the subtrahend is a zonotope. </p>
+<p>For inner approximations (exact = false), the algorithm from Vinod et. al. 2025 is used. Note that this algorithm is exact when the minuend is a constrained zonotope and the matrix [G;A] is invertible. Exact Pontryagin difference can only be computed when the subtrahend is a zonotope.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if Z1 and Z2 have different dimensions, or if the inexact difference is requested when the minuend is a hybrid zonotope. </td></tr>
+    <tr><td class="paramname">std::runtime_error</td><td>if internal preconditions fail (e.g., redundancy-removal failure during the computation). </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -3896,7 +4120,13 @@ Friends</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>zonotopic set </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if any entry in dims is not a valid dimension of Z. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -4028,7 +4258,13 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
-<p>Computes union of sets {Z0, Z1, ..., Zn}. If expose_indicators is true, returns union({Z0, ..., Zn}) x I where I is the indicator set for the union. Specifically, each dimension of I corresponds to one of the Zi in the union. So for union_of_many({Z0, Z1, Z2}, true) with Z0, Z1, Z2 not intersecting, if a vector [z, i] is in union({Z0, Z1, Z2}) x I, then i = [1, 0, 0] if z is in Z0, etc. </p>
+<p>Computes union of sets {Z0, Z1, ..., Zn}. If expose_indicators is true, returns union({Z0, ..., Zn}) x I where I is the indicator set for the union. Specifically, each dimension of I corresponds to one of the Zi in the union. So for union_of_many({Z0, Z1, Z2}, true) with Z0, Z1, Z2 not intersecting, if a vector [z, i] is in union({Z0, Z1, Z2}) x I, then i = [1, 0, 0] if z is in Z0, etc.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if Zs is empty or if its members have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -4075,7 +4311,13 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
-<p>Vpolys is a vector of matrices, where each matrix represents a polytope in vertex representation. Each row in each polytope matrix is a vertex of the polytope, and each column corresponds to a dimension. The function constructs a hybrid zonotope in [0,1] form that represents the union of these polytopes. This function computes union of sets {V0, V1, ..., Vn}. If expose_indicators is true, returns union({V0, ..., Vn}) x I where I is the indicator set for the union. Specifically, each dimension of I corresponds to one of the Vi in the union. So for vrep_2_hybzono({V0, V1, V2}, true) with V0, V1, V2 not intersecting, if a vector [z, i] is in union({V0, V1, V2}) x I, then i = [1, 0, 0] if z is in V0, etc. </p>
+<p>Vpolys is a vector of matrices, where each matrix represents a polytope in vertex representation. Each row in each polytope matrix is a vertex of the polytope, and each column corresponds to a dimension. The function constructs a hybrid zonotope in [0,1] form that represents the union of these polytopes. This function computes union of sets {V0, V1, ..., Vn}. If expose_indicators is true, returns union({V0, ..., Vn}) x I where I is the indicator set for the union. Specifically, each dimension of I corresponds to one of the Vi in the union. So for vrep_2_hybzono({V0, V1, V2}, true) with V0, V1, V2 not intersecting, if a vector [z, i] is in union({V0, V1, V2}) x I, then i = [1, 0, 0] if z is in V0, etc.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if Vpolys is empty or if its polytopes do not all share the same number of dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -4122,7 +4364,13 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
-<p>This function computes union of sets {Z0, Z1, ..., Zn}. This can be more efficient than union_of_many if all sets are zonotopes because generators can be reused. If expose_indicators is true, returns union({Z0, ..., Zn}) x I where I is the indicator set for the union. Specifically, each dimension of I corresponds to one of the Zi in the union. So for zono_union_2_hybzono({Z0, Z1, Z2}, true) with Z0, Z1, VZ2 not intersecting, if a vector [z, i] is in union({Z0, Z1, Z2}) x I, then i = [1, 0, 0] if z is in Z0, etc. </p>
+<p>This function computes union of sets {Z0, Z1, ..., Zn}. This can be more efficient than union_of_many if all sets are zonotopes because generators can be reused. If expose_indicators is true, returns union({Z0, ..., Zn}) x I where I is the indicator set for the union. Specifically, each dimension of I corresponds to one of the Zi in the union. So for zono_union_2_hybzono({Z0, Z1, Z2}, true) with Z0, Z1, VZ2 not intersecting, if a vector [z, i] is in union({Z0, Z1, Z2}) x I, then i = [1, 0, 0] if z is in Z0, etc.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if Zs is empty or if its zonotopes do not all share the same dimension. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

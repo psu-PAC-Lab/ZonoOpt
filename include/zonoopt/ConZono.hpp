@@ -47,6 +47,7 @@ namespace ZonoOpt
          * @param A constraint matrix
          * @param b constraint vector
          * @param zero_one_form true if set is in 0-1 form
+         * @throws std::invalid_argument if G, c, A, and b have inconsistent dimensions.
          */
         ConZono(const Eigen::SparseMatrix<zono_float>& G, const Eigen::Vector<zono_float, -1>& c,
                 const Eigen::SparseMatrix<zono_float>& A, const Eigen::Vector<zono_float, -1>& b,
@@ -69,6 +70,7 @@ namespace ZonoOpt
          * @param A constraint matrix
          * @param b constraint vector
          * @param zero_one_form true if set is in 0-1 form
+         * @throws std::invalid_argument if G, c, A, and b have inconsistent dimensions.
          */
         void set(const Eigen::SparseMatrix<zono_float>& G, const Eigen::Vector<zono_float, -1>& c,
                  const Eigen::SparseMatrix<zono_float>& A, const Eigen::Vector<zono_float, -1>& b,
@@ -78,9 +80,11 @@ namespace ZonoOpt
          * @brief Execute constraint reduction algorithm from Scott et. al. 2016
          *
          * @return Over-approximated constrained zonotope
-         * 
+         *
          * Removes one constraint and one generator from the constrained zonotope.
          * The resulting set is an over-approximation of the original set.
+         *
+         * @throws std::runtime_error if no valid constraint can be found to remove.
          */
         virtual std::unique_ptr<ConZono> constraint_reduction() const;
 

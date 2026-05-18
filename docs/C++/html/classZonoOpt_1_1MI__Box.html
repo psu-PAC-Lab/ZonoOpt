@@ -414,6 +414,13 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if x_lb and x_ub do not have the same size. </td></tr>
+    <tr><td class="paramname">std::out_of_range</td><td>if the binary indices in idx_b are outside [0, <a class="el" href="classZonoOpt_1_1Box.html#aa7955b649c5252db2893d7944b30353b" title="Get size of Box object.">size()</a>). </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -455,6 +462,12 @@ Additional Inherited Members</h2></td></tr>
     <tr><td class="paramname">intervals</td><td>vector intervals </td></tr>
     <tr><td class="paramname">idx_b</td><td>indices of binary variables {start index, number of binaries} </td></tr>
     <tr><td class="paramname">zero_one_form</td><td>flag indicating whether binary variables are in {0,1} form (true) or {-1,1} form (false) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::out_of_range</td><td>if the binary indices in idx_b are outside [0, <a class="el" href="classZonoOpt_1_1Box.html#aa7955b649c5252db2893d7944b30353b" title="Get size of Box object.">size()</a>). </td></tr>
   </table>
   </dd>
 </dl>
@@ -660,6 +673,12 @@ Additional Inherited Members</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">x</td><td>vector reference </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if x does not have the same size as the <a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a>. </td></tr>
   </table>
   </dd>
 </dl>

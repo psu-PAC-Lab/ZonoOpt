@@ -43,9 +43,6 @@ namespace ZonoOpt
      *  - SCIP's objective is linear by definition. Quadratic objectives are modeled
      *    via an epigraph reformulation (auxiliary variable + quadratic constraint),
      *    transparent to the caller.
-     *  - mi_opt_multisol with SCIPSettings falls back to the internal branch-and-bound
-     *    solver; SCIP's natural solution pool semantics don't match Gurobi's
-     *    "find n best / n diverse" mode well.
      */
     struct SCIPSettings : SolverSettings
     {

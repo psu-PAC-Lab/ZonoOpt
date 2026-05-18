@@ -178,7 +178,13 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
-<p>This computes an over-approximation of the affine map using the method of Rego et. al. (2020) "Guaranteed methods based on constrained zonotopes for set-valued state estimation of nonlinear discrete-time systems" The SVD-based zonotope over-approximation method is used in this function when Z is a constrained zonotope. When Z is a hybrid zonotope, the convex relaxation is used to produce a constrained zonotope, and then the SVD-based method is applied. </p>
+<p>This computes an over-approximation of the affine map using the method of Rego et. al. (2020) "Guaranteed methods based on constrained zonotopes for set-valued state estimation of nonlinear discrete-time systems" The SVD-based zonotope over-approximation method is used in this function when Z is a constrained zonotope. When Z is a hybrid zonotope, the convex relaxation is used to produce a constrained zonotope, and then the SVD-based method is applied.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if R, s, and Z have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -223,7 +229,13 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>zonotopic set </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if R, s, and Z have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -320,7 +332,13 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>zonotopic set </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if direction is not one of '&lt;', '&gt;', '=', or if Z, H, f, and R have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -359,7 +377,13 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>constrained zonotope convex hull</dd></dl>
-<p>Computes convex hull of sets {Z0, Z1, ..., Zn}. If Zi is a hybrid zonotope, it must be sharp or this function will throw an error. Zonotope outer approximations are computed using the method of Girard 2005, "Reachability of Uncertain Linear Systems Using Zonotopes". </p>
+<p>Computes convex hull of sets {Z0, Z1, ..., Zn}. If Zi is a hybrid zonotope, it must be sharp or this function will throw an error. Zonotope outer approximations are computed using the method of Girard 2005, "Reachability of Uncertain Linear Systems Using Zonotopes".</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if Zs is empty, if any member is a non-sharp hybrid zonotope, or if the outer-approximation path encounters a non-zonotope input. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -412,7 +436,13 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
-<p>Calls constrain with '&lt;' </p>
+<p>Calls constrain with '&lt;'</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if Z, H, f, and R have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -457,7 +487,13 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>zonotopic set </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if Z1, Z2, and R have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -502,7 +538,13 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>zonotopic set </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if Z2.n does not match the number of dimensions, or if any entry in dims is not a valid dimension of Z1. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -540,7 +582,13 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>zonotopic set </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if Z1 and Z2 have different dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -586,7 +634,14 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
-<p>For inner approximations (exact = false), the algorithm from Vinod et. al. 2025 is used. Note that this algorithm is exact when the minuend is a constrained zonotope and the matrix [G;A] is invertible. Exact Pontryagin difference can only be computed when the subtrahend is a zonotope. </p>
+<p>For inner approximations (exact = false), the algorithm from Vinod et. al. 2025 is used. Note that this algorithm is exact when the minuend is a constrained zonotope and the matrix [G;A] is invertible. Exact Pontryagin difference can only be computed when the subtrahend is a zonotope.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if Z1 and Z2 have different dimensions, or if the inexact difference is requested when the minuend is a hybrid zonotope. </td></tr>
+    <tr><td class="paramname">std::runtime_error</td><td>if internal preconditions fail (e.g., redundancy-removal failure during the computation). </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -624,7 +679,13 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>zonotopic set </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if any entry in dims is not a valid dimension of Z. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -750,7 +811,13 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
-<p>Computes union of sets {Z0, Z1, ..., Zn}. If expose_indicators is true, returns union({Z0, ..., Zn}) x I where I is the indicator set for the union. Specifically, each dimension of I corresponds to one of the Zi in the union. So for union_of_many({Z0, Z1, Z2}, true) with Z0, Z1, Z2 not intersecting, if a vector [z, i] is in union({Z0, Z1, Z2}) x I, then i = [1, 0, 0] if z is in Z0, etc. </p>
+<p>Computes union of sets {Z0, Z1, ..., Zn}. If expose_indicators is true, returns union({Z0, ..., Zn}) x I where I is the indicator set for the union. Specifically, each dimension of I corresponds to one of the Zi in the union. So for union_of_many({Z0, Z1, Z2}, true) with Z0, Z1, Z2 not intersecting, if a vector [z, i] is in union({Z0, Z1, Z2}) x I, then i = [1, 0, 0] if z is in Z0, etc.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if Zs is empty or if its members have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

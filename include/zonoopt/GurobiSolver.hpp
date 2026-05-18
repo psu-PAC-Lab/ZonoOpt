@@ -1,6 +1,12 @@
 #ifndef ZONOOPT_GUROBI_SOLVER_HPP_
 #define ZONOOPT_GUROBI_SOLVER_HPP_
 
+/**
+ * @file GurobiSolver.hpp
+ * @brief C++ interface to the Gurobi optimization solver via dynamic loading.
+ * 
+ */
+
 #include "Eigen/Dense"
 #include "Eigen/Sparse"
 
@@ -30,7 +36,8 @@ bool gurobi_available();
  *        xi_lb <= xi <= xi_ub
  *
  * Returns an OptSolution with z, J, run_time, converged, and infeasible populated.
- * Throws std::runtime_error if Gurobi is loaded but encounters a fatal API error.
+ *
+ * @throws std::runtime_error if the Gurobi API is unavailable or a fatal Gurobi API error occurs during model construction or solve.
  */
 OptSolution solve_qp_gurobi(const Eigen::SparseMatrix<zono_float>& P,
                             const Eigen::Vector<zono_float, -1>& q,
@@ -56,6 +63,8 @@ OptSolution solve_qp_gurobi(const Eigen::SparseMatrix<zono_float>& P,
  * requires {0,1}); the recovered xi is returned via OptSolution.z.
  *
  * Returns an OptSolution with z, J, run_time, converged, and infeasible populated.
+ *
+ * @throws std::runtime_error if the Gurobi API is unavailable or a fatal Gurobi API error occurs during model construction or solve.
  */
 OptSolution solve_miqp_gurobi(const Eigen::SparseMatrix<zono_float>& P,
                               const Eigen::Vector<zono_float, -1>& q,
@@ -74,6 +83,8 @@ OptSolution solve_miqp_gurobi(const Eigen::SparseMatrix<zono_float>& P,
  * Uses PoolSearchMode=2 (find n best solutions) with PoolSolutions=n_sols.
  * Returns a vector of OptSolution, one per pool entry (size up to n_sols, possibly 0
  * if the problem is infeasible).
+ *
+ * @throws std::runtime_error if the Gurobi API is unavailable or a fatal Gurobi API error occurs during model construction or solve.
  */
 std::vector<OptSolution> solve_miqp_gurobi_multisol(const Eigen::SparseMatrix<zono_float>& P,
                                                     const Eigen::Vector<zono_float, -1>& q,

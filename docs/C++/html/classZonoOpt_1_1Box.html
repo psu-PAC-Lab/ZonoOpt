@@ -503,6 +503,12 @@ Friends</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if x_lb and x_ub do not have the same size. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -634,6 +640,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if v is contained in box, false otherwise </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if v does not have the same size as the <a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -661,6 +673,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if other is a subset of this </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -706,7 +724,13 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>flag indicating that the contractor did not detect that A*x=b and the box do not intersect</dd></dl>
-<p>Executes a forward-backward interval contractor for the equality constraint A*x=b. For points x in the box, this shrinks the box without removing any points x that satisfy A*x=b. If the contractor detects that the box does not intersect A*x=b, then this function will return false. </p>
+<p>Executes a forward-backward interval contractor for the equality constraint A*x=b. For points x in the box, this shrinks the box without removing any points x that satisfy A*x=b. If the contractor detects that the box does not intersect A*x=b, then this function will return false.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if iter is not positive. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -773,7 +797,13 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>flag indicating that the contractor did not detect that A*x=b and the box do not intersect</dd></dl>
-<p>This is a forward-backward contractor over a subset of the dimensions of the box. This detects what other dimensions are affected up to a specified search depth prior to executing the contractor. </p>
+<p>This is a forward-backward contractor over a subset of the dimensions of the box. This detects what other dimensions are affected up to a specified search depth prior to executing the contractor.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if iter is not positive or if A_rm does not match A. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -801,6 +831,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classZonoOpt_1_1Interval.html" title="Interval class.">Interval</a> </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if x does not have the same size as the <a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -828,6 +864,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classZonoOpt_1_1Interval.html" title="Interval class.">Interval</a> for element i in <a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a> </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::out_of_range</td><td>if i is outside [0, <a class="el" href="classZonoOpt_1_1Box.html#aa7955b649c5252db2893d7944b30353b" title="Get size of Box object.">size()</a>). </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -855,6 +897,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>intersection of this and other </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -882,6 +930,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>interval hull of this and other </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -949,6 +1003,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Linear mapped box </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if A's number of columns does not equal the size of the <a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -976,6 +1036,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Linear mapped box </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if A's number of columns does not equal the size of the <a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1031,6 +1097,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Intersection of this and other </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1058,6 +1130,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>enclosure of this * other (elementwise) </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1085,6 +1163,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>enclosure of this * v (elementwise) </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if v does not have the same size as the <a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1165,6 +1249,12 @@ Friends</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1188,6 +1278,12 @@ Friends</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">v</td><td>vector to multiply </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if v does not have the same size as the <a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1270,6 +1366,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>enclosure of this + other (elementwise) </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1298,6 +1400,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>enclosure of v + box (elementwise) </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if v does not have the same size as the <a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1324,6 +1432,12 @@ Friends</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1347,6 +1461,12 @@ Friends</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">v</td><td>vector </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if v does not have the same size as the <a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1397,6 +1517,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>enclosure of this - other (elementwise) </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1424,6 +1550,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>enclosure of this - v (elementwise) </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if v does not have the same size as the <a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1450,6 +1582,12 @@ Friends</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1473,6 +1611,12 @@ Friends</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">v</td><td>vector to subtract </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if v does not have the same size as the <a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1503,6 +1647,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>enclosure of this / other (elementwise) </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1580,6 +1730,12 @@ Friends</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">other</td><td>rhs box </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1770,6 +1926,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classZonoOpt_1_1Interval.html" title="Interval class.">Interval</a> hull of this and other </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this and other have inconsistent dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1847,6 +2009,12 @@ Friends</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">x</td><td>vector reference </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if x does not have the same size as the <a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -2158,6 +2326,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>enclosure of v * box (elementwise) </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if v does not have the same size as the <a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2296,6 +2470,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>enclosure of v + box (elementwise) </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if v does not have the same size as the <a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2342,6 +2522,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>enclosure of v - box (elementwise) </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if v does not have the same size as the <a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
