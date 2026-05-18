@@ -1,0 +1,7 @@
+<map id="ZonoOpt::ExternalSolverResults" name="ZonoOpt::ExternalSolverResults">
+<area shape="rect" id="Node000001" title="Abstract base for external&#45;solver&#45;specific solution metadata." alt="" coords="117,5,347,31"/>
+<area shape="rect" id="Node000002" href="$structZonoOpt_1_1GurobiSolverResults.html" title="Solver&#45;native solution metadata produced by the Gurobi backend." alt="" coords="5,79,224,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="203,40,135,81,132,76,200,35"/>
+<area shape="rect" id="Node000003" href="$structZonoOpt_1_1SCIPSolverResults.html" title="Solver&#45;native solution metadata produced by the SCIP backend." alt="" coords="249,79,453,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="264,35,333,76,330,81,262,40"/>
+</map>

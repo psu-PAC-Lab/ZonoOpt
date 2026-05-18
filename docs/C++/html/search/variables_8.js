@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['k_5finf_5fcheck_0',['k_inf_check',['../structZonoOpt_1_1OptSettings.html#a16fc07e7766f31defcc853ae194c4c00',1,'ZonoOpt::OptSettings']]],
-  ['k_5fmax_5fadmm_1',['k_max_admm',['../structZonoOpt_1_1OptSettings.html#abda111b08820aa2719d9cf012cac824a',1,'ZonoOpt::OptSettings']]],
-  ['k_5fmax_5fadmm_5ffp_5fph1_2',['k_max_admm_fp_ph1',['../structZonoOpt_1_1OptSettings.html#aba9fbdd3c43656fed719c9c06fc0bab4',1,'ZonoOpt::OptSettings']]],
-  ['k_5fmax_5fadmm_5ffp_5fph2_3',['k_max_admm_fp_ph2',['../structZonoOpt_1_1OptSettings.html#a9264edec34a08e9cbce955a232b3ce39',1,'ZonoOpt::OptSettings']]],
-  ['k_5fmax_5fbnb_4',['k_max_bnb',['../structZonoOpt_1_1OptSettings.html#a370c28605c544cba4f10d13c10890d33',1,'ZonoOpt::OptSettings']]],
-  ['k_5frestart_5',['k_restart',['../structZonoOpt_1_1OptSettings.html#a2a0e4eca51a968b29ef268a52e78f4e1',1,'ZonoOpt::OptSettings']]]
+  ['inf_5fnorm_5fconv_0',['inf_norm_conv',['../structZonoOpt_1_1OptSettings.html#a98f460b97185e44b6ebe3079bea70079',1,'ZonoOpt::OptSettings']]],
+  ['infeasible_1',['infeasible',['../structZonoOpt_1_1OptSolution.html#a1abcc36f8525aea7d228a24b69f2f83e',1,'ZonoOpt::OptSolution::infeasible'],['../SCIPSolver_8cpp.html#ae3685d326927f45e106bbb294e7bb81a',1,'infeasible:&#160;SCIPSolver.cpp']]],
+  ['int_5fparams_2',['int_params',['../structZonoOpt_1_1GurobiSettings.html#ac6e529a427eefd7084c53dea70e7e6a5',1,'ZonoOpt::GurobiSettings::int_params'],['../structZonoOpt_1_1SCIPSettings.html#abfbd53610d4e02f21be1443bf8143437',1,'ZonoOpt::SCIPSettings::int_params']]],
+  ['intfeastol_3',['IntFeasTol',['../structZonoOpt_1_1GurobiSettings.html#afb32482583206292ee60e03f021c626a',1,'ZonoOpt::GurobiSettings']]],
+  ['iter_4',['iter',['../structZonoOpt_1_1OptSolution.html#ad7e8cccf5eaaea057cb10f60841d846e',1,'ZonoOpt::OptSolution']]],
+  ['iter_5fcount_5',['iter_count',['../structZonoOpt_1_1GurobiSolverResults.html#a38a627685b51a8ee9d8fc47933241b8e',1,'ZonoOpt::GurobiSolverResults::iter_count'],['../GurobiSolver_8cpp.html#acd316349044ab26b68b040a252959e06',1,'iter_count:&#160;GurobiSolver.cpp']]]
 ];

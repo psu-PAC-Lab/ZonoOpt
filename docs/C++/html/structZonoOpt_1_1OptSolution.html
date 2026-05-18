@@ -108,11 +108,13 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:ae75579600c7c0687f043d26b79228d5b" id="r_ae75579600c7c0687f043d26b79228d5b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSolution.html#ae75579600c7c0687f043d26b79228d5b">converged</a> = false</td></tr>
-<tr class="memdesc:ae75579600c7c0687f043d26b79228d5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">true if optimization has converged  <br /></td></tr>
+<tr class="memdesc:ae75579600c7c0687f043d26b79228d5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">true if optimization has converged (proved optimal for external solvers; satisfied tolerances for internal)  <br /></td></tr>
 <tr class="separator:ae75579600c7c0687f043d26b79228d5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0bee6dd906cace0468217522d3f3c827" id="r_a0bee6dd906cace0468217522d3f3c827"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSolution.html#a0bee6dd906cace0468217522d3f3c827">dual_residual</a> = std::numeric_limits&lt;<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&gt;::infinity()</td></tr>
 <tr class="memdesc:a0bee6dd906cace0468217522d3f3c827"><td class="mdescLeft">&#160;</td><td class="mdescRight">dual residual, corresponds to optimality  <br /></td></tr>
 <tr class="separator:a0bee6dd906cace0468217522d3f3c827"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad208e689e532e0af1da0bf224dc6b71c" id="r_ad208e689e532e0af1da0bf224dc6b71c"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="structZonoOpt_1_1ExternalSolverResults.html">ExternalSolverResults</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSolution.html#ad208e689e532e0af1da0bf224dc6b71c">external_results</a></td></tr>
+<tr class="separator:ad208e689e532e0af1da0bf224dc6b71c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1abcc36f8525aea7d228a24b69f2f83e" id="r_a1abcc36f8525aea7d228a24b69f2f83e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSolution.html#a1abcc36f8525aea7d228a24b69f2f83e">infeasible</a> = false</td></tr>
 <tr class="memdesc:a1abcc36f8525aea7d228a24b69f2f83e"><td class="mdescLeft">&#160;</td><td class="mdescRight">true if optimization problem is provably infeasible  <br /></td></tr>
 <tr class="separator:a1abcc36f8525aea7d228a24b69f2f83e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -126,7 +128,7 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:a9bb49c721a085472a57bfcb3530cd365"><td class="mdescLeft">&#160;</td><td class="mdescRight">primal residual, corresponds to feasibility  <br /></td></tr>
 <tr class="separator:a9bb49c721a085472a57bfcb3530cd365"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c924318807a20bd19229fe1d7995de2" id="r_a4c924318807a20bd19229fe1d7995de2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSolution.html#a4c924318807a20bd19229fe1d7995de2">run_time</a> = 0.0</td></tr>
-<tr class="memdesc:a4c924318807a20bd19229fe1d7995de2"><td class="mdescLeft">&#160;</td><td class="mdescRight">time to compute solution  <br /></td></tr>
+<tr class="memdesc:a4c924318807a20bd19229fe1d7995de2"><td class="mdescLeft">&#160;</td><td class="mdescRight">time to compute solution (seconds)  <br /></td></tr>
 <tr class="separator:a4c924318807a20bd19229fe1d7995de2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae06a6c2f5ea6bd1e7ffeffc0b2a22275" id="r_ae06a6c2f5ea6bd1e7ffeffc0b2a22275"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSolution.html#ae06a6c2f5ea6bd1e7ffeffc0b2a22275">startup_time</a> = 0.0</td></tr>
 <tr class="memdesc:ae06a6c2f5ea6bd1e7ffeffc0b2a22275"><td class="mdescLeft">&#160;</td><td class="mdescRight">time to factorize matrices and run interval contractors  <br /></td></tr>
@@ -143,6 +145,7 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Solution data structure for optimization routines in <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> library. </p>
+<p>The fields z, J, run_time, converged, and infeasible are always populated regardless of which solver computed the solution. Fields below labeled "admm-specific" carry meaningful values only when the internal solver was used; when an external solver (Gurobi, SCIP, ...) was used, <code>external_results</code> points to the solver-native solution metadata and the admm-specific fields are left at their defaults. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a6ba12b139d62cfa6104c07efbdd3dfae" name="a6ba12b139d62cfa6104c07efbdd3dfae"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6ba12b139d62cfa6104c07efbdd3dfae">&#9670;&#160;</a></span>print()</h2>
@@ -185,7 +188,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>true if optimization has converged </p>
+<p>true if optimization has converged (proved optimal for external solvers; satisfied tolerances for internal) </p>
 
 </div>
 </div>
@@ -202,6 +205,21 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>dual residual, corresponds to optimality </p>
+
+</div>
+</div>
+<a id="ad208e689e532e0af1da0bf224dc6b71c" name="ad208e689e532e0af1da0bf224dc6b71c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad208e689e532e0af1da0bf224dc6b71c">&#9670;&#160;</a></span>external_results</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="structZonoOpt_1_1ExternalSolverResults.html">ExternalSolverResults</a>&gt; ZonoOpt::OptSolution::external_results</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Polymorphic solver-native solution metadata. nullptr when the internal solver was used; otherwise points to a <a class="el" href="structZonoOpt_1_1GurobiSolverResults.html" title="Solver-native solution metadata produced by the Gurobi backend.">GurobiSolverResults</a>, <a class="el" href="structZonoOpt_1_1SCIPSolverResults.html" title="Solver-native solution metadata produced by the SCIP backend.">SCIPSolverResults</a>, etc. Inspect via dynamic_cast (C++) or isinstance (Python). </p>
 
 </div>
 </div>
@@ -281,7 +299,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>time to compute solution </p>
+<p>time to compute solution (seconds) </p>
 
 </div>
 </div>

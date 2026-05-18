@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['max_5fnodes_0',['max_nodes',['../structZonoOpt_1_1OptSettings.html#ae0316ea3c2a38f4b4197eefb2e09881b',1,'ZonoOpt::OptSettings']]]
+  ['j_0',['J',['../structZonoOpt_1_1OptSolution.html#a8c39dfe3e1db54bdde41b43107a98ab6',1,'ZonoOpt::OptSolution']]]
 ];

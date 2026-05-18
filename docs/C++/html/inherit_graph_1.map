@@ -1,11 +1,7 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$classZonoOpt_1_1HybZono.html" title="Hybrid zonotope class." alt="" coords="5,31,151,56"/>
-<area shape="rect" id="Node000001" href="$classZonoOpt_1_1ConZono.html" title="Constrained zonotope class." alt="" coords="199,31,343,56"/>
-<area shape="poly" id="edge2_Node000000_Node000001" title=" " alt="" coords="165,41,199,41,199,46,165,46"/>
-<area shape="rect" id="Node000002" href="$classZonoOpt_1_1EmptySet.html" title="Empty Set class." alt="" coords="391,5,540,31"/>
-<area shape="poly" id="edge3_Node000001_Node000002" title=" " alt="" coords="356,30,390,25,390,30,357,35"/>
-<area shape="rect" id="Node000003" href="$classZonoOpt_1_1Zono.html" title="Zonotope class." alt="" coords="406,55,525,80"/>
-<area shape="poly" id="edge4_Node000001_Node000003" title=" " alt="" coords="357,51,406,57,406,63,356,57"/>
-<area shape="rect" id="Node000004" href="$classZonoOpt_1_1Point.html" title="Point class." alt="" coords="588,55,707,80"/>
-<area shape="poly" id="edge5_Node000003_Node000004" title=" " alt="" coords="538,65,587,65,587,70,538,70"/>
+<area shape="rect" id="Node000000" href="$structZonoOpt_1_1ExternalSolverResults.html" title="Abstract base for external&#45;solver&#45;specific solution metadata." alt="" coords="5,31,235,56"/>
+<area shape="rect" id="Node000001" href="$structZonoOpt_1_1GurobiSolverResults.html" title="Solver&#45;native solution metadata produced by the Gurobi backend." alt="" coords="283,5,501,31"/>
+<area shape="poly" id="edge2_Node000000_Node000001" title=" " alt="" coords="248,29,282,26,283,31,248,34"/>
+<area shape="rect" id="Node000002" href="$structZonoOpt_1_1SCIPSolverResults.html" title="Solver&#45;native solution metadata produced by the SCIP backend." alt="" coords="290,55,494,80"/>
+<area shape="poly" id="edge3_Node000000_Node000002" title=" " alt="" coords="248,52,290,56,290,61,248,57"/>
 </map>

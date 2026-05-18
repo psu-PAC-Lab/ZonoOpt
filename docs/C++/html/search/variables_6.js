@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['inf_5fnorm_5fconv_0',['inf_norm_conv',['../structZonoOpt_1_1OptSettings.html#a98f460b97185e44b6ebe3079bea70079',1,'ZonoOpt::OptSettings']]],
-  ['infeasible_1',['infeasible',['../structZonoOpt_1_1OptSolution.html#a1abcc36f8525aea7d228a24b69f2f83e',1,'ZonoOpt::OptSolution']]],
-  ['iter_2',['iter',['../structZonoOpt_1_1OptSolution.html#ad7e8cccf5eaaea057cb10f60841d846e',1,'ZonoOpt::OptSolution']]]
+  ['g_0',['G',['../classZonoOpt_1_1HybZono.html#aed139ecd3415d14c3fce8f09d28910a6',1,'ZonoOpt::HybZono']]],
+  ['gb_1',['Gb',['../classZonoOpt_1_1HybZono.html#a5763b63d7afbebf2783a45efe60fc5f1',1,'ZonoOpt::HybZono']]],
+  ['gc_2',['Gc',['../classZonoOpt_1_1HybZono.html#a4ef0ba60650a0e5e08563e0643b5a50c',1,'ZonoOpt::HybZono']]],
+  ['got_5fsolution_3',['got_solution',['../GurobiSolver_8cpp.html#a36ea14868ed7328a771f635f44b2edf6',1,'got_solution:&#160;GurobiSolver.cpp'],['../SCIPSolver_8cpp.html#a36ea14868ed7328a771f635f44b2edf6',1,'got_solution:&#160;SCIPSolver.cpp']]]
 ];

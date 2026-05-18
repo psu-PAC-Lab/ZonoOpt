@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['j_0',['J',['../structZonoOpt_1_1OptSolution.html#a8c39dfe3e1db54bdde41b43107a98ab6',1,'ZonoOpt::OptSolution']]]
+  ['has_5fquad_0',['has_quad',['../SCIPSolver_8cpp.html#a919881faab78d881daf61f0467b85177',1,'SCIPSolver.cpp']]],
+  ['heuristics_1',['Heuristics',['../structZonoOpt_1_1GurobiSettings.html#a17f6b3d42ace9af25304ec4192f139b4',1,'ZonoOpt::GurobiSettings']]]
 ];

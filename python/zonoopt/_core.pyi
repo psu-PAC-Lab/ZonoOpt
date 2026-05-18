@@ -1593,6 +1593,65 @@ class EmptySet(ConZono):
             
         """
 
+class ExternalSolverResults:
+    """Abstract base for external-solver-specific solution metadata. Inspect via isinstance() to see whether GurobiSolverResults, SCIPSolverResults, etc."""
+    def __init__(self, *args, **kwargs) -> None:
+        """Initialize self.  See help(type(self)) for accurate signature."""
+
+class GurobiSettings(SolverSettings):
+    """Settings for the dynamically-loaded Gurobi solver backend. Every typed field is Optional; leave it as None to use Gurobi's default. For Gurobi parameters not exposed as typed fields, use int_params / dbl_params / str_params (keyed by Gurobi's documented parameter name). If Gurobi cannot be dynamically loaded, the library silently falls back to the internal solver with default OptSettings.
+
+    Reference: https://docs.gurobi.com/projects/optimizer/en/current/reference/parameters.html"""
+    Cuts: int | None
+    FeasibilityTol: float | None
+    Heuristics: float | None
+    IntFeasTol: float | None
+    LogFile: str | None
+    LogToConsole: int | None
+    MIPFocus: int | None
+    MIPGap: float | None
+    MIPGapAbs: float | None
+    MemLimit: float | None
+    Method: int | None
+    NumericFocus: int | None
+    OptimalityTol: float | None
+    OutputFlag: int | None
+    PoolGap: float | None
+    PoolGapAbs: float | None
+    PoolSearchMode: int | None
+    PoolSolutions: int | None
+    Presolve: int | None
+    Seed: int | None
+    SolutionLimit: int | None
+    Threads: int | None
+    TimeLimit: float | None
+    WorkLimit: float | None
+    dbl_params: _GurobiDblParams
+    int_params: _GurobiIntParams
+    str_params: _GurobiStrParams
+    def __init__(self) -> None:
+        """__init__(self: zonoopt._core.GurobiSettings) -> None"""
+    def copy(self) -> GurobiSettings:
+        """copy(self: zonoopt._core.GurobiSettings) -> zonoopt._core.GurobiSettings
+
+
+                        Copy settings object
+
+                        Returns:
+                            GurobiSettings: copy of settings
+            
+        """
+
+class GurobiSolverResults(ExternalSolverResults):
+    """Gurobi-native solution metadata attached to OptSolution.external_results when Gurobi was used."""
+    iter_count: float
+    mip_gap: float
+    node_count: float
+    obj_bound: float
+    status: int
+    def __init__(self) -> None:
+        """__init__(self: zonoopt._core.GurobiSolverResults) -> None"""
+
 class HybZono:
     """
             Hybrid zonotope class
@@ -1621,8 +1680,8 @@ class HybZono:
                             sharp (bool, optional): true if set is known to be sharp, i.e., convex relaxation = convex hull
             
         '''
-    def bounding_box(self, settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> Box:
-        """bounding_box(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x75a178e10bb0>) -> zonoopt._core.Box
+    def bounding_box(self, settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> Box:
+        """bounding_box(self: zonoopt._core.HybZono, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x77657ab453f0>) -> zonoopt._core.Box
 
 
                         Computes a bounding box of the set object as a Box object.
@@ -1638,8 +1697,8 @@ class HybZono:
                         In general, solves 2*n support optimizations where n is the set dimension to compute a bounding box.
             
         """
-    def complement(self, delta_m: typing.SupportsFloat | typing.SupportsIndex = ..., remove_redundancy: bool = ..., settings: OptSettings = ..., solution: OptSolution = ..., n_leaves: typing.SupportsInt | typing.SupportsIndex = ..., contractor_iter: typing.SupportsInt | typing.SupportsIndex = ...) -> HybZono:
-        '''complement(self: zonoopt._core.HybZono, delta_m: typing.SupportsFloat | typing.SupportsIndex = 100, remove_redundancy: bool = True, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt | typing.SupportsIndex = 2147483647, contractor_iter: typing.SupportsInt | typing.SupportsIndex = 100) -> zonoopt._core.HybZono
+    def complement(self, delta_m: typing.SupportsFloat | typing.SupportsIndex = ..., remove_redundancy: bool = ..., settings: object = ..., solution: OptSolution = ..., n_leaves: typing.SupportsInt | typing.SupportsIndex = ..., contractor_iter: typing.SupportsInt | typing.SupportsIndex = ...) -> HybZono:
+        '''complement(self: zonoopt._core.HybZono, delta_m: typing.SupportsFloat | typing.SupportsIndex = 100, remove_redundancy: bool = True, settings: object = None, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt | typing.SupportsIndex = 2147483647, contractor_iter: typing.SupportsInt | typing.SupportsIndex = 100) -> zonoopt._core.HybZono
 
 
                     Computes the complement of the set Z.
@@ -1662,8 +1721,8 @@ class HybZono:
                     X = {G \\xi + c | A \\xi = b, \\xi \\in [-1-delta_m, 1+delta+m]^{nG}}.
             
         '''
-    def contains_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x75a178e0abb0>) -> bool
+    def contains_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
+        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x77657a8604f0>) -> bool
 
 
                         Checks whether the point x is contained in the set object.
@@ -1796,7 +1855,7 @@ class HybZono:
             
         '''
     def get_leaves(self, *args, **kwargs):
-        """get_leaves(self: zonoopt._core.HybZono, remove_redundancy: bool = False, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt | typing.SupportsIndex = 2147483647, contractor_iter: typing.SupportsInt | typing.SupportsIndex = 100) -> list[ZonoOpt::ConZono]
+        """get_leaves(self: zonoopt._core.HybZono, remove_redundancy: bool = False, settings: object = None, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt | typing.SupportsIndex = 2147483647, contractor_iter: typing.SupportsInt | typing.SupportsIndex = 100) -> list[ZonoOpt::ConZono]
 
 
                         Computes individual constrained zonotopes whose union is the hybrid zonotope object.
@@ -1889,8 +1948,8 @@ class HybZono:
                             bool: true if set is a constrained zonotope
             
         """
-    def is_empty(self, settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        """is_empty(self: zonoopt._core.HybZono, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x75a178e19d70>) -> bool
+    def is_empty(self, settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
+        """is_empty(self: zonoopt._core.HybZono, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x77657a88b430>) -> bool
 
 
                         Returns true if the set is provably empty, false otherwise.
@@ -1954,8 +2013,8 @@ class HybZono:
                             bool: true if set is a zonotope
             
         """
-    def optimize_over(self, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], c: typing.SupportsFloat | typing.SupportsIndex = ..., settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x75a178e113f0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+    def optimize_over(self, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], c: typing.SupportsFloat | typing.SupportsIndex = ..., settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
+        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x77657a88b170>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Solves optimization problem with quadratic objective over the current set
@@ -1974,8 +2033,8 @@ class HybZono:
                         Solves optimization problem of the form min 0.5*z^T*P*z + q^T*z + c where z is a vector in the current set
             
         '''
-    def project_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x75a178e21530>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+    def project_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
+        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x77657a860cf0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Returns the projection of the point x onto the set object.
@@ -2027,8 +2086,8 @@ class HybZono:
                             sharp (bool): true if set is known to be sharp, i.e., convex relaxation = convex hull
             
         '''
-    def support(self, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: OptSettings = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> float:
-        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x75a178e197b0>) -> float
+    def support(self, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> float:
+        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x77657a8848b0>) -> float
 
 
                         Computes support function of the set in the direction d.
@@ -5826,8 +5885,26 @@ class IntervalMatrix:
             
         """
 
-class OptSettings:
-    """Settings for optimization routines in ZonoOpt library."""
+class ItemsView:
+    def __init__(self, *args, **kwargs) -> None:
+        """Initialize self.  See help(type(self)) for accurate signature."""
+    def __iter__(self) -> collections.abc.Iterator:
+        """__iter__(self: zonoopt._core.ItemsView) -> collections.abc.Iterator"""
+    def __len__(self) -> int:
+        """__len__(self: zonoopt._core.ItemsView) -> int"""
+
+class KeysView:
+    def __init__(self, *args, **kwargs) -> None:
+        """Initialize self.  See help(type(self)) for accurate signature."""
+    def __contains__(self, arg0: object) -> bool:
+        """__contains__(self: zonoopt._core.KeysView, arg0: object) -> bool"""
+    def __iter__(self) -> collections.abc.Iterator:
+        """__iter__(self: zonoopt._core.KeysView) -> collections.abc.Iterator"""
+    def __len__(self) -> int:
+        """__len__(self: zonoopt._core.KeysView) -> int"""
+
+class OptSettings(SolverSettings):
+    """Settings for the internal ZonoOpt ADMM / branch-and-bound solver."""
     contractor_iter: int
     contractor_tree_search_depth: int
     cycle_detection_buffer_size: int
@@ -5879,10 +5956,11 @@ class OptSettings:
         """
 
 class OptSolution:
-    """Solution data structure for optimization routines in ZonoOpt library."""
+    """Solution data structure for optimization routines in ZonoOpt library. Fields z, J, run_time, converged, infeasible are always populated. ADMM-specific fields (x, u, iter, startup_time, primal_residual, dual_residual) are populated only when the internal solver was used. external_results (None unless an external solver was used) carries solver-native metadata."""
     J: float
     converged: bool
     dual_residual: float
+    external_results: ExternalSolverResults
     infeasible: bool
     iter: int
     primal_residual: float
@@ -6067,6 +6145,62 @@ class Point(Zono):
 
         3. __isub__(self: zonoopt._core.Point, box: zonoopt._core.Box) -> zonoopt._core.HybZono
         '''
+
+class SCIPSettings(SolverSettings):
+    """Settings for the dynamically-loaded SCIP solver backend. Every typed field is Optional; leave it as None to use SCIP's default. For SCIP parameters not exposed as typed fields, use the bool/int/longint/real/char/str_params dicts keyed by SCIP's documented parameter name (e.g., 'limits/time', 'numerics/feastol'). If SCIP cannot be dynamically loaded, the library silently falls back to the internal solver with default OptSettings.
+
+    Reference: https://www.scipopt.org/doc/html/PARAMETERS.php"""
+    FeasibilityTol: float | None
+    MIPGap: float | None
+    MIPGapAbs: float | None
+    MemLimit: float | None
+    NodeLimit: int | None
+    Seed: int | None
+    SolutionLimit: int | None
+    Threads: int | None
+    TimeLimit: float | None
+    VerbLevel: int | None
+    bool_params: _SCIPBoolParams
+    char_params: _SCIPCharParams
+    int_params: _GurobiIntParams
+    longint_params: _SCIPLongintParams
+    real_params: _GurobiDblParams
+    str_params: _GurobiStrParams
+    def __init__(self) -> None:
+        """__init__(self: zonoopt._core.SCIPSettings) -> None"""
+    def copy(self) -> SCIPSettings:
+        """copy(self: zonoopt._core.SCIPSettings) -> zonoopt._core.SCIPSettings
+
+
+                        Copy settings object
+
+                        Returns:
+                            SCIPSettings: copy of settings
+            
+        """
+
+class SCIPSolverResults(ExternalSolverResults):
+    """SCIP-native solution metadata attached to OptSolution.external_results when SCIP was used."""
+    dual_bound: float
+    mip_gap: float
+    n_sols_pool: int
+    node_count: int
+    status: int
+    def __init__(self) -> None:
+        """__init__(self: zonoopt._core.SCIPSolverResults) -> None"""
+
+class SolverSettings:
+    """Abstract base class for ZonoOpt solver settings. Pass an OptSettings or GurobiSettings instance to ZonoOpt's optimization methods — the dynamic type selects the solver backend."""
+    def __init__(self, *args, **kwargs) -> None:
+        """Initialize self.  See help(type(self)) for accurate signature."""
+
+class ValuesView:
+    def __init__(self, *args, **kwargs) -> None:
+        """Initialize self.  See help(type(self)) for accurate signature."""
+    def __iter__(self) -> collections.abc.Iterator:
+        """__iter__(self: zonoopt._core.ValuesView) -> collections.abc.Iterator"""
+    def __len__(self) -> int:
+        """__len__(self: zonoopt._core.ValuesView) -> int"""
 
 class WarmStartParams:
     """
@@ -6264,6 +6398,264 @@ class Zono(ConZono):
         4. __imul__(self: zonoopt._core.Zono, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
         """
 
+class _GurobiDblParams:
+    def __init__(self) -> None:
+        """__init__(self: zonoopt._core._GurobiDblParams) -> None"""
+    def items(self) -> ItemsView:
+        """items(self: zonoopt._core._GurobiDblParams) -> zonoopt._core.ItemsView"""
+    def keys(self) -> KeysView:
+        """keys(self: zonoopt._core._GurobiDblParams) -> zonoopt._core.KeysView"""
+    def values(self) -> ValuesView:
+        """values(self: zonoopt._core._GurobiDblParams) -> zonoopt._core.ValuesView"""
+    def __bool__(self) -> bool:
+        """__bool__(self: zonoopt._core._GurobiDblParams) -> bool
+
+        Check whether the map is nonempty
+        """
+    @overload
+    def __contains__(self, arg0: str) -> bool:
+        """__contains__(*args, **kwargs)
+        Overloaded function.
+
+        1. __contains__(self: zonoopt._core._GurobiDblParams, arg0: str) -> bool
+
+        2. __contains__(self: zonoopt._core._GurobiDblParams, arg0: object) -> bool
+        """
+    @overload
+    def __contains__(self, arg0: object) -> bool:
+        """__contains__(*args, **kwargs)
+        Overloaded function.
+
+        1. __contains__(self: zonoopt._core._GurobiDblParams, arg0: str) -> bool
+
+        2. __contains__(self: zonoopt._core._GurobiDblParams, arg0: object) -> bool
+        """
+    def __delitem__(self, arg0: str) -> None:
+        """__delitem__(self: zonoopt._core._GurobiDblParams, arg0: str) -> None"""
+    def __getitem__(self, arg0: str) -> float:
+        """__getitem__(self: zonoopt._core._GurobiDblParams, arg0: str) -> float"""
+    def __iter__(self) -> collections.abc.Iterator[str]:
+        """__iter__(self: zonoopt._core._GurobiDblParams) -> collections.abc.Iterator[str]"""
+    def __len__(self) -> int:
+        """__len__(self: zonoopt._core._GurobiDblParams) -> int"""
+    def __setitem__(self, arg0: str, arg1: typing.SupportsFloat | typing.SupportsIndex) -> None:
+        """__setitem__(self: zonoopt._core._GurobiDblParams, arg0: str, arg1: typing.SupportsFloat | typing.SupportsIndex) -> None"""
+
+class _GurobiIntParams:
+    def __init__(self) -> None:
+        """__init__(self: zonoopt._core._GurobiIntParams) -> None"""
+    def items(self) -> ItemsView:
+        """items(self: zonoopt._core._GurobiIntParams) -> zonoopt._core.ItemsView"""
+    def keys(self) -> KeysView:
+        """keys(self: zonoopt._core._GurobiIntParams) -> zonoopt._core.KeysView"""
+    def values(self) -> ValuesView:
+        """values(self: zonoopt._core._GurobiIntParams) -> zonoopt._core.ValuesView"""
+    def __bool__(self) -> bool:
+        """__bool__(self: zonoopt._core._GurobiIntParams) -> bool
+
+        Check whether the map is nonempty
+        """
+    @overload
+    def __contains__(self, arg0: str) -> bool:
+        """__contains__(*args, **kwargs)
+        Overloaded function.
+
+        1. __contains__(self: zonoopt._core._GurobiIntParams, arg0: str) -> bool
+
+        2. __contains__(self: zonoopt._core._GurobiIntParams, arg0: object) -> bool
+        """
+    @overload
+    def __contains__(self, arg0: object) -> bool:
+        """__contains__(*args, **kwargs)
+        Overloaded function.
+
+        1. __contains__(self: zonoopt._core._GurobiIntParams, arg0: str) -> bool
+
+        2. __contains__(self: zonoopt._core._GurobiIntParams, arg0: object) -> bool
+        """
+    def __delitem__(self, arg0: str) -> None:
+        """__delitem__(self: zonoopt._core._GurobiIntParams, arg0: str) -> None"""
+    def __getitem__(self, arg0: str) -> int:
+        """__getitem__(self: zonoopt._core._GurobiIntParams, arg0: str) -> int"""
+    def __iter__(self) -> collections.abc.Iterator[str]:
+        """__iter__(self: zonoopt._core._GurobiIntParams) -> collections.abc.Iterator[str]"""
+    def __len__(self) -> int:
+        """__len__(self: zonoopt._core._GurobiIntParams) -> int"""
+    def __setitem__(self, arg0: str, arg1: typing.SupportsInt | typing.SupportsIndex) -> None:
+        """__setitem__(self: zonoopt._core._GurobiIntParams, arg0: str, arg1: typing.SupportsInt | typing.SupportsIndex) -> None"""
+
+class _GurobiStrParams:
+    def __init__(self) -> None:
+        """__init__(self: zonoopt._core._GurobiStrParams) -> None"""
+    def items(self) -> ItemsView:
+        """items(self: zonoopt._core._GurobiStrParams) -> zonoopt._core.ItemsView"""
+    def keys(self) -> KeysView:
+        """keys(self: zonoopt._core._GurobiStrParams) -> zonoopt._core.KeysView"""
+    def values(self) -> ValuesView:
+        """values(self: zonoopt._core._GurobiStrParams) -> zonoopt._core.ValuesView"""
+    def __bool__(self) -> bool:
+        """__bool__(self: zonoopt._core._GurobiStrParams) -> bool
+
+        Check whether the map is nonempty
+        """
+    @overload
+    def __contains__(self, arg0: str) -> bool:
+        """__contains__(*args, **kwargs)
+        Overloaded function.
+
+        1. __contains__(self: zonoopt._core._GurobiStrParams, arg0: str) -> bool
+
+        2. __contains__(self: zonoopt._core._GurobiStrParams, arg0: object) -> bool
+        """
+    @overload
+    def __contains__(self, arg0: object) -> bool:
+        """__contains__(*args, **kwargs)
+        Overloaded function.
+
+        1. __contains__(self: zonoopt._core._GurobiStrParams, arg0: str) -> bool
+
+        2. __contains__(self: zonoopt._core._GurobiStrParams, arg0: object) -> bool
+        """
+    def __delitem__(self, arg0: str) -> None:
+        """__delitem__(self: zonoopt._core._GurobiStrParams, arg0: str) -> None"""
+    def __getitem__(self, arg0: str) -> str:
+        """__getitem__(self: zonoopt._core._GurobiStrParams, arg0: str) -> str"""
+    def __iter__(self) -> collections.abc.Iterator[str]:
+        """__iter__(self: zonoopt._core._GurobiStrParams) -> collections.abc.Iterator[str]"""
+    def __len__(self) -> int:
+        """__len__(self: zonoopt._core._GurobiStrParams) -> int"""
+    def __setitem__(self, arg0: str, arg1: str) -> None:
+        """__setitem__(self: zonoopt._core._GurobiStrParams, arg0: str, arg1: str) -> None"""
+
+class _SCIPBoolParams:
+    def __init__(self) -> None:
+        """__init__(self: zonoopt._core._SCIPBoolParams) -> None"""
+    def items(self) -> ItemsView:
+        """items(self: zonoopt._core._SCIPBoolParams) -> zonoopt._core.ItemsView"""
+    def keys(self) -> KeysView:
+        """keys(self: zonoopt._core._SCIPBoolParams) -> zonoopt._core.KeysView"""
+    def values(self) -> ValuesView:
+        """values(self: zonoopt._core._SCIPBoolParams) -> zonoopt._core.ValuesView"""
+    def __bool__(self) -> bool:
+        """__bool__(self: zonoopt._core._SCIPBoolParams) -> bool
+
+        Check whether the map is nonempty
+        """
+    @overload
+    def __contains__(self, arg0: str) -> bool:
+        """__contains__(*args, **kwargs)
+        Overloaded function.
+
+        1. __contains__(self: zonoopt._core._SCIPBoolParams, arg0: str) -> bool
+
+        2. __contains__(self: zonoopt._core._SCIPBoolParams, arg0: object) -> bool
+        """
+    @overload
+    def __contains__(self, arg0: object) -> bool:
+        """__contains__(*args, **kwargs)
+        Overloaded function.
+
+        1. __contains__(self: zonoopt._core._SCIPBoolParams, arg0: str) -> bool
+
+        2. __contains__(self: zonoopt._core._SCIPBoolParams, arg0: object) -> bool
+        """
+    def __delitem__(self, arg0: str) -> None:
+        """__delitem__(self: zonoopt._core._SCIPBoolParams, arg0: str) -> None"""
+    def __getitem__(self, arg0: str) -> bool:
+        """__getitem__(self: zonoopt._core._SCIPBoolParams, arg0: str) -> bool"""
+    def __iter__(self) -> collections.abc.Iterator[str]:
+        """__iter__(self: zonoopt._core._SCIPBoolParams) -> collections.abc.Iterator[str]"""
+    def __len__(self) -> int:
+        """__len__(self: zonoopt._core._SCIPBoolParams) -> int"""
+    def __setitem__(self, arg0: str, arg1: bool) -> None:
+        """__setitem__(self: zonoopt._core._SCIPBoolParams, arg0: str, arg1: bool) -> None"""
+
+class _SCIPCharParams:
+    def __init__(self) -> None:
+        """__init__(self: zonoopt._core._SCIPCharParams) -> None"""
+    def items(self) -> ItemsView:
+        """items(self: zonoopt._core._SCIPCharParams) -> zonoopt._core.ItemsView"""
+    def keys(self) -> KeysView:
+        """keys(self: zonoopt._core._SCIPCharParams) -> zonoopt._core.KeysView"""
+    def values(self) -> ValuesView:
+        """values(self: zonoopt._core._SCIPCharParams) -> zonoopt._core.ValuesView"""
+    def __bool__(self) -> bool:
+        """__bool__(self: zonoopt._core._SCIPCharParams) -> bool
+
+        Check whether the map is nonempty
+        """
+    @overload
+    def __contains__(self, arg0: str) -> bool:
+        """__contains__(*args, **kwargs)
+        Overloaded function.
+
+        1. __contains__(self: zonoopt._core._SCIPCharParams, arg0: str) -> bool
+
+        2. __contains__(self: zonoopt._core._SCIPCharParams, arg0: object) -> bool
+        """
+    @overload
+    def __contains__(self, arg0: object) -> bool:
+        """__contains__(*args, **kwargs)
+        Overloaded function.
+
+        1. __contains__(self: zonoopt._core._SCIPCharParams, arg0: str) -> bool
+
+        2. __contains__(self: zonoopt._core._SCIPCharParams, arg0: object) -> bool
+        """
+    def __delitem__(self, arg0: str) -> None:
+        """__delitem__(self: zonoopt._core._SCIPCharParams, arg0: str) -> None"""
+    def __getitem__(self, arg0: str) -> str:
+        """__getitem__(self: zonoopt._core._SCIPCharParams, arg0: str) -> str"""
+    def __iter__(self) -> collections.abc.Iterator[str]:
+        """__iter__(self: zonoopt._core._SCIPCharParams) -> collections.abc.Iterator[str]"""
+    def __len__(self) -> int:
+        """__len__(self: zonoopt._core._SCIPCharParams) -> int"""
+    def __setitem__(self, arg0: str, arg1: str) -> None:
+        """__setitem__(self: zonoopt._core._SCIPCharParams, arg0: str, arg1: str) -> None"""
+
+class _SCIPLongintParams:
+    def __init__(self) -> None:
+        """__init__(self: zonoopt._core._SCIPLongintParams) -> None"""
+    def items(self) -> ItemsView:
+        """items(self: zonoopt._core._SCIPLongintParams) -> zonoopt._core.ItemsView"""
+    def keys(self) -> KeysView:
+        """keys(self: zonoopt._core._SCIPLongintParams) -> zonoopt._core.KeysView"""
+    def values(self) -> ValuesView:
+        """values(self: zonoopt._core._SCIPLongintParams) -> zonoopt._core.ValuesView"""
+    def __bool__(self) -> bool:
+        """__bool__(self: zonoopt._core._SCIPLongintParams) -> bool
+
+        Check whether the map is nonempty
+        """
+    @overload
+    def __contains__(self, arg0: str) -> bool:
+        """__contains__(*args, **kwargs)
+        Overloaded function.
+
+        1. __contains__(self: zonoopt._core._SCIPLongintParams, arg0: str) -> bool
+
+        2. __contains__(self: zonoopt._core._SCIPLongintParams, arg0: object) -> bool
+        """
+    @overload
+    def __contains__(self, arg0: object) -> bool:
+        """__contains__(*args, **kwargs)
+        Overloaded function.
+
+        1. __contains__(self: zonoopt._core._SCIPLongintParams, arg0: str) -> bool
+
+        2. __contains__(self: zonoopt._core._SCIPLongintParams, arg0: object) -> bool
+        """
+    def __delitem__(self, arg0: str) -> None:
+        """__delitem__(self: zonoopt._core._SCIPLongintParams, arg0: str) -> None"""
+    def __getitem__(self, arg0: str) -> int:
+        """__getitem__(self: zonoopt._core._SCIPLongintParams, arg0: str) -> int"""
+    def __iter__(self) -> collections.abc.Iterator[str]:
+        """__iter__(self: zonoopt._core._SCIPLongintParams) -> collections.abc.Iterator[str]"""
+    def __len__(self) -> int:
+        """__len__(self: zonoopt._core._SCIPLongintParams) -> int"""
+    def __setitem__(self, arg0: str, arg1: typing.SupportsInt | typing.SupportsIndex) -> None:
+        """__setitem__(self: zonoopt._core._SCIPLongintParams, arg0: str, arg1: typing.SupportsInt | typing.SupportsIndex) -> None"""
+
 def affine_inclusion(Z: HybZono, R: IntervalMatrix, s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'] = ...) -> HybZono:
     '''affine_inclusion(Z: zonoopt._core.HybZono, R: zonoopt._core.IntervalMatrix, s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"] = array([], dtype=float64)) -> zonoopt._core.HybZono
 
@@ -6359,6 +6751,19 @@ def from_json(filename: str) -> HybZono:
 
                 Returns:
                     HybZono: deserialized zonotopic set
+        
+    """
+def get_default_solver_settings() -> SolverSettings:
+    """get_default_solver_settings() -> zonoopt._core.SolverSettings
+
+
+                Return a reference to the current program-wide default solver settings.
+
+                The returned object is the same instance held by the library; it remains valid
+                until set_default_solver_settings is called again.
+
+                Returns:
+                    SolverSettings: the current default (OptSettings on a fresh program).
         
     """
 def halfspace_intersection(Z: HybZono, H: scipy.sparse.csc_matrix[numpy.float64], f: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], R: scipy.sparse.csc_matrix[numpy.float64] = ...) -> HybZono:
@@ -6483,8 +6888,32 @@ def project_onto_dims(Z: HybZono, dims: collections.abc.Sequence[typing.Supports
                     HybZono: zonotopic set
         
     """
-def set_diff(Z1: HybZono, Z2: HybZono, delta_m: typing.SupportsFloat | typing.SupportsIndex = ..., remove_redundancy: bool = ..., settings: OptSettings = ..., solution: OptSolution = ..., n_leaves: typing.SupportsInt | typing.SupportsIndex = ..., contractor_iter: typing.SupportsInt | typing.SupportsIndex = ...) -> HybZono:
-    """set_diff(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono, delta_m: typing.SupportsFloat | typing.SupportsIndex = 100, remove_redundancy: bool = True, settings: zonoopt._core.OptSettings = OptSettings structure: verbose: false verbosity_interval: 100 t_max: 1.79769e+308 k_max_admm: 5000 rho: 10 eps_dual: 0.01 eps_prim: 0.001 k_inf_check: 10 inf_norm_conv: true use_interval_contractor: true contractor_iter: 1 search_mode: 0 polish: 1 eps_dual_search: 0.1 eps_prim_search: 0.01 eps_r: 0.01 eps_a: 0.1 k_max_bnb: 100000 n_threads_bnb: 4 n_threads_admm_fp: 3 single_threaded_admm_fp: false max_nodes: 100000 contractor_tree_search_depth: 10 enable_perturb_admm_fp: true k_max_admm_fp_ph1: 10000 k_max_admm_fp_ph2: 90000 cycle_detection_buffer_size: 20 eps_perturb: 0.001 k_restart: 5000 enable_rng_seed: false rng_seed: 0 enable_restart_admm_fp: true, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt | typing.SupportsIndex = 2147483647, contractor_iter: typing.SupportsInt | typing.SupportsIndex = 10) -> zonoopt._core.HybZono
+def set_default_solver_settings(settings: SolverSettings) -> None:
+    """set_default_solver_settings(settings: zonoopt._core.SolverSettings) -> None
+
+
+                Set the program-wide default solver settings.
+
+                After calling this, any ZonoOpt optimization method invoked without an explicit
+                `settings` argument will use a polymorphic copy of `settings` as the default.
+                Use this to switch the entire library to a different solver backend (e.g., Gurobi)
+                with a single call, without passing settings to every optimization method.
+
+                Args:
+                    settings (SolverSettings): an OptSettings or GurobiSettings instance.
+
+                Raises:
+                    RuntimeError: if the selected solver cannot be initialized (e.g., a
+                        GurobiSettings is passed but the Gurobi shared library cannot be
+                        dynamically loaded). The previous default is left unchanged.
+
+                Example:
+                    >>> zono.set_default_solver_settings(zono.GurobiSettings())
+                    >>> Z.support(d)   # now uses Gurobi by default
+        
+    """
+def set_diff(Z1: HybZono, Z2: HybZono, delta_m: typing.SupportsFloat | typing.SupportsIndex = ..., remove_redundancy: bool = ..., settings: object = ..., solution: OptSolution = ..., n_leaves: typing.SupportsInt | typing.SupportsIndex = ..., contractor_iter: typing.SupportsInt | typing.SupportsIndex = ...) -> HybZono:
+    """set_diff(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono, delta_m: typing.SupportsFloat | typing.SupportsIndex = 100, remove_redundancy: bool = True, settings: object = None, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt | typing.SupportsIndex = 2147483647, contractor_iter: typing.SupportsInt | typing.SupportsIndex = 10) -> zonoopt._core.HybZono
 
 
                 Set difference Z1 \\\\ Z2

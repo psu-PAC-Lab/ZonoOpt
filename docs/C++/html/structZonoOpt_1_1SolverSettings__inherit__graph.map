@@ -1,0 +1,9 @@
+<map id="ZonoOpt::SolverSettings" name="ZonoOpt::SolverSettings">
+<area shape="rect" id="Node000001" title="Abstract base for all solver settings." alt="" coords="204,5,384,31"/>
+<area shape="rect" id="Node000002" href="$structZonoOpt_1_1GurobiSettings.html" title="Settings for the dynamically&#45;loaded Gurobi solver backend." alt="" coords="5,79,188,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="250,38,130,81,128,76,249,33"/>
+<area shape="rect" id="Node000003" href="$structZonoOpt_1_1OptSettings.html" title="Settings for the internal ZonoOpt ADMM / branch&#45;and&#45;bound solver." alt="" coords="213,79,375,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="297,44,297,79,291,79,291,44"/>
+<area shape="rect" id="Node000004" href="$structZonoOpt_1_1SCIPSettings.html" title="Settings for the dynamically&#45;loaded SCIP solver backend." alt="" coords="399,79,567,104"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="338,33,453,76,451,81,336,38"/>
+</map>
