@@ -52,5 +52,20 @@ TEST(AffineInclusion, RandomExamples)
         err_ss.str("");
         err_ss << "Zonotope " << *Z_inc << " does not contain point " << Z_ub_zono.get_center();
         EXPECT_TRUE(Z_inc->contains_point(Z_ub_zono.get_center())) << err_ss.str();
+
+        if (detail::gurobi_available())
+        {
+            EXPECT_TRUE(Z_inc->contains_point(Z_lb_zono.get_center(), GurobiSettings()))
+                << "Zonotope does not contain lower-bound center using Gurobi";
+            EXPECT_TRUE(Z_inc->contains_point(Z_ub_zono.get_center(), GurobiSettings()))
+                << "Zonotope does not contain upper-bound center using Gurobi";
+        }
+        if (detail::scip_available())
+        {
+            EXPECT_TRUE(Z_inc->contains_point(Z_lb_zono.get_center(), SCIPSettings()))
+                << "Zonotope does not contain lower-bound center using SCIP";
+            EXPECT_TRUE(Z_inc->contains_point(Z_ub_zono.get_center(), SCIPSettings()))
+                << "Zonotope does not contain upper-bound center using SCIP";
+        }
     }
 }

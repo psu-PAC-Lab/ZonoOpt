@@ -44,4 +44,15 @@ TEST(SafetyVerification, IntersectionIsEmpty)
 
     EXPECT_TRUE(ZonoOpt::intersection(*X, *O)->is_empty())
         << "Expected intersection of X and O to be empty";
+
+    if (ZonoOpt::detail::gurobi_available())
+    {
+        EXPECT_TRUE(ZonoOpt::intersection(*X, *O)->is_empty(ZonoOpt::GurobiSettings()))
+            << "Expected intersection of X and O to be empty using Gurobi";
+    }
+    if (ZonoOpt::detail::scip_available())
+    {
+        EXPECT_TRUE(ZonoOpt::intersection(*X, *O)->is_empty(ZonoOpt::SCIPSettings()))
+            << "Expected intersection of X and O to be empty using SCIP";
+    }
 }
