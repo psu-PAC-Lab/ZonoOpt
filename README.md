@@ -219,6 +219,13 @@ Equivalently, in C++:
 ZonoOpt::GurobiSettings settings;
 auto p_proj = Z.project_point(p, settings);
 ```
+The default solver selection can be modified by globally modifying the default solver settings, e.g.,
+```python
+zono.set_default_solver_settings(zono.SCIPSettings())
+```
+```cpp
+ZonoOpt::set_default_solver_settings(ZonoOpt::SCIPSettings());
+```
 
 ## Documentation
 Auto-generated API documentation is available below.
