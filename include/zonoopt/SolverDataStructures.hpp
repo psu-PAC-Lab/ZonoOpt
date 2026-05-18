@@ -232,12 +232,41 @@ namespace ZonoOpt
     };
 
     /**
+     * @brief Abstract base for external-solver-specific solution metadata.
+     *
+     * When an OptSolution is produced by an external solver (Gurobi, SCIP, ...),
+     * OptSolution::external_results points to a polymorphic ExternalSolverResults
+     * subclass carrying the solver-native status code, node count, gap, etc.
+     * The user can dynamic_cast to the concrete subclass to extract that info:
+     *
+     *     if (auto* gr = dynamic_cast<const GurobiSolverResults*>(sol.external_results.get())) {
+     *         std::cout << "Gurobi MIP nodes: " << gr->node_count << "\n";
+     *     }
+     */
+    struct ExternalSolverResults
+    {
+        virtual ~ExternalSolverResults() = default;
+
+        /// Polymorphic copy; required so callers can deep-copy an OptSolution.
+        virtual std::shared_ptr<ExternalSolverResults> clone() const = 0;
+
+        /// Human-readable summary of the solver-specific fields.
+        virtual std::string print() const { return "ExternalSolverResults"; }
+    };
+
+    /**
      * @brief Solution data structure for optimization routines in ZonoOpt library.
      *
+     * The fields z, J, run_time, converged, and infeasible are always populated
+     * regardless of which solver computed the solution. Fields below labeled
+     * "admm-specific" carry meaningful values only when the internal solver was
+     * used; when an external solver (Gurobi, SCIP, ...) was used,
+     * `external_results` points to the solver-native solution metadata and the
+     * admm-specific fields are left at their defaults.
      */
     struct OptSolution
     {
-        // general
+        // general — always populated
 
         /// solution vector
         Eigen::Vector<zono_float, -1> z;
@@ -245,22 +274,22 @@ namespace ZonoOpt
         /// objective
         zono_float J = -std::numeric_limits<zono_float>::infinity();
 
-        /// time to compute solution
+        /// time to compute solution (seconds)
         double run_time = 0.0;
+
+        /// true if optimization has converged (proved optimal for external solvers; satisfied tolerances for internal)
+        bool converged = false;
+
+        /// true if optimization problem is provably infeasible
+        bool infeasible = false;
+
+        // admm-specific — meaningful only when the internal solver was used.
 
         /// time to factorize matrices and run interval contractors
         double startup_time = 0.0;
 
         /// number of iterations
         int iter = 0;
-
-        /// true if optimization has converged
-        bool converged = false;
-
-        /// true if optimization problem is provably infeasible
-        bool infeasible = false;
-
-        // admm-specific
 
         /// ADMM primal variable, approximately equal to z when converged
         Eigen::Vector<zono_float, -1> x;
@@ -273,6 +302,13 @@ namespace ZonoOpt
 
         /// dual residual, corresponds to optimality
         zono_float dual_residual = std::numeric_limits<zono_float>::infinity();
+
+        // external-solver-specific — populated only when an external solver was used.
+
+        /// Polymorphic solver-native solution metadata. nullptr when the internal
+        /// solver was used; otherwise points to a GurobiSolverResults, SCIPSolverResults,
+        /// etc. Inspect via dynamic_cast (C++) or isinstance (Python).
+        std::shared_ptr<ExternalSolverResults> external_results;
 
         /**
          * @brief displays solution as string
@@ -294,6 +330,8 @@ namespace ZonoOpt
             ss << "  u: vector of length " << u.size() << std::endl;
             ss << "  primal_residual: " << primal_residual << std::endl;
             ss << "  dual_residual: " << dual_residual << std::endl;
+            if (external_results)
+                ss << "  external_results: " << external_results->print() << std::endl;
             return ss.str();
         }
     };

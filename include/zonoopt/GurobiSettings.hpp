@@ -148,6 +148,48 @@ namespace ZonoOpt
             return ss.str();
         }
     };
+
+    /**
+     * @brief Solver-native solution metadata produced by the Gurobi backend.
+     *
+     * When an OptSolution is produced by a Gurobi solve, OptSolution::external_results
+     * points to an instance of this class so the caller can read Gurobi-specific status,
+     * node counts, gap, and dual bound. Inspect via dynamic_cast / isinstance.
+     */
+    struct GurobiSolverResults : ExternalSolverResults
+    {
+        /// Raw Gurobi status code (see Gurobi's status code table).
+        int status = 0;
+
+        /// Simplex / barrier iteration count (Gurobi attribute "IterCount").
+        double iter_count = 0.0;
+
+        /// Number of branch-and-bound nodes explored (Gurobi attribute "NodeCount").
+        double node_count = 0.0;
+
+        /// Relative MIP optimality gap achieved at termination (Gurobi attribute "MIPGap").
+        double mip_gap = 0.0;
+
+        /// Best dual bound found for the MIP (Gurobi attribute "ObjBound").
+        double obj_bound = 0.0;
+
+        std::shared_ptr<ExternalSolverResults> clone() const override
+        {
+            return std::make_shared<GurobiSolverResults>(*this);
+        }
+
+        std::string print() const override
+        {
+            std::stringstream ss;
+            ss << "GurobiSolverResults:\n";
+            ss << "  status: " << status << "\n";
+            ss << "  iter_count: " << iter_count << "\n";
+            ss << "  node_count: " << node_count << "\n";
+            ss << "  mip_gap: " << mip_gap << "\n";
+            ss << "  obj_bound: " << obj_bound << "\n";
+            return ss.str();
+        }
+    };
 } // namespace ZonoOpt
 
 #endif

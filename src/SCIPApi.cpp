@@ -120,6 +120,9 @@ SCIPApi::SCIPApi()
 
     SCIPsolve                           = (SCIPsolve_t)                           sym("SCIPsolve");
     SCIPfreeTransform                   = (SCIPfreeTransform_t)                   sym("SCIPfreeTransform");
+    SCIPgetNTotalNodes                  = (SCIPgetNTotalNodes_t)                  sym("SCIPgetNTotalNodes");
+    SCIPgetGap                          = (SCIPgetGap_t)                          sym("SCIPgetGap");
+    SCIPgetDualbound                    = (SCIPgetDualbound_t)                    sym("SCIPgetDualbound");
     SCIPgetStatus                       = (SCIPgetStatus_t)                       sym("SCIPgetStatus");
     SCIPgetBestSol                      = (SCIPgetBestSol_t)                      sym("SCIPgetBestSol");
     SCIPgetNSols                        = (SCIPgetNSols_t)                        sym("SCIPgetNSols");

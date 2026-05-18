@@ -234,7 +234,41 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
     ;
 
-    py::class_<OptSolution>(m, "OptSolution", "Solution data structure for optimization routines in ZonoOpt library.")
+    // External-solver-specific solution metadata, attached to OptSolution.external_results
+    // when an external solver (Gurobi, SCIP, ...) was used.
+    py::class_<ExternalSolverResults, std::shared_ptr<ExternalSolverResults>>(m, "ExternalSolverResults",
+        "Abstract base for external-solver-specific solution metadata. "
+        "Inspect via isinstance() to see whether GurobiSolverResults, SCIPSolverResults, etc.")
+        .def("__repr__", &ExternalSolverResults::print);
+
+    py::class_<GurobiSolverResults, ExternalSolverResults, std::shared_ptr<GurobiSolverResults>>(
+        m, "GurobiSolverResults",
+        "Gurobi-native solution metadata attached to OptSolution.external_results when Gurobi was used.")
+        .def(py::init())
+        .def_readwrite("status",     &GurobiSolverResults::status,     "raw Gurobi status code")
+        .def_readwrite("iter_count", &GurobiSolverResults::iter_count, "simplex/barrier iterations (Gurobi IterCount)")
+        .def_readwrite("node_count", &GurobiSolverResults::node_count, "branch-and-bound nodes explored (Gurobi NodeCount)")
+        .def_readwrite("mip_gap",    &GurobiSolverResults::mip_gap,    "relative MIP optimality gap achieved (Gurobi MIPGap)")
+        .def_readwrite("obj_bound",  &GurobiSolverResults::obj_bound,  "best dual bound for the MIP (Gurobi ObjBound)")
+        .def("__repr__", &GurobiSolverResults::print);
+
+    py::class_<SCIPSolverResults, ExternalSolverResults, std::shared_ptr<SCIPSolverResults>>(
+        m, "SCIPSolverResults",
+        "SCIP-native solution metadata attached to OptSolution.external_results when SCIP was used.")
+        .def(py::init())
+        .def_readwrite("status",      &SCIPSolverResults::status,      "raw SCIP_Status code")
+        .def_readwrite("node_count",  &SCIPSolverResults::node_count,  "total branch-and-bound nodes explored (SCIPgetNTotalNodes)")
+        .def_readwrite("mip_gap",     &SCIPSolverResults::mip_gap,     "relative gap at termination (SCIPgetGap)")
+        .def_readwrite("dual_bound",  &SCIPSolverResults::dual_bound,  "best dual bound found (SCIPgetDualbound)")
+        .def_readwrite("n_sols_pool", &SCIPSolverResults::n_sols_pool, "number of feasible solutions in SCIP's storage (SCIPgetNSols)")
+        .def("__repr__", &SCIPSolverResults::print);
+
+    py::class_<OptSolution>(m, "OptSolution",
+        "Solution data structure for optimization routines in ZonoOpt library. "
+        "Fields z, J, run_time, converged, infeasible are always populated. "
+        "ADMM-specific fields (x, u, iter, startup_time, primal_residual, dual_residual) "
+        "are populated only when the internal solver was used. "
+        "external_results (None unless an external solver was used) carries solver-native metadata.")
         .def(py::init())
         .def_readwrite("z", &OptSolution::z, "solution vector")
         .def_readwrite("J", &OptSolution::J, "objective")
@@ -247,6 +281,8 @@ PYBIND11_MODULE(_core, m)
         .def_readwrite("u", &OptSolution::u, "ADMM dual variable")
         .def_readwrite("primal_residual", &OptSolution::primal_residual, "primal residual, corresponds to feasibility")
         .def_readwrite("dual_residual", &OptSolution::dual_residual, "dual residual, corresponds to optimality")
+        .def_readwrite("external_results", &OptSolution::external_results,
+            "Optional[ExternalSolverResults]: solver-native metadata, set when Gurobi/SCIP/etc. was used.")
         .def("__repr__", &OptSolution::print,
             R"pbdoc(
                 Displays solution as a string

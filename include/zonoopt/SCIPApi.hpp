@@ -90,6 +90,9 @@ public:
 
     typedef int    (*SCIPsolve_t)(ScipPtr);
     typedef int    (*SCIPfreeTransform_t)(ScipPtr);
+    typedef long long (*SCIPgetNTotalNodes_t)(ScipPtr);
+    typedef double (*SCIPgetGap_t)(ScipPtr);
+    typedef double (*SCIPgetDualbound_t)(ScipPtr);
     typedef int    (*SCIPgetStatus_t)(ScipPtr);
     typedef SolPtr (*SCIPgetBestSol_t)(ScipPtr);
     typedef int    (*SCIPgetNSols_t)(ScipPtr);
@@ -130,6 +133,9 @@ public:
 
     SCIPsolve_t                           SCIPsolve                           = nullptr;
     SCIPfreeTransform_t                   SCIPfreeTransform                   = nullptr;
+    SCIPgetNTotalNodes_t                  SCIPgetNTotalNodes                  = nullptr;
+    SCIPgetGap_t                          SCIPgetGap                          = nullptr;
+    SCIPgetDualbound_t                    SCIPgetDualbound                    = nullptr;
     SCIPgetStatus_t                       SCIPgetStatus                       = nullptr;
     SCIPgetBestSol_t                      SCIPgetBestSol                      = nullptr;
     SCIPgetNSols_t                        SCIPgetNSols                        = nullptr;

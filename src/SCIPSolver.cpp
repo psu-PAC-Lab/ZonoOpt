@@ -227,6 +227,12 @@ struct SolveResult
     double objective = 0.0;
     double runtime = 0.0;
     Eigen::VectorXd y;            // primary solution (best)
+
+    // Solver-native metadata fetched after each solve for SCIPSolverResults.
+    long long node_count = 0;
+    double mip_gap = 0.0;
+    double dual_bound = 0.0;
+    int n_sols_pool = 0;
 };
 
 /**
@@ -412,6 +418,13 @@ SolveResult solve_once(ScipProblem& prob)
         res.objective = api.SCIPgetSolOrigObj ? api.SCIPgetSolOrigObj(scip, best) : 0.0;
         res.got_solution = true;
     }
+
+    // Solver-native metadata for SCIPSolverResults (best-effort; symbols may be absent on older builds).
+    if (api.SCIPgetNTotalNodes) res.node_count  = api.SCIPgetNTotalNodes(scip);
+    if (api.SCIPgetGap)         res.mip_gap     = api.SCIPgetGap(scip);
+    if (api.SCIPgetDualbound)   res.dual_bound  = api.SCIPgetDualbound(scip);
+    if (api.SCIPgetNSols)       res.n_sols_pool = api.SCIPgetNSols(scip);
+
     return res;
 }
 
@@ -459,6 +472,16 @@ OptSolution build_opt_solution(const SolveResult& sr, const Eigen::Vector<zono_f
         sol.converged = false;
         sol.J = -std::numeric_limits<zono_float>::infinity();
     }
+
+    // Attach SCIP-native solution metadata so callers can read raw status, node count, etc.
+    auto sres = std::make_shared<SCIPSolverResults>();
+    sres->status      = sr.status;
+    sres->node_count  = sr.node_count;
+    sres->mip_gap     = sr.mip_gap;
+    sres->dual_bound  = sr.dual_bound;
+    sres->n_sols_pool = sr.n_sols_pool;
+    sol.external_results = sres;
+
     return sol;
 }
 

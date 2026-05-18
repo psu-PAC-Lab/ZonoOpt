@@ -120,6 +120,48 @@ namespace ZonoOpt
             return ss.str();
         }
     };
+
+    /**
+     * @brief Solver-native solution metadata produced by the SCIP backend.
+     *
+     * When an OptSolution is produced by a SCIP solve, OptSolution::external_results
+     * points to an instance of this class so the caller can read SCIP-specific status,
+     * node counts, gap, and dual bound. Inspect via dynamic_cast / isinstance.
+     */
+    struct SCIPSolverResults : ExternalSolverResults
+    {
+        /// Raw SCIP_Status code (see SCIP's status enum; layout differs across versions).
+        int status = 0;
+
+        /// Total branch-and-bound nodes explored (SCIPgetNTotalNodes).
+        long long node_count = 0;
+
+        /// Relative gap at termination (SCIPgetGap). +infinity if no primal bound found.
+        double mip_gap = 0.0;
+
+        /// Best dual bound found (SCIPgetDualbound).
+        double dual_bound = 0.0;
+
+        /// Number of feasible solutions in SCIP's solution storage at termination (SCIPgetNSols).
+        int n_sols_pool = 0;
+
+        std::shared_ptr<ExternalSolverResults> clone() const override
+        {
+            return std::make_shared<SCIPSolverResults>(*this);
+        }
+
+        std::string print() const override
+        {
+            std::stringstream ss;
+            ss << "SCIPSolverResults:\n";
+            ss << "  status: " << status << "\n";
+            ss << "  node_count: " << node_count << "\n";
+            ss << "  mip_gap: " << mip_gap << "\n";
+            ss << "  dual_bound: " << dual_bound << "\n";
+            ss << "  n_sols_pool: " << n_sols_pool << "\n";
+            return ss.str();
+        }
+    };
 } // namespace ZonoOpt
 
 #endif

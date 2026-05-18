@@ -30,7 +30,29 @@ struct GurobiResult
     double objective = 0.0;
     Eigen::VectorXd y;
     bool got_solution = false;
+
+    // Solver-native metadata fetched after optimization for GurobiSolverResults.
+    double iter_count = 0.0;
+    double node_count = 0.0;
+    double mip_gap = 0.0;
+    double obj_bound = 0.0;
 };
+
+/**
+ * Read Gurobi's solver-native metadata attributes (best-effort).
+ * "NodeCount" / "ObjBound" / "MIPGap" are MIP-only and silently skipped on LP/QP models.
+ */
+void fetch_gurobi_metadata(GurobiApi& api, GurobiApi::Model& model, GurobiResult& gr)
+{
+    auto try_dbl = [&](const char* name, double& out) {
+        try { api.get_dbl_attr(model, name, out); }
+        catch (const std::exception&) { /* attribute may not apply to this model type */ }
+    };
+    try_dbl("IterCount", gr.iter_count);
+    try_dbl("NodeCount", gr.node_count);
+    try_dbl("MIPGap",    gr.mip_gap);
+    try_dbl("ObjBound",  gr.obj_bound);
+}
 
 template <typename T>
 Eigen::VectorXd to_double_vec(const Eigen::Vector<T, -1>& v)
@@ -207,6 +229,8 @@ GurobiResult optimize_single(PreparedModel& pm)
         }
     }
 
+    fetch_gurobi_metadata(api, pm.model, result);
+
     return result;
 }
 
@@ -265,11 +289,16 @@ std::vector<GurobiResult> optimize_pool(PreparedModel& pm, int n_sols, int pool_
         return results;
     }
 
+    // Fetch model-level metadata once — these attributes describe the optimize call
+    // overall, not any particular pool entry.
+    GurobiResult shared_meta;
+    shared_meta.status = status;
+    shared_meta.runtime = runtime;
+    fetch_gurobi_metadata(api, pm.model, shared_meta);
+
     for (int k = 0; k < sol_count; ++k)
     {
-        GurobiResult gr;
-        gr.status = status;
-        gr.runtime = runtime;  // total optimization runtime; per-solution time is not separable
+        GurobiResult gr = shared_meta;  // copy status/runtime/metadata
         gr.y = Eigen::VectorXd::Zero(pm.n);
 
         try
@@ -315,6 +344,16 @@ OptSolution build_opt_solution(const GurobiResult& gr, const Eigen::Vector<zono_
         sol.converged = false;
         sol.J = -std::numeric_limits<zono_float>::infinity();
     }
+
+    // Attach Gurobi-native solution metadata so callers can read raw status, node count, etc.
+    auto gres = std::make_shared<GurobiSolverResults>();
+    gres->status     = gr.status;
+    gres->iter_count = gr.iter_count;
+    gres->node_count = gr.node_count;
+    gres->mip_gap    = gr.mip_gap;
+    gres->obj_bound  = gr.obj_bound;
+    sol.external_results = gres;
+
     return sol;
 }
 
