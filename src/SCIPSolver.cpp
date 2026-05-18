@@ -6,6 +6,7 @@
 #include <limits>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -564,10 +565,24 @@ std::vector<OptSolution> solve_miqp_scip_multisol(const Eigen::SparseMatrix<zono
     const int n = static_cast<int>(q.size());
     const zono_float offset = c + static_cast<zono_float>(prep.const_shift);
 
-    // With no binary variables there's only one possible "solution": the QP optimum.
+    // With no binary variables there's nothing to enumerate; return the QP optimum.
     if (bin_count == 0)
     {
         return { solve_qp_scip(P, q, c, A, b, xi_lb, xi_ub, settings) };
+    }
+
+    // multisol is a feasibility primitive in this library: callers (is_empty,
+    // get_bin_leaves) only consume the binary part of z and the infeasible flag.
+    // Drive enumeration through SCIP's count constraint handler, which performs
+    // a single branch-and-count tree search instead of N+1 sequential MIP solves
+    // separated by no-good cuts. The handler ignores any objective, which is fine
+    // here — any QP terms passed in are discarded.
+    if (!api.SCIPcount || !api.SCIPgetCountedSparseSols ||
+        !api.SCIPsparseSolGetLbs || !api.SCIPsparseSolGetNVars)
+    {
+        throw std::runtime_error(
+            "SCIP count handler symbols are unavailable in this SCIP build; "
+            "cannot enumerate multiple feasible binary assignments.");
     }
 
     // Cap requested count at 2^bin_count (the maximum number of distinct binary assignments).
@@ -577,86 +592,93 @@ std::vector<OptSolution> solve_miqp_scip_multisol(const Eigen::SparseMatrix<zono
         n_sols = std::min(n_sols, max_combinations);
     }
 
-    // ---- Build the SCIP problem once. Subsequent iterations re-solve after
-    //      adding a no-good cut that excludes the previous binary assignment.
-    //
-    // SCIP's natural solution pool would terminate as soon as the optimum is
-    // proved — which loses alternative-optimal binary assignments. The no-good
-    // cut approach explicitly enumerates distinct binary patterns in order of
-    // their objective value.
+    // Pure feasibility model: zero out the quadratic objective so the count handler
+    // doesn't have to deal with the epigraph constraint or a non-trivial objective.
+    Eigen::SparseMatrix<double> P_empty(prep.P_d.rows(), prep.P_d.cols());
+    Eigen::VectorXd q_zero = Eigen::VectorXd::Zero(prep.q_d.size());
 
-    ScipProblem prob = build_scip_problem(prep.P_d, prep.q_d, prep.A_d, prep.b_d,
+    ScipProblem prob = build_scip_problem(P_empty, q_zero, prep.A_d, prep.b_d,
                                           prep.lb_d, prep.ub_d, prep.vtype, settings);
     SCIPApi::ScipPtr scip = prob.scip();
 
-    if (!api.SCIPfreeTransform)
-    {
-        throw std::runtime_error(
-            "SCIPfreeTransform symbol is unavailable; cannot enumerate multiple solutions.");
-    }
+    scip_check(api.SCIPsetBoolParam(scip, "constraints/countsols/collect", 1u),
+               "set constraints/countsols/collect");
+    scip_check(api.SCIPsetLongintParam(scip, "constraints/countsols/sollimit",
+                                       static_cast<long long>(n_sols)),
+               "set constraints/countsols/sollimit");
+
+    auto t_start = std::chrono::steady_clock::now();
+    scip_check(api.SCIPcount(scip), "SCIPcount");
+    auto t_end = std::chrono::steady_clock::now();
+    const double runtime = std::chrono::duration<double>(t_end - t_start).count();
+
+    SCIPApi::VarPtr*       cs_vars       = nullptr;
+    SCIPApi::SparseSolPtr* cs_sparsesols = nullptr;
+    int cs_nvars = 0, cs_nsparsesols = 0;
+    api.SCIPgetCountedSparseSols(scip, &cs_vars, &cs_nvars, &cs_sparsesols, &cs_nsparsesols);
+
+    const long long node_count = api.SCIPgetNTotalNodes ? api.SCIPgetNTotalNodes(scip) : 0;
+
+    auto make_results = [&](int n_pool) {
+        auto sres = std::make_shared<SCIPSolverResults>();
+        sres->status      = SCIPApi::SCIP_STATUS_OPTIMAL;
+        sres->node_count  = node_count;
+        sres->mip_gap     = 0.0;
+        sres->dual_bound  = 0.0;
+        sres->n_sols_pool = n_pool;
+        return sres;
+    };
 
     std::vector<OptSolution> sols;
 
-    for (int iter = 0; iter < n_sols; ++iter)
+    if (cs_nsparsesols == 0)
     {
-        SolveResult sr = solve_once(prob);
+        // No feasible binary assignment — return a single infeasible OptSolution
+        // matching the convention used elsewhere.
+        OptSolution s;
+        s.z = Eigen::Vector<zono_float, -1>::Zero(n);
+        s.infeasible = true;
+        s.converged = false;
+        s.J = std::numeric_limits<zono_float>::infinity();
+        s.run_time = runtime;
+        s.iter = 0;
+        s.external_results = make_results(0);
+        sols.push_back(std::move(s));
+        return sols;
+    }
 
-        if (sr.infeasible || !sr.got_solution)
-        {
-            // No more feasible binary assignments. If this happened on iteration 0,
-            // surface the infeasibility; otherwise we've simply exhausted the patterns.
-            if (iter == 0)
-            {
-                OptSolution s;
-                s.z = Eigen::Vector<zono_float, -1>::Zero(n);
-                s.infeasible = sr.infeasible;
-                s.converged = false;
-                s.J = sr.infeasible ? std::numeric_limits<zono_float>::infinity()
-                                    : -std::numeric_limits<zono_float>::infinity();
-                s.run_time = sr.runtime;
-                sols.push_back(std::move(s));
-            }
-            break;
-        }
+    // Map active-variable pointer → its index in the sparse value arrays.
+    std::unordered_map<SCIPApi::VarPtr, int> var_to_idx;
+    var_to_idx.reserve(static_cast<size_t>(cs_nvars));
+    for (int j = 0; j < cs_nvars; ++j) var_to_idx[cs_vars[j]] = j;
 
-        // Record the solution (in xi-space).
-        Eigen::Vector<zono_float, -1> z = prep.recover_xi(sr.y).cast<zono_float>();
-        sols.push_back(build_opt_solution(sr, z, offset));
+    sols.reserve(static_cast<size_t>(cs_nsparsesols));
 
-        if (static_cast<int>(sols.size()) >= n_sols) break;
+    for (int k = 0; k < cs_nsparsesols; ++k)
+    {
+        long long* lbs = api.SCIPsparseSolGetLbs(cs_sparsesols[k]);
 
-        // Construct the no-good cut that excludes this binary assignment.
-        // Binary variables y_i live in {0, 1}; the cut forces at least one of
-        // them to differ from the current solution:
-        //   sum_{i: y_i ≈ 0} y_i + sum_{i: y_i ≈ 1} (1 - y_i) >= 1
-        // Rewriting:
-        //   sum_i coef_i * y_i >= 1 - (count of y_i ≈ 1)
-        //   where coef_i = +1 if y_i was 0, -1 if y_i was 1.
-        std::vector<SCIPApi::VarPtr> nv;
-        std::vector<double>          nc;
-        nv.reserve(bin_count);
-        nc.reserve(bin_count);
-        double rhs = 1.0;
+        // Build y (y-space — i.e., after the {-1,1}→{0,1} substitution if any).
+        // Continuous values are left at zero; the only consumers of multisol
+        // (get_bin_leaves, is_empty) read only the binary segment of z.
+        Eigen::VectorXd y = Eigen::VectorXd::Zero(prep.q_d.size());
         for (int i = bin_start; i < bin_start + bin_count; ++i)
         {
-            const bool one = (sr.y(i) > 0.5);
-            nv.push_back(prob.vars[i].var);
-            nc.push_back(one ? -1.0 : 1.0);
-            if (one) rhs -= 1.0;
+            auto it = var_to_idx.find(prob.vars[i].var);
+            if (it != var_to_idx.end())
+                y(i) = static_cast<double>(lbs[it->second]);
         }
 
-        // Switch back to PROBLEM stage so we can modify the problem.
-        scip_check(api.SCIPfreeTransform(scip), "SCIPfreeTransform");
-
-        SCIPApi::ConsPtr cons = nullptr;
-        const std::string name = "nogood_" + std::to_string(iter);
-        scip_check(api.SCIPcreateConsBasicLinear(scip, &cons, name.c_str(),
-                                                 static_cast<int>(nv.size()),
-                                                 nv.data(), nc.data(),
-                                                 rhs, api.SCIPinfinity(scip)),
-                   "createConsBasicLinear(nogood)");
-        scip_check(api.SCIPaddCons(scip, cons), "addCons(nogood)");
-        prob.conss.emplace_back(scip, cons);
+        OptSolution sol;
+        sol.z = prep.recover_xi(y).cast<zono_float>();
+        sol.J = offset;
+        sol.converged = true;
+        sol.infeasible = false;
+        sol.iter = 0;
+        // Charge the full enumeration runtime to the first solution; the rest are free.
+        sol.run_time = (k == 0) ? runtime : 0.0;
+        sol.external_results = make_results(cs_nsparsesols);
+        sols.push_back(std::move(sol));
     }
 
     return sols;

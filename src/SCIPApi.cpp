@@ -142,6 +142,11 @@ SCIPApi::SCIPApi()
     SCIPminorVersion                    = (SCIPminorVersion_t)                    sym("SCIPminorVersion");
     SCIPtechVersion                     = (SCIPtechVersion_t)                     sym("SCIPtechVersion");
 
+    SCIPcount                           = (SCIPcount_t)                           sym("SCIPcount");
+    SCIPgetCountedSparseSols            = (SCIPgetCountedSparseSols_t)            sym("SCIPgetCountedSparseSols");
+    SCIPsparseSolGetLbs                 = (SCIPsparseSolGetLbs_t)                 sym("SCIPsparseSolGetLbs");
+    SCIPsparseSolGetNVars               = (SCIPsparseSolGetNVars_t)               sym("SCIPsparseSolGetNVars");
+
     // Require all essentials to be present; if any is missing, mark the library as unavailable.
     if (!SCIPcreate || !SCIPfree || !SCIPincludeDefaultPlugins || !SCIPcreateProbBasic ||
         !SCIPcreateVarBasic || !SCIPaddVar || !SCIPreleaseVar ||

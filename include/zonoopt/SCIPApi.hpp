@@ -59,10 +59,11 @@ public:
     static constexpr int MIN_SCIP_MAJOR = 10;
 
     // Opaque SCIP_* pointer typedefs (we treat them as void*).
-    using ScipPtr  = void*;       // SCIP*
-    using VarPtr   = void*;       // SCIP_VAR*
-    using ConsPtr  = void*;       // SCIP_CONS*
-    using SolPtr   = void*;       // SCIP_SOL*
+    using ScipPtr       = void*;  // SCIP*
+    using VarPtr        = void*;  // SCIP_VAR*
+    using ConsPtr       = void*;  // SCIP_CONS*
+    using SolPtr        = void*;  // SCIP_SOL*
+    using SparseSolPtr  = void*;  // SCIP_SPARSESOL*
 
     using LibPtr = std::shared_ptr<void>;
 
@@ -112,6 +113,15 @@ public:
     typedef int    (*SCIPminorVersion_t)();
     typedef int    (*SCIPtechVersion_t)();
 
+    // Count handler: enumerates feasible integer/binary assignments and (when
+    // collect=TRUE) stores them in a sparse format separate from the regular
+    // solution pool. Used by solve_miqp_scip_multisol for feasibility-only
+    // enumeration of leaves.
+    typedef int          (*SCIPcount_t)(ScipPtr);
+    typedef void         (*SCIPgetCountedSparseSols_t)(ScipPtr, VarPtr**, int*, SparseSolPtr**, int*);
+    typedef long long*   (*SCIPsparseSolGetLbs_t)(SparseSolPtr);
+    typedef int          (*SCIPsparseSolGetNVars_t)(SparseSolPtr);
+
     // ---- function pointers --------------------------------------------------
     SCIPcreate_t                          SCIPcreate                          = nullptr;
     SCIPfree_t                            SCIPfree                            = nullptr;
@@ -154,6 +164,11 @@ public:
     SCIPmajorVersion_t                    SCIPmajorVersion                    = nullptr;
     SCIPminorVersion_t                    SCIPminorVersion                    = nullptr;
     SCIPtechVersion_t                     SCIPtechVersion                     = nullptr;
+
+    SCIPcount_t                           SCIPcount                           = nullptr;
+    SCIPgetCountedSparseSols_t            SCIPgetCountedSparseSols            = nullptr;
+    SCIPsparseSolGetLbs_t                 SCIPsparseSolGetLbs                 = nullptr;
+    SCIPsparseSolGetNVars_t               SCIPsparseSolGetNVars               = nullptr;
 
     // ---- API management -----------------------------------------------------
     static SCIPApi& instance();
