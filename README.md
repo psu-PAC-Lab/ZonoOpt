@@ -209,7 +209,7 @@ int main()
 Further Python examples are located in /examples.
 
 ## External Solvers
-ZonoOpt supports Gurobi and SCIP as external solvers via dynamic loading. To invoke an external solver, pass a corresponding settings structure to the function requiring optimization. For example, a point projection using Gurobi in Python would look like:
+ZonoOpt supports Gurobi and SCIP as external solvers via dynamic loading. Please note that a supported version of Gurobi or SCIP must be installed on your system for dynamic loading to succeed. To invoke an external solver, pass a corresponding settings structure to the function requiring optimization. For example, a point projection using Gurobi in Python would look like:
 ```python
 settings = zono.GurobiSettings()
 p_proj = Z.project_point(p, settings=settings)
@@ -219,13 +219,15 @@ Equivalently, in C++:
 ZonoOpt::GurobiSettings settings;
 auto p_proj = Z.project_point(p, settings);
 ```
-The default solver selection can be modified by globally modifying the default solver settings, e.g.,
+To change the default solver, globally modify the default solver settings, e.g.,
 ```python
 zono.set_default_solver_settings(zono.SCIPSettings())
 ```
+in Python, or
 ```cpp
 ZonoOpt::set_default_solver_settings(ZonoOpt::SCIPSettings());
 ```
+in C++.
 
 ## Documentation
 Auto-generated API documentation is available below.
