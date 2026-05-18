@@ -227,33 +227,52 @@ struct SolveResult
     double objective = 0.0;
     double runtime = 0.0;
     Eigen::VectorXd y;            // primary solution (best)
-    std::vector<Eigen::VectorXd> extra_solutions;  // additional solutions (pool); each is in y-space
-    std::vector<double>          extra_objectives;
 };
 
 /**
- * Build a SCIP model from the given (already y-space, if applicable) problem data,
- * solve it, and extract up to `n_sols` feasible solutions.
+ * RAII wrapper for a fully-built SCIP problem (env + variables + constraints).
  *
- * On `n_sols > 1`, "limits/maxsol" is set so SCIP retains that many solutions during
- * search, and after solve we copy them out via SCIPgetSols / SCIPgetNSols.
+ * Member declaration order is intentional: scip_env is declared FIRST so it is
+ * destroyed LAST. SCIPreleaseVar / SCIPreleaseCons in the ScopedVar/ScopedCons
+ * destructors require the SCIP env to still be valid; with this layout the
+ * conss/vars destructors run before scip_env's.
  */
-SolveResult run_scip(const Eigen::SparseMatrix<double>& P_d,
-                     const Eigen::VectorXd& q_d,
-                     const Eigen::SparseMatrix<double>& A_d,
-                     const Eigen::VectorXd& b_d,
-                     const Eigen::VectorXd& lb_d,
-                     const Eigen::VectorXd& ub_d,
-                     const std::vector<char>& vtype,
-                     int n_sols,
-                     const SCIPSettings& settings)
+struct ScipProblem
+{
+    SCIPApi::Scip scip_env;
+    std::vector<ScopedVar> vars;       // original n variables, then optionally t_epi
+    std::vector<ScopedCons> conss;     // linear equalities, then optionally the quadratic epigraph
+    SCIPApi::VarPtr t_var = nullptr;   // auxiliary epigraph variable (non-owning; ScopedVar in vars owns it)
+    bool has_quad = false;
+    int n = 0;
+
+    SCIPApi::ScipPtr scip() const { return scip_env.get(); }
+};
+
+/**
+ * Build the SCIP problem (env + vars + linear cons + quadratic epigraph cons if needed)
+ * but do not solve. Callers can solve, read solutions, and optionally add more constraints
+ * (e.g., no-good cuts) before resolving.
+ */
+ScipProblem build_scip_problem(const Eigen::SparseMatrix<double>& P_d,
+                               const Eigen::VectorXd& q_d,
+                               const Eigen::SparseMatrix<double>& A_d,
+                               const Eigen::VectorXd& b_d,
+                               const Eigen::VectorXd& lb_d,
+                               const Eigen::VectorXd& ub_d,
+                               const std::vector<char>& vtype,
+                               const SCIPSettings& settings)
 {
     SCIPApi& api = SCIPApi::instance();
     if (!api.is_available())
         throw std::runtime_error("SCIP API is not available.");
 
-    SCIPApi::Scip scip_env = api.create_scip();
-    SCIPApi::ScipPtr scip = scip_env.get();
+    ScipProblem prob;
+    prob.scip_env = api.create_scip();
+    prob.n = static_cast<int>(q_d.size());
+    prob.has_quad = P_d.nonZeros() > 0;
+
+    SCIPApi::ScipPtr scip = prob.scip();
 
     // Default to silent unless the user opted in via VerbLevel.
     if (!settings.VerbLevel.has_value() && api.SCIPsetMessagehdlrQuiet)
@@ -261,25 +280,13 @@ SolveResult run_scip(const Eigen::SparseMatrix<double>& P_d,
         api.SCIPsetMessagehdlrQuiet(scip, 1u);
     }
 
-    // Multisol storage capacity. SCIP's solution pool holds up to "limits/maxsol"
-    // feasible solutions found during search.
-    if (n_sols > 1)
-    {
-        scip_check(api.SCIPsetIntParam(scip, "limits/maxsol", std::max(n_sols, 1)),
-                   "set limits/maxsol");
-    }
-
     apply_scip_settings(api, scip, settings);
 
     scip_check(api.SCIPcreateProbBasic(scip, "zonoopt_scip"), "createProbBasic");
 
-    const int n = static_cast<int>(q_d.size());
-    const bool has_quad = P_d.nonZeros() > 0;
-
     // ---- Variables -------------------------------------------------------
-    std::vector<ScopedVar> vars;
-    vars.reserve(n + (has_quad ? 1 : 0));
-    for (int i = 0; i < n; ++i)
+    prob.vars.reserve(prob.n + (prob.has_quad ? 1 : 0));
+    for (int i = 0; i < prob.n; ++i)
     {
         const int kind = (vtype[i] == 'B') ? SCIPApi::SCIP_VARTYPE_BINARY
                                            : SCIPApi::SCIP_VARTYPE_CONTINUOUS;
@@ -289,26 +296,23 @@ SolveResult run_scip(const Eigen::SparseMatrix<double>& P_d,
                                           lb_d(i), ub_d(i), q_d(i), kind),
                    "createVarBasic");
         scip_check(api.SCIPaddVar(scip, v), "addVar");
-        vars.emplace_back(scip, v);
+        prob.vars.emplace_back(scip, v);
     }
 
     // Epigraph variable t (coefficient 1 in objective) — only if we have a quadratic part.
-    SCIPApi::VarPtr t_var = nullptr;
-    if (has_quad)
+    if (prob.has_quad)
     {
         const double inf = api.SCIPinfinity(scip);
-        scip_check(api.SCIPcreateVarBasic(scip, &t_var, "t_epi", -inf, inf, 1.0,
+        scip_check(api.SCIPcreateVarBasic(scip, &prob.t_var, "t_epi", -inf, inf, 1.0,
                                           SCIPApi::SCIP_VARTYPE_CONTINUOUS),
                    "createVarBasic(t_epi)");
-        scip_check(api.SCIPaddVar(scip, t_var), "addVar(t_epi)");
-        vars.emplace_back(scip, t_var);
+        scip_check(api.SCIPaddVar(scip, prob.t_var), "addVar(t_epi)");
+        prob.vars.emplace_back(scip, prob.t_var);
     }
 
     // ---- Linear equality constraints -------------------------------------
-    std::vector<ScopedCons> conss;
     if (A_d.nonZeros() > 0)
     {
-        // A is column-major; iterate rows by walking the row-major copy.
         Eigen::SparseMatrix<double, Eigen::RowMajor> A_rm(A_d);
         for (int row = 0; row < A_rm.outerSize(); ++row)
         {
@@ -316,7 +320,7 @@ SolveResult run_scip(const Eigen::SparseMatrix<double>& P_d,
             std::vector<double> lincoefs;
             for (Eigen::SparseMatrix<double, Eigen::RowMajor>::InnerIterator it(A_rm, row); it; ++it)
             {
-                linvars.push_back(vars[it.col()].var);
+                linvars.push_back(prob.vars[it.col()].var);
                 lincoefs.push_back(it.value());
             }
             if (linvars.empty()) continue;
@@ -329,17 +333,12 @@ SolveResult run_scip(const Eigen::SparseMatrix<double>& P_d,
                                                      rhs, rhs),
                        "createConsBasicLinear");
             scip_check(api.SCIPaddCons(scip, c), "addCons");
-            conss.emplace_back(scip, c);
+            prob.conss.emplace_back(scip, c);
         }
     }
 
-    // ---- Quadratic constraint for the objective epigraph -----------------
-    //
-    // 0.5 * xi^T P xi - t <= 0
-    //
-    // Build the term list from P (symmetric, lower-triangular contribution scaled
-    // by 0.5 on the diagonal, full off-diagonal counted once).
-    if (has_quad)
+    // ---- Quadratic epigraph constraint: 0.5 * xi^T P xi - t <= 0 ---------
+    if (prob.has_quad)
     {
         if (!api.SCIPcreateConsBasicQuadraticNonlinear)
         {
@@ -348,8 +347,7 @@ SolveResult run_scip(const Eigen::SparseMatrix<double>& P_d,
                 "SCIP 8 or newer is required for QP/MIQP support via ZonoOpt.");
         }
 
-        // Linear part: -1 * t
-        SCIPApi::VarPtr lvars[1] = { t_var };
+        SCIPApi::VarPtr lvars[1] = { prob.t_var };
         double          lcoefs[1] = { -1.0 };
 
         std::vector<SCIPApi::VarPtr> qv1, qv2;
@@ -362,10 +360,10 @@ SolveResult run_scip(const Eigen::SparseMatrix<double>& P_d,
         {
             for (Eigen::SparseMatrix<double>::InnerIterator it(P_d, k); it; ++it)
             {
-                if (it.col() > it.row()) continue; // lower-triangular only
+                if (it.col() > it.row()) continue;
                 const double v = (it.row() == it.col()) ? 0.5 * it.value() : it.value();
-                qv1.push_back(vars[it.row()].var);
-                qv2.push_back(vars[it.col()].var);
+                qv1.push_back(prob.vars[it.row()].var);
+                qv2.push_back(prob.vars[it.col()].var);
                 qc.push_back(v);
             }
         }
@@ -379,10 +377,21 @@ SolveResult run_scip(const Eigen::SparseMatrix<double>& P_d,
                        -inf, 0.0),
                    "createConsBasicQuadraticNonlinear");
         scip_check(api.SCIPaddCons(scip, qc_cons), "addCons(quadratic)");
-        conss.emplace_back(scip, qc_cons);
+        prob.conss.emplace_back(scip, qc_cons);
     }
 
-    // ---- Solve -----------------------------------------------------------
+    return prob;
+}
+
+/**
+ * Solve `prob` once and extract the best solution into a SolveResult.
+ * On infeasibility the SolveResult has infeasible=true and got_solution=false.
+ */
+SolveResult solve_once(ScipProblem& prob)
+{
+    SCIPApi& api = SCIPApi::instance();
+    SCIPApi::ScipPtr scip = prob.scip();
+
     auto t_start = std::chrono::steady_clock::now();
     scip_check(api.SCIPsolve(scip), "SCIPsolve");
     auto t_end = std::chrono::steady_clock::now();
@@ -397,31 +406,31 @@ SolveResult run_scip(const Eigen::SparseMatrix<double>& P_d,
     SCIPApi::SolPtr best = api.SCIPgetBestSol(scip);
     if (best != nullptr && !res.infeasible)
     {
-        res.y = Eigen::VectorXd::Zero(n);
-        for (int i = 0; i < n; ++i)
-            res.y(i) = api.SCIPgetSolVal(scip, best, vars[i].var);
+        res.y = Eigen::VectorXd::Zero(prob.n);
+        for (int i = 0; i < prob.n; ++i)
+            res.y(i) = api.SCIPgetSolVal(scip, best, prob.vars[i].var);
         res.objective = api.SCIPgetSolOrigObj ? api.SCIPgetSolOrigObj(scip, best) : 0.0;
         res.got_solution = true;
     }
-
-    if (n_sols > 1 && api.SCIPgetSols && api.SCIPgetNSols)
-    {
-        const int n_in_pool = api.SCIPgetNSols(scip);
-        SCIPApi::SolPtr* pool = api.SCIPgetSols(scip);
-        const int take = std::min(n_sols, n_in_pool);
-        // The "best" pool entry is index 0; we already captured it above. Include
-        // the remainder as extras.
-        for (int k = 1; k < take; ++k)
-        {
-            Eigen::VectorXd y = Eigen::VectorXd::Zero(n);
-            for (int i = 0; i < n; ++i)
-                y(i) = api.SCIPgetSolVal(scip, pool[k], vars[i].var);
-            res.extra_solutions.push_back(std::move(y));
-            res.extra_objectives.push_back(api.SCIPgetSolOrigObj ? api.SCIPgetSolOrigObj(scip, pool[k]) : 0.0);
-        }
-    }
-
     return res;
+}
+
+/**
+ * Backward-compatible single-shot solve used by solve_qp_scip / solve_miqp_scip.
+ * (Kept as a thin wrapper for clarity at the call sites.)
+ */
+SolveResult run_scip(const Eigen::SparseMatrix<double>& P_d,
+                     const Eigen::VectorXd& q_d,
+                     const Eigen::SparseMatrix<double>& A_d,
+                     const Eigen::VectorXd& b_d,
+                     const Eigen::VectorXd& lb_d,
+                     const Eigen::VectorXd& ub_d,
+                     const std::vector<char>& vtype,
+                     int /*n_sols, unused*/,
+                     const SCIPSettings& settings)
+{
+    ScipProblem prob = build_scip_problem(P_d, q_d, A_d, b_d, lb_d, ub_d, vtype, settings);
+    return solve_once(prob);
 }
 
 OptSolution build_opt_solution(const SolveResult& sr, const Eigen::Vector<zono_float, -1>& z,
@@ -524,44 +533,109 @@ std::vector<OptSolution> solve_miqp_scip_multisol(const Eigen::SparseMatrix<zono
 {
     if (n_sols < 1) n_sols = 1;
 
-    MiqpPrep prep = prep_miqp(P, q, A, b, xi_lb, xi_ub, bin_start, bin_count, zero_one_form);
-    SolveResult sr = run_scip(prep.P_d, prep.q_d, prep.A_d, prep.b_d,
-                              prep.lb_d, prep.ub_d, prep.vtype, n_sols, settings);
+    SCIPApi& api = SCIPApi::instance();
+    if (!api.is_available())
+        throw std::runtime_error("SCIP API is not available.");
 
+    MiqpPrep prep = prep_miqp(P, q, A, b, xi_lb, xi_ub, bin_start, bin_count, zero_one_form);
     const int n = static_cast<int>(q.size());
     const zono_float offset = c + static_cast<zono_float>(prep.const_shift);
 
+    // With no binary variables there's only one possible "solution": the QP optimum.
+    if (bin_count == 0)
+    {
+        return { solve_qp_scip(P, q, c, A, b, xi_lb, xi_ub, settings) };
+    }
+
+    // Cap requested count at 2^bin_count (the maximum number of distinct binary assignments).
+    {
+        const int max_combinations =
+            (bin_count < 31) ? (1 << bin_count) : std::numeric_limits<int>::max();
+        n_sols = std::min(n_sols, max_combinations);
+    }
+
+    // ---- Build the SCIP problem once. Subsequent iterations re-solve after
+    //      adding a no-good cut that excludes the previous binary assignment.
+    //
+    // SCIP's natural solution pool would terminate as soon as the optimum is
+    // proved — which loses alternative-optimal binary assignments. The no-good
+    // cut approach explicitly enumerates distinct binary patterns in order of
+    // their objective value.
+
+    ScipProblem prob = build_scip_problem(prep.P_d, prep.q_d, prep.A_d, prep.b_d,
+                                          prep.lb_d, prep.ub_d, prep.vtype, settings);
+    SCIPApi::ScipPtr scip = prob.scip();
+
+    if (!api.SCIPfreeTransform)
+    {
+        throw std::runtime_error(
+            "SCIPfreeTransform symbol is unavailable; cannot enumerate multiple solutions.");
+    }
+
     std::vector<OptSolution> sols;
 
-    if (sr.infeasible)
+    for (int iter = 0; iter < n_sols; ++iter)
     {
-        OptSolution s;
-        s.z = Eigen::Vector<zono_float, -1>::Zero(n);
-        s.infeasible = true;
-        s.converged = false;
-        s.J = std::numeric_limits<zono_float>::infinity();
-        s.run_time = sr.runtime;
-        sols.push_back(std::move(s));
-        return sols;
-    }
+        SolveResult sr = solve_once(prob);
 
-    // Best solution first.
-    if (sr.got_solution)
-    {
+        if (sr.infeasible || !sr.got_solution)
+        {
+            // No more feasible binary assignments. If this happened on iteration 0,
+            // surface the infeasibility; otherwise we've simply exhausted the patterns.
+            if (iter == 0)
+            {
+                OptSolution s;
+                s.z = Eigen::Vector<zono_float, -1>::Zero(n);
+                s.infeasible = sr.infeasible;
+                s.converged = false;
+                s.J = sr.infeasible ? std::numeric_limits<zono_float>::infinity()
+                                    : -std::numeric_limits<zono_float>::infinity();
+                s.run_time = sr.runtime;
+                sols.push_back(std::move(s));
+            }
+            break;
+        }
+
+        // Record the solution (in xi-space).
         Eigen::Vector<zono_float, -1> z = prep.recover_xi(sr.y).cast<zono_float>();
         sols.push_back(build_opt_solution(sr, z, offset));
+
+        if (static_cast<int>(sols.size()) >= n_sols) break;
+
+        // Construct the no-good cut that excludes this binary assignment.
+        // Binary variables y_i live in {0, 1}; the cut forces at least one of
+        // them to differ from the current solution:
+        //   sum_{i: y_i ≈ 0} y_i + sum_{i: y_i ≈ 1} (1 - y_i) >= 1
+        // Rewriting:
+        //   sum_i coef_i * y_i >= 1 - (count of y_i ≈ 1)
+        //   where coef_i = +1 if y_i was 0, -1 if y_i was 1.
+        std::vector<SCIPApi::VarPtr> nv;
+        std::vector<double>          nc;
+        nv.reserve(bin_count);
+        nc.reserve(bin_count);
+        double rhs = 1.0;
+        for (int i = bin_start; i < bin_start + bin_count; ++i)
+        {
+            const bool one = (sr.y(i) > 0.5);
+            nv.push_back(prob.vars[i].var);
+            nc.push_back(one ? -1.0 : 1.0);
+            if (one) rhs -= 1.0;
+        }
+
+        // Switch back to PROBLEM stage so we can modify the problem.
+        scip_check(api.SCIPfreeTransform(scip), "SCIPfreeTransform");
+
+        SCIPApi::ConsPtr cons = nullptr;
+        const std::string name = "nogood_" + std::to_string(iter);
+        scip_check(api.SCIPcreateConsBasicLinear(scip, &cons, name.c_str(),
+                                                 static_cast<int>(nv.size()),
+                                                 nv.data(), nc.data(),
+                                                 rhs, api.SCIPinfinity(scip)),
+                   "createConsBasicLinear(nogood)");
+        scip_check(api.SCIPaddCons(scip, cons), "addCons(nogood)");
+        prob.conss.emplace_back(scip, cons);
     }
-    // Pool extras.
-    for (size_t k = 0; k < sr.extra_solutions.size(); ++k)
-    {
-        SolveResult sr_k = sr;            // copy meta (runtime, status, etc.)
-        sr_k.y = sr.extra_solutions[k];
-        sr_k.objective = sr.extra_objectives[k];
-        sr_k.got_solution = true;
-        sr_k.optimal = false;             // these are feasible-but-not-proved-optimal
-        Eigen::Vector<zono_float, -1> z = prep.recover_xi(sr_k.y).cast<zono_float>();
-        sols.push_back(build_opt_solution(sr_k, z, offset));
-    }
+
     return sols;
 }
 

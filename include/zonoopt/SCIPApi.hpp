@@ -89,6 +89,7 @@ public:
     typedef int    (*SCIPreleaseCons_t)(ScipPtr, ConsPtr*);
 
     typedef int    (*SCIPsolve_t)(ScipPtr);
+    typedef int    (*SCIPfreeTransform_t)(ScipPtr);
     typedef int    (*SCIPgetStatus_t)(ScipPtr);
     typedef SolPtr (*SCIPgetBestSol_t)(ScipPtr);
     typedef int    (*SCIPgetNSols_t)(ScipPtr);
@@ -128,6 +129,7 @@ public:
     SCIPreleaseCons_t                     SCIPreleaseCons                     = nullptr;
 
     SCIPsolve_t                           SCIPsolve                           = nullptr;
+    SCIPfreeTransform_t                   SCIPfreeTransform                   = nullptr;
     SCIPgetStatus_t                       SCIPgetStatus                       = nullptr;
     SCIPgetBestSol_t                      SCIPgetBestSol                      = nullptr;
     SCIPgetNSols_t                        SCIPgetNSols                        = nullptr;

@@ -119,6 +119,7 @@ SCIPApi::SCIPApi()
     SCIPreleaseCons                     = (SCIPreleaseCons_t)                     sym("SCIPreleaseCons");
 
     SCIPsolve                           = (SCIPsolve_t)                           sym("SCIPsolve");
+    SCIPfreeTransform                   = (SCIPfreeTransform_t)                   sym("SCIPfreeTransform");
     SCIPgetStatus                       = (SCIPgetStatus_t)                       sym("SCIPgetStatus");
     SCIPgetBestSol                      = (SCIPgetBestSol_t)                      sym("SCIPgetBestSol");
     SCIPgetNSols                        = (SCIPgetNSols_t)                        sym("SCIPgetNSols");
