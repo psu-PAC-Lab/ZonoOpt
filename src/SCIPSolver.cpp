@@ -287,6 +287,32 @@ ScipProblem build_scip_problem(const Eigen::SparseMatrix<double>& P_d,
         api.SCIPsetMessagehdlrQuiet(scip, 1u);
     }
 
+    // Tell SCIP to assume nonlinear constraints are convex. ZonoOpt's QP/MIQP
+    // problems always have PSD P (objectives are quadratic distances like ||G xi - x||^2),
+    // and the epigraph reformulation we use below produces a convex quadratic constraint.
+    // Without this, SCIP's curvature detection on a sparse 35×35 PSD form falls back to
+    // generic spatial branching and the solve runs orders of magnitude slower.
+    // Applied before apply_scip_settings so a user who knows better can override via the
+    // bool_params escape hatch.
+    scip_check(api.SCIPsetBoolParam(scip, "constraints/nonlinear/assumeconvex", 1u),
+               "set constraints/nonlinear/assumeconvex");
+
+    // For pure (continuous) QPs with a quadratic objective, SCIP's outer-approximation
+    // cutting plane separator can fail to close the gap when the optimal objective is
+    // near zero: dual stays at 0 (the epigraph variable's lower bound) while primal
+    // hovers at some small positive value, leaving the relative gap infinite indefinitely.
+    // SCIP's sub-NLP heuristic finds the actual optimum on iteration 1, so terminate
+    // after the first feasible solution. Skip this for MIP/MIQP (still need branch-and-bound
+    // to enumerate integer assignments) and for pure LP (no quadratic constraint, gap closes
+    // immediately at the root, and the first feasible is generally NOT the LP optimum).
+    const bool has_binary = std::any_of(vtype.begin(), vtype.end(),
+                                        [](char t) { return t == 'B'; });
+    if (prob.has_quad && !has_binary)
+    {
+        scip_check(api.SCIPsetIntParam(scip, "limits/solutions", 1),
+                   "set limits/solutions");
+    }
+
     apply_scip_settings(api, scip, settings);
 
     scip_check(api.SCIPcreateProbBasic(scip, "zonoopt_scip"), "createProbBasic");
@@ -307,10 +333,14 @@ ScipProblem build_scip_problem(const Eigen::SparseMatrix<double>& P_d,
     }
 
     // Epigraph variable t (coefficient 1 in objective) — only if we have a quadratic part.
+    // Lower bound 0 is valid because P is PSD (we set assumeconvex above), hence
+    // 0.5 xi^T P xi >= 0, hence t = 0.5 xi^T P xi >= 0 at any feasible point. Without
+    // this bound the LP relaxation's dual is -inf and SCIP can't close the gap on
+    // near-zero QPs via cuts in any reasonable time.
     if (prob.has_quad)
     {
         const double inf = api.SCIPinfinity(scip);
-        scip_check(api.SCIPcreateVarBasic(scip, &prob.t_var, "t_epi", -inf, inf, 1.0,
+        scip_check(api.SCIPcreateVarBasic(scip, &prob.t_var, "t_epi", 0.0, inf, 1.0,
                                           SCIPApi::SCIP_VARTYPE_CONTINUOUS),
                    "createVarBasic(t_epi)");
         scip_check(api.SCIPaddVar(scip, prob.t_var), "addVar(t_epi)");
