@@ -224,27 +224,18 @@ namespace ZonoOpt
             xi_lb.setConstant(-1);
         const Eigen::Vector<zono_float, -1> xi_ub = Eigen::Vector<zono_float, -1>::Ones(this->nG);
 
-        // External solver dispatch — Gurobi/SCIP routed by dynamic type; on failure to
-        // load, silently fall back to the internal ADMM with default OptSettings.
+        // External solver dispatch — routed by dynamic type of settings.
         if (const auto* gs = dynamic_cast<const GurobiSettings*>(&settings))
         {
-            if (detail::gurobi_available())
-            {
-                OptSolution sol = detail::solve_qp_gurobi(P, q, c, A, b, xi_lb, xi_ub, *gs);
-                if (solution != nullptr) *solution = std::make_shared<OptSolution>(sol);
-                return sol;
-            }
-            // fall through with default OptSettings for ADMM
+            OptSolution sol = detail::solve_qp_gurobi(P, q, c, A, b, xi_lb, xi_ub, *gs);
+            if (solution != nullptr) *solution = std::make_shared<OptSolution>(sol);
+            return sol;
         }
         if (const auto* ss = dynamic_cast<const SCIPSettings*>(&settings))
         {
-            if (detail::scip_available())
-            {
-                OptSolution sol = detail::solve_qp_scip(P, q, c, A, b, xi_lb, xi_ub, *ss);
-                if (solution != nullptr) *solution = std::make_shared<OptSolution>(sol);
-                return sol;
-            }
-            // fall through with default OptSettings for ADMM
+            OptSolution sol = detail::solve_qp_scip(P, q, c, A, b, xi_lb, xi_ub, *ss);
+            if (solution != nullptr) *solution = std::make_shared<OptSolution>(sol);
+            return sol;
         }
 
         // Resolve OptSettings for the internal ADMM solver: use the passed-in one when applicable,
@@ -306,63 +297,54 @@ namespace ZonoOpt
 
         xi_ub = Eigen::Vector<zono_float, -1>::Ones(this->nG);
 
-        // External solver dispatch — GurobiSettings/SCIPSettings routes accordingly; on
-        // load failure, silently fall back to internal solver with default OptSettings.
+        // External solver dispatch — routed by dynamic type of settings.
         if (const auto* gs = dynamic_cast<const GurobiSettings*>(&settings))
         {
-            if (detail::gurobi_available())
+            for (int i = 0; i < this->n; i++)
             {
-                for (int i = 0; i < this->n; i++)
-                {
-                    d.setZero();
-                    d(i) = -1;
-                    q = -this->G.transpose() * d;
-                    OptSolution sol_neg = detail::solve_qp_gurobi(P, q, zero, this->A, this->b, xi_lb, xi_ub, *gs);
-                    if (sol_neg.infeasible)
-                        throw std::invalid_argument("Bounding box: Z is empty");
-                    s_neg = -d.dot(this->G * sol_neg.z + this->c);
+                d.setZero();
+                d(i) = -1;
+                q = -this->G.transpose() * d;
+                OptSolution sol_neg = detail::solve_qp_gurobi(P, q, zero, this->A, this->b, xi_lb, xi_ub, *gs);
+                if (sol_neg.infeasible)
+                    throw std::invalid_argument("Bounding box: Z is empty");
+                s_neg = -d.dot(this->G * sol_neg.z + this->c);
 
-                    d.setZero();
-                    d(i) = 1;
-                    q = -this->G.transpose() * d;
-                    OptSolution sol_pos = detail::solve_qp_gurobi(P, q, zero, this->A, this->b, xi_lb, xi_ub, *gs);
-                    if (sol_pos.infeasible)
-                        throw std::invalid_argument("Bounding box: Z is empty");
-                    s_pos = d.dot(this->G * sol_pos.z + this->c);
+                d.setZero();
+                d(i) = 1;
+                q = -this->G.transpose() * d;
+                OptSolution sol_pos = detail::solve_qp_gurobi(P, q, zero, this->A, this->b, xi_lb, xi_ub, *gs);
+                if (sol_pos.infeasible)
+                    throw std::invalid_argument("Bounding box: Z is empty");
+                s_pos = d.dot(this->G * sol_pos.z + this->c);
 
-                    box.set_element(i, Interval(s_neg, s_pos));
-                }
-                return box;
+                box.set_element(i, Interval(s_neg, s_pos));
             }
-            // fall through to internal solver with default OptSettings
+            return box;
         }
         if (const auto* ss = dynamic_cast<const SCIPSettings*>(&settings))
         {
-            if (detail::scip_available())
+            for (int i = 0; i < this->n; i++)
             {
-                for (int i = 0; i < this->n; i++)
-                {
-                    d.setZero();
-                    d(i) = -1;
-                    q = -this->G.transpose() * d;
-                    OptSolution sol_neg = detail::solve_qp_scip(P, q, zero, this->A, this->b, xi_lb, xi_ub, *ss);
-                    if (sol_neg.infeasible)
-                        throw std::invalid_argument("Bounding box: Z is empty");
-                    s_neg = -d.dot(this->G * sol_neg.z + this->c);
+                d.setZero();
+                d(i) = -1;
+                q = -this->G.transpose() * d;
+                OptSolution sol_neg = detail::solve_qp_scip(P, q, zero, this->A, this->b, xi_lb, xi_ub, *ss);
+                if (sol_neg.infeasible)
+                    throw std::invalid_argument("Bounding box: Z is empty");
+                s_neg = -d.dot(this->G * sol_neg.z + this->c);
 
-                    d.setZero();
-                    d(i) = 1;
-                    q = -this->G.transpose() * d;
-                    OptSolution sol_pos = detail::solve_qp_scip(P, q, zero, this->A, this->b, xi_lb, xi_ub, *ss);
-                    if (sol_pos.infeasible)
-                        throw std::invalid_argument("Bounding box: Z is empty");
-                    s_pos = d.dot(this->G * sol_pos.z + this->c);
+                d.setZero();
+                d(i) = 1;
+                q = -this->G.transpose() * d;
+                OptSolution sol_pos = detail::solve_qp_scip(P, q, zero, this->A, this->b, xi_lb, xi_ub, *ss);
+                if (sol_pos.infeasible)
+                    throw std::invalid_argument("Bounding box: Z is empty");
+                s_pos = d.dot(this->G * sol_pos.z + this->c);
 
-                    box.set_element(i, Interval(s_neg, s_pos));
-                }
-                return box;
+                box.set_element(i, Interval(s_neg, s_pos));
             }
-            // fall through to internal solver with default OptSettings
+            return box;
         }
 
         // Resolve OptSettings for the internal ADMM solver.

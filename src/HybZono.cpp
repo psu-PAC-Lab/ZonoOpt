@@ -687,33 +687,24 @@ namespace ZonoOpt
             xi_lb.setConstant(-1);
         const Eigen::Vector<zono_float, -1> xi_ub = Eigen::Vector<zono_float, -1>::Ones(this->nG);
 
-        // External solver dispatch — Gurobi/SCIP routed by dynamic type; on load
-        // failure, silently fall back to internal solver with default OptSettings.
+        // External solver dispatch — routed by dynamic type of settings.
         if (const auto* gs = dynamic_cast<const GurobiSettings*>(&settings))
         {
-            if (detail::gurobi_available())
-            {
-                OptSolution sol = detail::solve_miqp_gurobi(P, q, c, A, b, xi_lb, xi_ub,
-                                                            this->nGc, this->nGb,
-                                                            this->zero_one_form, *gs);
-                if (solution != nullptr)
-                    *solution = std::make_shared<OptSolution>(sol);
-                return sol;
-            }
-            // fall through to internal solver with default OptSettings
+            OptSolution sol = detail::solve_miqp_gurobi(P, q, c, A, b, xi_lb, xi_ub,
+                                                        this->nGc, this->nGb,
+                                                        this->zero_one_form, *gs);
+            if (solution != nullptr)
+                *solution = std::make_shared<OptSolution>(sol);
+            return sol;
         }
         if (const auto* ss = dynamic_cast<const SCIPSettings*>(&settings))
         {
-            if (detail::scip_available())
-            {
-                OptSolution sol = detail::solve_miqp_scip(P, q, c, A, b, xi_lb, xi_ub,
-                                                          this->nGc, this->nGb,
-                                                          this->zero_one_form, *ss);
-                if (solution != nullptr)
-                    *solution = std::make_shared<OptSolution>(sol);
-                return sol;
-            }
-            // fall through to internal solver with default OptSettings
+            OptSolution sol = detail::solve_miqp_scip(P, q, c, A, b, xi_lb, xi_ub,
+                                                      this->nGc, this->nGb,
+                                                      this->zero_one_form, *ss);
+            if (solution != nullptr)
+                *solution = std::make_shared<OptSolution>(sol);
+            return sol;
         }
 
         OptSettings default_opt;
@@ -762,36 +753,26 @@ namespace ZonoOpt
             xi_lb.setConstant(-1);
         const Eigen::Vector<zono_float, -1> xi_ub = Eigen::Vector<zono_float, -1>::Ones(this->nG);
 
-        // External solver dispatch — Gurobi/SCIP routed by dynamic type (each uses
-        // its native solution-pool mechanism); on load failure, silently fall back
-        // to the internal solver with default OptSettings.
+        // External solver dispatch — routed by dynamic type of settings.
         if (const auto* gs = dynamic_cast<const GurobiSettings*>(&settings))
         {
-            if (detail::gurobi_available())
-            {
-                std::vector<OptSolution> sols = detail::solve_miqp_gurobi_multisol(
-                    P, q, c, A, b, xi_lb, xi_ub,
-                    this->nGc, this->nGb, this->zero_one_form,
-                    n_sols, *gs);
-                if (solution != nullptr && !sols.empty())
-                    *solution = std::make_shared<OptSolution>(sols.back());
-                return sols;
-            }
-            // fall through to internal solver with default OptSettings
+            std::vector<OptSolution> sols = detail::solve_miqp_gurobi_multisol(
+                P, q, c, A, b, xi_lb, xi_ub,
+                this->nGc, this->nGb, this->zero_one_form,
+                n_sols, *gs);
+            if (solution != nullptr && !sols.empty())
+                *solution = std::make_shared<OptSolution>(sols.back());
+            return sols;
         }
         if (const auto* ss = dynamic_cast<const SCIPSettings*>(&settings))
         {
-            if (detail::scip_available())
-            {
-                std::vector<OptSolution> sols = detail::solve_miqp_scip_multisol(
-                    P, q, c, A, b, xi_lb, xi_ub,
-                    this->nGc, this->nGb, this->zero_one_form,
-                    n_sols, *ss);
-                if (solution != nullptr && !sols.empty())
-                    *solution = std::make_shared<OptSolution>(sols.back());
-                return sols;
-            }
-            // fall through to internal solver with default OptSettings
+            std::vector<OptSolution> sols = detail::solve_miqp_scip_multisol(
+                P, q, c, A, b, xi_lb, xi_ub,
+                this->nGc, this->nGb, this->zero_one_form,
+                n_sols, *ss);
+            if (solution != nullptr && !sols.empty())
+                *solution = std::make_shared<OptSolution>(sols.back());
+            return sols;
         }
 
         OptSettings default_opt;
