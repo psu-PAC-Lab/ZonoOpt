@@ -3,10 +3,10 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <limits>
 #include <stdexcept>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -601,19 +601,8 @@ std::vector<OptSolution> solve_miqp_scip_multisol(const Eigen::SparseMatrix<zono
         return { solve_qp_scip(P, q, c, A, b, xi_lb, xi_ub, settings) };
     }
 
-    // multisol is a feasibility primitive in this library: callers (is_empty,
-    // get_bin_leaves) only consume the binary part of z and the infeasible flag.
-    // Drive enumeration through SCIP's count constraint handler, which performs
-    // a single branch-and-count tree search instead of N+1 sequential MIP solves
-    // separated by no-good cuts. The handler ignores any objective, which is fine
-    // here — any QP terms passed in are discarded.
-    if (!api.SCIPcount || !api.SCIPgetCountedSparseSols ||
-        !api.SCIPsparseSolGetLbs || !api.SCIPsparseSolGetNVars)
-    {
-        throw std::runtime_error(
-            "SCIP count handler symbols are unavailable in this SCIP build; "
-            "cannot enumerate multiple feasible binary assignments.");
-    }
+    if (!api.SCIPfreeTransform)
+        throw std::runtime_error("SCIPfreeTransform is unavailable; cannot enumerate multiple feasible binary assignments.");
 
     // Cap requested count at 2^bin_count (the maximum number of distinct binary assignments).
     {
@@ -622,95 +611,147 @@ std::vector<OptSolution> solve_miqp_scip_multisol(const Eigen::SparseMatrix<zono
         n_sols = (std::min)(n_sols, max_combinations);
     }
 
-    // Pure feasibility model: zero out the quadratic objective so the count handler
-    // doesn't have to deal with the epigraph constraint or a non-trivial objective.
+    // Enumerate feasible binary assignments via repeated solve + no-good cuts.
+    //
+    // The previous implementation used SCIP's count constraint handler, but that handler
+    // populates its variable list via SCIPgetVarsData during solving, which returns
+    // *transformed* variable pointers. Our prob.vars array holds *original* variable
+    // pointers (from SCIPcreateVarBasic + SCIPaddVar). The pointer-based lookup always
+    // failed, leaving all binary values at zero — infeasible for union sets whose
+    // indicator variables must sum to one.
+    //
+    // The no-good cut approach avoids the issue entirely: SCIPgetSolVal handles
+    // original/transformed translation internally, so sr.y always carries the correct
+    // binary values read from the current solution.
+
+    // Feasibility model: zero objective (any feasible binary assignment is acceptable).
     Eigen::SparseMatrix<double> P_empty(prep.P_d.rows(), prep.P_d.cols());
     Eigen::VectorXd q_zero = Eigen::VectorXd::Zero(prep.q_d.size());
 
     ScipProblem prob = build_scip_problem(P_empty, q_zero, prep.A_d, prep.b_d,
                                           prep.lb_d, prep.ub_d, prep.vtype, settings);
     SCIPApi::ScipPtr scip = prob.scip();
-
-    scip_check(api.SCIPsetBoolParam(scip, "constraints/countsols/collect", 1u),
-               "set constraints/countsols/collect");
-    scip_check(api.SCIPsetLongintParam(scip, "constraints/countsols/sollimit",
-                                       static_cast<long long>(n_sols)),
-               "set constraints/countsols/sollimit");
-
-    auto t_start = std::chrono::steady_clock::now();
-    scip_check(api.SCIPcount(scip), "SCIPcount");
-    auto t_end = std::chrono::steady_clock::now();
-    const double runtime = std::chrono::duration<double>(t_end - t_start).count();
-
-    SCIPApi::VarPtr*       cs_vars       = nullptr;
-    SCIPApi::SparseSolPtr* cs_sparsesols = nullptr;
-    int cs_nvars = 0, cs_nsparsesols = 0;
-    api.SCIPgetCountedSparseSols(scip, &cs_vars, &cs_nvars, &cs_sparsesols, &cs_nsparsesols);
-
-    const long long node_count = api.SCIPgetNTotalNodes ? api.SCIPgetNTotalNodes(scip) : 0;
-
-    auto make_results = [&](int n_pool) {
-        auto sres = std::make_shared<SCIPSolverResults>();
-        sres->status      = SCIPApi::SCIP_STATUS_OPTIMAL;
-        sres->node_count  = node_count;
-        sres->mip_gap     = 0.0;
-        sres->dual_bound  = 0.0;
-        sres->n_sols_pool = n_pool;
-        return sres;
-    };
+    const double inf = api.SCIPinfinity(scip);
 
     std::vector<OptSolution> sols;
+    // Do not reserve based on n_sols — it may be INT_MAX for "find all leaves".
 
-    if (cs_nsparsesols == 0)
+    const auto t_global_start = std::chrono::steady_clock::now();
+    bool converged = false;
+
+    for (int k = 0; k < n_sols; ++k)
     {
-        // No feasible binary assignment — return a single infeasible OptSolution
-        // matching the convention used elsewhere.
+        SolveResult sr = solve_once(prob);
+
+        if (sr.infeasible)
+        {
+            // All feasible binary assignments have been enumerated.
+            converged = true;
+            break;
+        }
+        if (!sr.got_solution)
+            break;  // time limit or other early termination without a solution
+
+        // Read binary values from sr.y (populated by SCIPgetSolVal in solve_once, which
+        // handles original↔transformed variable translation internally). Round to nearest
+        // integer to guard against small floating-point errors near 0 or 1.
+        Eigen::VectorXd y = Eigen::VectorXd::Zero(prep.q_d.size());
+        for (int i = bin_start; i < bin_start + bin_count; ++i)
+            y(i) = std::round(sr.y(i));
+
+        OptSolution sol;
+        sol.z = prep.recover_xi(y).cast<zono_float>();
+        sol.J = offset;
+        sol.converged = true;  // overwritten on the last entry after the loop
+        sol.infeasible = false;
+        sol.iter = 0;
+        sol.run_time = sr.runtime;
+        {
+            auto sres = std::make_shared<SCIPSolverResults>();
+            sres->status      = sr.status;
+            sres->node_count  = sr.node_count;
+            sres->mip_gap     = 0.0;
+            sres->dual_bound  = 0.0;
+            sres->n_sols_pool = static_cast<int>(sols.size()) + 1;
+            sol.external_results = sres;
+        }
+        sols.push_back(std::move(sol));
+
+        if (static_cast<int>(sols.size()) == n_sols)
+            break;
+
+        // Free the transformed problem so a new constraint can be added to the original.
+        scip_check(api.SCIPfreeTransform(scip), "SCIPfreeTransform");
+
+        // No-good cut: at least one binary variable must differ from the current assignment.
+        // In y-space (all binaries in {0,1}):
+        //   sum_{i: y_i=1} (1-x_i) + sum_{i: y_i=0} x_i >= 1
+        //   => coef_i = -1 if y_i=1 else +1,  lhs = 1 - count(y_i=1)
+        std::vector<SCIPApi::VarPtr> ng_vars;
+        std::vector<double> ng_coefs;
+        ng_vars.reserve(static_cast<size_t>(bin_count));
+        ng_coefs.reserve(static_cast<size_t>(bin_count));
+        double ng_lhs = 1.0;
+        for (int i = bin_start; i < bin_start + bin_count; ++i)
+        {
+            ng_vars.push_back(prob.vars[i].var);
+            if (y(i) > 0.5)
+            {
+                ng_coefs.push_back(-1.0);
+                ng_lhs -= 1.0;
+            }
+            else
+            {
+                ng_coefs.push_back(1.0);
+            }
+        }
+        SCIPApi::ConsPtr ng_cons = nullptr;
+        const std::string ng_name = "nogood_" + std::to_string(k);
+        scip_check(api.SCIPcreateConsBasicLinear(scip, &ng_cons, ng_name.c_str(),
+                                                  static_cast<int>(ng_vars.size()),
+                                                  ng_vars.data(), ng_coefs.data(),
+                                                  ng_lhs, inf),
+                   "createConsBasicLinear(nogood)");
+        scip_check(api.SCIPaddCons(scip, ng_cons), "addCons(nogood)");
+        scip_check(api.SCIPreleaseCons(scip, &ng_cons), "releaseCons(nogood)");
+
+        // Update the per-solve time limit so total enumeration respects the budget.
+        if (settings.TimeLimit)
+        {
+            const double elapsed = std::chrono::duration<double>(
+                std::chrono::steady_clock::now() - t_global_start).count();
+            const double remaining = *settings.TimeLimit - elapsed;
+            if (remaining <= 0.0)
+                break;
+            scip_check(api.SCIPsetRealParam(scip, "limits/time", remaining),
+                       "set limits/time");
+        }
+    }
+
+    if (sols.empty())
+    {
+        // Infeasible on the very first solve — the set has no feasible binary assignment.
         OptSolution s;
         s.z = Eigen::Vector<zono_float, -1>::Zero(n);
         s.infeasible = true;
         s.converged = false;
         s.J = std::numeric_limits<zono_float>::infinity();
-        s.run_time = runtime;
+        s.run_time = 0.0;
         s.iter = 0;
-        s.external_results = make_results(0);
-        sols.push_back(std::move(s));
-        return sols;
-    }
-
-    // Map active-variable pointer → its index in the sparse value arrays.
-    std::unordered_map<SCIPApi::VarPtr, int> var_to_idx;
-    var_to_idx.reserve(static_cast<size_t>(cs_nvars));
-    for (int j = 0; j < cs_nvars; ++j) var_to_idx[cs_vars[j]] = j;
-
-    sols.reserve(static_cast<size_t>(cs_nsparsesols));
-
-    for (int k = 0; k < cs_nsparsesols; ++k)
-    {
-        long long* lbs = api.SCIPsparseSolGetLbs(cs_sparsesols[k]);
-
-        // Build y (y-space — i.e., after the {-1,1}→{0,1} substitution if any).
-        // Continuous values are left at zero; the only consumers of multisol
-        // (get_bin_leaves, is_empty) read only the binary segment of z.
-        Eigen::VectorXd y = Eigen::VectorXd::Zero(prep.q_d.size());
-        for (int i = bin_start; i < bin_start + bin_count; ++i)
         {
-            auto it = var_to_idx.find(prob.vars[i].var);
-            if (it != var_to_idx.end())
-                y(i) = static_cast<double>(lbs[it->second]);
+            auto sres = std::make_shared<SCIPSolverResults>();
+            sres->status      = SCIPApi::SCIP_STATUS_INFEASIBLE;
+            sres->node_count  = 0;
+            sres->mip_gap     = 0.0;
+            sres->dual_bound  = 0.0;
+            sres->n_sols_pool = 0;
+            s.external_results = sres;
         }
-
-        OptSolution sol;
-        sol.z = prep.recover_xi(y).cast<zono_float>();
-        sol.J = offset;
-        sol.converged = true;
-        sol.infeasible = false;
-        sol.iter = 0;
-        // Charge the full enumeration runtime to the first solution; the rest are free.
-        sol.run_time = (k == 0) ? runtime : 0.0;
-        sol.external_results = make_results(cs_nsparsesols);
-        sols.push_back(std::move(sol));
+        return { std::move(s) };
     }
 
+    // Mark the last solution with the overall convergence status.
+    sols.back().converged = converged;
     return sols;
 }
 
