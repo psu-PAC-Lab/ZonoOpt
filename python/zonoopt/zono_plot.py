@@ -162,26 +162,10 @@ def get_vertices(Z, t_max=60.0):
         return Z.get_c().reshape(1, Z.get_n())
     elif Z.is_zono() or Z.is_conzono():
         return _get_conzono_vertices(Z, t_max=t_max)
-    elif Z.is_hybzono():
-        t0 = time.time()
-        settings = OptSettings()
-        settings.t_max = t_max
-        sol = OptSolution()
-        Z_leaves = Z.get_leaves(settings=settings, solution=sol)
-        if not sol.converged and not sol.infeasible:
-            warnings.warn('get_leaves returned before convergence, get_vertices may be incomplete.')
-        dt = time.time() - t0
-        V = np.zeros((0, Z.get_n()))
-        for leaf in Z_leaves:
-            V_leaf = get_vertices(leaf, t_max=t_max-dt)
-            if V_leaf is not None:
-                V = np.vstack((V, V_leaf))
-            dt = time.time() - t0
-        return V
     else:
-        raise ValueError('get_vertices unsupported data type')
+        raise ValueError('_get_conzono_vertices unsupported data type')
 
-def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, enable_progress_bar=True, **kwargs):
+def plot(Z, ax=None, settings=get_default_solver_settings(), t_max=60.0, enable_progress_bar=True, **kwargs):
     """
     Plots zonotopic set using matplotlib.
 
@@ -210,6 +194,14 @@ def plot(Z, ax=None, settings=OptSettings(), t_max=60.0, enable_progress_bar=Tru
     if Z.is_hybzono():
         t0 = time.time()
         
+        # pass t_max through to solver settings
+        if settings.solver_name() == 'ZonoOpt':
+            settings.t_max = min(t_max, settings.t_max)
+        elif settings.solver_name() == 'Gurobi' or settings.solver_name() == 'SCIP':
+            settings.TimeLimit = min(t_max, settings.TimeLimit)
+        else:
+            raise NotImplementedError(f"Solver {settings.solver_name()} not supported for plotting with time limit")
+
         sol = OptSolution()
         leaves = Z.get_leaves(settings=settings, solution=sol)
 

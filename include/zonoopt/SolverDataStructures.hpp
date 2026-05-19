@@ -51,6 +51,13 @@ namespace ZonoOpt
          * @throws std::runtime_error if the backend cannot be initialized (subclass implementations only; the default no-op does not throw).
          */
         virtual void verify_available() const {}
+
+        /**
+         * @brief Return name of the solver backend selected by this settings type, e.g., "ZonoOpt", "Gurobi", "SCIP".
+         * 
+         * @return std::string 
+         */
+        virtual std::string solver_name() const = 0;
     };
 
     /**
@@ -230,6 +237,11 @@ namespace ZonoOpt
             ss << "  rng_seed: " << rng_seed << std::endl;
             ss << "  enable_restart_admm_fp: " << (enable_restart_admm_fp ? "true" : "false") << std::endl;
             return ss.str();
+        }
+
+        std::string solver_name() const override
+        {
+            return "ZonoOpt";
         }
     };
 

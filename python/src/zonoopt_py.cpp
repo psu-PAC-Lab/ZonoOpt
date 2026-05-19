@@ -53,7 +53,15 @@ PYBIND11_MODULE(_core, m)
     // solver settings and solution classes
     py::class_<SolverSettings>(m, "SolverSettings",
         "Abstract base class for ZonoOpt solver settings. Pass an OptSettings or GurobiSettings instance to "
-        "ZonoOpt's optimization methods — the dynamic type selects the solver backend.");
+        "ZonoOpt's optimization methods — the dynamic type selects the solver backend.")
+        .def("solver_name", &SolverSettings::solver_name,
+            R"pbdoc(
+                Returns the name of the solver backend selected by this settings type.
+
+                Returns:
+                    str: solver name
+            )pbdoc")    
+    ;
 
     py::class_<OptSettings, SolverSettings>(m, "OptSettings", "Settings for the internal ZonoOpt ADMM / branch-and-bound solver.")
         .def(py::init())

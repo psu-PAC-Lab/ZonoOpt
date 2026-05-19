@@ -153,6 +153,11 @@ namespace ZonoOpt
          * @throw std::runtime_error if the Gurobi shared library cannot be dynamically loaded
          */
         GurobiSettings() { verify_available(); }
+
+        std::string solver_name() const override
+        {
+            return "Gurobi";
+        }
     };
 
     /**

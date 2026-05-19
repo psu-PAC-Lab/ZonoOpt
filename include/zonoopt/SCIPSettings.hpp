@@ -122,6 +122,11 @@ namespace ZonoOpt
          * @throw std::runtime_error if the SCIP shared library cannot be dynamically loaded
          */
         SCIPSettings() { verify_available(); }
+
+        std::string solver_name() const override
+        {
+            return "SCIP";
+        }
     };
 
     /**
