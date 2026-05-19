@@ -165,14 +165,14 @@ def get_vertices(Z, t_max=60.0):
     else:
         raise ValueError('_get_conzono_vertices unsupported data type')
 
-def plot(Z, ax=None, settings=get_default_solver_settings(), t_max=60.0, enable_progress_bar=True, **kwargs):
+def plot(Z, ax=None, settings=None, t_max=60.0, enable_progress_bar=True, **kwargs):
     """
     Plots zonotopic set using matplotlib.
 
     Args:
         Z (HybZono): zonotopic set to be plotted
         ax (matplotlib.axes.Axes, optional): Axes to plot on. If None, current axes are used.
-        settings (OptSettings, optional): Settings for the optimization. Defaults to OptSettings().
+        settings (SolverSettings, optional): Settings for the optimization. Defaults to get_default_solver_settings().
         t_max (float, optional): Maximum time to spend on finding vertices. Defaults to 60.0 seconds.
         enable_progress_bar (bool, optional): If True, will display a progress bar when plotting hybrid zonotopes.
         **kwargs: Additional keyword arguments passed to the plotting function (e.g., color, alpha).
@@ -187,6 +187,9 @@ def plot(Z, ax=None, settings=get_default_solver_settings(), t_max=60.0, enable_
     from scipy.spatial import ConvexHull
     from tqdm import tqdm
 
+    if settings is None:
+        settings = get_default_solver_settings()
+
     if Z.get_n() < 2 or Z.get_n() > 3:
         raise ValueError("Plot only implemented in 2D or 3D")
     
@@ -196,9 +199,9 @@ def plot(Z, ax=None, settings=get_default_solver_settings(), t_max=60.0, enable_
         
         # pass t_max through to solver settings
         if settings.solver_name() == 'ZonoOpt':
-            settings.t_max = min(t_max, settings.t_max)
+            settings.t_max = t_max
         elif settings.solver_name() == 'Gurobi' or settings.solver_name() == 'SCIP':
-            settings.TimeLimit = min(t_max, settings.TimeLimit)
+            settings.TimeLimit = t_max
         else:
             raise NotImplementedError(f"Solver {settings.solver_name()} not supported for plotting with time limit")
 

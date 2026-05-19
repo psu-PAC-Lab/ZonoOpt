@@ -243,6 +243,12 @@ namespace ZonoOpt
         {
             return "ZonoOpt";
         }
+
+        /**
+         * @brief OptSettings constructor
+         * 
+         */
+        OptSettings() = default;
     };
 
     /**
