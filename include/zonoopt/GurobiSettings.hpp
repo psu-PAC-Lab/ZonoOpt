@@ -147,6 +147,12 @@ namespace ZonoOpt
             for (const auto& kv : str_params) ss << "  [str] "  << kv.first << " = \"" << kv.second << "\"\n";
             return ss.str();
         }
+
+        /**
+         * @brief Construct a new Gurobi Settings object
+         * @throw std::runtime_error if the Gurobi shared library cannot be dynamically loaded
+         */
+        GurobiSettings() { verify_available(); }
     };
 
     /**

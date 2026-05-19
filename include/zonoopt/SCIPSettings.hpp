@@ -116,6 +116,12 @@ namespace ZonoOpt
             for (const auto& kv : str_params)     ss << "  [str]     " << kv.first << " = \"" << kv.second << "\"\n";
             return ss.str();
         }
+
+        /**
+         * @brief Construct a new SCIPSettings object
+         * @throw std::runtime_error if the SCIP shared library cannot be dynamically loaded
+         */
+        SCIPSettings() { verify_available(); }
     };
 
     /**
