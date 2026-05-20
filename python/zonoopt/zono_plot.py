@@ -4,12 +4,21 @@ import warnings
 
 from ._core import *
 
-def get_vertices(Z, t_max=60.0):
+def _set_tmax(settings, t_max):
+    if settings.solver_name() == 'ZonoOpt':
+        settings.t_max = t_max
+    elif settings.solver_name() == 'Gurobi' or settings.solver_name() == 'SCIP':
+        settings.TimeLimit = t_max
+    else:
+        raise NotImplementedError(f"Solver {settings.solver_name()} not supported for plotting with time limit")
+
+def get_vertices(Z, settings=None, t_max=60.0):
     """
     Get vertices of zonotopic set using scipy linprog.
     
     Args:
         Z (HybZono): Zonotopic set.
+        settings (OptSettings, optional): Optimization settings for get leaves. Defaults to None. If None, default settings are used.
         t_max (float, optional): Maximum time to spend on finding vertices. Defaults to 60.0 seconds.
     
     Returns:
@@ -162,6 +171,16 @@ def get_vertices(Z, t_max=60.0):
         return Z.get_c().reshape(1, Z.get_n())
     elif Z.is_zono() or Z.is_conzono():
         return _get_conzono_vertices(Z, t_max=t_max)
+    elif Z.is_hybzono():
+        if settings is None:
+            settings = get_default_solver_settings()
+        _set_tmax(settings, t_max)
+        leaves = Z.get_leaves(settings=settings)
+        verts = np.zeros((0, Z.get_n()))
+        for leaf in leaves:
+            leaf_verts = get_vertices(leaf, settings=settings, t_max=t_max)
+            verts = np.vstack((verts, leaf_verts))
+        return verts
     else:
         raise ValueError('_get_conzono_vertices unsupported data type')
 
@@ -198,12 +217,7 @@ def plot(Z, ax=None, settings=None, t_max=60.0, enable_progress_bar=True, **kwar
         t0 = time.time()
         
         # pass t_max through to solver settings
-        if settings.solver_name() == 'ZonoOpt':
-            settings.t_max = t_max
-        elif settings.solver_name() == 'Gurobi' or settings.solver_name() == 'SCIP':
-            settings.TimeLimit = t_max
-        else:
-            raise NotImplementedError(f"Solver {settings.solver_name()} not supported for plotting with time limit")
+        _set_tmax(settings, t_max)
 
         sol = OptSolution()
         leaves = Z.get_leaves(settings=settings, solution=sol)
