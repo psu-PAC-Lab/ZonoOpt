@@ -133,9 +133,7 @@ PYBIND11_MODULE(_core, m)
     py::class_<GurobiSettings, SolverSettings>(m, "GurobiSettings",
         "Settings for the dynamically-loaded Gurobi solver backend. Every typed field is Optional; "
         "leave it as None to use Gurobi's default. For Gurobi parameters not exposed as typed fields, "
-        "use int_params / dbl_params / str_params (keyed by Gurobi's documented parameter name). "
-        "If Gurobi cannot be dynamically loaded, the library silently falls back to the internal "
-        "solver with default OptSettings.\n\n"
+        "use int_params / dbl_params / str_params (keyed by Gurobi's documented parameter name)\n\n"
         "Reference: https://docs.gurobi.com/projects/optimizer/en/current/reference/parameters.html")
         .def(py::init())
         // Termination
@@ -194,8 +192,7 @@ PYBIND11_MODULE(_core, m)
         "Settings for the dynamically-loaded SCIP solver backend. Every typed field is Optional; "
         "leave it as None to use SCIP's default. For SCIP parameters not exposed as typed fields, "
         "use the bool/int/longint/real/char/str_params dicts keyed by SCIP's documented parameter "
-        "name (e.g., 'limits/time', 'numerics/feastol'). If SCIP cannot be dynamically loaded, the "
-        "library silently falls back to the internal solver with default OptSettings.\n\n"
+        "name (e.g., 'limits/time', 'numerics/feastol').\n\n"
         "Reference: https://www.scipopt.org/doc/html/PARAMETERS.php")
         .def(py::init())
         // Limits

@@ -186,7 +186,7 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Settings for the dynamically-loaded SCIP solver backend. </p>
-<p>Pass an instance to a <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> optimization method to route through SCIP. If the SCIP shared library cannot be loaded at runtime, set_default_solver_settings with a <a class="el" href="structZonoOpt_1_1SCIPSettings.html" title="Settings for the dynamically-loaded SCIP solver backend.">SCIPSettings</a> throws std::runtime_error; per-call passes silently fall back to the internal solver.</p>
+<p>Pass an instance to a <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> optimization method to route through SCIP.</p>
 <p>Notes:</p><ul>
 <li>SCIP's objective is linear by definition. Quadratic objectives are modeled via an epigraph reformulation (auxiliary variable + quadratic constraint), transparent to the caller. </li>
 </ul>

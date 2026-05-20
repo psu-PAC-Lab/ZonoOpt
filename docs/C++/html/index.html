@@ -270,11 +270,11 @@ External Solvers</h1>
 <div class="line">p_proj = Z.project_point(p, settings=settings)</div>
 </div><!-- fragment --><p> Equivalently, in C++: </p><div class="fragment"><div class="line"><a class="code hl_struct" href="structZonoOpt_1_1GurobiSettings.html">ZonoOpt::GurobiSettings</a> settings;</div>
 <div class="line"><span class="keyword">auto</span> p_proj = Z.project_point(p, settings);</div>
-<div class="ttc" id="astructZonoOpt_1_1GurobiSettings_html"><div class="ttname"><a href="structZonoOpt_1_1GurobiSettings.html">ZonoOpt::GurobiSettings</a></div><div class="ttdoc">Settings for the dynamically-loaded Gurobi solver backend.</div><div class="ttdef"><b>Definition</b> GurobiSettings.hpp:45</div></div>
+<div class="ttc" id="astructZonoOpt_1_1GurobiSettings_html"><div class="ttname"><a href="structZonoOpt_1_1GurobiSettings.html">ZonoOpt::GurobiSettings</a></div><div class="ttdoc">Settings for the dynamically-loaded Gurobi solver backend.</div><div class="ttdef"><b>Definition</b> GurobiSettings.hpp:43</div></div>
 </div><!-- fragment --><p> To change the default solver, globally modify the default solver settings, e.g., </p><div class="fragment"><div class="line">zono.set_default_solver_settings(zono.SCIPSettings())</div>
 </div><!-- fragment --><p> in Python, or </p><div class="fragment"><div class="line"><a class="code hl_function" href="namespaceZonoOpt.html#ad08051d5c7e92b4a60834bd510d627df">ZonoOpt::set_default_solver_settings</a>(<a class="code hl_struct" href="structZonoOpt_1_1SCIPSettings.html">ZonoOpt::SCIPSettings</a>());</div>
 <div class="ttc" id="anamespaceZonoOpt_html_ad08051d5c7e92b4a60834bd510d627df"><div class="ttname"><a href="namespaceZonoOpt.html#ad08051d5c7e92b4a60834bd510d627df">ZonoOpt::set_default_solver_settings</a></div><div class="ttdeci">void set_default_solver_settings(const SolverSettings &amp;settings)</div><div class="ttdoc">Replaces the program-wide default solver settings with a polymorphic copy of settings.</div><div class="ttdef"><b>Definition</b> SolverDataStructures.hpp:403</div></div>
-<div class="ttc" id="astructZonoOpt_1_1SCIPSettings_html"><div class="ttname"><a href="structZonoOpt_1_1SCIPSettings.html">ZonoOpt::SCIPSettings</a></div><div class="ttdoc">Settings for the dynamically-loaded SCIP solver backend.</div><div class="ttdef"><b>Definition</b> SCIPSettings.hpp:48</div></div>
+<div class="ttc" id="astructZonoOpt_1_1SCIPSettings_html"><div class="ttname"><a href="structZonoOpt_1_1SCIPSettings.html">ZonoOpt::SCIPSettings</a></div><div class="ttdoc">Settings for the dynamically-loaded SCIP solver backend.</div><div class="ttdef"><b>Definition</b> SCIPSettings.hpp:45</div></div>
 </div><!-- fragment --><p> in C++.</p>
 <h1><a class="anchor" id="autotoc_md6"></a>
 Documentation</h1>

@@ -35,9 +35,6 @@ namespace ZonoOpt
      * @brief Settings for the dynamically-loaded SCIP solver backend.
      *
      * Pass an instance to a ZonoOpt optimization method to route through SCIP.
-     * If the SCIP shared library cannot be loaded at runtime, set_default_solver_settings
-     * with a SCIPSettings throws std::runtime_error; per-call passes silently fall back
-     * to the internal solver.
      *
      * Notes:
      *  - SCIP's objective is linear by definition. Quadratic objectives are modeled

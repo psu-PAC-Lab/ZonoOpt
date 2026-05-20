@@ -38,8 +38,6 @@ namespace ZonoOpt
      * @brief Settings for the dynamically-loaded Gurobi solver backend.
      *
      * Pass an instance to a ZonoOpt optimization method to route through Gurobi.
-     * If the Gurobi shared library cannot be loaded at runtime, the library silently
-     * falls back to the internal solver with default OptSettings.
      */
     struct GurobiSettings : SolverSettings
     {
