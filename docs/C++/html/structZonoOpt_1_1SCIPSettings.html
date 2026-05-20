@@ -126,6 +126,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ade3f084cb192935f1b7eda4eecedd33a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3fd28c66205ff7d24c97e74e2923c261" id="r_a3fd28c66205ff7d24c97e74e2923c261"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1SCIPSettings.html#a3fd28c66205ff7d24c97e74e2923c261">print</a> () const</td></tr>
 <tr class="separator:a3fd28c66205ff7d24c97e74e2923c261"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a095ca814a7a96c9e28e73539284ccf19" id="r_a095ca814a7a96c9e28e73539284ccf19"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1SCIPSettings.html#a095ca814a7a96c9e28e73539284ccf19">SCIPSettings</a> ()</td></tr>
+<tr class="memdesc:a095ca814a7a96c9e28e73539284ccf19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new <a class="el" href="structZonoOpt_1_1SCIPSettings.html" title="Settings for the dynamically-loaded SCIP solver backend.">SCIPSettings</a> object.  <br /></td></tr>
+<tr class="separator:a095ca814a7a96c9e28e73539284ccf19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1246bcf1d01b7df0e719773c12af2e56" id="r_a1246bcf1d01b7df0e719773c12af2e56"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1SCIPSettings.html#a1246bcf1d01b7df0e719773c12af2e56">solver_name</a> () const override</td></tr>
+<tr class="memdesc:a1246bcf1d01b7df0e719773c12af2e56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return name of the solver backend selected by this settings type, e.g., "ZonoOpt", "Gurobi", "SCIP".  <br /></td></tr>
+<tr class="separator:a1246bcf1d01b7df0e719773c12af2e56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad3545a980ff49aa6064c7a3f0d7535c3" id="r_ad3545a980ff49aa6064c7a3f0d7535c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1SCIPSettings.html#ad3545a980ff49aa6064c7a3f0d7535c3">verify_available</a> () const override</td></tr>
 <tr class="memdesc:ad3545a980ff49aa6064c7a3f0d7535c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verify the solver backend selected by this settings type is usable.  <br /></td></tr>
 <tr class="separator:ad3545a980ff49aa6064c7a3f0d7535c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -184,7 +190,41 @@ Public Attributes</h2></td></tr>
 <p>Notes:</p><ul>
 <li>SCIP's objective is linear by definition. Quadratic objectives are modeled via an epigraph reformulation (auxiliary variable + quadratic constraint), transparent to the caller. </li>
 </ul>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a095ca814a7a96c9e28e73539284ccf19" name="a095ca814a7a96c9e28e73539284ccf19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a095ca814a7a96c9e28e73539284ccf19">&#9670;&#160;</a></span>SCIPSettings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ZonoOpt::SCIPSettings::SCIPSettings </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a new <a class="el" href="structZonoOpt_1_1SCIPSettings.html" title="Settings for the dynamically-loaded SCIP solver backend.">SCIPSettings</a> object. </p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>if the SCIP shared library cannot be dynamically loaded </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a id="ade3f084cb192935f1b7eda4eecedd33a" name="ade3f084cb192935f1b7eda4eecedd33a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ade3f084cb192935f1b7eda4eecedd33a">&#9670;&#160;</a></span>clone()</h2>
 
@@ -236,6 +276,36 @@ Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1246bcf1d01b7df0e719773c12af2e56" name="a1246bcf1d01b7df0e719773c12af2e56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1246bcf1d01b7df0e719773c12af2e56">&#9670;&#160;</a></span>solver_name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string ZonoOpt::SCIPSettings::solver_name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return name of the solver backend selected by this settings type, e.g., "ZonoOpt", "Gurobi", "SCIP". </p>
+<dl class="section return"><dt>Returns</dt><dd>std::string </dd></dl>
+
+<p>Implements <a class="el" href="structZonoOpt_1_1SolverSettings.html#a402159a50b6acd5d0ff49a7e3b9efbaf">ZonoOpt::SolverSettings</a>.</p>
 
 </div>
 </div>

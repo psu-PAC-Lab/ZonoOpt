@@ -27,7 +27,7 @@ var searchData=
   ['got_5fsolution_24',['got_solution',['../GurobiSolver_8cpp.html#a36ea14868ed7328a771f635f44b2edf6',1,'got_solution:&#160;GurobiSolver.cpp'],['../SCIPSolver_8cpp.html#a36ea14868ed7328a771f635f44b2edf6',1,'got_solution:&#160;SCIPSolver.cpp']]],
   ['gurobiapi_2ecpp_25',['GurobiApi.cpp',['../GurobiApi_8cpp.html',1,'']]],
   ['gurobiapi_2ehpp_26',['GurobiApi.hpp',['../GurobiApi_8hpp.html',1,'']]],
-  ['gurobisettings_27',['GurobiSettings',['../structZonoOpt_1_1GurobiSettings.html',1,'ZonoOpt']]],
+  ['gurobisettings_27',['gurobisettings',['../structZonoOpt_1_1GurobiSettings.html#a5b17d6bc044c0c489384720f74af5849',1,'ZonoOpt::GurobiSettings::GurobiSettings()'],['../structZonoOpt_1_1GurobiSettings.html',1,'ZonoOpt::GurobiSettings']]],
   ['gurobisettings_2ehpp_28',['GurobiSettings.hpp',['../GurobiSettings_8hpp.html',1,'']]],
   ['gurobisolver_2ecpp_29',['GurobiSolver.cpp',['../GurobiSolver_8cpp.html',1,'']]],
   ['gurobisolver_2ehpp_30',['GurobiSolver.hpp',['../GurobiSolver_8hpp.html',1,'']]],

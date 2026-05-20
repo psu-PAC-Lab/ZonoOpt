@@ -19,5 +19,6 @@ var searchData=
   ['get_5fng_16',['get_nG',['../classZonoOpt_1_1HybZono.html#abb909e4cc7bd34bddcadd8fcdce69c9c',1,'ZonoOpt::HybZono']]],
   ['get_5fngb_17',['get_nGb',['../classZonoOpt_1_1HybZono.html#a4aa036a1dc1f2eafc8ae2278f7f06d8b',1,'ZonoOpt::HybZono']]],
   ['get_5fngc_18',['get_nGc',['../classZonoOpt_1_1HybZono.html#a784bb392482c3ba9437a286b376d2118',1,'ZonoOpt::HybZono']]],
-  ['get_5fvolume_19',['get_volume',['../classZonoOpt_1_1Zono.html#abe6f3a7d34994a451b5910203d12035e',1,'ZonoOpt::Zono']]]
+  ['get_5fvolume_19',['get_volume',['../classZonoOpt_1_1Zono.html#abe6f3a7d34994a451b5910203d12035e',1,'ZonoOpt::Zono']]],
+  ['gurobisettings_20',['GurobiSettings',['../structZonoOpt_1_1GurobiSettings.html#a5b17d6bc044c0c489384720f74af5849',1,'ZonoOpt::GurobiSettings']]]
 ];

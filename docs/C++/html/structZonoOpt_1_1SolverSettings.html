@@ -117,6 +117,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8b6c05a7edc04231f05be064b0d99346" id="r_a8b6c05a7edc04231f05be064b0d99346"><td class="memItemLeft" align="right" valign="top">virtual std::unique_ptr&lt; <a class="el" href="structZonoOpt_1_1SolverSettings.html">SolverSettings</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1SolverSettings.html#a8b6c05a7edc04231f05be064b0d99346">clone</a> () const =0</td></tr>
 <tr class="memdesc:a8b6c05a7edc04231f05be064b0d99346"><td class="mdescLeft">&#160;</td><td class="mdescRight">Polymorphic copy. Must be overridden by every concrete subclass.  <br /></td></tr>
 <tr class="separator:a8b6c05a7edc04231f05be064b0d99346"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a402159a50b6acd5d0ff49a7e3b9efbaf" id="r_a402159a50b6acd5d0ff49a7e3b9efbaf"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1SolverSettings.html#a402159a50b6acd5d0ff49a7e3b9efbaf">solver_name</a> () const =0</td></tr>
+<tr class="memdesc:a402159a50b6acd5d0ff49a7e3b9efbaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return name of the solver backend selected by this settings type, e.g., "ZonoOpt", "Gurobi", "SCIP".  <br /></td></tr>
+<tr class="separator:a402159a50b6acd5d0ff49a7e3b9efbaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a379f2277e9c9818213b9378d7828ccb0" id="r_a379f2277e9c9818213b9378d7828ccb0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1SolverSettings.html#a379f2277e9c9818213b9378d7828ccb0">verify_available</a> () const</td></tr>
 <tr class="memdesc:a379f2277e9c9818213b9378d7828ccb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verify the solver backend selected by this settings type is usable.  <br /></td></tr>
 <tr class="separator:a379f2277e9c9818213b9378d7828ccb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -183,6 +186,36 @@ Public Member Functions</h2></td></tr>
 <p>Polymorphic copy. Must be overridden by every concrete subclass. </p>
 
 <p>Implemented in <a class="el" href="structZonoOpt_1_1GurobiSettings.html#ac15fa31af3897890c66c4ba65ed0adcc">ZonoOpt::GurobiSettings</a>, <a class="el" href="structZonoOpt_1_1SCIPSettings.html#ade3f084cb192935f1b7eda4eecedd33a">ZonoOpt::SCIPSettings</a>, and <a class="el" href="structZonoOpt_1_1OptSettings.html#a4c154e1ac58cd08b257053828651853d">ZonoOpt::OptSettings</a>.</p>
+
+</div>
+</div>
+<a id="a402159a50b6acd5d0ff49a7e3b9efbaf" name="a402159a50b6acd5d0ff49a7e3b9efbaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a402159a50b6acd5d0ff49a7e3b9efbaf">&#9670;&#160;</a></span>solver_name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string ZonoOpt::SolverSettings::solver_name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return name of the solver backend selected by this settings type, e.g., "ZonoOpt", "Gurobi", "SCIP". </p>
+<dl class="section return"><dt>Returns</dt><dd>std::string </dd></dl>
+
+<p>Implemented in <a class="el" href="structZonoOpt_1_1GurobiSettings.html#a591889a4b435814f5617cf4896a63d59">ZonoOpt::GurobiSettings</a>, <a class="el" href="structZonoOpt_1_1SCIPSettings.html#a1246bcf1d01b7df0e719773c12af2e56">ZonoOpt::SCIPSettings</a>, and <a class="el" href="structZonoOpt_1_1OptSettings.html#ac7f04cb147a1c3b71ae416cbfeac4908">ZonoOpt::OptSettings</a>.</p>
 
 </div>
 </div>

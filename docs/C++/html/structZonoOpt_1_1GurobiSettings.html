@@ -124,9 +124,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac15fa31af3897890c66c4ba65ed0adcc" id="r_ac15fa31af3897890c66c4ba65ed0adcc"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="structZonoOpt_1_1SolverSettings.html">SolverSettings</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1GurobiSettings.html#ac15fa31af3897890c66c4ba65ed0adcc">clone</a> () const override</td></tr>
 <tr class="memdesc:ac15fa31af3897890c66c4ba65ed0adcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Polymorphic copy. Must be overridden by every concrete subclass.  <br /></td></tr>
 <tr class="separator:ac15fa31af3897890c66c4ba65ed0adcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b17d6bc044c0c489384720f74af5849" id="r_a5b17d6bc044c0c489384720f74af5849"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1GurobiSettings.html#a5b17d6bc044c0c489384720f74af5849">GurobiSettings</a> ()</td></tr>
+<tr class="memdesc:a5b17d6bc044c0c489384720f74af5849"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new Gurobi Settings object.  <br /></td></tr>
+<tr class="separator:a5b17d6bc044c0c489384720f74af5849"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a29c55eda117cf2469f46ad6166776a" id="r_a8a29c55eda117cf2469f46ad6166776a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1GurobiSettings.html#a8a29c55eda117cf2469f46ad6166776a">print</a> () const</td></tr>
 <tr class="memdesc:a8a29c55eda117cf2469f46ad6166776a"><td class="mdescLeft">&#160;</td><td class="mdescRight">displays the parameters that have been explicitly set  <br /></td></tr>
 <tr class="separator:a8a29c55eda117cf2469f46ad6166776a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a591889a4b435814f5617cf4896a63d59" id="r_a591889a4b435814f5617cf4896a63d59"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1GurobiSettings.html#a591889a4b435814f5617cf4896a63d59">solver_name</a> () const override</td></tr>
+<tr class="memdesc:a591889a4b435814f5617cf4896a63d59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return name of the solver backend selected by this settings type, e.g., "ZonoOpt", "Gurobi", "SCIP".  <br /></td></tr>
+<tr class="separator:a591889a4b435814f5617cf4896a63d59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a41d43ab60642db55a41e7944efcfaf96" id="r_a41d43ab60642db55a41e7944efcfaf96"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1GurobiSettings.html#a41d43ab60642db55a41e7944efcfaf96">verify_available</a> () const override</td></tr>
 <tr class="memdesc:a41d43ab60642db55a41e7944efcfaf96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verify the solver backend selected by this settings type is usable.  <br /></td></tr>
 <tr class="separator:a41d43ab60642db55a41e7944efcfaf96"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -212,7 +218,41 @@ Public Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Settings for the dynamically-loaded Gurobi solver backend. </p>
 <p>Pass an instance to a <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> optimization method to route through Gurobi. If the Gurobi shared library cannot be loaded at runtime, the library silently falls back to the internal solver with default <a class="el" href="structZonoOpt_1_1OptSettings.html" title="Settings for the internal ZonoOpt ADMM / branch-and-bound solver.">OptSettings</a>. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a5b17d6bc044c0c489384720f74af5849" name="a5b17d6bc044c0c489384720f74af5849"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b17d6bc044c0c489384720f74af5849">&#9670;&#160;</a></span>GurobiSettings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ZonoOpt::GurobiSettings::GurobiSettings </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a new Gurobi Settings object. </p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>if the Gurobi shared library cannot be dynamically loaded </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a id="ac15fa31af3897890c66c4ba65ed0adcc" name="ac15fa31af3897890c66c4ba65ed0adcc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac15fa31af3897890c66c4ba65ed0adcc">&#9670;&#160;</a></span>clone()</h2>
 
@@ -266,6 +306,36 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>displays the parameters that have been explicitly set </p>
+
+</div>
+</div>
+<a id="a591889a4b435814f5617cf4896a63d59" name="a591889a4b435814f5617cf4896a63d59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a591889a4b435814f5617cf4896a63d59">&#9670;&#160;</a></span>solver_name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string ZonoOpt::GurobiSettings::solver_name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return name of the solver backend selected by this settings type, e.g., "ZonoOpt", "Gurobi", "SCIP". </p>
+<dl class="section return"><dt>Returns</dt><dd>std::string </dd></dl>
+
+<p>Implements <a class="el" href="structZonoOpt_1_1SolverSettings.html#a402159a50b6acd5d0ff49a7e3b9efbaf">ZonoOpt::SolverSettings</a>.</p>
 
 </div>
 </div>
