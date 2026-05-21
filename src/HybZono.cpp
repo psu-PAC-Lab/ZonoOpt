@@ -1531,8 +1531,8 @@ namespace ZonoOpt
         const Eigen::SparseMatrix<zono_float>& Gm = p1 ? Z2.G : Z1.G;
         const Eigen::Vector<zono_float, -1>& cm = p1 ? Z2.c : Z1.c;
 
-        const int nGp = Gp.cols();
-        const int nGm = Gm.cols();
+        const int nGp = static_cast<int>(Gp.cols());
+        const int nGm = static_cast<int>(Gm.cols());
 
         // Build G_hull triplets directly from sparse column iterators.
         // Column layout: sum(0..nGm-1) | center(nGm) | diff(nGm+1..2*nGm) | tail_Gp(2*nGm+1..nGm+nGp)

@@ -302,12 +302,21 @@ ZonoOptLibHandle GurobiApi::load_library()
         "libgurobi130.dylib", "libgurobi120.dylib", "libgurobi110.dylib", "libgurobi.dylib"
     };
 
+#ifdef _WIN32
+    char* home = nullptr;
+    size_t home_len = 0;
+    _dupenv_s(&home, &home_len, "GUROBI_HOME");
+    std::unique_ptr<char, decltype(&free)> home_guard(home, &free);
+#else
     const char* home = std::getenv("GUROBI_HOME");
+#endif
 
     if (home)
     {
-        const std::string path = std::string(home) + "/lib/";
-        ZonoOptLibHandle h = load_library_from_path(path, names);
+        const std::string base = std::string(home);
+        ZonoOptLibHandle h = load_library_from_path(base + "/bin/", names);
+        if (h) return h;
+        h = load_library_from_path(base + "/lib/", names);
         if (h) return h;
     }
 
