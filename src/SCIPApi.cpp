@@ -1,6 +1,7 @@
 #include "zonoopt/SCIPApi.hpp"
 
 #include <cstdlib>
+#include <filesystem>
 #include <stdexcept>
 #include <string>
 
@@ -189,18 +190,44 @@ ZonoOptScipLibHandle SCIPApi::load_library()
         "scip.dll", "libscip.dll"
     };
 
+    auto try_root = [&](const std::string& root) -> ZonoOptScipLibHandle {
+        if (auto h = load_library_from_path(root + "/bin/", names)) return h;
+        if (auto h = load_library_from_path(root + "/lib/", names)) return h;
+        return nullptr;
+    };
+
     // Try SCIPOPTDIR (conventional env var for the SCIP Optimization Suite).
+#ifdef _WIN32
+    char* dir_buf = nullptr; size_t dir_len = 0;
+    if (_dupenv_s(&dir_buf, &dir_len, "SCIPOPTDIR") == 0 && dir_buf) {
+        std::unique_ptr<char, decltype(&free)> g(dir_buf, &free);
+        if (auto h = try_root(dir_buf)) return h;
+    }
+    if (_dupenv_s(&dir_buf, &dir_len, "SCIP_DIR") == 0 && dir_buf) {
+        std::unique_ptr<char, decltype(&free)> g(dir_buf, &free);
+        if (auto h = try_root(dir_buf)) return h;
+    }
+    // Scan "C:\Program Files\SCIPOptSuite*" — the default Windows installer location.
+    {
+        namespace fs = std::filesystem;
+        std::error_code ec;
+        for (const auto& entry : fs::directory_iterator("C:\\Program Files", ec))
+        {
+            if (!entry.is_directory(ec)) continue;
+            const std::string name = entry.path().filename().string();
+            if (name.rfind("SCIPOptSuite", 0) == 0)
+            {
+                if (auto h = try_root(entry.path().string())) return h;
+            }
+        }
+    }
+#else
     if (const char* dir = std::getenv("SCIPOPTDIR"))
-    {
-        const std::string path = std::string(dir) + "/lib/";
-        if (auto h = load_library_from_path(path, names)) return h;
-    }
-    // Try SCIP_DIR as a secondary convention.
+        if (auto h = try_root(dir)) return h;
     if (const char* dir = std::getenv("SCIP_DIR"))
-    {
-        const std::string path = std::string(dir) + "/lib/";
-        if (auto h = load_library_from_path(path, names)) return h;
-    }
+        if (auto h = try_root(dir)) return h;
+#endif
+
     // Fall back to the dynamic linker's default search path.
     return load_library_from_path("", names);
 }
@@ -212,7 +239,8 @@ ZonoOptScipLibHandle SCIPApi::load_library_from_path(const std::string& path, co
         const std::string full = path + name;
         ZonoOptScipLibHandle h = nullptr;
 #ifdef _WIN32
-        h = LoadLibrary(full.c_str());
+        const std::string full_native = std::filesystem::path(full).make_preferred().string();
+        h = LoadLibraryExA(full_native.c_str(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
 #else
         h = dlopen(full.c_str(), RTLD_LAZY);
 #endif

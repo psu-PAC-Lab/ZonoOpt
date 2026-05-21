@@ -1,6 +1,7 @@
 #include "zonoopt/GurobiApi.hpp"
 
 #include <cstdlib>
+#include <filesystem>
 #include <stdexcept>
 #include <string>
 
@@ -330,7 +331,8 @@ ZonoOptLibHandle GurobiApi::load_library_from_path(const std::string& path, cons
     {
         const std::string full_path = path + name;
 #ifdef _WIN32
-        h = LoadLibrary(full_path.c_str());
+        const std::string full_path_native = std::filesystem::path(full_path).make_preferred().string();
+        h = LoadLibraryExA(full_path_native.c_str(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
 #else
         h = dlopen(full_path.c_str(), RTLD_LAZY);
 #endif
