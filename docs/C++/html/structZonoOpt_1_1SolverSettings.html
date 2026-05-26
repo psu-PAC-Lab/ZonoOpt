@@ -130,7 +130,8 @@ Public Member Functions</h2></td></tr>
 <div class="textblock"><p>Abstract base for all solver settings. </p>
 <p>The dynamic type of the <a class="el" href="structZonoOpt_1_1SolverSettings.html" title="Abstract base for all solver settings.">SolverSettings</a> instance passed to <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a>'s optimization routines selects which solver backend is used:</p><ul>
 <li><a class="el" href="structZonoOpt_1_1OptSettings.html" title="Settings for the internal ZonoOpt ADMM / branch-and-bound solver.">OptSettings</a> → internal ADMM / branch-and-bound (default)</li>
-<li><a class="el" href="structZonoOpt_1_1GurobiSettings.html" title="Settings for the dynamically-loaded Gurobi solver backend.">GurobiSettings</a> → dynamically-loaded Gurobi; silent fallback to OptSettings() if Gurobi cannot be loaded at runtime</li>
+<li><a class="el" href="structZonoOpt_1_1GurobiSettings.html" title="Settings for the dynamically-loaded Gurobi solver backend.">GurobiSettings</a> → dynamically-loaded Gurobi</li>
+<li><a class="el" href="structZonoOpt_1_1SCIPSettings.html" title="Settings for the dynamically-loaded SCIP solver backend.">SCIPSettings</a> → dynamically-loaded SCIP</li>
 </ul>
 <p>Derived classes implement <a class="el" href="structZonoOpt_1_1SolverSettings.html#a8b6c05a7edc04231f05be064b0d99346" title="Polymorphic copy. Must be overridden by every concrete subclass.">clone()</a> so the program-wide default settings can hold a polymorphic copy (see get_default_solver_settings / set_default_solver_settings). </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>

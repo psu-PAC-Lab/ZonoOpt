@@ -25,8 +25,8 @@ namespace ZonoOpt
      * The dynamic type of the SolverSettings instance passed to ZonoOpt's optimization
      * routines selects which solver backend is used:
      *   - OptSettings      → internal ADMM / branch-and-bound (default)
-     *   - GurobiSettings   → dynamically-loaded Gurobi; silent fallback to OptSettings()
-     *                        if Gurobi cannot be loaded at runtime
+     *   - GurobiSettings   → dynamically-loaded Gurobi
+     *   - SCIPSettings     → dynamically-loaded SCIP
      *
      * Derived classes implement clone() so the program-wide default settings can hold
      * a polymorphic copy (see get_default_solver_settings / set_default_solver_settings).
