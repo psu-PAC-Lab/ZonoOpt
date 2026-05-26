@@ -88,7 +88,8 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">SolverDataStructures.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -96,23 +97,40 @@ $(function() {
 <p>Optimization settings and solution data structures for <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> library.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;Eigen/Dense&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;sstream&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
 </div>
 <p><a href="SolverDataStructures_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1ExternalSolverResults.html">ZonoOpt::ExternalSolverResults</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract base for external-solver-specific solution metadata.  <a href="structZonoOpt_1_1ExternalSolverResults.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSettings.html">ZonoOpt::OptSettings</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Settings for optimization routines in <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> library.  <a href="structZonoOpt_1_1OptSettings.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Settings for the internal <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> ADMM / branch-and-bound solver.  <a href="structZonoOpt_1_1OptSettings.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1OptSolution.html">ZonoOpt::OptSolution</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solution data structure for optimization routines in <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> library.  <a href="structZonoOpt_1_1OptSolution.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structZonoOpt_1_1SolverSettings.html">ZonoOpt::SolverSettings</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract base for all solver settings.  <a href="structZonoOpt_1_1SolverSettings.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespaceZonoOpt" id="r_namespaceZonoOpt"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html">ZonoOpt</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a5324e974af612bdc56ece16a9c6d3b48" id="r_a5324e974af612bdc56ece16a9c6d3b48"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structZonoOpt_1_1SolverSettings.html">SolverSettings</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a5324e974af612bdc56ece16a9c6d3b48">ZonoOpt::get_default_solver_settings</a> ()</td></tr>
+<tr class="memdesc:a5324e974af612bdc56ece16a9c6d3b48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a reference to the current program-wide default solver settings.  <br /></td></tr>
+<tr class="separator:a5324e974af612bdc56ece16a9c6d3b48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad08051d5c7e92b4a60834bd510d627df" id="r_ad08051d5c7e92b4a60834bd510d627df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#ad08051d5c7e92b4a60834bd510d627df">ZonoOpt::set_default_solver_settings</a> (const <a class="el" href="structZonoOpt_1_1SolverSettings.html">SolverSettings</a> &amp;settings)</td></tr>
+<tr class="memdesc:ad08051d5c7e92b4a60834bd510d627df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the program-wide default solver settings with a polymorphic copy of <code>settings</code>.  <br /></td></tr>
+<tr class="separator:ad08051d5c7e92b4a60834bd510d627df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Optimization settings and solution data structures for <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> library. </p>

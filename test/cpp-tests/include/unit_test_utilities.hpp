@@ -82,11 +82,7 @@ inline Eigen::SparseMatrix<zono_float> random_sparse_matrix(int m, int n, double
             }
         }
     }
-#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
-    mat.setFromSortedTriplets(triplets.begin(), triplets.end());
-#else
     mat.setFromTriplets(triplets.begin(), triplets.end());
-#endif
 
     return mat;
 }

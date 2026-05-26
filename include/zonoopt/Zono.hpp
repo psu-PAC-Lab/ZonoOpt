@@ -44,6 +44,7 @@ namespace ZonoOpt
          * @param G generator matrix
          * @param c center
          * @param zero_one_form true if set is in 0-1 form
+         * @throws std::invalid_argument if G and c have inconsistent dimensions.
          */
         Zono(const Eigen::SparseMatrix<zono_float>& G, const Eigen::Vector<zono_float, -1>& c,
              const bool zero_one_form = false);
@@ -54,10 +55,11 @@ namespace ZonoOpt
         // set method
         /**
          * @brief Reset zonotope object with the given parameters.
-         * 
+         *
          * @param G generator matrix
          * @param c center
          * @param zero_one_form true if set is in 0-1 form
+         * @throws std::invalid_argument if G and c have inconsistent dimensions.
          */
         void set(const Eigen::SparseMatrix<zono_float>& G, const Eigen::Vector<zono_float, -1>& c,
                  bool zero_one_form = false);
@@ -72,6 +74,8 @@ namespace ZonoOpt
          *
          * @param n_o desired order, must be greater than or equal to the dimension of the set
          * @return zonotope with order n_o
+         * @throws std::invalid_argument if n_o is less than the dimension of the set.
+         * @throws std::runtime_error if the underlying constraint reduction does not return a zonotope (internal error).
          */
         std::unique_ptr<Zono> reduce_order(int n_o);
 
@@ -124,11 +128,11 @@ namespace ZonoOpt
         void operator*=(HybZono& other) = delete;
 
     protected:
-        bool do_is_empty(const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) const override;
+        bool do_is_empty(const SolverSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) const override;
 
-        Box do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) override;
+        Box do_bounding_box(const SolverSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) override;
 
-        zono_float do_support(const Eigen::Vector<zono_float, -1>& d, const OptSettings&,
+        zono_float do_support(const Eigen::Vector<zono_float, -1>& d, const SolverSettings&,
                               std::shared_ptr<OptSolution>* sol, const WarmStartParams&) override;
     };
 
@@ -151,6 +155,7 @@ namespace ZonoOpt
      * @param c center vector
      * @return zonotope
      * @ingroup ZonoOpt_SetupFunctions
+     * @throws std::invalid_argument if n_sides is not even or less than 4, or if radius is not positive.
      */
     std::unique_ptr<Zono> make_regular_zono_2D(zono_float radius, int n_sides, bool outer_approx = false,
                                                const Eigen::Vector<zono_float, 2>& c = Eigen::Vector<

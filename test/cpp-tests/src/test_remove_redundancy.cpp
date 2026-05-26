@@ -32,6 +32,21 @@ TEST(RemoveRedundancy, Case1_ConZonoSimplifiesToZono)
     EXPECT_NEAR(sup, -4., 1e-3) << "case1: expected support = -4., got " << sup;
 
     EXPECT_TRUE(Z_rr->is_zono()) << "case1: expected set to be a zonotope after removing redundancy.";
+
+    if (detail::gurobi_available())
+    {
+        d(0) = 1.;
+        EXPECT_NEAR(Z_rr->support(d, GurobiSettings()), 10., 1e-3) << "case1 Gurobi: expected support = 10.";
+        d(0) = -1.;
+        EXPECT_NEAR(Z_rr->support(d, GurobiSettings()), -4., 1e-3) << "case1 Gurobi: expected support = -4.";
+    }
+    if (detail::scip_available())
+    {
+        d(0) = 1.;
+        EXPECT_NEAR(Z_rr->support(d, SCIPSettings()), 10., 1e-3) << "case1 SCIP: expected support = 10.";
+        d(0) = -1.;
+        EXPECT_NEAR(Z_rr->support(d, SCIPSettings()), -4., 1e-3) << "case1 SCIP: expected support = -4.";
+    }
 }
 
 TEST(RemoveRedundancy, Case2_HybZonoSupportPreserved)
@@ -73,6 +88,25 @@ TEST(RemoveRedundancy, Case2_HybZonoSupportPreserved)
         EXPECT_NEAR(sup_after[i], sup_before[i], 1e-3)
             << "case2: expected support = " << sup_before[i] << ", got " << sup_after[i];
     }
+
+    if (detail::gurobi_available())
+    {
+        d(0) = 1.;
+        const zono_float s0 = Z_rr->support(d, GurobiSettings());
+        d(0) = -1.;
+        const zono_float s1 = Z_rr->support(d, GurobiSettings());
+        EXPECT_NEAR(s0, sup_before[0], 1e-3) << "case2 Gurobi: expected support = " << sup_before[0];
+        EXPECT_NEAR(s1, sup_before[1], 1e-3) << "case2 Gurobi: expected support = " << sup_before[1];
+    }
+    if (detail::scip_available())
+    {
+        d(0) = 1.;
+        const zono_float s0 = Z_rr->support(d, SCIPSettings());
+        d(0) = -1.;
+        const zono_float s1 = Z_rr->support(d, SCIPSettings());
+        EXPECT_NEAR(s0, sup_before[0], 1e-3) << "case2 SCIP: expected support = " << sup_before[0];
+        EXPECT_NEAR(s1, sup_before[1], 1e-3) << "case2 SCIP: expected support = " << sup_before[1];
+    }
 }
 
 TEST(RemoveRedundancy, Case3_ConZonoSupportPreserved)
@@ -108,6 +142,25 @@ TEST(RemoveRedundancy, Case3_ConZonoSupportPreserved)
     {
         EXPECT_NEAR(sup_after[i], sup_before[i], 1e-3)
             << "case3: expected support = " << sup_before[i] << ", got " << sup_after[i];
+    }
+
+    if (detail::gurobi_available())
+    {
+        d(0) = 1.;
+        const zono_float s0 = Z_rr->support(d, GurobiSettings());
+        d(0) = -1.;
+        const zono_float s1 = Z_rr->support(d, GurobiSettings());
+        EXPECT_NEAR(s0, sup_before[0], 1e-3) << "case3 Gurobi: expected support = " << sup_before[0];
+        EXPECT_NEAR(s1, sup_before[1], 1e-3) << "case3 Gurobi: expected support = " << sup_before[1];
+    }
+    if (detail::scip_available())
+    {
+        d(0) = 1.;
+        const zono_float s0 = Z_rr->support(d, SCIPSettings());
+        d(0) = -1.;
+        const zono_float s1 = Z_rr->support(d, SCIPSettings());
+        EXPECT_NEAR(s0, sup_before[0], 1e-3) << "case3 SCIP: expected support = " << sup_before[0];
+        EXPECT_NEAR(s1, sup_before[1], 1e-3) << "case3 SCIP: expected support = " << sup_before[1];
     }
 }
 
@@ -146,6 +199,15 @@ TEST(RemoveRedundancy, NonEmptyFromFile_test5)
     std::stringstream ss;
     ss << "Expected non-empty set, got " << *Z_rr;
     EXPECT_FALSE(Z_rr->is_empty(settings)) << ss.str();
+
+    if (detail::gurobi_available())
+    {
+        EXPECT_FALSE(Z_rr->is_empty(GurobiSettings())) << "test5 Gurobi: expected non-empty set, got " << *Z_rr;
+    }
+    if (detail::scip_available())
+    {
+        EXPECT_FALSE(Z_rr->is_empty(SCIPSettings())) << "test5 SCIP: expected non-empty set, got " << *Z_rr;
+    }
 }
 
 TEST(RemoveRedundancy, NonEmptyFromFile_test6)
@@ -163,6 +225,15 @@ TEST(RemoveRedundancy, NonEmptyFromFile_test6)
     std::stringstream ss;
     ss << "Expected non-empty set, got " << *Z_rr;
     EXPECT_FALSE(Z_rr->is_empty(settings)) << ss.str();
+
+    if (detail::gurobi_available())
+    {
+        EXPECT_FALSE(Z_rr->is_empty(GurobiSettings())) << "test6 Gurobi: expected non-empty set, got " << *Z_rr;
+    }
+    if (detail::scip_available())
+    {
+        EXPECT_FALSE(Z_rr->is_empty(SCIPSettings())) << "test6 SCIP: expected non-empty set, got " << *Z_rr;
+    }
 }
 
 TEST(RemoveRedundancy, NonEmptyFromFile_test7)
@@ -180,6 +251,15 @@ TEST(RemoveRedundancy, NonEmptyFromFile_test7)
     std::stringstream ss;
     ss << "Expected non-empty set, got " << *Z_rr;
     EXPECT_FALSE(Z_rr->is_empty(settings)) << ss.str();
+
+    if (detail::gurobi_available())
+    {
+        EXPECT_FALSE(Z_rr->is_empty(GurobiSettings())) << "test7 Gurobi: expected non-empty set, got " << *Z_rr;
+    }
+    if (detail::scip_available())
+    {
+        EXPECT_FALSE(Z_rr->is_empty(SCIPSettings())) << "test7 SCIP: expected non-empty set, got " << *Z_rr;
+    }
 }
 
 TEST(RemoveRedundancy, RandomConZono100)

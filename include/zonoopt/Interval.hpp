@@ -366,13 +366,14 @@ namespace ZonoOpt
 
         /**
          * @brief Interval power with fractional exponent
-         * 
+         *
          * @param f power
-         * @return enclosure of this^f 
-         * 
+         * @return enclosure of this^f
+         *
          * Calls integer power if f is an integer within numerical tolerance.
          * Calls nth_root if f is a positive rational number within numerical tolerance.
-         * Otherwise throws error.
+         *
+         * @throws std::domain_error if the interval contains negative values and f is a non-integer power.
          */
         Interval pow(const zono_float f) const;
 

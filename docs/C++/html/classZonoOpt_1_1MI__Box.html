@@ -174,7 +174,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:acb3a056cb0eaa32acc8d0c84b239c113 inherit pub_methods_classZonoOpt_1_1Box" id="r_acb3a056cb0eaa32acc8d0c84b239c113"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1Box.html#acb3a056cb0eaa32acc8d0c84b239c113">contract</a> (const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, Eigen::RowMajor &gt; &amp;A, const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;b, int iter)</td></tr>
 <tr class="memdesc:acb3a056cb0eaa32acc8d0c84b239c113 inherit pub_methods_classZonoOpt_1_1Box"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1Interval.html" title="Interval class.">Interval</a> contractor.  <br /></td></tr>
 <tr class="separator:acb3a056cb0eaa32acc8d0c84b239c113 inherit pub_methods_classZonoOpt_1_1Box"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e736d03bedfd3bf93e04fb30f3cd3c8 inherit pub_methods_classZonoOpt_1_1Box" id="r_a7e736d03bedfd3bf93e04fb30f3cd3c8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1Box.html#a7e736d03bedfd3bf93e04fb30f3cd3c8">contract_subset</a> (const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, Eigen::RowMajor &gt; &amp;A_rm, const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;b, int iter, const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;A, const std::set&lt; int &gt; &amp;inds, int tree_search_depth)</td></tr>
+<tr class="memitem:a7e736d03bedfd3bf93e04fb30f3cd3c8 inherit pub_methods_classZonoOpt_1_1Box" id="r_a7e736d03bedfd3bf93e04fb30f3cd3c8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1Box.html#a7e736d03bedfd3bf93e04fb30f3cd3c8">contract_subset</a> (const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, Eigen::RowMajor &gt; &amp;<a class="el" href="GurobiSolver_8cpp.html#a796c11f736da9e40044021d2b21229b2">A_rm</a>, const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;b, int iter, const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;A, const std::set&lt; int &gt; &amp;inds, int tree_search_depth)</td></tr>
 <tr class="memdesc:a7e736d03bedfd3bf93e04fb30f3cd3c8 inherit pub_methods_classZonoOpt_1_1Box"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1Interval.html" title="Interval class.">Interval</a> contractor over a subset of the dimensions of the box.  <br /></td></tr>
 <tr class="separator:a7e736d03bedfd3bf93e04fb30f3cd3c8 inherit pub_methods_classZonoOpt_1_1Box"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03d1d9707dd33d16bd9e4b50022cbf28 inherit pub_methods_classZonoOpt_1_1Box" id="r_a03d1d9707dd33d16bd9e4b50022cbf28"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Interval.html">Interval</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1Box.html#a03d1d9707dd33d16bd9e4b50022cbf28">dot</a> (const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;x) const</td></tr>
@@ -414,6 +414,13 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if x_lb and x_ub do not have the same size. </td></tr>
+    <tr><td class="paramname">std::out_of_range</td><td>if the binary indices in idx_b are outside [0, <a class="el" href="classZonoOpt_1_1Box.html#aa7955b649c5252db2893d7944b30353b" title="Get size of Box object.">size()</a>). </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -455,6 +462,12 @@ Additional Inherited Members</h2></td></tr>
     <tr><td class="paramname">intervals</td><td>vector intervals </td></tr>
     <tr><td class="paramname">idx_b</td><td>indices of binary variables {start index, number of binaries} </td></tr>
     <tr><td class="paramname">zero_one_form</td><td>flag indicating whether binary variables are in {0,1} form (true) or {-1,1} form (false) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::out_of_range</td><td>if the binary indices in idx_b are outside [0, <a class="el" href="classZonoOpt_1_1Box.html#aa7955b649c5252db2893d7944b30353b" title="Get size of Box object.">size()</a>). </td></tr>
   </table>
   </dd>
 </dl>
@@ -660,6 +673,12 @@ Additional Inherited Members</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">x</td><td>vector reference </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if x does not have the same size as the <a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a>. </td></tr>
   </table>
   </dd>
 </dl>

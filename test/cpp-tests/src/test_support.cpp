@@ -23,6 +23,17 @@ TEST(Support, ConZonoSupportValue)
     const zono_float s = Z.support(d);
 
     EXPECT_NEAR(s / s_expected, 1.0, 5e-2) << "Support value does not match expected value";
+
+    if (detail::gurobi_available())
+    {
+        const zono_float s_grb = Z.support(d, GurobiSettings());
+        EXPECT_NEAR(s_grb / s_expected, 1.0, 5e-2) << "Support value using Gurobi does not match expected value";
+    }
+    if (detail::scip_available())
+    {
+        const zono_float s_scip = Z.support(d, SCIPSettings());
+        EXPECT_NEAR(s_scip / s_expected, 1.0, 5e-2) << "Support value using SCIP does not match expected value";
+    }
 }
 
 TEST(Support, ZonoConZonoConsistency)
@@ -68,5 +79,20 @@ TEST(Support, ZonoConZonoConsistency)
         ss << "Zono and ConZono solutions do not produce same support value when applied to generators and center"
            << "\nZono support: " << applied1 << "\nConZono support: " << applied2;
         EXPECT_NEAR(applied1, applied2, 1e-2) << ss.str();
+
+        if (detail::gurobi_available())
+        {
+            const zono_float s1g = Zz->support(d, GurobiSettings());
+            const zono_float s2g = Zc.support(d, GurobiSettings());
+            EXPECT_NEAR(s1g, s2g, 1e-2)
+                << "Zono and ConZono support values disagree using Gurobi: " << s1g << " vs " << s2g;
+        }
+        if (detail::scip_available())
+        {
+            const zono_float s1s = Zz->support(d, SCIPSettings());
+            const zono_float s2s = Zc.support(d, SCIPSettings());
+            EXPECT_NEAR(s1s, s2s, 1e-2)
+                << "Zono and ConZono support values disagree using SCIP: " << s1s << " vs " << s2s;
+        }
     }
 }

@@ -141,7 +141,14 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>zonotopic set </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>if the file cannot be opened or the JSON contains an unrecognized set type. </td></tr>
+    <tr><td class="paramname">std::invalid_argument</td><td>if the JSON contains malformed triplet data (e.g., mismatched triplet vector sizes or out-of-range indices). </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -220,7 +227,13 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>zonotope </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>zonotope</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if n_sides is not even or less than 4, or if radius is not positive. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -254,7 +267,13 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">Z</td><td>zonotopic set </td></tr>
-    <tr><td class="paramname">filename</td><td>the name of the JSON file to write to </td></tr>
+    <tr><td class="paramname">filename</td><td>the name of the JSON file to write to</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>if Z is an unrecognized set type or the file cannot be opened for writing. </td></tr>
   </table>
   </dd>
 </dl>
@@ -324,7 +343,13 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
-<p>Vpolys is a vector of matrices, where each matrix represents a polytope in vertex representation. Each row in each polytope matrix is a vertex of the polytope, and each column corresponds to a dimension. The function constructs a hybrid zonotope in [0,1] form that represents the union of these polytopes. This function computes union of sets {V0, V1, ..., Vn}. If expose_indicators is true, returns union({V0, ..., Vn}) x I where I is the indicator set for the union. Specifically, each dimension of I corresponds to one of the Vi in the union. So for vrep_2_hybzono({V0, V1, V2}, true) with V0, V1, V2 not intersecting, if a vector [z, i] is in union({V0, V1, V2}) x I, then i = [1, 0, 0] if z is in V0, etc. </p>
+<p>Vpolys is a vector of matrices, where each matrix represents a polytope in vertex representation. Each row in each polytope matrix is a vertex of the polytope, and each column corresponds to a dimension. The function constructs a hybrid zonotope in [0,1] form that represents the union of these polytopes. This function computes union of sets {V0, V1, ..., Vn}. If expose_indicators is true, returns union({V0, ..., Vn}) x I where I is the indicator set for the union. Specifically, each dimension of I corresponds to one of the Vi in the union. So for vrep_2_hybzono({V0, V1, V2}, true) with V0, V1, V2 not intersecting, if a vector [z, i] is in union({V0, V1, V2}) x I, then i = [1, 0, 0] if z is in V0, etc.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if Vpolys is empty or if its polytopes do not all share the same number of dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -363,7 +388,13 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>zonotopic set</dd></dl>
-<p>This function computes union of sets {Z0, Z1, ..., Zn}. This can be more efficient than union_of_many if all sets are zonotopes because generators can be reused. If expose_indicators is true, returns union({Z0, ..., Zn}) x I where I is the indicator set for the union. Specifically, each dimension of I corresponds to one of the Zi in the union. So for zono_union_2_hybzono({Z0, Z1, Z2}, true) with Z0, Z1, VZ2 not intersecting, if a vector [z, i] is in union({Z0, Z1, Z2}) x I, then i = [1, 0, 0] if z is in Z0, etc. </p>
+<p>This function computes union of sets {Z0, Z1, ..., Zn}. This can be more efficient than union_of_many if all sets are zonotopes because generators can be reused. If expose_indicators is true, returns union({Z0, ..., Zn}) x I where I is the indicator set for the union. Specifically, each dimension of I corresponds to one of the Zi in the union. So for zono_union_2_hybzono({Z0, Z1, Z2}, true) with Z0, Z1, VZ2 not intersecting, if a vector [z, i] is in union({Z0, Z1, Z2}) x I, then i = [1, 0, 0] if z is in Z0, etc.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if Zs is empty or if its zonotopes do not all share the same dimension. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

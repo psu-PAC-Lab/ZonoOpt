@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import zonoopt as zono
 from scipy import sparse
@@ -1395,20 +1396,36 @@ def test_zono_hull():
     _test_inconsistent_dimensions()
     print('Passed: Zono Hull')
 
-# run the unit tests
-test_vrep_2_hz()
-test_minkowski_sum()
-test_intersection()
-test_is_empty()
-test_support()
-test_point_contain()
-test_get_leaves()
-test_safety_verification()
-test_interval_arithmetic()
-test_affine_inclusion()
-test_operator_overloading()
-test_constrain()
-test_json()
-test_remove_redundancy()
-test_overapproximation()
-test_zono_hull()
+if __name__ == '__main__':
+    tests = [
+        test_vrep_2_hz,
+        test_minkowski_sum,
+        test_intersection,
+        test_is_empty,
+        test_support,
+        test_point_contain,
+        test_get_leaves,
+        test_safety_verification,
+        test_interval_arithmetic,
+        test_affine_inclusion,
+        test_operator_overloading,
+        test_constrain,
+        test_json,
+        test_remove_redundancy,
+        test_overapproximation,
+        test_zono_hull,
+    ]
+
+    failures = []
+    for test in tests:
+        try:
+            test()
+        except Exception as e:
+            failures.append((test.__name__, e))
+            print(f'FAILED: {test.__name__}: {e}')
+
+    if failures:
+        print(f'\n{len(failures)} test(s) failed')
+        sys.exit(1)
+    else:
+        print('\nAll tests passed!')

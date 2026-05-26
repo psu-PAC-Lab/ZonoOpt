@@ -1,12 +1,35 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/eigen.h>
 #include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
 namespace py = pybind11;
 
 #define IS_PYTHON_ENV
 #define zono_float double
 #include "ZonoOpt.hpp"
 using namespace ZonoOpt;
+
+// Make the Gurobi/SCIP escape-hatch maps opaque so .def_readwrite returns a
+// reference-semantics proxy (in-place mutation propagates back to the C++ object).
+PYBIND11_MAKE_OPAQUE(std::map<std::string, int>);
+PYBIND11_MAKE_OPAQUE(std::map<std::string, double>);
+PYBIND11_MAKE_OPAQUE(std::map<std::string, std::string>);
+PYBIND11_MAKE_OPAQUE(std::map<std::string, bool>);
+PYBIND11_MAKE_OPAQUE(std::map<std::string, long long>);
+PYBIND11_MAKE_OPAQUE(std::map<std::string, char>);
+
+namespace {
+// Resolve a `settings` parameter from the Python side. None falls through to the
+// program-wide default installed via set_default_solver_settings (or the initial
+// OptSettings() if the user never called that). pybind11 evaluates py::arg defaults
+// once at module-import time, so we cannot use `py::arg = get_default_solver_settings()`
+// directly — we accept py::object and look up the current default per call.
+const SolverSettings& resolve_solver_settings(const py::object& obj)
+{
+    if (obj.is_none()) return get_default_solver_settings();
+    return obj.cast<const SolverSettings&>();
+}
+} // anonymous namespace
 
 PYBIND11_MODULE(_core, m)
 {
@@ -19,8 +42,28 @@ PYBIND11_MODULE(_core, m)
         Robbins, J.A., Siefert, J.A., and Pangborn, H.C., "Sparsity-Promoting Reachability Analysis and Optimization of Constrained Zonotopes," 2025.**
     )pbdoc";
 
+    // Bound map types for Gurobi/SCIP escape hatches (Python dict-like with reference semantics).
+    py::bind_map<std::map<std::string, int>>(m, "_GurobiIntParams");
+    py::bind_map<std::map<std::string, double>>(m, "_GurobiDblParams");
+    py::bind_map<std::map<std::string, std::string>>(m, "_GurobiStrParams");
+    py::bind_map<std::map<std::string, bool>>(m, "_SCIPBoolParams");
+    py::bind_map<std::map<std::string, long long>>(m, "_SCIPLongintParams");
+    py::bind_map<std::map<std::string, char>>(m, "_SCIPCharParams");
+
     // solver settings and solution classes
-    py::class_<OptSettings>(m, "OptSettings", "Settings for optimization routines in ZonoOpt library.")
+    py::class_<SolverSettings>(m, "SolverSettings",
+        "Abstract base class for ZonoOpt solver settings. Pass an OptSettings or GurobiSettings instance to "
+        "ZonoOpt's optimization methods — the dynamic type selects the solver backend.")
+        .def("solver_name", &SolverSettings::solver_name,
+            R"pbdoc(
+                Returns the name of the solver backend selected by this settings type.
+
+                Returns:
+                    str: solver name
+            )pbdoc")    
+    ;
+
+    py::class_<OptSettings, SolverSettings>(m, "OptSettings", "Settings for the internal ZonoOpt ADMM / branch-and-bound solver.")
         .def(py::init())
         .def_readwrite("verbose", &OptSettings::verbose, "display optimization progress")
         .def_readwrite("verbosity_interval", &OptSettings::verbosity_interval, "print every verbose_interval iterations")
@@ -87,7 +130,150 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
     ;
 
-    py::class_<OptSolution>(m, "OptSolution", "Solution data structure for optimization routines in ZonoOpt library.")
+    py::class_<GurobiSettings, SolverSettings>(m, "GurobiSettings",
+        "Settings for the dynamically-loaded Gurobi solver backend. Every typed field is Optional; "
+        "leave it as None to use Gurobi's default. For Gurobi parameters not exposed as typed fields, "
+        "use int_params / dbl_params / str_params (keyed by Gurobi's documented parameter name)\n\n"
+        "Reference: https://docs.gurobi.com/projects/optimizer/en/current/reference/parameters.html")
+        .def(py::init())
+        // Termination
+        .def_readwrite("TimeLimit",     &GurobiSettings::TimeLimit,     "wall-clock time limit in seconds")
+        .def_readwrite("WorkLimit",     &GurobiSettings::WorkLimit,     "deterministic work limit")
+        .def_readwrite("MemLimit",      &GurobiSettings::MemLimit,      "memory limit in GB")
+        .def_readwrite("SolutionLimit", &GurobiSettings::SolutionLimit, "stop after this many MIP solutions")
+        // Tolerances
+        .def_readwrite("MIPGap",         &GurobiSettings::MIPGap,         "relative MIP optimality gap")
+        .def_readwrite("MIPGapAbs",      &GurobiSettings::MIPGapAbs,      "absolute MIP optimality gap")
+        .def_readwrite("FeasibilityTol", &GurobiSettings::FeasibilityTol, "constraint feasibility tolerance")
+        .def_readwrite("OptimalityTol",  &GurobiSettings::OptimalityTol,  "dual feasibility tolerance")
+        .def_readwrite("IntFeasTol",     &GurobiSettings::IntFeasTol,     "integer feasibility tolerance")
+        // Algorithm / behavior
+        .def_readwrite("Method",       &GurobiSettings::Method,       "root-node algorithm: -1 auto, 0..5")
+        .def_readwrite("Presolve",     &GurobiSettings::Presolve,     "-1 auto, 0 off, 1 conservative, 2 aggressive")
+        .def_readwrite("Cuts",         &GurobiSettings::Cuts,         "global cut aggressiveness: -1..3")
+        .def_readwrite("MIPFocus",     &GurobiSettings::MIPFocus,     "0 default, 1 feasibility, 2 optimality, 3 bound")
+        .def_readwrite("NumericFocus", &GurobiSettings::NumericFocus, "0..3 numerical-care knob")
+        .def_readwrite("Heuristics",   &GurobiSettings::Heuristics,   "MIP heuristics effort, 0..1")
+        .def_readwrite("Threads",      &GurobiSettings::Threads,      "worker thread count; 0 = Gurobi auto")
+        .def_readwrite("Seed",         &GurobiSettings::Seed,         "random seed")
+        // Solution pool
+        .def_readwrite("PoolSolutions",  &GurobiSettings::PoolSolutions,  "size of the MIP solution pool")
+        .def_readwrite("PoolSearchMode", &GurobiSettings::PoolSearchMode, "0 default, 1 n diverse, 2 n best")
+        .def_readwrite("PoolGap",        &GurobiSettings::PoolGap,        "relative gap for pool solutions")
+        .def_readwrite("PoolGapAbs",     &GurobiSettings::PoolGapAbs,     "absolute gap for pool solutions")
+        // Logging
+        .def_readwrite("OutputFlag",   &GurobiSettings::OutputFlag,   "0 silent, 1 verbose (Gurobi default 1)")
+        .def_readwrite("LogToConsole", &GurobiSettings::LogToConsole, "log to console flag")
+        .def_readwrite("LogFile",      &GurobiSettings::LogFile,      "Gurobi log file path")
+        // Escape hatch
+        .def_readwrite("int_params", &GurobiSettings::int_params,
+            "dict[str, int]: Gurobi int parameters not in the typed fields above, keyed by Gurobi parameter name")
+        .def_readwrite("dbl_params", &GurobiSettings::dbl_params,
+            "dict[str, float]: Gurobi double parameters not in the typed fields above, keyed by Gurobi parameter name")
+        .def_readwrite("str_params", &GurobiSettings::str_params,
+            "dict[str, str]: Gurobi string parameters not in the typed fields above, keyed by Gurobi parameter name")
+        .def("__repr__", &GurobiSettings::print,
+            R"pbdoc(
+                Displays the parameters that have been explicitly set.
+
+                Returns:
+                    str: string
+            )pbdoc")
+        .def("copy", [](const GurobiSettings& self) -> GurobiSettings { return self; },
+            R"pbdoc(
+                Copy settings object
+
+                Returns:
+                    GurobiSettings: copy of settings
+            )pbdoc")
+    ;
+
+    py::class_<SCIPSettings, SolverSettings>(m, "SCIPSettings",
+        "Settings for the dynamically-loaded SCIP solver backend. Every typed field is Optional; "
+        "leave it as None to use SCIP's default. For SCIP parameters not exposed as typed fields, "
+        "use the bool/int/longint/real/char/str_params dicts keyed by SCIP's documented parameter "
+        "name (e.g., 'limits/time', 'numerics/feastol').\n\n"
+        "Reference: https://www.scipopt.org/doc/html/PARAMETERS.php")
+        .def(py::init())
+        // Limits
+        .def_readwrite("TimeLimit",     &SCIPSettings::TimeLimit,     "wall-clock time limit in seconds ('limits/time')")
+        .def_readwrite("MemLimit",      &SCIPSettings::MemLimit,      "memory limit in MB ('limits/memory')")
+        .def_readwrite("SolutionLimit", &SCIPSettings::SolutionLimit, "stop after this many MIP solutions ('limits/solutions')")
+        .def_readwrite("NodeLimit",     &SCIPSettings::NodeLimit,     "max branch-and-bound nodes ('limits/nodes')")
+        // Tolerances
+        .def_readwrite("MIPGap",         &SCIPSettings::MIPGap,         "relative MIP optimality gap ('limits/gap')")
+        .def_readwrite("MIPGapAbs",      &SCIPSettings::MIPGapAbs,      "absolute MIP optimality gap ('limits/absgap')")
+        .def_readwrite("FeasibilityTol", &SCIPSettings::FeasibilityTol, "feasibility tolerance ('numerics/feastol')")
+        // Behavior
+        .def_readwrite("Threads", &SCIPSettings::Threads, "worker threads ('parallel/maxnthreads')")
+        .def_readwrite("Seed",    &SCIPSettings::Seed,    "random seed shift ('randomization/randomseedshift')")
+        // Display
+        .def_readwrite("VerbLevel", &SCIPSettings::VerbLevel,
+            "verbosity 0..5 ('display/verblevel'); 0 = silent. SCIP default is 4 but ZonoOpt defaults to silent unless set.")
+        // Escape-hatch maps
+        .def_readwrite("bool_params",    &SCIPSettings::bool_params,
+            "dict[str, bool]: SCIP bool parameters by name (e.g., 'misc/usesymmetry')")
+        .def_readwrite("int_params",     &SCIPSettings::int_params,
+            "dict[str, int]: SCIP int parameters by name")
+        .def_readwrite("longint_params", &SCIPSettings::longint_params,
+            "dict[str, int]: SCIP long-int parameters by name (e.g., 'limits/nodes')")
+        .def_readwrite("real_params",    &SCIPSettings::real_params,
+            "dict[str, float]: SCIP real parameters by name (e.g., 'numerics/dualfeastol')")
+        .def_readwrite("char_params",    &SCIPSettings::char_params,
+            "dict[str, str]: SCIP char parameters by name (single-character values)")
+        .def_readwrite("str_params",     &SCIPSettings::str_params,
+            "dict[str, str]: SCIP string parameters by name")
+        .def("__repr__", &SCIPSettings::print,
+            R"pbdoc(
+                Displays the parameters that have been explicitly set.
+
+                Returns:
+                    str: string
+            )pbdoc")
+        .def("copy", [](const SCIPSettings& self) -> SCIPSettings { return self; },
+            R"pbdoc(
+                Copy settings object
+
+                Returns:
+                    SCIPSettings: copy of settings
+            )pbdoc")
+    ;
+
+    // External-solver-specific solution metadata, attached to OptSolution.external_results
+    // when an external solver (Gurobi, SCIP, ...) was used.
+    py::class_<ExternalSolverResults, std::shared_ptr<ExternalSolverResults>>(m, "ExternalSolverResults",
+        "Abstract base for external-solver-specific solution metadata. "
+        "Inspect via isinstance() to see whether GurobiSolverResults, SCIPSolverResults, etc.")
+        .def("__repr__", &ExternalSolverResults::print);
+
+    py::class_<GurobiSolverResults, ExternalSolverResults, std::shared_ptr<GurobiSolverResults>>(
+        m, "GurobiSolverResults",
+        "Gurobi-native solution metadata attached to OptSolution.external_results when Gurobi was used.")
+        .def(py::init())
+        .def_readwrite("status",     &GurobiSolverResults::status,     "raw Gurobi status code")
+        .def_readwrite("iter_count", &GurobiSolverResults::iter_count, "simplex/barrier iterations (Gurobi IterCount)")
+        .def_readwrite("node_count", &GurobiSolverResults::node_count, "branch-and-bound nodes explored (Gurobi NodeCount)")
+        .def_readwrite("mip_gap",    &GurobiSolverResults::mip_gap,    "relative MIP optimality gap achieved (Gurobi MIPGap)")
+        .def_readwrite("obj_bound",  &GurobiSolverResults::obj_bound,  "best dual bound for the MIP (Gurobi ObjBound)")
+        .def("__repr__", &GurobiSolverResults::print);
+
+    py::class_<SCIPSolverResults, ExternalSolverResults, std::shared_ptr<SCIPSolverResults>>(
+        m, "SCIPSolverResults",
+        "SCIP-native solution metadata attached to OptSolution.external_results when SCIP was used.")
+        .def(py::init())
+        .def_readwrite("status",      &SCIPSolverResults::status,      "raw SCIP_Status code")
+        .def_readwrite("node_count",  &SCIPSolverResults::node_count,  "total branch-and-bound nodes explored (SCIPgetNTotalNodes)")
+        .def_readwrite("mip_gap",     &SCIPSolverResults::mip_gap,     "relative gap at termination (SCIPgetGap)")
+        .def_readwrite("dual_bound",  &SCIPSolverResults::dual_bound,  "best dual bound found (SCIPgetDualbound)")
+        .def_readwrite("n_sols_pool", &SCIPSolverResults::n_sols_pool, "number of feasible solutions in SCIP's storage (SCIPgetNSols)")
+        .def("__repr__", &SCIPSolverResults::print);
+
+    py::class_<OptSolution>(m, "OptSolution",
+        "Solution data structure for optimization routines in ZonoOpt library. "
+        "Fields z, J, run_time, converged, infeasible are always populated. "
+        "ADMM-specific fields (x, u, iter, startup_time, primal_residual, dual_residual) "
+        "are populated only when the internal solver was used. "
+        "external_results (None unless an external solver was used) carries solver-native metadata.")
         .def(py::init())
         .def_readwrite("z", &OptSolution::z, "solution vector")
         .def_readwrite("J", &OptSolution::J, "objective")
@@ -100,6 +286,8 @@ PYBIND11_MODULE(_core, m)
         .def_readwrite("u", &OptSolution::u, "ADMM dual variable")
         .def_readwrite("primal_residual", &OptSolution::primal_residual, "primal residual, corresponds to feasibility")
         .def_readwrite("dual_residual", &OptSolution::dual_residual, "dual residual, corresponds to optimality")
+        .def_readwrite("external_results", &OptSolution::external_results,
+            "Optional[ExternalSolverResults]: solver-native metadata, set when Gurobi/SCIP/etc. was used.")
         .def("__repr__", &OptSolution::print,
             R"pbdoc(
                 Displays solution as a string
@@ -2210,9 +2398,10 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
         .def("optimize_over", [](const HybZono& self, const Eigen::SparseMatrix<zono_float> &P,
             const Eigen::Vector<zono_float, -1> &q, zono_float c,
-            const OptSettings &settings, OptSolution* solution,
+            py::object settings_obj, OptSolution* solution,
             const WarmStartParams& warm_start_params)-> Eigen::Vector<zono_float, -1>
             {
+                const SolverSettings& settings = resolve_solver_settings(settings_obj);
                 auto sol_shared = std::make_shared<OptSolution>();
                 auto z = self.optimize_over(P, q, c, settings, &sol_shared, warm_start_params);
                 if (solution)
@@ -2220,7 +2409,7 @@ PYBIND11_MODULE(_core, m)
                 return z;
             },
             "optimize over", py::arg("P"), py::arg("q"), py::arg("c")=0,
-            py::arg("settings")=OptSettings(), py::arg("solution")=nullptr,
+            py::arg("settings")=py::none(), py::arg("solution")=nullptr,
             py::arg("warm_start_params")=WarmStartParams(),
             R"pbdoc(
                 Solves optimization problem with quadratic objective over the current set
@@ -2239,16 +2428,17 @@ PYBIND11_MODULE(_core, m)
                 Solves optimization problem of the form min 0.5*z^T*P*z + q^T*z + c where z is a vector in the current set
             )pbdoc")
         .def("project_point", [](const HybZono& self, const Eigen::Vector<zono_float, -1> &x,
-            const OptSettings &settings, OptSolution* solution,
+            py::object settings_obj, OptSolution* solution,
             const WarmStartParams& warm_start_params) -> Eigen::Vector<zono_float, -1>
             {
+                const SolverSettings& settings = resolve_solver_settings(settings_obj);
                 auto sol_shared = std::make_shared<OptSolution>();
                 auto z = self.project_point(x, settings, &sol_shared, warm_start_params);
                 if (solution)
                     *solution = *sol_shared;
                 return z;
             },
-            py::arg("x"), py::arg("settings")=OptSettings(),
+            py::arg("x"), py::arg("settings")=py::none(),
             py::arg("solution")=nullptr, py::arg("warm_start_params")=WarmStartParams(),
             R"pbdoc(
                 Returns the projection of the point x onto the set object.
@@ -2262,16 +2452,17 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     numpy.array: point z in the current set
             )pbdoc")
-        .def("is_empty", [](const HybZono& self, const OptSettings &settings,
+        .def("is_empty", [](const HybZono& self, py::object settings_obj,
             OptSolution* solution, const WarmStartParams& warm_start_params) -> bool
             {
+                const SolverSettings& settings = resolve_solver_settings(settings_obj);
                 auto sol_shared = std::make_shared<OptSolution>();
                 const bool empty = self.is_empty(settings, &sol_shared, warm_start_params);
                 if (solution)
                     *solution = *sol_shared;
                 return empty;
             },
-            py::arg("settings")=OptSettings(),
+            py::arg("settings")=py::none(),
             py::arg("solution")=nullptr, py::arg("warm_start_params")=WarmStartParams(),
             R"pbdoc(
                 Returns true if the set is provably empty, false otherwise.
@@ -2285,16 +2476,17 @@ PYBIND11_MODULE(_core, m)
                     bool: flag indicating whether set is provably empty
             )pbdoc")
         .def("support", [](HybZono& self, const Eigen::Vector<zono_float, -1> &d,
-            const OptSettings &settings, OptSolution* solution,
+            py::object settings_obj, OptSolution* solution,
             const WarmStartParams& warm_start_params) -> zono_float
             {
+                const SolverSettings& settings = resolve_solver_settings(settings_obj);
                 auto sol_shared = std::make_shared<OptSolution>();
                 const zono_float s = self.support(d, settings, &sol_shared, warm_start_params);
                 if (solution)
                     *solution = *sol_shared;
                 return s;
             },
-            py::arg("d"), py::arg("settings")=OptSettings(),
+            py::arg("d"), py::arg("settings")=py::none(),
             py::arg("solution")=nullptr, py::arg("warm_start_params")=WarmStartParams(),
             R"pbdoc(
                 Computes support function of the set in the direction d.
@@ -2311,16 +2503,17 @@ PYBIND11_MODULE(_core, m)
                 Solves max_{z in Z} <z, d> where <., .> is the inner product
             )pbdoc")
         .def("contains_point", [](const HybZono& self, const Eigen::Vector<zono_float, -1> &x,
-            const OptSettings &settings, OptSolution* solution,
+            py::object settings_obj, OptSolution* solution,
             const WarmStartParams& warm_start_params) -> bool
             {
+                const SolverSettings& settings = resolve_solver_settings(settings_obj);
                 auto sol_shared = std::make_shared<OptSolution>();
                 const bool contains = self.contains_point(x, settings, &sol_shared, warm_start_params);
                 if (solution)
                     *solution = *sol_shared;
                 return contains;
             },
-            py::arg("x"), py::arg("settings")=OptSettings(),
+            py::arg("x"), py::arg("settings")=py::none(),
             py::arg("solution")=nullptr, py::arg("warm_start_params")=WarmStartParams(),
             R"pbdoc(
                 Checks whether the point x is contained in the set object.
@@ -2338,16 +2531,17 @@ PYBIND11_MODULE(_core, m)
                 Will return false only if an infeasibility certificate is found, i.e., false negatives are not possible.
             )pbdoc")
         .def("bounding_box", [](HybZono& self,
-            const OptSettings &settings, OptSolution* solution,
+            py::object settings_obj, OptSolution* solution,
             const WarmStartParams& warm_start_params) -> Box
             {
+                const SolverSettings& settings = resolve_solver_settings(settings_obj);
                 auto sol_shared = std::make_shared<OptSolution>();
                 const Box bb = self.bounding_box(settings, &sol_shared, warm_start_params);
                 if (solution)
                     *solution = *sol_shared;
                 return bb;
             },
-            py::arg("settings")=OptSettings(),
+            py::arg("settings")=py::none(),
             py::arg("solution")=nullptr, py::arg("warm_start_params")=WarmStartParams(),
             R"pbdoc(
                 Computes a bounding box of the set object as a Box object.
@@ -2373,16 +2567,17 @@ PYBIND11_MODULE(_core, m)
                 If the set is sharp, the convex relaxation is the convex hull.
             )pbdoc")
         .def("get_leaves", [](const HybZono& self, bool remove_redundancy,
-            const OptSettings &settings, OptSolution* solution,
+            py::object settings_obj, OptSolution* solution,
             int n_leaves, int contractor_iter) -> std::vector<std::unique_ptr<ConZono>>
             {
+                const SolverSettings& settings = resolve_solver_settings(settings_obj);
                 auto sol_shared = std::make_shared<OptSolution>();
                 auto leaves = self.get_leaves(remove_redundancy, settings, &sol_shared, n_leaves, contractor_iter);
                 if (solution)
                     *solution = *sol_shared;
                 return leaves;
             },
-            py::arg("remove_redundancy")=false, py::arg("settings")=OptSettings(), py::arg("solution")=nullptr,
+            py::arg("remove_redundancy")=false, py::arg("settings")=py::none(), py::arg("solution")=nullptr,
             py::arg("n_leaves")=std::numeric_limits<int>::max(), py::arg("contractor_iter")=100, 
             R"pbdoc(
                 Computes individual constrained zonotopes whose union is the hybrid zonotope object.
@@ -2405,16 +2600,17 @@ PYBIND11_MODULE(_core, m)
                 for ADMM-FP, these will instead be used for branch and bound search.
             )pbdoc")
         .def("complement", [](HybZono& self, zono_float delta_m,
-            bool remove_redundancy, const OptSettings &settings, OptSolution* solution,
+            bool remove_redundancy, py::object settings_obj, OptSolution* solution,
             int n_leaves, int contractor_iter) -> std::unique_ptr<HybZono>
             {
+                const SolverSettings& settings = resolve_solver_settings(settings_obj);
                 auto sol_shared = std::make_shared<OptSolution>();
                 auto Z = self.complement(delta_m, remove_redundancy, settings, &sol_shared, n_leaves, contractor_iter);
                 if (solution)
                     *solution = *sol_shared;
                 return Z;
             },
-            py::arg("delta_m")=100, py::arg("remove_redundancy")=true, py::arg("settings")=OptSettings(),
+            py::arg("delta_m")=100, py::arg("remove_redundancy")=true, py::arg("settings")=py::none(),
             py::arg("solution")=nullptr, py::arg("n_leaves")=std::numeric_limits<int>::max(), py::arg("contractor_iter")=100,
             R"pbdoc(
             Computes the complement of the set Z.
@@ -3157,9 +3353,10 @@ PYBIND11_MODULE(_core, m)
                 HybZono: zonotopic set
         )pbdoc");
     m.def("set_diff", [](const HybZono& Z1, HybZono& Z2, zono_float delta_m,
-            bool remove_redundancy, const OptSettings &settings, OptSolution* solution,
+            bool remove_redundancy, py::object settings_obj, OptSolution* solution,
             int n_leaves, int contractor_iter) -> std::unique_ptr<HybZono>
             {
+                const SolverSettings& settings = resolve_solver_settings(settings_obj);
                 auto sol_shared = std::make_shared<OptSolution>();
                 auto Z = set_diff(Z1, Z2, delta_m, remove_redundancy, settings, &sol_shared, n_leaves, contractor_iter);
                 if (solution)
@@ -3167,7 +3364,7 @@ PYBIND11_MODULE(_core, m)
                 return Z;
             },
             py::arg("Z1"), py::arg("Z2"), py::arg("delta_m")=100, py::arg("remove_redundancy")=true,
-            py::arg("settings")=OptSettings(), py::arg("solution")=nullptr, py::arg("n_leaves")=std::numeric_limits<int>::max(), py::arg("contractor_iter")=10,
+            py::arg("settings")=py::none(), py::arg("solution")=nullptr, py::arg("n_leaves")=std::numeric_limits<int>::max(), py::arg("contractor_iter")=10,
             R"pbdoc(
             Set difference Z1 \\ Z2
 
@@ -3272,5 +3469,40 @@ PYBIND11_MODULE(_core, m)
 
             Returns:
                 HybZono: deserialized zonotopic set
+        )pbdoc");
+
+    // ---- Program-wide default solver settings --------------------------------
+    m.def("set_default_solver_settings", &set_default_solver_settings, py::arg("settings"),
+        R"pbdoc(
+            Set the program-wide default solver settings.
+
+            After calling this, any ZonoOpt optimization method invoked without an explicit
+            `settings` argument will use a polymorphic copy of `settings` as the default.
+            Use this to switch the entire library to a different solver backend (e.g., Gurobi)
+            with a single call, without passing settings to every optimization method.
+
+            Args:
+                settings (SolverSettings): an OptSettings or GurobiSettings instance.
+
+            Raises:
+                RuntimeError: if the selected solver cannot be initialized (e.g., a
+                    GurobiSettings is passed but the Gurobi shared library cannot be
+                    dynamically loaded). The previous default is left unchanged.
+
+            Example:
+                >>> zono.set_default_solver_settings(zono.GurobiSettings())
+                >>> Z.support(d)   # now uses Gurobi by default
+        )pbdoc");
+
+    m.def("get_default_solver_settings", &get_default_solver_settings,
+        py::return_value_policy::reference,
+        R"pbdoc(
+            Return a reference to the current program-wide default solver settings.
+
+            The returned object is the same instance held by the library; it remains valid
+            until set_default_solver_settings is called again.
+
+            Returns:
+                SolverSettings: the current default (OptSettings on a fresh program).
         )pbdoc");
 }

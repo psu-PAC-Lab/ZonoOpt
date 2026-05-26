@@ -53,7 +53,7 @@ class HybZono
 
         /**
          * @brief HybZono constructor
-         * 
+         *
          * @param Gc continuous generator matrix
          * @param Gb binary generator matrix
          * @param c center
@@ -62,6 +62,7 @@ class HybZono
          * @param b constraint vector
          * @param zero_one_form true if set is in 0-1 form
          * @param sharp true if set is known to be sharp, i.e., convex relaxation = convex hull
+         * @throws std::invalid_argument if Gc, Gb, c, Ac, Ab, and b have inconsistent dimensions.
          */
         HybZono(const Eigen::SparseMatrix<zono_float>& Gc, const Eigen::SparseMatrix<zono_float>& Gb, const Eigen::Vector<zono_float, -1>& c,
             const Eigen::SparseMatrix<zono_float>& Ac, const Eigen::SparseMatrix<zono_float>& Ab, const Eigen::Vector<zono_float, -1>& b,
@@ -72,7 +73,7 @@ class HybZono
 
         /**
          * @brief Reset hybrid zonotope object with the given parameters.
-         * 
+         *
          * @param Gc continuous generator matrix
          * @param Gb binary generator matrix
          * @param c center
@@ -81,6 +82,7 @@ class HybZono
          * @param b constraint vector
          * @param zero_one_form true if set is in 0-1 form
          * @param sharp true if set is known to be sharp, i.e., convex relaxation = convex hull
+         * @throws std::invalid_argument if Gc, Gb, c, Ac, Ab, and b have inconsistent dimensions.
          */
         void set(const Eigen::SparseMatrix<zono_float>& Gc, const Eigen::SparseMatrix<zono_float>& Gb, const Eigen::Vector<zono_float, -1>& c,
             const Eigen::SparseMatrix<zono_float>& Ac, const Eigen::SparseMatrix<zono_float>& Ab, const Eigen::Vector<zono_float, -1>& b,
@@ -217,9 +219,11 @@ class HybZono
          * This method uses an interval contractor to detect generators that can be removed.
          * Constrained zonotopes with separable constraints and generators in the form [g0 0 0 ...]^T * xi + c, a^T * xi = b are simplified.
          * Additionally, any linearly dependent rows of the constraint matrix A are removed.
-         * If the linearly dependent constraints are not consistent (e.g., if A = [1, 0.1; 1, 0.1] and b = [1; 0.8]), 
+         * If the linearly dependent constraints are not consistent (e.g., if A = [1, 0.1; 1, 0.1] and b = [1; 0.8]),
          * the returned set is not equivalent to the original set.
          * Unused factors are also removed.
+         *
+         * @throws std::runtime_error if redundancy removal fails internally (should not occur in normal use).
          */
         virtual std::unique_ptr<HybZono> remove_redundancy(int contractor_iter=10) const;
 
@@ -249,8 +253,10 @@ class HybZono
          * delta_m is a parameter that defines the set over which the complement is defined.
          * For a constrained zonotope, the complement is restricted to the set
          * X = {G \xi + c | A \xi = b, \xi \in [-1-delta_m, 1+delta+m]^{nG}}.
+         *
+         * @throws std::runtime_error if the set is empty.
          */
-        virtual std::unique_ptr<HybZono> complement(const zono_float delta_m = 100, const bool remove_redundancy=true, const OptSettings &settings=OptSettings(),
+        virtual std::unique_ptr<HybZono> complement(const zono_float delta_m = 100, const bool remove_redundancy=true, const SolverSettings &settings=get_default_solver_settings(),
             std::shared_ptr<OptSolution>* solution=nullptr, const int n_leaves = std::numeric_limits<int>::max(), const int contractor_iter=10)
         {
             return do_complement(delta_m, remove_redundancy, settings, solution, n_leaves, contractor_iter);
@@ -312,12 +318,14 @@ class HybZono
          * @param solution optimization solution structure pointer, populated with result
          * @param warm_start_params warm start parameters
          * @return point z in the current set
-         * 
+         *
          * Solves optimization problem of the form min 0.5*z^T*P*z + q^T*z + c where z is a vector in the current set
+         *
+         * @throws std::invalid_argument if P, q, or c have inconsistent dimensions with the set.
          */
         Eigen::Vector<zono_float, -1> optimize_over(
             const Eigen::SparseMatrix<zono_float> &P, const Eigen::Vector<zono_float, -1> &q, zono_float c=0,
-            const OptSettings &settings=OptSettings(), std::shared_ptr<OptSolution>* solution=nullptr,
+            const SolverSettings &settings=get_default_solver_settings(), std::shared_ptr<OptSolution>* solution=nullptr,
             const WarmStartParams& warm_start_params=WarmStartParams()) const
         {
             return do_optimize_over(P, q, c, settings, solution, warm_start_params);
@@ -325,15 +333,17 @@ class HybZono
 
         /**
          * @brief Returns the projection of the point x onto the set object.
-         * 
+         *
          * @param x point to be projected
          * @param settings optimization settings structure
          * @param solution optimization solution structure pointer, populated with result
          * @params warm_start_params warm start parameters
          * @return point z in the current set
+         * @throws std::invalid_argument if x does not have the same dimension as the set.
+         * @throws std::runtime_error if the projection problem is infeasible (e.g., the set is empty).
          */
         Eigen::Vector<zono_float, -1> project_point(const Eigen::Vector<zono_float, -1>& x,
-            const OptSettings &settings=OptSettings(), std::shared_ptr<OptSolution>* solution=nullptr,
+            const SolverSettings &settings=get_default_solver_settings(), std::shared_ptr<OptSolution>* solution=nullptr,
             const WarmStartParams& warm_start_params=WarmStartParams()) const
         {
             return do_project_point(x, settings, solution, warm_start_params);
@@ -348,7 +358,7 @@ class HybZono
          * @return flag indicating whether set is provably empty
          *
          */
-        bool is_empty(const OptSettings &settings=OptSettings(),
+        bool is_empty(const SolverSettings &settings=get_default_solver_settings(),
             std::shared_ptr<OptSolution>* solution=nullptr, const WarmStartParams& warm_start_params=WarmStartParams()) const
         {
             return do_is_empty(settings, solution, warm_start_params);
@@ -356,16 +366,18 @@ class HybZono
 
         /**
          * @brief Computes support function of the set in the direction d.
-         * 
+         *
          * @param d vector defining direction for support function
          * @param settings optimization settings structure
          * @param solution optimization solution structure pointer, populated with result
          * @param warm_start_params warm start parameters
          * @return support
-         * 
-         * Solves max_{z in Z} <z, d> where <., .> is the inner product 
+         *
+         * Solves max_{z in Z} <z, d> where <., .> is the inner product
+         *
+         * @throws std::invalid_argument if d does not have the same dimension as the set, or if the support problem is infeasible.
          */
-        zono_float support(const Eigen::Vector<zono_float, -1>& d, const OptSettings &settings=OptSettings(),
+        zono_float support(const Eigen::Vector<zono_float, -1>& d, const SolverSettings &settings=get_default_solver_settings(),
             std::shared_ptr<OptSolution>* solution=nullptr, const WarmStartParams& warm_start_params=WarmStartParams())
         {
             return do_support(d, settings, solution, warm_start_params);
@@ -373,7 +385,7 @@ class HybZono
 
         /**
          * @brief Checks whether the point x is contained in the set object.
-         * 
+         *
          * @param x point to be checked for set containment
          * @param settings optimization settings structure
          * @param solution optimization solution structure pointer, populated with result
@@ -381,8 +393,10 @@ class HybZono
          *
          * False positives are possible; will return true if the optimization converges within the specified tolerances.
          * Will return false only if an infeasibility certificate is found, i.e., false negatives are not possible.
+         *
+         * @throws std::invalid_argument if x does not have the same dimension as the set.
          */
-        bool contains_point(const Eigen::Vector<zono_float, -1>& x, const OptSettings &settings=OptSettings(),
+        bool contains_point(const Eigen::Vector<zono_float, -1>& x, const SolverSettings &settings=get_default_solver_settings(),
             std::shared_ptr<OptSolution>* solution=nullptr, const WarmStartParams& warm_start_params=WarmStartParams()) const
         {
             return do_contains_point(x, settings, solution, warm_start_params);
@@ -390,15 +404,17 @@ class HybZono
 
         /**
          * @brief Computes a bounding box of the set object as a Box object.
-         * 
+         *
          * @param settings optimization settings structure
          * @param solution optimization solution structure pointer, populated with result
          * @param warm_start_params warm start parameters
          * @return Box Z_bb
-         * 
+         *
          * In general, solves 2*n support optimizations where n is the set dimension to compute a bounding box.
+         *
+         * @throws std::invalid_argument if the set is empty.
          */
-        Box bounding_box(const OptSettings &settings=OptSettings(), std::shared_ptr<OptSolution>* solution=nullptr,
+        Box bounding_box(const SolverSettings &settings=get_default_solver_settings(), std::shared_ptr<OptSolution>* solution=nullptr,
             const WarmStartParams& warm_start_params=WarmStartParams())
         {
             return do_bounding_box(settings, solution, warm_start_params);
@@ -421,7 +437,7 @@ class HybZono
          * Branch and bound search is used to find all leaves of the hybrid zonotope tree. If any threads are allocated
          * for ADMM-FP, these will instead be used for branch and bound search.
          */
-        std::vector<std::unique_ptr<ConZono>> get_leaves(bool remove_redundancy=false, const OptSettings &settings=OptSettings(),
+        std::vector<std::unique_ptr<ConZono>> get_leaves(bool remove_redundancy=false, const SolverSettings &settings=get_default_solver_settings(),
             std::shared_ptr<OptSolution>* solution=nullptr, int n_leaves = std::numeric_limits<int>::max(), int contractor_iter=10) const;
 
         // friend function declarations
@@ -443,7 +459,7 @@ class HybZono
         friend std::unique_ptr<HybZono> constrain(HybZono& Z, const Eigen::SparseMatrix<zono_float>& H,
             const Eigen::Vector<zono_float, -1>& f, char direction, const Eigen::SparseMatrix<zono_float>& R);
         friend std::unique_ptr<HybZono> set_diff(const HybZono& Z1, HybZono& Z2, zono_float delta_m, bool remove_redundancy,
-            const OptSettings &settings, std::shared_ptr<OptSolution>* solution, const WarmStartParams& warm_start_params, int n_leaves, int contractor_iter);
+            const SolverSettings &settings, std::shared_ptr<OptSolution>* solution, const WarmStartParams& warm_start_params, int n_leaves, int contractor_iter);
         friend std::unique_ptr<HybZono> vrep_2_hybzono(const std::vector<Eigen::Matrix<zono_float, -1, -1>> &Vpolys, bool expose_indicators);
         friend std::unique_ptr<HybZono> zono_union_2_hybzono(std::vector<std::shared_ptr<Zono>> &Zs, bool expose_indicators);
 
@@ -451,17 +467,19 @@ class HybZono
 
         /**
          * @brief minkowski sum
-         * 
+         *
          * @param other
-         * @return std::unique_ptr<HybZono> 
+         * @return std::unique_ptr<HybZono>
+         * @throws std::invalid_argument if this and other have different dimensions.
          */
         std::unique_ptr<HybZono> operator+(HybZono& other) const;
 
         /**
          * @brief minkowski sum with point
-         * 
+         *
          * @param v
-         * @return std::unique_ptr<HybZono> 
+         * @return std::unique_ptr<HybZono>
+         * @throws std::invalid_argument if v does not have the same dimension as this set.
          */
         std::unique_ptr<HybZono> operator+(const Eigen::Vector<zono_float, -1>& v) const;
 
@@ -471,6 +489,7 @@ class HybZono
          * @param v
          * @param Z
          * @return std::unique_ptr<HybZono>
+         * @throws std::invalid_argument if v does not have the same dimension as Z.
          */
         friend std::unique_ptr<HybZono> operator+(const Eigen::Vector<zono_float, -1>& v, HybZono& Z);
 
@@ -479,6 +498,7 @@ class HybZono
          *
          * @param box
          * @return std::unique_ptr<HybZono>
+         * @throws std::invalid_argument if box does not have the same dimension as this set.
          */
         std::unique_ptr<HybZono> operator+(const Box& box) const;
 
@@ -488,20 +508,23 @@ class HybZono
          * @param box
          * @param Z
          * @return std::unique_ptr<HybZono>
+         * @throws std::invalid_argument if box does not have the same dimension as Z.
          */
         friend std::unique_ptr<HybZono> operator+(const Box& box, HybZono& Z);
 
         /**
          * @brief in-place minkowski sum
-         * 
-         * @param other 
+         *
+         * @param other
+         * @throws std::invalid_argument if this and other have different dimensions.
          */
         void operator+=(HybZono& other);
 
         /**
          * @brief in-place minkowski sum with point
-         * 
+         *
          * @param v
+         * @throws std::invalid_argument if v does not have the same dimension as this set.
          */
         void operator+=(const Eigen::Vector<zono_float, -1>& v);
 
@@ -509,24 +532,27 @@ class HybZono
          * @brief in-place minkowski sum with box
          *
          * @param box
+         * @throws std::invalid_argument if box does not have the same dimension as this set.
          */
         void operator+=(const Box& box);
 
         /**
          * @brief affine map with sparse matrix: returns R*Z
-         * 
-         * @param R 
-         * @param Z 
-         * @return std::unique_ptr<HybZono> 
+         *
+         * @param R
+         * @param Z
+         * @return std::unique_ptr<HybZono>
+         * @throws std::invalid_argument if R's column count does not match Z's dimension.
          */
         friend std::unique_ptr<HybZono> operator*(const Eigen::SparseMatrix<zono_float>& R, const HybZono& Z);
 
         /**
          * @brief affine map with dense matrix: returns R*Z
-         * 
-         * @param R 
-         * @param Z 
-         * @return std::unique_ptr<HybZono> 
+         *
+         * @param R
+         * @param Z
+         * @return std::unique_ptr<HybZono>
+         * @throws std::invalid_argument if R's column count does not match Z's dimension.
          */
         friend std::unique_ptr<HybZono> operator*(const Eigen::Matrix<zono_float, -1, -1>& R, const HybZono& Z);
 
@@ -535,6 +561,7 @@ class HybZono
          * @param R
          * @param Z
          * @return std::unique_ptr<HybZono>
+         * @throws std::invalid_argument if R's column count does not match Z's dimension.
          */
         friend std::unique_ptr<HybZono> operator*(const IntervalMatrix& R, const HybZono& Z);
 
@@ -564,17 +591,19 @@ class HybZono
 
         /**
          * @brief pontryagin difference
-         * 
-         * @param other 
-         * @return std::unique_ptr<HybZono> 
+         *
+         * @param other
+         * @return std::unique_ptr<HybZono>
+         * @throws std::invalid_argument if this and other have different dimensions, or if the inexact difference is requested with a hybrid-zonotope minuend.
          */
         std::unique_ptr<HybZono> operator-(Zono& other);
 
         /**
          * @brief pontryagin difference with point
-         * 
-         * @param v 
-         * @return std::unique_ptr<HybZono> 
+         *
+         * @param v
+         * @return std::unique_ptr<HybZono>
+         * @throws std::invalid_argument if v does not have the same dimension as this set.
          */
         std::unique_ptr<HybZono> operator-(const Eigen::Vector<zono_float, -1>& v);
 
@@ -582,26 +611,30 @@ class HybZono
          * @brief pontryagin difference with box
          * @param box
          * @return std::unique_ptr<HybZono>
+         * @throws std::invalid_argument if box does not have the same dimension as this set.
          */
         std::unique_ptr<HybZono> operator-(const Box& box);
 
         /**
          * @brief in-place pontryagin difference
-         * 
-         * @param other 
+         *
+         * @param other
+         * @throws std::invalid_argument if this and other have different dimensions.
          */
         void operator-=(Zono& other);
 
         /**
          * @brief in-place pontryagin difference with point
-         * 
-         * @param v 
+         *
+         * @param v
+         * @throws std::invalid_argument if v does not have the same dimension as this set.
          */
         void operator-=(const Eigen::Vector<zono_float, -1>& v);
 
         /**
          * @brief in-place pontryagin difference with box
          * @param box
+         * @throws std::invalid_argument if box does not have the same dimension as this set.
          */
         void operator-=(const Box& box);
 
@@ -643,17 +676,19 @@ class HybZono
 
         /**
          * @brief intersection
-         * 
-         * @param other 
-         * @return std::unique_ptr<HybZono> 
+         *
+         * @param other
+         * @return std::unique_ptr<HybZono>
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         std::unique_ptr<HybZono> operator&(HybZono& other) const;
 
         /**
          * @brief union
-         * 
-         * @param other 
-         * @return std::unique_ptr<HybZono> 
+         *
+         * @param other
+         * @return std::unique_ptr<HybZono>
+         * @throws std::invalid_argument if this and other have different dimensions.
          */
         std::unique_ptr<HybZono> operator|(HybZono& other) const;
 
@@ -716,25 +751,25 @@ class HybZono
         // methods
         virtual Eigen::Vector<zono_float, -1> do_optimize_over(
             const Eigen::SparseMatrix<zono_float> &P, const Eigen::Vector<zono_float, -1> &q, zono_float c,
-            const OptSettings &settings, std::shared_ptr<OptSolution>* solution,
+            const SolverSettings &settings, std::shared_ptr<OptSolution>* solution,
             const WarmStartParams& warm_start_params) const;
 
         virtual Eigen::Vector<zono_float, -1> do_project_point(const Eigen::Vector<zono_float, -1>& x,
-            const OptSettings &settings, std::shared_ptr<OptSolution>* solution, const WarmStartParams& warm_start_params) const;
+            const SolverSettings &settings, std::shared_ptr<OptSolution>* solution, const WarmStartParams& warm_start_params) const;
 
-        virtual bool do_is_empty(const OptSettings &settings, std::shared_ptr<OptSolution>* solution,
+        virtual bool do_is_empty(const SolverSettings &settings, std::shared_ptr<OptSolution>* solution,
             const WarmStartParams& warm_start_params) const;
 
-        virtual zono_float do_support(const Eigen::Vector<zono_float, -1>& d, const OptSettings &settings,
+        virtual zono_float do_support(const Eigen::Vector<zono_float, -1>& d, const SolverSettings &settings,
             std::shared_ptr<OptSolution>* solution, const WarmStartParams& warm_start_params);
 
-        virtual bool do_contains_point(const Eigen::Vector<zono_float, -1>& x, const OptSettings &settings,
+        virtual bool do_contains_point(const Eigen::Vector<zono_float, -1>& x, const SolverSettings &settings,
             std::shared_ptr<OptSolution>* solution, const WarmStartParams& warm_start_params) const;
 
-        virtual Box do_bounding_box(const OptSettings &settings, std::shared_ptr<OptSolution>* solution,
+        virtual Box do_bounding_box(const SolverSettings &settings, std::shared_ptr<OptSolution>* solution,
             const WarmStartParams& warm_start_params);
 
-        virtual std::unique_ptr<HybZono> do_complement(zono_float, bool remove_redundancy, const OptSettings &settings,
+        virtual std::unique_ptr<HybZono> do_complement(zono_float, bool remove_redundancy, const SolverSettings &settings,
             std::shared_ptr<OptSolution>* solution, int n_leaves, int contractor_iter);
 
 
@@ -742,17 +777,17 @@ class HybZono
         static std::set<int> find_unused_generators(const Eigen::SparseMatrix<zono_float>& G, const Eigen::SparseMatrix<zono_float>& A);
         OptSolution mi_opt(const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q,
             zono_float c, const Eigen::SparseMatrix<zono_float>& A, const Eigen::Vector<zono_float, -1>& b,
-            const OptSettings &settings=OptSettings(), std::shared_ptr<OptSolution>* solution=nullptr,
+            const SolverSettings &settings=get_default_solver_settings(), std::shared_ptr<OptSolution>* solution=nullptr,
             const WarmStartParams& warm_start_params=WarmStartParams()) const;
         std::vector<OptSolution> mi_opt_multisol(const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q,
             zono_float c, const Eigen::SparseMatrix<zono_float>& A, const Eigen::Vector<zono_float, -1>& b, int n_sols,
-            const OptSettings &settings=OptSettings(), std::shared_ptr<OptSolution>* solution=nullptr) const;
+            const SolverSettings &settings=get_default_solver_settings(), std::shared_ptr<OptSolution>* solution=nullptr) const;
 
     private:
 
         void make_G_A();
         void set_Ac_Ab_from_A();
-        std::vector<Eigen::Vector<zono_float, -1>> get_bin_leaves(const OptSettings &settings=OptSettings(), std::shared_ptr<OptSolution>* solution=nullptr,
+        std::vector<Eigen::Vector<zono_float, -1>> get_bin_leaves(const SolverSettings &settings=get_default_solver_settings(), std::shared_ptr<OptSolution>* solution=nullptr,
             int n_leaves = std::numeric_limits<int>::max()) const;
         std::vector<std::pair<int, int>> get_simplifiable_constraints() const;
         void apply_constraint_simplification(const std::vector<std::pair<int, int>>& cons, Box& box);
@@ -771,6 +806,7 @@ class HybZono
  * @param s vector offset
  * @return zonotopic set
  * @ingroup ZonoOpt_SetOperations
+ * @throws std::invalid_argument if R, s, and Z have inconsistent dimensions.
  */
 std::unique_ptr<HybZono> affine_map(const HybZono& Z,
     const Eigen::SparseMatrix<zono_float>& R, const Eigen::Vector<zono_float, -1>& s = Eigen::Vector<zono_float, -1>());
@@ -788,6 +824,8 @@ std::unique_ptr<HybZono> affine_map(const HybZono& Z,
  * Rego et. al. (2020) "Guaranteed methods based on constrained zonotopes for set-valued state estimation of nonlinear discrete-time systems"
  * The SVD-based zonotope over-approximation method is used in this function when Z is a constrained zonotope.
  * When Z is a hybrid zonotope, the convex relaxation is used to produce a constrained zonotope, and then the SVD-based method is applied.
+ *
+ * @throws std::invalid_argument if R, s, and Z have inconsistent dimensions.
  */
 std::unique_ptr<HybZono> affine_inclusion(const HybZono& Z, const IntervalMatrix& R,
     const Eigen::Vector<zono_float, -1>& s=Eigen::Vector<zono_float, -1>());
@@ -799,6 +837,7 @@ std::unique_ptr<HybZono> affine_inclusion(const HybZono& Z, const IntervalMatrix
  * @param dims vector of dimensions
  * @return zonotopic set
  * @ingroup ZonoOpt_SetOperations
+ * @throws std::invalid_argument if any entry in dims is not a valid dimension of Z.
  */
 std::unique_ptr<HybZono> project_onto_dims(const HybZono& Z, const std::vector<int>& dims);
 
@@ -809,6 +848,7 @@ std::unique_ptr<HybZono> project_onto_dims(const HybZono& Z, const std::vector<i
  * @param Z2 zonotopic set
  * @return zonotopic set
  * @ingroup ZonoOpt_SetOperations
+ * @throws std::invalid_argument if Z1 and Z2 have different dimensions.
  */
 std::unique_ptr<HybZono> minkowski_sum(const HybZono& Z1, HybZono& Z2);
 
@@ -824,6 +864,9 @@ std::unique_ptr<HybZono> minkowski_sum(const HybZono& Z1, HybZono& Z2);
  * For inner approximations (exact = false), the algorithm from Vinod et. al. 2025 is used.
  * Note that this algorithm is exact when the minuend is a constrained zonotope and the matrix [G;A] is invertible.
  * Exact Pontryagin difference can only be computed when the subtrahend is a zonotope.
+ *
+ * @throws std::invalid_argument if Z1 and Z2 have different dimensions, or if the inexact difference is requested when the minuend is a hybrid zonotope.
+ * @throws std::runtime_error if internal preconditions fail (e.g., redundancy-removal failure during the computation).
  */
 std::unique_ptr<HybZono> pontry_diff(HybZono& Z1, Zono& Z2, bool exact=true);
 
@@ -835,6 +878,7 @@ std::unique_ptr<HybZono> pontry_diff(HybZono& Z1, Zono& Z2, bool exact=true);
  * @param R affine map matrix
  * @return zonotopic set
  * @ingroup ZonoOpt_SetOperations
+ * @throws std::invalid_argument if Z1, Z2, and R have inconsistent dimensions.
  */
 std::unique_ptr<HybZono> intersection(const HybZono& Z1, HybZono& Z2,
     const Eigen::SparseMatrix<zono_float>& R=Eigen::SparseMatrix<zono_float>());
@@ -847,6 +891,7 @@ std::unique_ptr<HybZono> intersection(const HybZono& Z1, HybZono& Z2,
  * @param dims vector of dimensions
  * @return zonotopic set
  * @ingroup ZonoOpt_SetOperations
+ * @throws std::invalid_argument if Z2.n does not match the number of dimensions, or if any entry in dims is not a valid dimension of Z1.
  */
 std::unique_ptr<HybZono> intersection_over_dims(const HybZono& Z1, HybZono& Z2,
     const std::vector<int>& dims);
@@ -862,6 +907,8 @@ std::unique_ptr<HybZono> intersection_over_dims(const HybZono& Z1, HybZono& Z2,
  * @ingroup ZonoOpt_SetOperations
  *
  * Calls constrain with '<'
+ *
+ * @throws std::invalid_argument if Z, H, f, and R have inconsistent dimensions.
  */
 std::unique_ptr<HybZono> halfspace_intersection(HybZono& Z, const Eigen::SparseMatrix<zono_float>& H,
     const Eigen::Vector<zono_float, -1>& f, const Eigen::SparseMatrix<zono_float>& R=Eigen::SparseMatrix<zono_float>());
@@ -878,6 +925,8 @@ std::unique_ptr<HybZono> halfspace_intersection(HybZono& Z, const Eigen::SparseM
  * Computes union of sets {Z0, Z1, ..., Zn}. If expose_indicators is true, returns union({Z0, ..., Zn}) x I where I is the indicator set for the union.
  * Specifically, each dimension of I corresponds to one of the Zi in the union. So for union_of_many({Z0, Z1, Z2}, true) with Z0, Z1, Z2 not intersecting,
  * if a vector [z, i] is in union({Z0, Z1, Z2}) x I, then i = [1, 0, 0] if z is in Z0, etc.
+ *
+ * @throws std::invalid_argument if Zs is empty or if its members have inconsistent dimensions.
  */
 std::unique_ptr<HybZono> union_of_many(const std::vector<std::shared_ptr<HybZono>>& Zs, bool preserve_sharpness=false, bool expose_indicators=false);
 
@@ -892,6 +941,8 @@ std::unique_ptr<HybZono> union_of_many(const std::vector<std::shared_ptr<HybZono
  * Computes convex hull of sets {Z0, Z1, ..., Zn}.
  * If Zi is a hybrid zonotope, it must be sharp or this function will throw an error.
  * Zonotope outer approximations are computed using the method of Girard 2005, "Reachability of Uncertain Linear Systems Using Zonotopes".
+ *
+ * @throws std::invalid_argument if Zs is empty, if any member is a non-sharp hybrid zonotope, or if the outer-approximation path encounters a non-zonotope input.
  */
 std::unique_ptr<ConZono> convex_hull(const std::vector<std::shared_ptr<HybZono>>& Zs, bool exact=true);
 
@@ -916,6 +967,7 @@ std::unique_ptr<HybZono> cartesian_product(const HybZono& Z1, HybZono& Z2);
  * @return zonotopic set
  * @ingroup ZonoOpt_SetOperations
  *
+ * @throws std::invalid_argument if direction is not one of '<', '>', '=', or if Z, H, f, and R have inconsistent dimensions.
  */
 std::unique_ptr<HybZono> constrain(HybZono& Z, const Eigen::SparseMatrix<zono_float>& H,
             const Eigen::Vector<zono_float, -1>& f, char direction, const Eigen::SparseMatrix<zono_float>& R=Eigen::SparseMatrix<zono_float>());
@@ -935,7 +987,7 @@ std::unique_ptr<HybZono> constrain(HybZono& Z, const Eigen::SparseMatrix<zono_fl
  * @ingroup ZonoOpt_SetOperations
  */
 std::unique_ptr<HybZono> set_diff(const HybZono& Z1, HybZono& Z2, zono_float delta_m = 100, bool remove_redundancy=true,
-    const OptSettings &settings=OptSettings(), std::shared_ptr<OptSolution>* solution=nullptr,
+    const SolverSettings &settings=get_default_solver_settings(), std::shared_ptr<OptSolution>* solution=nullptr,
     int n_leaves = std::numeric_limits<int>::max(), int contractor_iter = 10);
 
 
@@ -953,6 +1005,8 @@ std::unique_ptr<HybZono> set_diff(const HybZono& Z1, HybZono& Z2, zono_float del
  * This function computes union of sets {V0, V1, ..., Vn}. If expose_indicators is true, returns union({V0, ..., Vn}) x I where I is the indicator set for the union.
  * Specifically, each dimension of I corresponds to one of the Vi in the union. So for vrep_2_hybzono({V0, V1, V2}, true) with V0, V1, V2 not intersecting,
  * if a vector [z, i] is in union({V0, V1, V2}) x I, then i = [1, 0, 0] if z is in V0, etc.
+ *
+ * @throws std::invalid_argument if Vpolys is empty or if its polytopes do not all share the same number of dimensions.
  */
 std::unique_ptr<HybZono> vrep_2_hybzono(const std::vector<Eigen::Matrix<zono_float, -1, -1>> &Vpolys, bool expose_indicators=false);
 
@@ -969,6 +1023,8 @@ std::unique_ptr<HybZono> vrep_2_hybzono(const std::vector<Eigen::Matrix<zono_flo
 * If expose_indicators is true, returns union({Z0, ..., Zn}) x I where I is the indicator set for the union.
 * Specifically, each dimension of I corresponds to one of the Zi in the union. So for zono_union_2_hybzono({Z0, Z1, Z2}, true) with Z0, Z1, VZ2 not intersecting,
 * if a vector [z, i] is in union({Z0, Z1, Z2}) x I, then i = [1, 0, 0] if z is in Z0, etc.
+*
+* @throws std::invalid_argument if Zs is empty or if its zonotopes do not all share the same dimension.
 */
 std::unique_ptr<HybZono> zono_union_2_hybzono(std::vector<std::shared_ptr<Zono>> &Zs, bool expose_indicators=false);
 

@@ -13,15 +13,58 @@
  */
 
 #include <Eigen/Dense>
+#include <memory>
 #include <sstream>
+#include <string>
 
 namespace ZonoOpt
 {
     /**
-     * @brief Settings for optimization routines in ZonoOpt library.
+     * @brief Abstract base for all solver settings.
+     *
+     * The dynamic type of the SolverSettings instance passed to ZonoOpt's optimization
+     * routines selects which solver backend is used:
+     *   - OptSettings      → internal ADMM / branch-and-bound (default)
+     *   - GurobiSettings   → dynamically-loaded Gurobi; silent fallback to OptSettings()
+     *                        if Gurobi cannot be loaded at runtime
+     *
+     * Derived classes implement clone() so the program-wide default settings can hold
+     * a polymorphic copy (see get_default_solver_settings / set_default_solver_settings).
+     */
+    struct SolverSettings
+    {
+        virtual ~SolverSettings() = default;
+
+        /**
+         * @brief Polymorphic copy. Must be overridden by every concrete subclass.
+         */
+        virtual std::unique_ptr<SolverSettings> clone() const = 0;
+
+        /**
+         * @brief Verify the solver backend selected by this settings type is usable.
+         *
+         * Called by set_default_solver_settings(); should throw std::runtime_error if
+         * the backend cannot be initialized (e.g., GurobiSettings throws if the Gurobi
+         * library cannot be dynamically loaded). Default implementation is a no-op,
+         * appropriate for the internal solver which is always available.
+         *
+         * @throws std::runtime_error if the backend cannot be initialized (subclass implementations only; the default no-op does not throw).
+         */
+        virtual void verify_available() const {}
+
+        /**
+         * @brief Return name of the solver backend selected by this settings type, e.g., "ZonoOpt", "Gurobi", "SCIP".
+         * 
+         * @return std::string 
+         */
+        virtual std::string solver_name() const = 0;
+    };
+
+    /**
+     * @brief Settings for the internal ZonoOpt ADMM / branch-and-bound solver.
      *
      */
-    struct OptSettings
+    struct OptSettings : SolverSettings
     {
         // general settings
 
@@ -125,6 +168,12 @@ namespace ZonoOpt
         /// rng seed for ADMM-FP
         unsigned int rng_seed = 0;
 
+        // polymorphic copy
+        std::unique_ptr<SolverSettings> clone() const override
+        {
+            return std::make_unique<OptSettings>(*this);
+        }
+
         // validity check
         /**
          * @brief Checks whether settings struct is valid
@@ -189,15 +238,55 @@ namespace ZonoOpt
             ss << "  enable_restart_admm_fp: " << (enable_restart_admm_fp ? "true" : "false") << std::endl;
             return ss.str();
         }
+
+        std::string solver_name() const override
+        {
+            return "ZonoOpt";
+        }
+
+        /**
+         * @brief OptSettings constructor
+         * 
+         */
+        OptSettings() = default;
+    };
+
+    /**
+     * @brief Abstract base for external-solver-specific solution metadata.
+     *
+     * When an OptSolution is produced by an external solver (Gurobi, SCIP, ...),
+     * OptSolution::external_results points to a polymorphic ExternalSolverResults
+     * subclass carrying the solver-native status code, node count, gap, etc.
+     * The user can dynamic_cast to the concrete subclass to extract that info:
+     *
+     *     if (auto* gr = dynamic_cast<const GurobiSolverResults*>(sol.external_results.get())) {
+     *         std::cout << "Gurobi MIP nodes: " << gr->node_count << "\n";
+     *     }
+     */
+    struct ExternalSolverResults
+    {
+        virtual ~ExternalSolverResults() = default;
+
+        /// Polymorphic copy; required so callers can deep-copy an OptSolution.
+        virtual std::shared_ptr<ExternalSolverResults> clone() const = 0;
+
+        /// Human-readable summary of the solver-specific fields.
+        virtual std::string print() const { return "ExternalSolverResults"; }
     };
 
     /**
      * @brief Solution data structure for optimization routines in ZonoOpt library.
      *
+     * The fields z, J, run_time, converged, and infeasible are always populated
+     * regardless of which solver computed the solution. Fields below labeled
+     * "admm-specific" carry meaningful values only when the internal solver was
+     * used; when an external solver (Gurobi, SCIP, ...) was used,
+     * `external_results` points to the solver-native solution metadata and the
+     * admm-specific fields are left at their defaults.
      */
     struct OptSolution
     {
-        // general
+        // general — always populated
 
         /// solution vector
         Eigen::Vector<zono_float, -1> z;
@@ -205,22 +294,22 @@ namespace ZonoOpt
         /// objective
         zono_float J = -std::numeric_limits<zono_float>::infinity();
 
-        /// time to compute solution
+        /// time to compute solution (seconds)
         double run_time = 0.0;
+
+        /// true if optimization has converged (proved optimal for external solvers; satisfied tolerances for internal)
+        bool converged = false;
+
+        /// true if optimization problem is provably infeasible
+        bool infeasible = false;
+
+        // admm-specific — meaningful only when the internal solver was used.
 
         /// time to factorize matrices and run interval contractors
         double startup_time = 0.0;
 
         /// number of iterations
         int iter = 0;
-
-        /// true if optimization has converged
-        bool converged = false;
-
-        /// true if optimization problem is provably infeasible
-        bool infeasible = false;
-
-        // admm-specific
 
         /// ADMM primal variable, approximately equal to z when converged
         Eigen::Vector<zono_float, -1> x;
@@ -233,6 +322,13 @@ namespace ZonoOpt
 
         /// dual residual, corresponds to optimality
         zono_float dual_residual = std::numeric_limits<zono_float>::infinity();
+
+        // external-solver-specific — populated only when an external solver was used.
+
+        /// Polymorphic solver-native solution metadata. nullptr when the internal
+        /// solver was used; otherwise points to a GurobiSolverResults, SCIPSolverResults,
+        /// etc. Inspect via dynamic_cast (C++) or isinstance (Python).
+        std::shared_ptr<ExternalSolverResults> external_results;
 
         /**
          * @brief displays solution as string
@@ -254,9 +350,61 @@ namespace ZonoOpt
             ss << "  u: vector of length " << u.size() << std::endl;
             ss << "  primal_residual: " << primal_residual << std::endl;
             ss << "  dual_residual: " << dual_residual << std::endl;
+            if (external_results)
+                ss << "  external_results: " << external_results->print() << std::endl;
             return ss.str();
         }
     };
+
+    // ---- Program-wide default solver settings -------------------------------
+    //
+    // ZonoOpt's optimization methods take a SolverSettings argument whose default
+    // is whatever set_default_solver_settings() last installed. This lets a user
+    // switch the entire library to (e.g.) Gurobi by calling
+    //     set_default_solver_settings(GurobiSettings{});
+    // once at program startup, instead of passing GurobiSettings to every call.
+    //
+    // Initial default is OptSettings() (internal ADMM/branch-and-bound).
+    //
+    // Not thread-safe: set_default_solver_settings should be called from a single
+    // thread at startup before parallel optimization begins. Existing const
+    // SolverSettings& references obtained from get_default_solver_settings() are
+    // invalidated by a subsequent set_default_solver_settings() call.
+
+    namespace detail
+    {
+        inline std::unique_ptr<SolverSettings>& default_settings_storage()
+        {
+            static std::unique_ptr<SolverSettings> p = std::make_unique<OptSettings>();
+            return p;
+        }
+    } // namespace detail
+
+    /**
+     * @brief Returns a reference to the current program-wide default solver settings.
+     *
+     * The returned reference is valid until the next call to set_default_solver_settings().
+     */
+    inline const SolverSettings& get_default_solver_settings()
+    {
+        return *detail::default_settings_storage();
+    }
+
+    /**
+     * @brief Replaces the program-wide default solver settings with a polymorphic copy of `settings`.
+     *
+     * After this call, any ZonoOpt optimization method invoked without an explicit
+     * settings argument will use a freshly resolved reference to the new default.
+     *
+     * @throws std::runtime_error if the backend selected by `settings` cannot be
+     *         initialized (e.g., a GurobiSettings whose Gurobi library cannot be
+     *         dynamically loaded). The existing default is left unchanged on throw.
+     */
+    inline void set_default_solver_settings(const SolverSettings& settings)
+    {
+        settings.verify_available();
+        detail::default_settings_storage() = settings.clone();
+    }
 } // end namespace ZonoOpt
 
 #endif

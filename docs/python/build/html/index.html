@@ -277,6 +277,28 @@ We may do this in Python using operator overloading as follows:</p>
 </div>
 <p>Further Python examples are located in /examples.</p>
 </section>
+<section id="external-solvers">
+<h3>External Solvers<a class="headerlink" href="#external-solvers" title="Link to this heading"></a></h3>
+<p>ZonoOpt supports Gurobi and SCIP as external solvers via dynamic loading. Please note that a supported version of Gurobi or SCIP must be installed on your system for dynamic loading to succeed. To invoke an external solver, pass a corresponding settings structure to the function requiring optimization. For example, a point projection using Gurobi in Python would look like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">settings</span> <span class="o">=</span> <span class="n">zono</span><span class="o">.</span><span class="n">GurobiSettings</span><span class="p">()</span>
+<span class="n">p_proj</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">project_point</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="n">settings</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Equivalently, in C++:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ZonoOpt</span><span class="o">::</span><span class="n">GurobiSettings</span><span class="w"> </span><span class="n">settings</span><span class="p">;</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">p_proj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Z</span><span class="p">.</span><span class="n">project_point</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">settings</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To change the default solver, globally modify the default solver settings, e.g.,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">zono</span><span class="o">.</span><span class="n">set_default_solver_settings</span><span class="p">(</span><span class="n">zono</span><span class="o">.</span><span class="n">SCIPSettings</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>in Python, or</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ZonoOpt</span><span class="o">::</span><span class="n">set_default_solver_settings</span><span class="p">(</span><span class="n">ZonoOpt</span><span class="o">::</span><span class="n">SCIPSettings</span><span class="p">());</span>
+</pre></div>
+</div>
+<p>in C++.</p>
+</section>
 <section id="documentation">
 <h3>Documentation<a class="headerlink" href="#documentation" title="Link to this heading"></a></h3>
 <p>Auto-generated API documentation is available below.</p>
@@ -308,12 +330,21 @@ We may do this in Python using operator overloading as follows:</p>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.Box"><code class="docutils literal notranslate"><span class="pre">Box</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.ConZono"><code class="docutils literal notranslate"><span class="pre">ConZono</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.EmptySet"><code class="docutils literal notranslate"><span class="pre">EmptySet</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.ExternalSolverResults"><code class="docutils literal notranslate"><span class="pre">ExternalSolverResults</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.GurobiSettings"><code class="docutils literal notranslate"><span class="pre">GurobiSettings</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.GurobiSolverResults"><code class="docutils literal notranslate"><span class="pre">GurobiSolverResults</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.HybZono"><code class="docutils literal notranslate"><span class="pre">HybZono</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.Interval"><code class="docutils literal notranslate"><span class="pre">Interval</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.IntervalMatrix"><code class="docutils literal notranslate"><span class="pre">IntervalMatrix</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.ItemsView"><code class="docutils literal notranslate"><span class="pre">ItemsView</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.KeysView"><code class="docutils literal notranslate"><span class="pre">KeysView</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.OptSettings"><code class="docutils literal notranslate"><span class="pre">OptSettings</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.OptSolution"><code class="docutils literal notranslate"><span class="pre">OptSolution</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.Point"><code class="docutils literal notranslate"><span class="pre">Point</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.SCIPSettings"><code class="docutils literal notranslate"><span class="pre">SCIPSettings</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.SCIPSolverResults"><code class="docutils literal notranslate"><span class="pre">SCIPSolverResults</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.SolverSettings"><code class="docutils literal notranslate"><span class="pre">SolverSettings</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.ValuesView"><code class="docutils literal notranslate"><span class="pre">ValuesView</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.WarmStartParams"><code class="docutils literal notranslate"><span class="pre">WarmStartParams</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.Zono"><code class="docutils literal notranslate"><span class="pre">Zono</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.affine_inclusion"><code class="docutils literal notranslate"><span class="pre">affine_inclusion()</span></code></a></li>
@@ -322,6 +353,7 @@ We may do this in Python using operator overloading as follows:</p>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.constrain"><code class="docutils literal notranslate"><span class="pre">constrain()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.convex_hull"><code class="docutils literal notranslate"><span class="pre">convex_hull()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.from_json"><code class="docutils literal notranslate"><span class="pre">from_json()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.get_default_solver_settings"><code class="docutils literal notranslate"><span class="pre">get_default_solver_settings()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.get_vertices"><code class="docutils literal notranslate"><span class="pre">get_vertices()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.halfspace_intersection"><code class="docutils literal notranslate"><span class="pre">halfspace_intersection()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.intersection"><code class="docutils literal notranslate"><span class="pre">intersection()</span></code></a></li>
@@ -332,6 +364,7 @@ We may do this in Python using operator overloading as follows:</p>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.plot"><code class="docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.pontry_diff"><code class="docutils literal notranslate"><span class="pre">pontry_diff()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.project_onto_dims"><code class="docutils literal notranslate"><span class="pre">project_onto_dims()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.set_default_solver_settings"><code class="docutils literal notranslate"><span class="pre">set_default_solver_settings()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.set_diff"><code class="docutils literal notranslate"><span class="pre">set_diff()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.to_json"><code class="docutils literal notranslate"><span class="pre">to_json()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="zonoopt.html#zonoopt.union_of_many"><code class="docutils literal notranslate"><span class="pre">union_of_many()</span></code></a></li>

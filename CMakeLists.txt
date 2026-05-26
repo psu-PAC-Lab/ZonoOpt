@@ -149,6 +149,10 @@ set(SOURCE_FILES
     src/IntervalMatrix.cpp
     src/BranchAndBound.cpp
     src/ZonoJson.cpp
+    src/GurobiApi.cpp
+    src/GurobiSolver.cpp
+    src/SCIPApi.cpp
+    src/SCIPSolver.cpp
 )
 
 # build
@@ -179,6 +183,11 @@ endif()
 target_link_libraries(${TARGET_VAR} PUBLIC Eigen3::Eigen)
 target_link_libraries(${TARGET_VAR} PUBLIC ${boost_handle})
 target_link_libraries(${TARGET_VAR} PUBLIC nlohmann_json::nlohmann_json)
+
+# Dynamic loader (dlopen/dlsym) for runtime-loaded external solvers (Gurobi, etc.).
+if (NOT WIN32)
+    target_link_libraries(${TARGET_VAR} PRIVATE ${CMAKE_DL_LIBS})
+endif()
 
 # include directories
 target_include_directories(${TARGET_VAR} PUBLIC

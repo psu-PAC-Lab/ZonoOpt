@@ -53,6 +53,7 @@ namespace ZonoOpt
          * @brief Constructor from intervals of lower and upper bounds
          * @param x_lb vector of lower bounds
          * @param x_ub vector of upper bounds
+         * @throws std::invalid_argument if x_lb and x_ub do not have the same size.
          */
         Box(const Eigen::Vector<zono_float, -1>& x_lb, const Eigen::Vector<zono_float, -1>& x_ub);
 
@@ -90,6 +91,7 @@ namespace ZonoOpt
          * @brief Element-wise access
          * @param i index
          * @return Interval for element i in Box
+         * @throws std::out_of_range if i is outside [0, size()).
          */
         Interval get_element(int i) const;
 
@@ -112,6 +114,7 @@ namespace ZonoOpt
         /**
          * @brief Projects vector onto the Box
          * @param x vector reference
+         * @throws std::invalid_argument if x does not have the same size as the Box.
          */
         virtual void project(Eigen::Ref<Eigen::Vector<zono_float, -1>> x) const;
 
@@ -174,6 +177,7 @@ namespace ZonoOpt
          *
          * @param other other
          * @return intersection of this and other
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         Box intersect(const Box& other) const;
 
@@ -182,22 +186,25 @@ namespace ZonoOpt
          *
          * @param other other box
          * @return interval hull of this and other
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         Box interval_hull(const Box& other) const;
 
         /**
          * @brief Check vector continment
-         * 
+         *
          * @param v vector
          * @return true if v is contained in box, false otherwise
+         * @throws std::invalid_argument if v does not have the same size as the Box.
          */
         bool contains(const Eigen::Vector<zono_float, -1>& v);
 
         /**
          * @brief Check set containment
-         * 
+         *
          * @param other box to check if subset
          * @return true if other is a subset of this
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         bool contains_set(const Box& other) const;
 
@@ -207,12 +214,14 @@ namespace ZonoOpt
          * @brief Elementwise addition
          * @param other rhs box
          * @return enclosure of this + other (elementwise)
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         Box operator+(const Box& other) const;
 
         /**
          * @brief Elementwise addition in-place
          * @param other other box
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         void operator+=(const Box& other);
 
@@ -221,6 +230,7 @@ namespace ZonoOpt
          * @param v vector to add
          * @param box box to add
          * @return enclosure of v + box (elementwise)
+         * @throws std::invalid_argument if v does not have the same size as the Box.
          */
         Box operator+(const Eigen::Vector<zono_float, -1>& v) const;
 
@@ -228,6 +238,7 @@ namespace ZonoOpt
         /**
          * @brief Elementwise addition with vector in-place
          * @param v vector
+         * @throws std::invalid_argument if v does not have the same size as the Box.
          */
         void operator+=(const Eigen::Vector<zono_float, -1>& v);
 
@@ -236,6 +247,7 @@ namespace ZonoOpt
          * @param v vector to add
          * @param box box to add
          * @return enclosure of v + box (elementwise)
+         * @throws std::invalid_argument if v does not have the same size as the Box.
          */
         friend Box operator+(const Eigen::Vector<zono_float, -1>& v, const Box& box);
 
@@ -243,12 +255,14 @@ namespace ZonoOpt
          * @brief Elementwise subtraction
          * @param other rhs box
          * @return enclosure of this - other (elementwise)
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         Box operator-(const Box& other) const;
 
         /**
          * @brief Elementwise subtraction in-place
          * @param other other box
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         void operator-=(const Box& other);
 
@@ -256,12 +270,14 @@ namespace ZonoOpt
          * @brief Elementwise subtraction with vector
          * @param v vector to subtract
          * @return enclosure of this - v (elementwise)
+         * @throws std::invalid_argument if v does not have the same size as the Box.
          */
         Box operator-(const Eigen::Vector<zono_float, -1>& v) const;
 
         /**
          * @brief Elementwise subtraction with vector in-place
          * @param v vector to subtract
+         * @throws std::invalid_argument if v does not have the same size as the Box.
          */
         void operator-=(const Eigen::Vector<zono_float, -1>& v);
 
@@ -270,6 +286,7 @@ namespace ZonoOpt
          * @param v vector
          * @param box box to subtract
          * @return enclosure of v - box (elementwise)
+         * @throws std::invalid_argument if v does not have the same size as the Box.
          */
         friend Box operator-(const Eigen::Vector<zono_float, -1>& v, const Box& box);
 
@@ -277,12 +294,14 @@ namespace ZonoOpt
          * @brief Elementwise multiplication
          * @param other rhs box
          * @return enclosure of this * other (elementwise)
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         Box operator*(const Box& other) const;
 
         /**
          * @brief Elementwise multiplication in-place
          * @param other other box
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         void operator*=(const Box& other);
 
@@ -311,12 +330,14 @@ namespace ZonoOpt
          * @brief Elementwise multiplication with vector
          * @param v vector to multiply
          * @return enclosure of this * v (elementwise)
+         * @throws std::invalid_argument if v does not have the same size as the Box.
          */
         Box operator*(const Eigen::Vector<zono_float, -1>& v) const;
 
         /**
          * @brief Elementwise multiplication with vector in-place
          * @param v vector to multiply
+         * @throws std::invalid_argument if v does not have the same size as the Box.
          */
         void operator*=(const Eigen::Vector<zono_float, -1>& v);
 
@@ -325,6 +346,7 @@ namespace ZonoOpt
          * @param v vector to multiply
          * @param box box to multiply
          * @return enclosure of v * box (elementwise)
+         * @throws std::invalid_argument if v does not have the same size as the Box.
          */
         friend Box operator*(const Eigen::Vector<zono_float, -1>& v, const Box& box);
 
@@ -367,12 +389,14 @@ namespace ZonoOpt
          * @brief Elementwise division
          * @param other rhs box
          * @return enclosure of this / other (elementwise)
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         Box operator/(const Box& other) const;
 
         /**
          * @brief Elementwise division in-place
          * @param other rhs box
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         void operator/=(const Box& other);
 
@@ -429,6 +453,7 @@ namespace ZonoOpt
          *
          * @param other other box
          * @return Intersection of this and other
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         Box operator&(const Box& other) const;
 
@@ -437,6 +462,7 @@ namespace ZonoOpt
          *
          * @param other box
          * @return Interval hull of this and other
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         Box operator|(const Box& other) const;
 
@@ -476,6 +502,8 @@ namespace ZonoOpt
          * Executes a forward-backward interval contractor for the equality constraint A*x=b.
          * For points x in the box, this shrinks the box without removing any points x that satisfy A*x=b.
          * If the contractor detects that the box does not intersect A*x=b, then this function will return false.
+         *
+         * @throws std::invalid_argument if iter is not positive.
          */
         bool contract(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A, const Eigen::Vector<zono_float, -1>& b,
                       int iter);
@@ -492,6 +520,8 @@ namespace ZonoOpt
          *
          * This is a forward-backward contractor over a subset of the dimensions of the box.
          * This detects what other dimensions are affected up to a specified search depth prior to executing the contractor.
+         *
+         * @throws std::invalid_argument if iter is not positive or if A_rm does not match A.
          */
         bool contract_subset(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A_rm,
                              const Eigen::Vector<zono_float, -1>& b, int iter,
@@ -502,6 +532,7 @@ namespace ZonoOpt
          * @brief Linear map of box based on interval arithmetic
          * @param A map matrix (dense)
          * @return Linear mapped box
+         * @throws std::invalid_argument if A's number of columns does not equal the size of the Box.
          */
         Box linear_map(const Eigen::Matrix<zono_float, -1, -1>& A) const;
 
@@ -509,6 +540,7 @@ namespace ZonoOpt
          * @brief Linear map of box based on interval arithmetic
          * @param A map matrix (sparse row major)
          * @return Linear mapped box
+         * @throws std::invalid_argument if A's number of columns does not equal the size of the Box.
          */
         Box linear_map(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A) const;
 
@@ -516,6 +548,7 @@ namespace ZonoOpt
          * @brief Linear map with vector
          * @param x vector
          * @return Interval
+         * @throws std::invalid_argument if x does not have the same size as the Box.
          */
         Interval dot(const Eigen::Vector<zono_float, -1>& x) const;
 
@@ -623,6 +656,8 @@ namespace ZonoOpt
          * @param x_ub vector of upper bounds
          * @param idx_b indices of binary variables {start index, number of binaries}
          * @param zero_one_form flag indicating whether binary variables are in {0,1} form (true) or {-1,1} form (false)
+         * @throws std::invalid_argument if x_lb and x_ub do not have the same size.
+         * @throws std::out_of_range if the binary indices in idx_b are outside [0, size()).
          */
         MI_Box(const Eigen::Vector<zono_float, -1>& x_lb, const Eigen::Vector<zono_float, -1>& x_ub,
                const std::pair<int, int>& idx_b, bool zero_one_form);
@@ -632,6 +667,7 @@ namespace ZonoOpt
          * @param intervals vector intervals
          * @param idx_b indices of binary variables {start index, number of binaries}
          * @param zero_one_form flag indicating whether binary variables are in {0,1} form (true) or {-1,1} form (false)
+         * @throws std::out_of_range if the binary indices in idx_b are outside [0, size()).
          */
         MI_Box(const std::vector<Interval>& intervals, const std::pair<int, int>& idx_b, bool zero_one_form);
 

@@ -35,6 +35,19 @@ TEST(ZonoHull, PointsContained)
     EXPECT_TRUE(U->contains_point(Z1.get_center()));
     EXPECT_TRUE(U->contains_point(Z2.get_center()));
     EXPECT_TRUE(U->contains_point((Z1.get_center() + Z2.get_center()) / 2));
+
+    if (detail::gurobi_available())
+    {
+        EXPECT_TRUE(U->contains_point(Z1.get_center(), GurobiSettings()));
+        EXPECT_TRUE(U->contains_point(Z2.get_center(), GurobiSettings()));
+        EXPECT_TRUE(U->contains_point((Z1.get_center() + Z2.get_center()) / 2, GurobiSettings()));
+    }
+    if (detail::scip_available())
+    {
+        EXPECT_TRUE(U->contains_point(Z1.get_center(), SCIPSettings()));
+        EXPECT_TRUE(U->contains_point(Z2.get_center(), SCIPSettings()));
+        EXPECT_TRUE(U->contains_point((Z1.get_center() + Z2.get_center()) / 2, SCIPSettings()));
+    }
 }
 
 TEST(ZonoHull, SeveralSets)
@@ -60,6 +73,15 @@ TEST(ZonoHull, SeveralSets)
         Zono* Z_zono = dynamic_cast<Zono*>(Z.get());
         ASSERT_TRUE(Z_zono != nullptr);
         EXPECT_TRUE(U->contains_point(Z_zono->get_center()));
+
+        if (detail::gurobi_available())
+        {
+            EXPECT_TRUE(U->contains_point(Z_zono->get_center(), GurobiSettings()));
+        }
+        if (detail::scip_available())
+        {
+            EXPECT_TRUE(U->contains_point(Z_zono->get_center(), SCIPSettings()));
+        }
     }
 }
 

@@ -261,26 +261,38 @@ image</div></div>
 <div class="ttc" id="agroup__ZonoOpt__SetOperations_html_ga791d82941cf98f5440cb2d361376992d"><div class="ttname"><a href="group__ZonoOpt__SetOperations.html#ga791d82941cf98f5440cb2d361376992d">ZonoOpt::intersection</a></div><div class="ttdeci">std::unique_ptr&lt; HybZono &gt; intersection(const HybZono &amp;Z1, HybZono &amp;Z2, const Eigen::SparseMatrix&lt; zono_float &gt; &amp;R=Eigen::SparseMatrix&lt; zono_float &gt;())</div><div class="ttdoc">Computes the generalized intersection of sets Z1 and Z2 over the matrix R.</div><div class="ttdef"><b>Definition</b> SetOperations.cpp:215</div></div>
 <div class="ttc" id="agroup__ZonoOpt__SetupFunctions_html_ga22e35050f518e280aae3e824b539ef76"><div class="ttname"><a href="group__ZonoOpt__SetupFunctions.html#ga22e35050f518e280aae3e824b539ef76">ZonoOpt::interval_2_zono</a></div><div class="ttdeci">std::unique_ptr&lt; Zono &gt; interval_2_zono(const Box &amp;box)</div><div class="ttdoc">Builds a zonotope from a Box object.</div><div class="ttdef"><b>Definition</b> Zono.cpp:346</div></div>
 <div class="ttc" id="agroup__ZonoOpt__SetupFunctions_html_ga5e33e41bf5f1cf8e1f32e1de45dba939"><div class="ttname"><a href="group__ZonoOpt__SetupFunctions.html#ga5e33e41bf5f1cf8e1f32e1de45dba939">ZonoOpt::make_regular_zono_2D</a></div><div class="ttdeci">std::unique_ptr&lt; Zono &gt; make_regular_zono_2D(zono_float radius, int n_sides, bool outer_approx=false, const Eigen::Vector&lt; zono_float, 2 &gt; &amp;c=Eigen::Vector&lt; zono_float, 2 &gt;::Zero())</div><div class="ttdoc">Builds a 2D regular zonotope with a given radius and number of sides.</div><div class="ttdef"><b>Definition</b> Zono.cpp:310</div></div>
-<div class="ttc" id="agroup__ZonoOpt__SetupFunctions_html_gac52f05464954432151ae50802a4da669"><div class="ttname"><a href="group__ZonoOpt__SetupFunctions.html#gac52f05464954432151ae50802a4da669">ZonoOpt::vrep_2_conzono</a></div><div class="ttdeci">std::unique_ptr&lt; ConZono &gt; vrep_2_conzono(const Eigen::Matrix&lt; zono_float, -1, -1 &gt; &amp;Vpoly)</div><div class="ttdoc">Builds a constrained zonotope from a vertex representation polytope.</div><div class="ttdef"><b>Definition</b> ConZono.cpp:594</div></div>
-<div class="ttc" id="agroup__ZonoOpt__Typedefs_html_ga3a3f3cf55efb220d20c4a23c7a34f4d4"><div class="ttname"><a href="group__ZonoOpt__Typedefs.html#ga3a3f3cf55efb220d20c4a23c7a34f4d4">ZonoOpt::ZonoPtr</a></div><div class="ttdeci">std::unique_ptr&lt; HybZono &gt; ZonoPtr</div><div class="ttdoc">Type alias for a unique pointer to a (polymorphic) HybZono object. &lt;&gt;</div><div class="ttdef"><b>Definition</b> ZonoOpt.hpp:91</div></div>
+<div class="ttc" id="agroup__ZonoOpt__SetupFunctions_html_gac52f05464954432151ae50802a4da669"><div class="ttname"><a href="group__ZonoOpt__SetupFunctions.html#gac52f05464954432151ae50802a4da669">ZonoOpt::vrep_2_conzono</a></div><div class="ttdeci">std::unique_ptr&lt; ConZono &gt; vrep_2_conzono(const Eigen::Matrix&lt; zono_float, -1, -1 &gt; &amp;Vpoly)</div><div class="ttdoc">Builds a constrained zonotope from a vertex representation polytope.</div><div class="ttdef"><b>Definition</b> ConZono.cpp:675</div></div>
+<div class="ttc" id="agroup__ZonoOpt__Typedefs_html_ga3a3f3cf55efb220d20c4a23c7a34f4d4"><div class="ttname"><a href="group__ZonoOpt__Typedefs.html#ga3a3f3cf55efb220d20c4a23c7a34f4d4">ZonoOpt::ZonoPtr</a></div><div class="ttdeci">std::unique_ptr&lt; HybZono &gt; ZonoPtr</div><div class="ttdoc">Type alias for a unique pointer to a (polymorphic) HybZono object. &lt;&gt;</div><div class="ttdef"><b>Definition</b> ZonoOpt.hpp:93</div></div>
 </div><!-- fragment --><p>Further Python examples are located in /examples.</p>
 <h1><a class="anchor" id="autotoc_md5"></a>
+External Solvers</h1>
+<p><a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> supports Gurobi and SCIP as external solvers via dynamic loading. Please note that a supported version of Gurobi or SCIP must be installed on your system for dynamic loading to succeed. To invoke an external solver, pass a corresponding settings structure to the function requiring optimization. For example, a point projection using Gurobi in Python would look like: </p><div class="fragment"><div class="line">settings = zono.GurobiSettings()</div>
+<div class="line">p_proj = Z.project_point(p, settings=settings)</div>
+</div><!-- fragment --><p> Equivalently, in C++: </p><div class="fragment"><div class="line"><a class="code hl_struct" href="structZonoOpt_1_1GurobiSettings.html">ZonoOpt::GurobiSettings</a> settings;</div>
+<div class="line"><span class="keyword">auto</span> p_proj = Z.project_point(p, settings);</div>
+<div class="ttc" id="astructZonoOpt_1_1GurobiSettings_html"><div class="ttname"><a href="structZonoOpt_1_1GurobiSettings.html">ZonoOpt::GurobiSettings</a></div><div class="ttdoc">Settings for the dynamically-loaded Gurobi solver backend.</div><div class="ttdef"><b>Definition</b> GurobiSettings.hpp:43</div></div>
+</div><!-- fragment --><p> To change the default solver, globally modify the default solver settings, e.g., </p><div class="fragment"><div class="line">zono.set_default_solver_settings(zono.SCIPSettings())</div>
+</div><!-- fragment --><p> in Python, or </p><div class="fragment"><div class="line"><a class="code hl_function" href="namespaceZonoOpt.html#ad08051d5c7e92b4a60834bd510d627df">ZonoOpt::set_default_solver_settings</a>(<a class="code hl_struct" href="structZonoOpt_1_1SCIPSettings.html">ZonoOpt::SCIPSettings</a>());</div>
+<div class="ttc" id="anamespaceZonoOpt_html_ad08051d5c7e92b4a60834bd510d627df"><div class="ttname"><a href="namespaceZonoOpt.html#ad08051d5c7e92b4a60834bd510d627df">ZonoOpt::set_default_solver_settings</a></div><div class="ttdeci">void set_default_solver_settings(const SolverSettings &amp;settings)</div><div class="ttdoc">Replaces the program-wide default solver settings with a polymorphic copy of settings.</div><div class="ttdef"><b>Definition</b> SolverDataStructures.hpp:403</div></div>
+<div class="ttc" id="astructZonoOpt_1_1SCIPSettings_html"><div class="ttname"><a href="structZonoOpt_1_1SCIPSettings.html">ZonoOpt::SCIPSettings</a></div><div class="ttdoc">Settings for the dynamically-loaded SCIP solver backend.</div><div class="ttdef"><b>Definition</b> SCIPSettings.hpp:45</div></div>
+</div><!-- fragment --><p> in C++.</p>
+<h1><a class="anchor" id="autotoc_md6"></a>
 Documentation</h1>
 <p>Auto-generated API documentation is available below.</p>
 <p><a href="https://psu-PAC-Lab.github.io/ZonoOpt/C++/html/index.html">C++ API</a></p>
 <p><a href="https://psu-PAC-Lab.github.io/ZonoOpt/python/build/html/index.html">Python API</a></p>
-<h1><a class="anchor" id="autotoc_md6"></a>
+<h1><a class="anchor" id="autotoc_md7"></a>
 References</h1>
 <p>More information about <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> can be found in the following publications. Please cite one or both of these as appropriate if you use <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a> in your published work:</p>
 <p><b>Robbins, J.A., Siefert, J.A., and Pangborn, H.C., "Sparsity-Promoting Reachability Analysis and Optimization of Constrained Zonotopes," 2025. <a href="https://doi.org/10.48550/arXiv.2504.03885">https://arxiv.org/abs/2504.03885</a>.</b></p>
 <p><b>Robbins, J.A., Thompson, A.F., Glunt, J.J., and Pangborn, H.C., "Hybrid System Planning using a Mixed-Integer ADMM Heuristic and Hybrid Zonotopes", 2026. <a href="https://doi.org/10.48550/arXiv.2602.17574">https://arxiv.org/abs/2602.17574</a></b></p>
-<h1><a class="anchor" id="autotoc_md7"></a>
+<h1><a class="anchor" id="autotoc_md8"></a>
 Additional Notes</h1>
 <ul>
 <li>For internal reasons, <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a>'s versioning begins at 2.0.0. Please note that the library is currently in Beta. In this phase, there may be API changes in minor version updates (e.g., 2.1.0 to 2.2.0). There will be no API changes between patch numbers (e.g., 2.2.0 to 2.2.1).</li>
 <li>For Python users, <a class="el" href="namespaceZonoOpt.html">ZonoOpt</a>'s use of multithreading for some hybrid zonotope operations can cause issues with cProfile. Profiling with py-spy is recommended.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md8"></a>
+<h1><a class="anchor" id="autotoc_md9"></a>
 See Also</h1>
 <p>For MATLAB users, <a href="https://github.com/ESCL-at-UTD/zonoLAB">zonoLAB</a> provides classes and set operations for zonotopes, constrained zonotopes, and hybrid zonotopes. </p>
 </div></div><!-- PageDoc -->

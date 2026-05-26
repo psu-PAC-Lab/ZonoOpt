@@ -1,0 +1,5 @@
+<map id="ZonoOpt::SCIPSolverResults" name="ZonoOpt::SCIPSolverResults">
+<area shape="rect" id="Node000001" title="Solver&#45;native solution metadata produced by the SCIP backend." alt="" coords="18,79,222,104"/>
+<area shape="rect" id="Node000002" href="$structZonoOpt_1_1ExternalSolverResults.html" title="Abstract base for external&#45;solver&#45;specific solution metadata." alt="" coords="5,5,235,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="123,44,123,79,117,79,117,44"/>
+</map>

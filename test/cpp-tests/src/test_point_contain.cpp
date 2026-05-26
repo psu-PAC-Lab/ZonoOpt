@@ -20,6 +20,16 @@ TEST(PointContain, ContainsInternalPoint)
     const Eigen::Vector<zono_float, -1> x_c = load_vector(test_folder + "x_c.txt");
 
     EXPECT_TRUE(Z.contains_point(x_c)) << "Expected Z to contain x_c";
+
+    // rerun with different solvers
+    if (detail::gurobi_available())
+    {
+        EXPECT_TRUE(Z.contains_point(x_c, GurobiSettings())) << "Expected Z to contain x_c using Gurobi";
+    }
+    if (detail::scip_available())
+    {
+        EXPECT_TRUE(Z.contains_point(x_c, SCIPSettings())) << "Expected Z to contain x_c using SCIP";
+    }
 }
 
 TEST(PointContain, RejectsExternalPoint)
@@ -37,4 +47,13 @@ TEST(PointContain, RejectsExternalPoint)
     const Eigen::Vector<zono_float, -1> x_n = load_vector(test_folder + "x_n.txt");
 
     EXPECT_FALSE(Z.contains_point(x_n)) << "Expected Z to not contain x_n";
+
+    if (detail::gurobi_available())
+    {
+        EXPECT_FALSE(Z.contains_point(x_n, GurobiSettings())) << "Expected Z to not contain x_n using Gurobi";
+    }
+    if (detail::scip_available())
+    {
+        EXPECT_FALSE(Z.contains_point(x_n, SCIPSettings())) << "Expected Z to not contain x_n using SCIP";
+    }
 }

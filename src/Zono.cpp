@@ -77,7 +77,7 @@ namespace ZonoOpt
         return ss.str();
     }
 
-    bool Zono::do_is_empty(const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) const
+    bool Zono::do_is_empty(const SolverSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&) const
     {
         if (sol)
         {
@@ -94,7 +94,7 @@ namespace ZonoOpt
             return false;
     }
 
-    Box Zono::do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&)
+    Box Zono::do_bounding_box(const SolverSettings&, std::shared_ptr<OptSolution>* sol, const WarmStartParams&)
     {
         // convert to [-1,1] form
         if (this->zero_one_form) this->convert_form();
@@ -206,7 +206,7 @@ namespace ZonoOpt
         return std::unique_ptr<Zono>(dynamic_cast<Zono*>(Z.release()));
     }
 
-    zono_float Zono::do_support(const Eigen::Vector<zono_float, -1>& d, const OptSettings&,
+    zono_float Zono::do_support(const Eigen::Vector<zono_float, -1>& d, const SolverSettings&,
                                 std::shared_ptr<OptSolution>* sol,
                                 const WarmStartParams&)
     {

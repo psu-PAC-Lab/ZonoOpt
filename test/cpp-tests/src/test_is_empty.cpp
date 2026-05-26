@@ -18,6 +18,15 @@ TEST(IsEmpty, FeasibleIsNotEmpty)
     const ConZono Zf (G, c, A, b);
 
     EXPECT_FALSE(Zf.is_empty()) << "Expected Zf to be non-empty";
+
+    if (detail::gurobi_available())
+    {
+        EXPECT_FALSE(Zf.is_empty(GurobiSettings())) << "Expected Zf to be non-empty using Gurobi";
+    }
+    if (detail::scip_available())
+    {
+        EXPECT_FALSE(Zf.is_empty(SCIPSettings())) << "Expected Zf to be non-empty using SCIP";
+    }
 }
 
 TEST(IsEmpty, InfeasibleIsEmpty)
@@ -33,4 +42,13 @@ TEST(IsEmpty, InfeasibleIsEmpty)
     const ConZono Zi (G, c, A, b);
 
     EXPECT_TRUE(Zi.is_empty()) << "Expected Zi to be empty";
+
+    if (detail::gurobi_available())
+    {
+        EXPECT_TRUE(Zi.is_empty(GurobiSettings())) << "Expected Zi to be empty using Gurobi";
+    }
+    if (detail::scip_available())
+    {
+        EXPECT_TRUE(Zi.is_empty(SCIPSettings())) << "Expected Zi to be empty using SCIP";
+    }
 }

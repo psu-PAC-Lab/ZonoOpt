@@ -972,7 +972,7 @@ namespace ZonoOpt
 
     std::unique_ptr<HybZono> set_diff(const HybZono& Z1, HybZono& Z2, const zono_float delta_m,
                                       const bool remove_redundancy,
-                                      const OptSettings& settings, std::shared_ptr<OptSolution>* solution,
+                                      const SolverSettings& settings, std::shared_ptr<OptSolution>* solution,
                                       const int n_leaves,
                                       const int contractor_iter)
     {

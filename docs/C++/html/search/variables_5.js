@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['g_0',['G',['../classZonoOpt_1_1HybZono.html#aed139ecd3415d14c3fce8f09d28910a6',1,'ZonoOpt::HybZono']]],
-  ['gb_1',['Gb',['../classZonoOpt_1_1HybZono.html#a5763b63d7afbebf2783a45efe60fc5f1',1,'ZonoOpt::HybZono']]],
-  ['gc_2',['Gc',['../classZonoOpt_1_1HybZono.html#a4ef0ba60650a0e5e08563e0643b5a50c',1,'ZonoOpt::HybZono']]]
+  ['feasibilitytol_0',['feasibilitytol',['../structZonoOpt_1_1GurobiSettings.html#a64994addb50659a1a032699768b1a89b',1,'ZonoOpt::GurobiSettings::FeasibilityTol'],['../structZonoOpt_1_1SCIPSettings.html#a723bc816d806d0c5df4fd12e0b386060',1,'ZonoOpt::SCIPSettings::FeasibilityTol']]]
 ];

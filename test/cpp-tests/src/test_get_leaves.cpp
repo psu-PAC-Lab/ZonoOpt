@@ -24,4 +24,17 @@ TEST(GetLeaves, LeavesCount)
 
     EXPECT_EQ(leaves.size(), static_cast<size_t>(n_CZs * n_CZs))
         << "Expected " << n_CZs * n_CZs << " leaves, got " << leaves.size();
+
+    if (detail::gurobi_available())
+    {
+        const auto leaves_grb = Z->get_leaves(false, GurobiSettings());
+        EXPECT_EQ(leaves_grb.size(), static_cast<size_t>(n_CZs * n_CZs))
+            << "Expected " << n_CZs * n_CZs << " leaves using Gurobi, got " << leaves_grb.size();
+    }
+    if (detail::scip_available())
+    {
+        const auto leaves_scip = Z->get_leaves(false, SCIPSettings());
+        EXPECT_EQ(leaves_scip.size(), static_cast<size_t>(n_CZs * n_CZs))
+            << "Expected " << n_CZs * n_CZs << " leaves using SCIP, got " << leaves_scip.size();
+    }
 }

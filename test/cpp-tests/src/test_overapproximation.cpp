@@ -24,6 +24,19 @@ TEST(Overapproximation, ReduceOrder)
     const auto Zr = Z_zono->reduce_order(10);
 
     EXPECT_TRUE(Zr->contains_point(p_proj)) << "Reduced zonotope does not contain projected point.";
+
+    if (detail::gurobi_available())
+    {
+        const auto p_proj_grb = Z_zono->project_point(p, GurobiSettings());
+        EXPECT_TRUE(Zr->contains_point(p_proj_grb, GurobiSettings()))
+            << "Reduced zonotope does not contain projected point using Gurobi.";
+    }
+    if (detail::scip_available())
+    {
+        const auto p_proj_scip = Z_zono->project_point(p, SCIPSettings());
+        EXPECT_TRUE(Zr->contains_point(p_proj_scip, SCIPSettings()))
+            << "Reduced zonotope does not contain projected point using SCIP.";
+    }
 }
 
 TEST(Overapproximation, ConstraintReduction)
@@ -45,6 +58,19 @@ TEST(Overapproximation, ConstraintReduction)
     const auto Z_cr = Z_conzono->constraint_reduction();
 
     EXPECT_TRUE(Z_cr->contains_point(p_proj)) << "Reduced constrained zonotope does not contain projected point.";
+
+    if (detail::gurobi_available())
+    {
+        const auto p_proj_grb = Z_conzono->project_point(p, GurobiSettings());
+        EXPECT_TRUE(Z_cr->contains_point(p_proj_grb, GurobiSettings()))
+            << "Reduced constrained zonotope does not contain projected point using Gurobi.";
+    }
+    if (detail::scip_available())
+    {
+        const auto p_proj_scip = Z_conzono->project_point(p, SCIPSettings());
+        EXPECT_TRUE(Z_cr->contains_point(p_proj_scip, SCIPSettings()))
+            << "Reduced constrained zonotope does not contain projected point using SCIP.";
+    }
 }
 
 TEST(Overapproximation, ToZonoApprox)
@@ -66,6 +92,19 @@ TEST(Overapproximation, ToZonoApprox)
     const auto Z_approx = Z_conzono->to_zono_approx();
 
     EXPECT_TRUE(Z_approx->contains_point(p_proj)) << "Zonotope approximation does not contain projected point.";
+
+    if (detail::gurobi_available())
+    {
+        const auto p_proj_grb = Z_conzono->project_point(p, GurobiSettings());
+        EXPECT_TRUE(Z_approx->contains_point(p_proj_grb, GurobiSettings()))
+            << "Zonotope approximation does not contain projected point using Gurobi.";
+    }
+    if (detail::scip_available())
+    {
+        const auto p_proj_scip = Z_conzono->project_point(p, SCIPSettings());
+        EXPECT_TRUE(Z_approx->contains_point(p_proj_scip, SCIPSettings()))
+            << "Zonotope approximation does not contain projected point using SCIP.";
+    }
 }
 
 TEST(Overapproximation, ConvexRelaxation)
@@ -82,4 +121,17 @@ TEST(Overapproximation, ConvexRelaxation)
     const auto Z_relax = Z->convex_relaxation();
 
     EXPECT_TRUE(Z_relax->contains_point(p_proj)) << "Convex relaxation does not contain projected point.";
+
+    if (detail::gurobi_available())
+    {
+        const auto p_proj_grb = Z->project_point(p, GurobiSettings());
+        EXPECT_TRUE(Z_relax->contains_point(p_proj_grb, GurobiSettings()))
+            << "Convex relaxation does not contain projected point using Gurobi.";
+    }
+    if (detail::scip_available())
+    {
+        const auto p_proj_scip = Z->project_point(p, SCIPSettings());
+        EXPECT_TRUE(Z_relax->contains_point(p_proj_scip, SCIPSettings()))
+            << "Convex relaxation does not contain projected point using SCIP.";
+    }
 }

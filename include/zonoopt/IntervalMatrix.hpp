@@ -45,6 +45,7 @@ namespace ZonoOpt
          * @brief IntervalMatrix constructor using dense lower and upper bound matrices
          * @param mat_lb lower bound matrix
          * @param mat_ub upper bound matrix
+         * @throws std::invalid_argument if mat_lb and mat_ub do not have the same dimensions.
          */
         IntervalMatrix(const Eigen::Matrix<zono_float, -1, -1>& mat_lb,
                        const Eigen::Matrix<zono_float, -1, -1>& mat_ub);
@@ -116,33 +117,37 @@ namespace ZonoOpt
 
         /**
          * @brief Interval matrix intersection
-         * 
+         *
          * @param other interval matrix to intersect with
-         * @return IntervalMatrix 
+         * @return IntervalMatrix
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         IntervalMatrix intersect(const IntervalMatrix& other) const;
 
         /**
          * @brief Interval matrix interval hull
-         * 
+         *
          * @param other interval matrix to compute hull with
-         * @return IntervalMatrix 
+         * @return IntervalMatrix
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         IntervalMatrix interval_hull(const IntervalMatrix& other) const;
 
         /**
          * @brief Check whether the interval matrix contains a given sparse matrix
-         * 
+         *
          * @param mat matrix
          * @return true if mat is contained in the interval matrix, false otherwise
+         * @throws std::invalid_argument if mat does not have the same dimensions as this interval matrix.
          */
         bool contains(const Eigen::SparseMatrix<zono_float>& mat) const;
 
         /**
          * @brief Check whether the interval matrix contains another interval matrix
-         * 
+         *
          * @param other interval matrix
          * @return true if other is contained in this, false otherwise
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         bool contains_set(const IntervalMatrix& other) const;
 
@@ -150,6 +155,7 @@ namespace ZonoOpt
          * @brief IntervalMatrix multiplication with vector
          * @param v rhs vector
          * @return resulting box
+         * @throws std::invalid_argument if v's size does not match this matrix's column count.
          */
         Box operator*(const Eigen::Vector<zono_float, -1>& v) const;
 
@@ -157,6 +163,7 @@ namespace ZonoOpt
          * @brief IntervalMatrix multiplication with Box
          * @param box rhs box
          * @return resulting box
+         * @throws std::invalid_argument if box's size does not match this matrix's column count.
          */
         Box operator*(const Box& box) const;
 
@@ -248,6 +255,7 @@ namespace ZonoOpt
          * @brief IntervalMatrix multiplication with sparse matrix
          * @param A rhs matrix
          * @return resulting interval matrix
+         * @throws std::invalid_argument if A's row count does not match this matrix's column count.
          */
         IntervalMatrix operator*(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A) const;
 
@@ -256,6 +264,7 @@ namespace ZonoOpt
          * @param A lhs matrix
          * @param B rhs interval matrix
          * @return resulting interval matrix
+         * @throws std::invalid_argument if A's column count does not match B's row count.
          */
         friend IntervalMatrix operator*(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A, const IntervalMatrix& B);
 
@@ -263,6 +272,7 @@ namespace ZonoOpt
          * @brief IntervalMatrix multiplication with dense matrix
          * @param A rhs matrix
          * @return resulting interval matrix
+         * @throws std::invalid_argument if A's row count does not match this matrix's column count.
          */
         IntervalMatrix operator*(const Eigen::Matrix<zono_float, -1, -1>& A) const;
 
@@ -271,6 +281,7 @@ namespace ZonoOpt
          * @param A lhs matrix
          * @param B rhs interval matrix
          * @return resulting interval matrix
+         * @throws std::invalid_argument if A's column count does not match B's row count.
          */
         friend IntervalMatrix operator*(const Eigen::Matrix<zono_float, -1, -1>& A, const IntervalMatrix& B);
 
@@ -278,12 +289,14 @@ namespace ZonoOpt
          * @brief IntervalMatrix multiplication with another IntervalMatrix
          * @param other rhs interval matrix
          * @return resulting interval matrix
+         * @throws std::invalid_argument if other's row count does not match this matrix's column count.
          */
         IntervalMatrix operator*(const IntervalMatrix& other) const;
 
         /**
          * @brief IntervalMatrix multiplication with another IntervalMatrix in-place
          * @param other rhs interval matrix
+         * @throws std::invalid_argument if other's row count does not match this matrix's column count.
          */
         void operator*=(const IntervalMatrix& other);
 
@@ -291,12 +304,14 @@ namespace ZonoOpt
          * @brief IntervalMatrix addition
          * @param other rhs interval matrix
          * @return resulting interval matrix
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         IntervalMatrix operator+(const IntervalMatrix& other) const;
 
         /**
          * @brief IntervalMatrix addition in-place
          * @param other rhs interval matrix
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         void operator+=(const IntervalMatrix& other);
 
@@ -347,12 +362,14 @@ namespace ZonoOpt
          * @brief IntervalMatrix subtraction
          * @param other rhs interval matrix
          * @return resulting interval matrix
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         IntervalMatrix operator-(const IntervalMatrix& other) const;
 
         /**
          * @brief IntervalMatrix subtraction in-place
          * @param other rhs interval matrix
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         void operator-=(const IntervalMatrix& other);
 
@@ -407,17 +424,19 @@ namespace ZonoOpt
 
         /**
          * @brief Interval matrix intersection oeprator
-         * 
+         *
          * @param other interval matrix to intersect with
-         * @return IntervalMatrix 
+         * @return IntervalMatrix
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         IntervalMatrix operator&(const IntervalMatrix& other) const;
 
         /**
          * @brief Interval matrix interval hull operator
-         * 
+         *
          * @param other interval matrix to compute hull with
-         * @return IntervalMatrix 
+         * @return IntervalMatrix
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         IntervalMatrix operator|(const IntervalMatrix& other) const;
 

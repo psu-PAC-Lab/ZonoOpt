@@ -52,28 +52,28 @@ namespace ZonoOpt
     protected:
         Eigen::Vector<zono_float, -1> do_optimize_over(
             const Eigen::SparseMatrix<zono_float>&, const Eigen::Vector<zono_float, -1>&, zono_float,
-            const OptSettings&, std::shared_ptr<OptSolution>* solution,
+            const SolverSettings&, std::shared_ptr<OptSolution>* solution,
             const WarmStartParams&) const override;
 
-        Eigen::Vector<zono_float, -1> do_project_point(const Eigen::Vector<zono_float, -1>&, const OptSettings&,
+        Eigen::Vector<zono_float, -1> do_project_point(const Eigen::Vector<zono_float, -1>&, const SolverSettings&,
                                                        std::shared_ptr<OptSolution>* solution,
                                                        const WarmStartParams&) const override;
 
-        zono_float do_support(const Eigen::Vector<zono_float, -1>&, const OptSettings&,
+        zono_float do_support(const Eigen::Vector<zono_float, -1>&, const SolverSettings&,
                               std::shared_ptr<OptSolution>* solution,
                               const WarmStartParams&) override;
 
-        bool do_contains_point(const Eigen::Vector<zono_float, -1>&, const OptSettings&, 
+        bool do_contains_point(const Eigen::Vector<zono_float, -1>&, const SolverSettings&, 
                                std::shared_ptr<OptSolution>* sol,
                                const WarmStartParams&) const override;
 
-        Box do_bounding_box(const OptSettings&, std::shared_ptr<OptSolution>* sol,
+        Box do_bounding_box(const SolverSettings&, std::shared_ptr<OptSolution>* sol,
                             const WarmStartParams&) override;
 
-        bool do_is_empty(const OptSettings&, std::shared_ptr<OptSolution>* sol,
+        bool do_is_empty(const SolverSettings&, std::shared_ptr<OptSolution>* sol,
                          const WarmStartParams&) const override;
 
-        std::unique_ptr<HybZono> do_complement(zono_float delta_m, bool, const OptSettings&,
+        std::unique_ptr<HybZono> do_complement(zono_float delta_m, bool, const SolverSettings&,
                                                std::shared_ptr<OptSolution>* sol,
                                                int, int) override;
 
