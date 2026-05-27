@@ -4,6 +4,8 @@ from scipy import sparse
 import matplotlib.pyplot as plt
 import subprocess
 
+zono.set_default_solver_settings(zono.SCIPSettings())
+
 # PWA system
 nx = 4
 nu = 2
@@ -116,15 +118,17 @@ for k in range(N):
         c += 0.5*xr.dot(Q.dot(xr))
 
 ### solve optimization problem ###
-settings = zono.OptSettings()
-settings.single_threaded_admm_fp = True
-settings.rng_seed = 0
-settings.enable_rng_seed = True
+# settings = zono.OptSettings()
+# settings.single_threaded_admm_fp = True
+# settings.rng_seed = 0
+# settings.enable_rng_seed = True
 
-settings.verbose = True
-settings.verbosity_interval = 1000
+# settings.verbose = True
+# settings.verbosity_interval = 1000
 
-z_sol = Z.optimize_over(P, q, settings=settings)
+# z_sol = Z.optimize_over(P, q, settings=settings)
+
+z_sol = Z.optimize_over(P, q)
 
 ### plot ###
 def is_latex_installed():

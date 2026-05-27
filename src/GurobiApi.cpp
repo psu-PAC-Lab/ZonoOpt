@@ -298,8 +298,8 @@ GurobiApi::GurobiApi()
 ZonoOptLibHandle GurobiApi::load_library()
 {
     std::vector<std::string> names = {
-        "libgurobi130.so", "libgurobi120.so", "libgurobi110.so", "libgurobi100.so", "libgurobi.so",
-        "gurobi130.dll", "gurobi120.dll", "gurobi110.dll", "gurobi100.dll", "gurobi.dll",
+        "libgurobi130.so", "libgurobi120.so", "libgurobi110.so", "libgurobi.so",
+        "gurobi130.dll", "gurobi120.dll", "gurobi110.dll", "gurobi.dll",
         "libgurobi130.dylib", "libgurobi120.dylib", "libgurobi110.dylib", "libgurobi.dylib"
     };
 
