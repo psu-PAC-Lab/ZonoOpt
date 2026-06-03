@@ -248,4 +248,11 @@ More information about ZonoOpt can be found in the following publications. Pleas
 - For Python users, ZonoOpt's use of multithreading for some hybrid zonotope operations can cause issues with cProfile. Profiling with py-spy is recommended. 
 
 ## See Also
-For MATLAB users, [zonoLAB](https://github.com/ESCL-at-UTD/zonoLAB) provides classes and set operations for zonotopes, constrained zonotopes, and hybrid zonotopes.
+
+### Projects Using ZonoOpt
+- [pyspect](https://github.com/KTH-SML/pyspect) is a Python toolbox for compiling temporal logic specifications into reachability programs.
+
+### Related Projects 
+- [zonoLAB](https://github.com/ESCL-at-UTD/zonoLAB) is a MATLAB toolbox that provides classes and set operations for zonotopes, constrained zonotopes, and hybrid zonotopes.
+- [pycvxset](https://github.com/merlresearch/pycvxset) is a Python toolbox for convex set manipulation.
+
