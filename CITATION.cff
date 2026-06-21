@@ -11,5 +11,6 @@ preferred-citation:
   - family-names: "Pangborn"
     given-names: "Herschel C."  
   title: "Sparsity-Promoting Reachability Analysis and Optimization of Constrained Zonotopes"
-  doi: 10.48550/arXiv.2504.03885
-  year: 2025
+  doi: 10.1109/TCST.2026.3700277
+  year: 2026
+  journal: "IEEE Transactions on Control Systems Technology"
