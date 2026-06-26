@@ -24,7 +24,7 @@ classifiers = [
 dependencies = [
   'matplotlib>=3.6',
   'numpy>=2.0',
-  'scipy>=1.17',
+  'scipy>=1.15', # prefer 1.17 or greater for plotting
   'tqdm>=4.67'
 ]
 
