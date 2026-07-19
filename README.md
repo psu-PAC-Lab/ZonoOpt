@@ -5,6 +5,8 @@ This C++ library provides classes and tailored optimization routines for zonotop
 
 [![Python build](https://github.com/psu-PAC-Lab/ZonoOpt/actions/workflows/python_build.yml/badge.svg)](https://github.com/psu-PAC-Lab/ZonoOpt/actions/workflows/python_build.yml)
 
+![PyPI Downloads](https://img.shields.io/pypi/dm/zonoopt?label=PyPI%20Downloads)
+
 ![image](images/mhe-traj.svg)
 ![image](images/reachability-traj.svg)
 
