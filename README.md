@@ -241,9 +241,9 @@ Auto-generated API documentation is available below.
 ## References
 More information about ZonoOpt can be found in the following publications. Please cite one or both of these as appropriate if you use ZonoOpt in your published work:
 
-**J. A. Robbins, J. A. Siefert and H. C. Pangborn, "Sparsity-Promoting Reachability Analysis and Optimization of Constrained Zonotopes," in IEEE Transactions on Control Systems Technology, doi: 10.1109/TCST.2026.3700277.**
+>J. A. Robbins, J. A. Siefert and H. C. Pangborn, "Sparsity-Promoting Reachability Analysis and Optimization of Constrained Zonotopes," in IEEE Transactions on Control Systems Technology, doi: 10.1109/TCST.2026.3700277.
 
-**Robbins, J.A., Thompson, A.F., Glunt, J.J., and Pangborn, H.C., "Hybrid System Planning using a Mixed-Integer ADMM Heuristic and Hybrid Zonotopes", 2026. [https://arxiv.org/abs/2602.17574](https://doi.org/10.48550/arXiv.2602.17574)**
+>Robbins, J.A., Thompson, A.F., Glunt, J.J., and Pangborn, H.C., "Hybrid System Planning using a Mixed-Integer ADMM Heuristic and Hybrid Zonotopes", 2026. [https://arxiv.org/abs/2602.17574](https://doi.org/10.48550/arXiv.2602.17574)
 
 ## Additional Notes
 - For internal reasons, ZonoOpt's versioning begins at 2.0.0. Please note that the library is currently in Beta. In this phase, there may be API changes in minor version updates (e.g., 2.1.0 to 2.2.0). There will be no API changes between patch numbers (e.g., 2.2.0 to 2.2.1).
