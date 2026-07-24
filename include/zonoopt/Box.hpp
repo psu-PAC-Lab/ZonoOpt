@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_BOX_HPP_
-#define ZONOOPT_BOX_HPP_
+#pragma once
 
 /**
  * @file Box.hpp
@@ -12,7 +11,16 @@
  *
  */
 
+#include <vector>
+#include <set>
+#include <utility>
+#include <ostream>
+
+#include "Eigen/Dense"
+#include "Eigen/Sparse"
+
 #include "Interval.hpp"
+#include "Defines.hpp"
 
 namespace ZonoOpt
 {
@@ -698,10 +706,4 @@ namespace ZonoOpt
         std::pair<int, int> idx_b;
         zono_float bin_low = zero, bin_high = one;
     };
-
-
-
 }
-
-
-#endif

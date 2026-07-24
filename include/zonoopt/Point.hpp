@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_POINT_HPP_
-#define ZONOOPT_POINT_HPP_
+#pragma once
 
 /**
  * @file Point.hpp
@@ -11,6 +10,12 @@
  * @copyright Copyright (c) 2025
  * 
  */
+
+#include <memory>
+#include <string>
+
+#include "Eigen/Dense"
+#include "Eigen/Sparse"
 
 #include "Zono.hpp"
 
@@ -124,5 +129,3 @@ namespace ZonoOpt
     
     };
 } // namespace ZonoOpt
-
-#endif

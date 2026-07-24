@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_BNB_DATA_STRUCTURES_
-#define ZONOOPT_BNB_DATA_STRUCTURES_
+#pragma once
 
 /**
  * @file BnbDataStructures.hpp
@@ -22,6 +21,8 @@
 #include <functional>
 
 #include "ADMM.hpp"
+#include "Defines.hpp"
+#include "Interval.hpp"
 #include "SolverDataStructures.hpp"
 
 namespace ZonoOpt::detail
@@ -322,6 +323,3 @@ namespace ZonoOpt::detail
 
     };
 } // namespace ZonoOpt::detail
-
-
-#endif

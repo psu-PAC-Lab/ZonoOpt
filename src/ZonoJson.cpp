@@ -1,4 +1,19 @@
-#include "ZonoOpt.hpp"
+#include <fstream>
+#include <memory>
+#include <string>
+#include <stdexcept>
+#include <vector>
+
+#include "Eigen/Dense"
+#include "Eigen/Sparse"
+
+#include "zonoopt/ConZono.hpp"
+#include "zonoopt/Defines.hpp"
+#include "zonoopt/EmptySet.hpp"
+#include "zonoopt/HybZono.hpp"
+#include "zonoopt/Point.hpp"
+#include "zonoopt/Zono.hpp"
+#include "zonoopt/ZonoJson.hpp"
 
 namespace ZonoOpt
 {

@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_SCIP_SOLVER_HPP_
-#define ZONOOPT_SCIP_SOLVER_HPP_
+#pragma once
 
 /**
  * @file SCIPSolver.hpp
@@ -7,9 +6,12 @@
  * 
  */
 
+#include <vector>
+
 #include "Eigen/Dense"
 #include "Eigen/Sparse"
 
+#include "Defines.hpp"
 #include "SolverDataStructures.hpp"
 #include "SCIPSettings.hpp"
 
@@ -90,5 +92,3 @@ std::vector<OptSolution> solve_miqp_scip_multisol(const Eigen::SparseMatrix<zono
 
 } // namespace detail
 } // namespace ZonoOpt
-
-#endif

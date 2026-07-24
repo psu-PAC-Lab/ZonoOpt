@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_SCIP_API_HPP_
-#define ZONOOPT_SCIP_API_HPP_
+#pragma once
 
 /**
  * @file SCIPApi.hpp
@@ -223,5 +222,3 @@ private:
 
 } // namespace detail
 } // namespace ZonoOpt
-
-#endif

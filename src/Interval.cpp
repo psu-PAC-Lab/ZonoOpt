@@ -1,4 +1,13 @@
-#include "ZonoOpt.hpp"
+#include <algorithm>
+#include <cmath>
+#include <ostream>
+#include <stdexcept>
+#include <string>
+#include <utility>
+
+#include <boost/numeric/interval.hpp>
+
+#include "zonoopt/Interval.hpp"
 
 namespace ZonoOpt
 {

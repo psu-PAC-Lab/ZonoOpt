@@ -1,4 +1,24 @@
-#include "ZonoOpt.hpp"
+#include <atomic>
+#include <chrono>
+#include <cmath>
+#include <limits>
+#include <memory>
+#include <random>
+#include <set>
+#include <sstream>
+#include <stdexcept>
+#include <utility>
+#include <vector>
+
+#include "Eigen/Dense"
+#include "Eigen/Sparse"
+
+#include "zonoopt/ADMM.hpp"
+#include "zonoopt/CholeskyUtilities.hpp"
+#include "zonoopt/Defines.hpp"
+#include "zonoopt/GenUtilities.hpp"
+#include "zonoopt/SparseMatrixUtilities.hpp"
+#include "zonoopt/SolverDataStructures.hpp"
 
 namespace ZonoOpt
 {

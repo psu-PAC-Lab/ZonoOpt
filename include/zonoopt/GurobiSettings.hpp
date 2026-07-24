@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_GUROBI_SETTINGS_HPP_
-#define ZONOOPT_GUROBI_SETTINGS_HPP_
+#pragma once
 
 /**
  * @file GurobiSettings.hpp
@@ -200,5 +199,3 @@ namespace ZonoOpt
         }
     };
 } // namespace ZonoOpt
-
-#endif

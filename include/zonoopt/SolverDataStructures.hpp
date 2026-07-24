@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_SOLVER_DATA_STRUCUTURES_HPP_
-#define ZONOOPT_SOLVER_DATA_STRUCUTURES_HPP_
+#pragma once
 
 /**
  * @file SolverDataStructures.hpp
@@ -12,10 +11,14 @@
  * 
  */
 
-#include <Eigen/Dense>
+#include <limits>
 #include <memory>
 #include <sstream>
 #include <string>
+
+#include "Eigen/Dense"
+
+#include "Defines.hpp"
 
 namespace ZonoOpt
 {
@@ -406,5 +409,3 @@ namespace ZonoOpt
         detail::default_settings_storage() = settings.clone();
     }
 } // end namespace ZonoOpt
-
-#endif

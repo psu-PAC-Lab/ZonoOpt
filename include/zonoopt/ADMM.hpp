@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_ADMM_HPP_
-#define ZONOOPT_ADMM_HPP_
+#pragma once
 
 /**
  * @file ADMM.hpp
@@ -12,23 +11,15 @@
  * 
  */
 
-
-#include <vector>
-#include <chrono>
-#include <stdexcept>
-#include <iostream>
-#include <sstream>
 #include <memory>
-#include <set>
-#include <cmath>
-#include <random>
 #include <atomic>
+#include <random>
 
 #include "Eigen/Dense"
 #include "Eigen/Sparse"
-#include "CholeskyUtilities.hpp"
+
 #include "Box.hpp"
-#include "SparseMatrixUtilities.hpp"
+#include "CholeskyUtilities.hpp"
 #include "SolverDataStructures.hpp"
 
 /* 
@@ -248,5 +239,3 @@ namespace ZonoOpt
         };
     } // end namespace detail
 } // end namespace ZonoOpt
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_GUROBI_API_HPP_
-#define ZONOOPT_GUROBI_API_HPP_
+#pragma once
 
 /**
  * @file GurobiApi.hpp
@@ -126,5 +125,3 @@ private:
 
 } // namespace detail
 } // namespace ZonoOpt
-
-#endif

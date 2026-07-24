@@ -1,9 +1,9 @@
-#include "zonoopt/SCIPApi.hpp"
-
 #include <cstdlib>
 #include <filesystem>
 #include <stdexcept>
 #include <string>
+
+#include "zonoopt/SCIPApi.hpp"
 
 namespace ZonoOpt
 {

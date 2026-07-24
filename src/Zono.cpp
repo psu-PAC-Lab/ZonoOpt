@@ -1,4 +1,20 @@
-#include "ZonoOpt.hpp"
+#include <algorithm>
+#include <cmath>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <sstream>
+#include <utility>
+
+#include "Eigen/Dense"
+#include "Eigen/Sparse"
+
+#include "zonoopt/ADMM.hpp"
+#include "zonoopt/Box.hpp"
+#include "zonoopt/Defines.hpp"
+#include "zonoopt/GenUtilities.hpp"
+#include "zonoopt/SolverDataStructures.hpp"
+#include "zonoopt/Zono.hpp"
 
 namespace ZonoOpt
 {

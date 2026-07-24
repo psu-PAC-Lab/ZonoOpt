@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_SCIP_SETTINGS_HPP_
-#define ZONOOPT_SCIP_SETTINGS_HPP_
+#pragma once
 
 /**
  * @file SCIPSettings.hpp
@@ -168,5 +167,3 @@ namespace ZonoOpt
         }
     };
 } // namespace ZonoOpt
-
-#endif

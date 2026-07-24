@@ -1,11 +1,12 @@
-#ifndef ZONOOPT_GUROBI_SOLVER_HPP_
-#define ZONOOPT_GUROBI_SOLVER_HPP_
+#pragma once
 
 /**
  * @file GurobiSolver.hpp
  * @brief C++ interface to the Gurobi optimization solver via dynamic loading.
  * 
  */
+
+#include <vector>
 
 #include "Eigen/Dense"
 #include "Eigen/Sparse"
@@ -100,5 +101,3 @@ std::vector<OptSolution> solve_miqp_gurobi_multisol(const Eigen::SparseMatrix<zo
 
 } // namespace detail
 } // namespace ZonoOpt
-
-#endif
