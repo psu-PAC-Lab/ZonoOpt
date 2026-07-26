@@ -1,3 +1,14 @@
+/**
+ * @file Defines.hpp
+ * @author Josh Robbins (jrobbins@psu.edu)
+ * @brief Defines for ZonoOpt library
+ * @version 1.0
+ * @date 2026-07-26
+ * 
+ * @copyright Copyright (c) 2026
+ * 
+ */
+
 #pragma once
 
 #define EIGEN_MPL2_ONLY // Disable features licensed under LGPL

@@ -9,7 +9,6 @@
 #include "Eigen/Dense"
 #include "Eigen/Sparse"
 
-#include "zonoopt/ADMM.hpp"
 #include "zonoopt/Box.hpp"
 #include "zonoopt/Defines.hpp"
 #include "zonoopt/GenUtilities.hpp"
