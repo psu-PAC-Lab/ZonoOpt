@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_ADMM_HPP_
-#define ZONOOPT_ADMM_HPP_
+#pragma once
 
 /**
  * @file ADMM.hpp
@@ -12,23 +11,15 @@
  * 
  */
 
-
-#include <vector>
-#include <chrono>
-#include <stdexcept>
-#include <iostream>
-#include <sstream>
 #include <memory>
-#include <set>
-#include <cmath>
-#include <random>
 #include <atomic>
+#include <random>
 
 #include "Eigen/Dense"
 #include "Eigen/Sparse"
-#include "CholeskyUtilities.hpp"
+
 #include "Box.hpp"
-#include "SparseMatrixUtilities.hpp"
+#include "CholeskyUtilities.hpp"
 #include "SolverDataStructures.hpp"
 
 /* 
@@ -40,20 +31,6 @@
 
 namespace ZonoOpt
 {
-    /**
-     * @brief Warm start parameters for optimization routines in ZonoOpt library.
-     * 
-     * This specifically contains primal and dual variables for ADMM warm-starting.
-     */
-    struct WarmStartParams
-    {
-        /// primal variable
-        Eigen::Vector<zono_float, -1> z;
-
-        /// dual variable
-        Eigen::Vector<zono_float, -1> u;
-    };
-
     namespace detail
     {
         /**
@@ -248,5 +225,3 @@ namespace ZonoOpt
         };
     } // end namespace detail
 } // end namespace ZonoOpt
-
-#endif

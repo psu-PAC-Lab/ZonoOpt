@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_ZONO_HPP_
-#define ZONOOPT_ZONO_HPP_
+#pragma once
 
 /**
  * @file Zono.hpp
@@ -12,7 +11,14 @@
  * 
  */
 
+#include <memory>
+#include <string>
+
+#include "Eigen/Dense"
+#include "Eigen/Sparse"
+
 #include "ConZono.hpp"
+#include "Defines.hpp"
 
 namespace ZonoOpt
 {
@@ -161,5 +167,3 @@ namespace ZonoOpt
                                                const Eigen::Vector<zono_float, 2>& c = Eigen::Vector<
                                                    zono_float, 2>::Zero());
 } // namespace ZonoOpt
-
-#endif

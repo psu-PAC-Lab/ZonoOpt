@@ -1,4 +1,12 @@
-#include "ZonoOpt.hpp"
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <sstream>
+
+#include "Eigen/Dense"
+#include "Eigen/Sparse"
+
+#include "zonoopt/Point.hpp"
 
 namespace ZonoOpt
 {

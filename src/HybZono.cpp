@@ -1,6 +1,31 @@
-#include "ZonoOpt.hpp"
+#include <algorithm>
+#include <cmath>
+#include <limits>
+#include <memory>
+#include <ostream>
+#include <stdexcept>
+#include <set>
+#include <string>
+#include <sstream>
+#include <utility>
+#include <vector>
+
+#include "Eigen/Dense"
+#include "Eigen/Sparse"
+
+#include "zonoopt/Box.hpp"
+#include "zonoopt/BranchAndBound.hpp"
+#include "zonoopt/ConZono.hpp"
+#include "zonoopt/Defines.hpp"
+#include "zonoopt/EmptySet.hpp"
 #include "zonoopt/GurobiSolver.hpp"
+#include "zonoopt/HybZono.hpp"
+#include "zonoopt/Interval.hpp"
+#include "zonoopt/IntervalMatrix.hpp"
+#include "zonoopt/Point.hpp"
 #include "zonoopt/SCIPSolver.hpp"
+#include "zonoopt/SparseMatrixUtilities.hpp"
+#include "zonoopt/Zono.hpp"
 
 namespace ZonoOpt
 {

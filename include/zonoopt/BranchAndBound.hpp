@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_BRANCH_AND_BOUND_
-#define ZONOOPT_BRANCH_AND_BOUND_
+#pragma once
 
 /**
  * @file BranchAndBound.hpp
@@ -12,18 +11,16 @@
  * 
  */
 
-#include <thread>
 #include <atomic>
 #include <mutex>
 #include <condition_variable>
-#include <sstream>
-#include <iomanip>
 #include <variant>
 #include <memory_resource>
 #include <cmath>
 #include <random>
 
 #include "BnbDataStructures.hpp"
+#include "Defines.hpp"
 #include "SolverDataStructures.hpp"
 #include "ADMM.hpp"
 
@@ -192,6 +189,3 @@ namespace ZonoOpt::detail
         zono_float get_lower_bound();
     };
 } // namespace ZonoOpt::detail
-
-
-#endif

@@ -1,9 +1,9 @@
-#include "zonoopt/GurobiApi.hpp"
-
 #include <cstdlib>
 #include <filesystem>
 #include <stdexcept>
 #include <string>
+
+#include "zonoopt/GurobiApi.hpp"
 
 namespace ZonoOpt
 {

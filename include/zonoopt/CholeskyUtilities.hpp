@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_CHOLESKY_UTILITIES_HPP_
-#define ZONOOPT_CHOLESKY_UTILITIES_HPP_
+#pragma once
 
 /**
  * @file CholeskyUtilities.hpp
@@ -14,6 +13,8 @@
 
 #include "Eigen/Sparse"
 #include "Eigen/Dense"
+
+#include "Defines.hpp"
 
 namespace ZonoOpt::detail {
 
@@ -34,5 +35,3 @@ namespace ZonoOpt::detail {
 
 } // end namespace detail
 // end namespace ZonoOpt
-
-#endif

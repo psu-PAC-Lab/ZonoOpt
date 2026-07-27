@@ -1,4 +1,17 @@
-#include "ZonoOpt.hpp"
+#include <algorithm>
+#include <cmath>
+#include <ostream>
+#include <string>
+#include <sstream>
+#include <stdexcept>
+#include <utility>
+#include <vector>
+
+#include "Eigen/Dense"
+#include "Eigen/Sparse"
+
+#include "zonoopt/Interval.hpp"
+#include "zonoopt/IntervalMatrix.hpp"
 
 namespace ZonoOpt
 {

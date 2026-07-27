@@ -1,4 +1,8 @@
-#include "ZonoOpt.hpp"
+#include "Eigen/Dense"
+#include "Eigen/Sparse"
+
+#include "zonoopt/CholeskyUtilities.hpp"
+#include "zonoopt/Defines.hpp"
 
 namespace ZonoOpt::detail
 {

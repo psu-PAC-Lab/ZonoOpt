@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_GENUTILITIES_HPP_
-#define ZONOOPT_GENUTILITIES_HPP_
+#pragma once
 
 /**
  * @file GenUtilities.hpp
@@ -81,5 +80,3 @@ namespace ZonoOpt::detail
         ss.str("");
     }
 }
-
-#endif

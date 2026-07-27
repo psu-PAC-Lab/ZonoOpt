@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_INTERVAL_HPP_
-#define ZONOOPT_INTERVAL_HPP_
+#pragma once
 
 /**
  * @file Interval.hpp
@@ -13,12 +12,15 @@
  */
 
 #include <string>
-#include <vector>
-#include <set>
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
 #include <cmath>
+#include <ostream>
+#include <utility>
+
 #include <boost/numeric/interval.hpp>
+#include "Eigen/Dense"
+#include "Eigen/Sparse"
+
+#include "Defines.hpp"
 
 namespace ZonoOpt
 {
@@ -498,5 +500,3 @@ namespace ZonoOpt
     };
 
 } // namespace ZonoOpt
-
-#endif

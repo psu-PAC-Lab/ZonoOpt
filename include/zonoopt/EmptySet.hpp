@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_EMPTYSET_HPP_
-#define ZONOOPT_EMPTYSET_HPP_
+#pragma once
 
 /**
  * @file EmptySet.hpp
@@ -12,7 +11,12 @@
  *
  */
 
+#include <memory>
+#include <string>
+#include <stdexcept>
+
 #include "ConZono.hpp"
+#include "Defines.hpp"
 #include "Zono.hpp"
 
 namespace ZonoOpt
@@ -82,5 +86,3 @@ namespace ZonoOpt
 
     };
 }
-
-#endif

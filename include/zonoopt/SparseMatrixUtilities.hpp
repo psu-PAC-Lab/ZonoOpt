@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_SPARSEMATRIXUTILITIES_HPP_
-#define ZONOOPT_SPARSEMATRIXUTILITIES_HPP_
+#pragma once
 
 /**
  * @file SparseMatrixUtilities.hpp
@@ -12,8 +11,10 @@
  * 
  */
 
-#include <Eigen/Sparse>
 #include <vector>
+#include <stdexcept>
+
+#include "Eigen/Sparse"
 
 namespace ZonoOpt::detail
 {
@@ -181,5 +182,3 @@ namespace ZonoOpt::detail
 
 } // namespace ZonoOpt::detail
 // end namespace ZonoOpt
-
-#endif

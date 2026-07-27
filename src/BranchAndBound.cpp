@@ -1,4 +1,21 @@
-#include "ZonoOpt.hpp"
+#include <chrono>
+#include <cmath>
+#include <iomanip>
+#include <functional>
+#include <limits>
+#include <memory>
+#include <sstream>
+#include <stdexcept>
+#include <thread>
+#include <utility>
+#include <vector>
+
+#include "Eigen/Dense"
+
+#include "zonoopt/BranchAndBound.hpp"
+#include "zonoopt/BnbDataStructures.hpp"
+#include "zonoopt/Defines.hpp"
+#include "zonoopt/GenUtilities.hpp"
 
 namespace ZonoOpt::detail
 {

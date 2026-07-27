@@ -1,6 +1,3 @@
-#include "zonoopt/GurobiSolver.hpp"
-#include "zonoopt/GurobiApi.hpp"
-
 #include <algorithm>
 #include <chrono>
 #include <limits>
@@ -8,6 +5,12 @@
 #include <string>
 #include <stdexcept>
 #include <utility>
+
+#include "Eigen/Dense"
+#include "Eigen/Sparse"
+
+#include "zonoopt/GurobiSolver.hpp"
+#include "zonoopt/GurobiApi.hpp"
 
 namespace ZonoOpt
 {

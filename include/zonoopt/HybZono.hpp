@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_HYBZONO_HPP_
-#define ZONOOPT_HYBZONO_HPP_
+#pragma once
 
 /**
  * @file HybZono.hpp
@@ -12,14 +11,16 @@
  * 
  */
 
-#include "SparseMatrixUtilities.hpp"
-#include "BranchAndBound.hpp"
-#include "BnbDataStructures.hpp"
-#include "IntervalMatrix.hpp"
-
-#include <cassert>
 #include <limits>
-#include <set>
+#include <memory>
+
+#include "Eigen/Dense"
+#include "Eigen/Sparse"
+
+#include "ADMM.hpp"
+#include "Defines.hpp"
+#include "IntervalMatrix.hpp"
+#include "SolverDataStructures.hpp"
 
 namespace ZonoOpt
 {
@@ -1029,5 +1030,3 @@ std::unique_ptr<HybZono> vrep_2_hybzono(const std::vector<Eigen::Matrix<zono_flo
 std::unique_ptr<HybZono> zono_union_2_hybzono(std::vector<std::shared_ptr<Zono>> &Zs, bool expose_indicators=false);
 
 } // end namespace ZonoOpt
-
-#endif

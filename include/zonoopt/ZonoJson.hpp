@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_ZONO_JSON_HPP__
-#define ZONOOPT_ZONO_JSON_HPP__
+#pragma once
 
 /**
  * @file ZonoJson.hpp
@@ -12,10 +11,14 @@
  *
  */
 
-
-#include <fstream>
+#include <memory>
 #include <string>
+#include <vector>
+
+#include "Eigen/Dense"
+#include "Eigen/Sparse"
 #include "nlohmann/json.hpp"
+
 #include "HybZono.hpp"
 
 namespace ZonoOpt
@@ -50,6 +53,3 @@ namespace detail
 }
 
 }
-
-
-#endif

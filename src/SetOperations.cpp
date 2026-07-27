@@ -1,9 +1,18 @@
-#include <stdexcept>
 #include <algorithm>
-#include <utility>
 #include <memory>
+#include <stdexcept>
+#include <utility>
+#include <vector>
 
-#include "ZonoOpt.hpp"
+#include "zonoopt/Box.hpp"
+#include "zonoopt/Defines.hpp"
+#include "zonoopt/ConZono.hpp"
+#include "zonoopt/EmptySet.hpp"
+#include "zonoopt/HybZono.hpp"
+#include "zonoopt/IntervalMatrix.hpp"
+#include "zonoopt/Point.hpp"
+#include "zonoopt/SparseMatrixUtilities.hpp"
+#include "zonoopt/Zono.hpp"
 
 namespace ZonoOpt
 {

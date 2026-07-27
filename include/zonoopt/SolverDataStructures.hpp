@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_SOLVER_DATA_STRUCUTURES_HPP_
-#define ZONOOPT_SOLVER_DATA_STRUCUTURES_HPP_
+#pragma once
 
 /**
  * @file SolverDataStructures.hpp
@@ -12,10 +11,14 @@
  * 
  */
 
-#include <Eigen/Dense>
+#include <limits>
 #include <memory>
 #include <sstream>
 #include <string>
+
+#include "Eigen/Dense"
+
+#include "Defines.hpp"
 
 namespace ZonoOpt
 {
@@ -405,6 +408,19 @@ namespace ZonoOpt
         settings.verify_available();
         detail::default_settings_storage() = settings.clone();
     }
-} // end namespace ZonoOpt
 
-#endif
+    /**
+     * @brief Warm start parameters for optimization routines in ZonoOpt library.
+     * 
+     * This specifically contains primal and dual variables for ADMM warm-starting.
+     */
+    struct WarmStartParams
+    {
+        /// primal variable
+        Eigen::Vector<zono_float, -1> z;
+
+        /// dual variable
+        Eigen::Vector<zono_float, -1> u;
+    };
+
+} // end namespace ZonoOpt

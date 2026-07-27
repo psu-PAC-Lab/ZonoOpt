@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_CONZONO_HPP_
-#define ZONOOPT_CONZONO_HPP_
+#pragma once
 
 /**
  * @file ConZono.hpp
@@ -12,7 +11,15 @@
  * 
  */
 
+#include <memory>
+#include <string>
+
+#include "Eigen/Dense"
+#include "Eigen/Sparse"
+
 #include "HybZono.hpp"
+#include "Defines.hpp"
+#include "SolverDataStructures.hpp"
 
 namespace ZonoOpt
 {
@@ -173,6 +180,3 @@ namespace ZonoOpt
     */
     std::unique_ptr<ConZono> vrep_2_conzono(const Eigen::Matrix<zono_float, -1, -1>& Vpoly);
 } // namespace ZonoOpt
-
-
-#endif

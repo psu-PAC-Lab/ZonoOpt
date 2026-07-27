@@ -1,5 +1,4 @@
-#ifndef ZONOOPT_INTERVALMATRIX_HPP_
-#define ZONOOPT_INTERVALMATRIX_HPP_
+#pragma once
 
 /**
 * @file IntervalMatrix.hpp
@@ -12,8 +11,17 @@
  *
  */
 
+#include <ostream>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "Eigen/Dense"
+#include "Eigen/Sparse"
+
 #include "Interval.hpp"
 #include "Box.hpp"
+#include "Defines.hpp"
 
 namespace ZonoOpt
 {
@@ -496,6 +504,3 @@ namespace ZonoOpt
     };
 
 }
-
-
-#endif

@@ -1,6 +1,3 @@
-#include "zonoopt/SCIPSolver.hpp"
-#include "zonoopt/SCIPApi.hpp"
-
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -9,6 +6,9 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#include "zonoopt/SCIPSolver.hpp"
+#include "zonoopt/SCIPApi.hpp"
 
 namespace ZonoOpt
 {
