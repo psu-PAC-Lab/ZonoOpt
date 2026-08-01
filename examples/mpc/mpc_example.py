@@ -562,37 +562,11 @@ class MPCProb:
 
         elif self.solver_flag=='gurobi':
 
-            # build gurobi model
-            P_tilde = Z.get_G().transpose().dot(P.dot(Z.get_G()))
-            q_tilde = Z.get_G().transpose().dot(P*Z.get_c() + q)
+            # solve using ZonoOpt's built-in Gurobi solver support
+            gurobi_settings = zono.GurobiSettings()
+            gurobi_settings.OutputFlag = 1 if self.verbose else 0
 
-            # create model
-            prob = gp.Model()
-
-            # add variables
-            if Z.is_0_1_form():
-                x_gurobi = prob.addMVar(Z.get_nG(), lb=np.zeros(Z.get_nG()), ub=np.ones(Z.get_nG()))
-            else:
-                x_gurobi = prob.addMVar(Z.get_nG(), lb=-np.ones(Z.get_nG()), ub=np.ones(Z.get_nG()))
-
-            # add constraints
-            A_gurobi = Z.get_A()
-            b_gurobi = Z.get_b()
-            prob.addConstr(A_gurobi.dot(x_gurobi) == b_gurobi)
-
-            # add objective
-            prob.setMObjective(P_tilde, q_tilde, 0.0, sense=gp.GRB.MINIMIZE)
-
-            # optimize
-            prob.optimize()
-            xi_opt = np.array([x.X for x in prob.getVars()])
-            xopt = Z.get_G()*xi_opt + Z.get_c()
-
-            # logging
-            data.sol.run_time = prob.Runtime
-            data.sol.iter = prob.BarIterCount
-            data.sol.startup_time = 0.0
-            data.sol.infeasible = prob.Status != 2
+            xopt = Z.optimize_over(P, q, settings=gurobi_settings, solution=data.sol)
 
         else:
             return ValueError('Unknown solver flag')

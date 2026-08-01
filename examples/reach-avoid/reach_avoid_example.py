@@ -18,7 +18,6 @@ except ImportError:
     exit()
 
 if MODE == 'heuristic_test' or MODE == 'admm_fp_multirun':
-    import gurobipy as gp
     if MODE == 'heuristic_test':
         try:
             import objective_feasibility_pump as ofp
@@ -155,58 +154,21 @@ def zono_planning_prob(x0, xr, A, B, Q, R, QN, N, X, U, XN, X_map, solver_flag, 
     
     elif solver_flag == 'gurobi':
 
-        # create model
-        prob = gp.Model()
+        # solve using ZonoOpt's built-in Gurobi solver support
+        gurobi_settings = zono.GurobiSettings()
+        gurobi_settings.MIPGap = settings.eps_r
+        gurobi_settings.MIPGapAbs = settings.eps_a
+        gurobi_settings.Threads = settings.n_threads_bnb + settings.n_threads_admm_fp + 1  # +1 for the main thread
+        gurobi_settings.OutputFlag = 1 if settings.verbose else 0
+        gurobi_settings.TimeLimit = settings.t_max
+        gurobi_settings.FeasibilityTol = settings.eps_prim
 
-        # settings
-        prob.Params.MIPGap = settings.eps_r
-        prob.Params.MIPGapAbs = settings.eps_a
-        prob.Params.Threads = settings.n_threads_bnb + settings.n_threads_admm_fp + 1  # +1 for the main thread
-        prob.Params.OutputFlag = 1 if settings.verbose else 0
-        prob.Params.TimeLimit = settings.t_max
-        prob.Params.FeasibilityTol = settings.eps_prim
+        xopt = Z.optimize_over(P, q, c=c, settings=gurobi_settings, solution=sol)
 
-        # need 0-1 form
-        if not Z.is_0_1_form():
-            Z.convert_form()
-
-        # build gurobi model
-        P_tilde = Z.get_G().transpose().dot(P.dot(Z.get_G()))
-        q_tilde = Z.get_G().transpose().dot(P*Z.get_c() + q)
-        c_tilde = 0.5*Z.get_c().dot(P.dot(Z.get_c())) + q.dot(Z.get_c()) + c
-
-        # add variables
-        x_gurobi = prob.addMVar(Z.get_nG(), lb=np.zeros(Z.get_nG()), ub=np.ones(Z.get_nG()))
-        xc = x_gurobi[0:Z.get_nGc()]
-        xb = x_gurobi[Z.get_nGc():Z.get_nG()]
-        xc.vtype = gp.GRB.CONTINUOUS
-        xb.vtype = gp.GRB.BINARY
-
-        # add constraints
-        prob.addConstr(Z.get_Ac().dot(xc) + Z.get_Ab().dot(xb) == Z.get_b())
-
-        # add objective
-        prob.setMObjective(0.5*P_tilde, q_tilde, c_tilde, sense=gp.GRB.MINIMIZE)
-
-        # optimize
-        prob.optimize()
-
-        if prob.Status != 2:
+        if not sol.converged:
             print('Gurobi did not find a feasible solution')
             sol.infeasible = True
             return None, None, None
-
-        # logging
-        sol.run_time = prob.Runtime
-        sol.iter = prob.BarIterCount
-        sol.startup_time = 0.0
-        sol.infeasible = prob.Status != 2
-        sol.J = prob.ObjVal
-        sol.converged = prob.Status == 2
-
-        # solution
-        xi_opt = np.array([x.X for x in prob.getVars()])
-        xopt = Z.get_G()*xi_opt + Z.get_c()
 
     elif solver_flag == 'ofp':
         # settings
