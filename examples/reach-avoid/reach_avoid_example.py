@@ -170,6 +170,24 @@ def zono_planning_prob(x0, xr, A, B, Q, R, QN, N, X, U, XN, X_map, solver_flag, 
             sol.infeasible = True
             return None, None, None
 
+    elif solver_flag == 'scip':
+
+        # solve using ZonoOpt's built-in SCIP solver support
+        scip_settings = zono.SCIPSettings()
+        scip_settings.MIPGap = settings.eps_r
+        scip_settings.MIPGapAbs = settings.eps_a
+        scip_settings.Threads = settings.n_threads_bnb + settings.n_threads_admm_fp + 1  # +1 for the main thread
+        scip_settings.VerbLevel = 4 if settings.verbose else 0
+        scip_settings.TimeLimit = settings.t_max
+        scip_settings.FeasibilityTol = settings.eps_prim
+
+        xopt = Z.optimize_over(P, q, c=c, settings=scip_settings, solution=sol)
+
+        if not sol.converged:
+            print('SCIP did not find a feasible solution')
+            sol.infeasible = True
+            return None, None, None
+
     elif solver_flag == 'ofp':
         # settings
         ofp_settings = ofp.OFP_Settings()
@@ -491,10 +509,12 @@ elif MODE == 'heuristic_test':
     n_feas_admm_fp_arr = []
     n_feas_admm_arr = []
     n_feas_gurobi_arr = []
+    n_feas_scip_arr = []
     n_feas_ofp_arr = []
     t_admm_fp_arr = []
     t_admm_arr = []
     t_gurobi_arr = []
+    t_scip_arr = []
     t_ofp_arr = []
 
     for sample_factor in sample_factor_arr:
@@ -503,10 +523,12 @@ elif MODE == 'heuristic_test':
         n_feas_admm = 0
         n_feas_admm_fp = 0
         n_feas_gurobi = 0
+        n_feas_scip = 0
         n_feas_ofp = 0
         t_admm_fp = []
         t_admm = []
         t_gurobi = []
+        t_scip = []
         t_ofp = []
 
         for seed in range(n_seeds):
@@ -553,6 +575,16 @@ elif MODE == 'heuristic_test':
             else:
                 t_gurobi.append(np.nan)
 
+            # run with SCIP for comparison
+            # build and solve motion planning problem
+            x_traj, u_traj, Z_mpc, Z_map, sol, XN = reach_avoid_problem(seed, sample_factor, settings, 'scip')
+
+            if sol.converged:
+                n_feas_scip += 1
+                t_scip.append(sol.run_time)
+            else:
+                t_scip.append(np.nan)
+
             # run with OFP for comparison
             # build and solve motion planning problem
             x_traj, u_traj, Z_mpc, Z_map, sol, XN = reach_avoid_problem(seed, sample_factor, settings, 'ofp')
@@ -568,16 +600,19 @@ elif MODE == 'heuristic_test':
         n_feas_admm_fp_arr.append(n_feas_admm_fp)
         n_feas_admm_arr.append(n_feas_admm)
         n_feas_gurobi_arr.append(n_feas_gurobi)
+        n_feas_scip_arr.append(n_feas_scip)
         n_feas_ofp_arr.append(n_feas_ofp)
         t_admm_fp_arr.append(t_admm_fp)
         t_admm_arr.append(t_admm)
         t_gurobi_arr.append(t_gurobi)
+        t_scip_arr.append(t_scip)
         t_ofp_arr.append(t_ofp)
 
         # print results
         print(f'ADMM-FP feasible in {n_feas_admm_fp} / {n_seeds} cases -> {n_feas_admm_fp/(n_seeds)*100:.2f}%, average solution time = {np.mean(t_admm_fp_arr[-1]) if len(t_admm_fp_arr[-1]) > 0 else np.nan} s')
         print(f'ADMM feasible in {n_feas_admm} / {n_seeds} cases -> {n_feas_admm/(n_seeds)*100:.2f}%, average solution time = {np.mean(t_admm_arr[-1]) if len(t_admm_arr[-1]) > 0 else np.nan} s')
         print(f'Gurobi feasible in {n_feas_gurobi} / {n_seeds} cases -> {n_feas_gurobi/(n_seeds)*100:.2f}%, average solution time = {np.mean(t_gurobi_arr[-1]) if len(t_gurobi_arr[-1]) > 0 else np.nan} s')
+        print(f'SCIP feasible in {n_feas_scip} / {n_seeds} cases -> {n_feas_scip/(n_seeds)*100:.2f}%, average solution time = {np.mean(t_scip_arr[-1]) if len(t_scip_arr[-1]) > 0 else np.nan} s')
         print(f'OFP feasible in {n_feas_ofp} / {n_seeds} cases -> {n_feas_ofp/(n_seeds)*100:.2f}%, average solution time = {np.mean(t_ofp_arr[-1]) if len(t_ofp_arr[-1]) > 0 else np.nan} s')
 
     # Save results as JSON
@@ -587,10 +622,12 @@ elif MODE == 'heuristic_test':
         'n_feas_admm_fp_arr': n_feas_admm_fp_arr,
         'n_feas_admm_arr': n_feas_admm_arr,
         'n_feas_gurobi_arr': n_feas_gurobi_arr,
+        'n_feas_scip_arr': n_feas_scip_arr,
         'n_feas_ofp_arr': n_feas_ofp_arr,
         't_admm_fp_arr': t_admm_fp_arr,
         't_admm_arr': t_admm_arr,
         't_gurobi_arr': t_gurobi_arr,
+        't_scip_arr': t_scip_arr,
         't_ofp_arr': t_ofp_arr
     }
 

@@ -125,7 +125,26 @@ def gurobi_solve(Z, P, q, c, settings, seed, find_global_opt=False, t_max_global
     sol = zono.OptSolution()
     Z.optimize_over(P, q, c=c, settings=gurobi_settings, solution=sol)
 
-    return sol.converged, sol.run_time, sol.z, sol.external_results.iter_count
+    return sol.converged, sol.run_time, sol.z, np.nan
+
+def scip_solve(Z, P, q, c, settings, seed, find_global_opt=False, t_max_global_opt=10.0):
+    # solve using ZonoOpt's built-in SCIP solver support
+    scip_settings = zono.SCIPSettings()
+    if find_global_opt:
+        scip_settings.MIPGap = 0.0 # must find global optimum
+        scip_settings.TimeLimit = t_max_global_opt
+    else:
+        scip_settings.MIPGap = 1.0 # any feasible solution is acceptable
+        scip_settings.TimeLimit = settings.t_max
+    scip_settings.VerbLevel = 4 if settings.verbose else 0
+    scip_settings.MIPGapAbs = 0.0
+    scip_settings.Threads = 1
+    scip_settings.FeasibilityTol = settings.eps_prim
+
+    sol = zono.OptSolution()
+    Z.optimize_over(P, q, c=c, settings=scip_settings, solution=sol)
+
+    return sol.converged, sol.run_time, sol.z, np.nan
 
 def get_residual(Z, xi, order=2):
     
@@ -169,14 +188,17 @@ t_admm_fp_arr = []
 t_admm_arr = []
 t_ofp_arr = []
 t_gurobi_arr = []
+t_scip_arr = []
 rel_obj_admm_fp_arr = []
 rel_obj_admm_arr = []
 rel_obj_ofp_arr = []
 rel_obj_gurobi_arr = []
+rel_obj_scip_arr = []
 iter_admm_fp_arr = []
 iter_admm_arr = []
 iter_ofp_arr = []
 iter_gurobi_arr = []
+iter_scip_arr = []
 
 n_trials = 100
 trial = 0
@@ -194,25 +216,29 @@ while trial < n_trials:
     admm_feas, admm_time, admm_xi, admm_iter = admm_solve(Z, P, q, c, settings, seed=seed)
     ofp_feas, ofp_time, ofp_xi, ofp_iter = ofp_solve(Z, P, q, c, settings, seed=seed)
     gurobi_feas, gurobi_time, gurobi_xi, gurobi_iter = gurobi_solve(Z, P, q, c, settings, seed=seed, find_global_opt=False)
+    scip_feas, scip_time, scip_xi, scip_iter = scip_solve(Z, P, q, c, settings, seed=seed, find_global_opt=False)
     global_feas, global_time, global_xi, global_iter = gurobi_solve(Z, P, q, c, settings, seed=seed, find_global_opt=True, t_max_global_opt=10.0)
 
     admm_fp_obj = get_objective(Z, admm_fp_xi, P, q, c) if admm_fp_feas else np.inf
     admm_obj = get_objective(Z, admm_xi, P, q, c) if admm_feas else np.inf
     ofp_obj = get_objective(Z, ofp_xi, P, q, c) if ofp_feas else np.inf
     gurobi_obj = get_objective(Z, gurobi_xi, P, q, c) if gurobi_feas else np.inf
+    scip_obj = get_objective(Z, scip_xi, P, q, c) if scip_feas else np.inf
     global_obj = get_objective(Z, global_xi, P, q, c) if global_feas else np.inf
 
     admm_fp_rel_obj = 100.*np.abs(admm_fp_obj-global_obj)/np.abs(admm_fp_obj) if admm_fp_feas else np.inf
     admm_rel_obj = 100.*np.abs(admm_obj-global_obj)/np.abs(admm_obj) if admm_feas else np.inf
     ofp_rel_obj = 100.*np.abs(ofp_obj-global_obj)/np.abs(ofp_obj) if ofp_feas else np.inf
     gurobi_rel_obj = 100.*np.abs(gurobi_obj-global_obj)/np.abs(gurobi_obj) if gurobi_feas else np.inf
+    scip_rel_obj = 100.*np.abs(scip_obj-global_obj)/np.abs(scip_obj) if scip_feas else np.inf
 
     print(f'ADMM-FP:   feas={admm_fp_feas}, time={admm_fp_time:.4f}s, computed residual = {get_residual(Z, admm_fp_xi):.4e}, percent suboptimality = {admm_fp_rel_obj:.4e}')
     print(f'ADMM:      feas={admm_feas}, time={admm_time:.4f}s, computed residual = {get_residual(Z, admm_xi):.4e}, percent suboptimality = {admm_rel_obj:.4e}')
     print(f'OFP:      feas={ofp_feas}, time={ofp_time:.4f}s, computed residual = {get_residual(Z, ofp_xi):.4e}, percent suboptimality = {ofp_rel_obj:.4e}')
     print(f'Gurobi:   feas={gurobi_feas}, time={gurobi_time:.4f}s, computed residual = {get_residual(Z, gurobi_xi):.4e}, percent suboptimality = {gurobi_rel_obj:.4e}')
+    print(f'SCIP:     feas={scip_feas}, time={scip_time:.4f}s, computed residual = {get_residual(Z, scip_xi):.4e}, percent suboptimality = {scip_rel_obj:.4e}')
 
-    if admm_fp_feas or admm_feas or ofp_feas or gurobi_feas:
+    if admm_fp_feas or admm_feas or ofp_feas or gurobi_feas or scip_feas:
         if admm_fp_feas:
             t_admm_fp_arr.append(admm_fp_time)
             rel_obj_admm_fp_arr.append(admm_fp_rel_obj)
@@ -229,6 +255,10 @@ while trial < n_trials:
             t_gurobi_arr.append(gurobi_time)
             rel_obj_gurobi_arr.append(gurobi_rel_obj)
             iter_gurobi_arr.append(gurobi_iter)
+        if scip_feas:
+            t_scip_arr.append(scip_time)
+            rel_obj_scip_arr.append(scip_rel_obj)
+            iter_scip_arr.append(scip_iter)
         trial += 1
     seed += 1
 
@@ -238,9 +268,10 @@ print(f'  ADMM-FP found feasible solution in {len(t_admm_fp_arr)} cases.')
 print(f'  ADMM found feasible solution in {len(t_admm_arr)} cases.')
 print(f'  OFP found feasible solution in {len(t_ofp_arr)} cases.')
 print(f'  Gurobi found feasible solution in {len(t_gurobi_arr)} cases.')
+print(f'  SCIP found feasible solution in {len(t_scip_arr)} cases.')
 
 # plot results
-textwidth_pt = 12.
+textwidth_pt = 10.
 if is_latex_installed():
     rc_context = {
         "text.usetex": True,
@@ -260,19 +291,19 @@ inches_per_pt = 1 / 72.27
 
 with plt.rc_context(rc_context):
 
-    data_labels = [r'ADMM-FP', r'OFP', r'ADMM', r'Gurobi']
-    colors = ['b', 'm', 'g', 'r']
+    data_labels = [r'ADMM-FP', r'OFP', r'ADMM', r'Gurobi', r'SCIP']
+    colors = ['b', 'm', 'g', 'r', 'c']
 
     # solution time / rate of solution comparison plot
-    figwidth_pt = 260.
+    figwidth_pt = 245.71
     figsize = (figwidth_pt * inches_per_pt, 1.3*figwidth_pt * inches_per_pt)  # Convert pt to inches
     fig = plt.figure(constrained_layout=True, figsize=figsize)
     gs = fig.add_gridspec(ncols=1, nrows=4, height_ratios=[1, 2, 2, 2])
 
     ax = fig.add_subplot(gs[0,0])
-    ax.bar(range(4), 
-           [len(t_admm_fp_arr)*(100./n_trials), len(t_ofp_arr)*(100./n_trials), len(t_admm_arr)*(100./n_trials), len(t_gurobi_arr)*(100./n_trials)], 
-           color=['b', 'm', 'g', 'r'], 
+    ax.bar(range(5),
+           [len(t_admm_fp_arr)*(100./n_trials), len(t_ofp_arr)*(100./n_trials), len(t_admm_arr)*(100./n_trials), len(t_gurobi_arr)*(100./n_trials), len(t_scip_arr)*(100./n_trials)],
+           color=colors,
            alpha=0.5)
     ax.set_xticklabels([])
     ax.set_ylabel(r'[\%]', fontsize=textwidth_pt)
@@ -283,7 +314,7 @@ with plt.rc_context(rc_context):
     # suboptimality of found solution
     ax = fig.add_subplot(gs[1,0])
 
-    all_data = [rel_obj_admm_fp_arr, rel_obj_ofp_arr, rel_obj_admm_arr, rel_obj_gurobi_arr]
+    all_data = [rel_obj_admm_fp_arr, rel_obj_ofp_arr, rel_obj_admm_arr, rel_obj_gurobi_arr, rel_obj_scip_arr]
     bp = ax.boxplot(
         all_data,
         patch_artist=True,
@@ -308,7 +339,7 @@ with plt.rc_context(rc_context):
     # time to find a feasible solution
     ax = fig.add_subplot(gs[2,0])
 
-    all_data = [t_admm_fp_arr, t_ofp_arr, t_admm_arr, t_gurobi_arr]
+    all_data = [t_admm_fp_arr, t_ofp_arr, t_admm_arr, t_gurobi_arr, t_scip_arr]
     bp = ax.boxplot(
         all_data,
         patch_artist=True,
@@ -334,7 +365,7 @@ with plt.rc_context(rc_context):
     # number of iterations to find a feasible solution
     ax = fig.add_subplot(gs[3,0])
 
-    all_data = [iter_admm_fp_arr, iter_ofp_arr, iter_admm_arr, iter_gurobi_arr]
+    all_data = [iter_admm_fp_arr, iter_ofp_arr, iter_admm_arr, iter_gurobi_arr, iter_scip_arr]
     bp = ax.boxplot(
         all_data,
         patch_artist=True,

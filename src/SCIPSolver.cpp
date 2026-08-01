@@ -436,7 +436,9 @@ SolveResult solve_once(ScipProblem& prob)
     SolveResult res;
     res.runtime = std::chrono::duration<double>(t_end - t_start).count();
     res.status  = api.SCIPgetStatus(scip);
-    res.optimal = (res.status == api.SCIP_STATUS_OPTIMAL);
+    res.optimal = (res.status == api.SCIP_STATUS_OPTIMAL
+                || res.status == api.SCIP_STATUS_GAPLIMIT
+                || res.status == api.SCIP_STATUS_SOLLIMIT);
     res.infeasible = (res.status == api.SCIP_STATUS_INFEASIBLE
                    || res.status == api.SCIP_STATUS_INFORUNBD);
 

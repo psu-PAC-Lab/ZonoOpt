@@ -21,10 +21,12 @@ with open('reach_avoid_results.json', 'r') as f:
     n_feas_admm_fp_arr = data['n_feas_admm_fp_arr']
     n_feas_admm_arr = data['n_feas_admm_arr']
     n_feas_gurobi_arr = data['n_feas_gurobi_arr']
+    n_feas_scip_arr = data['n_feas_scip_arr']
     n_feas_ofp_arr = data['n_feas_ofp_arr']
     t_admm_fp_arr = data['t_admm_fp_arr']
     t_admm_arr = data['t_admm_arr']
     t_gurobi_arr = data['t_gurobi_arr']
+    t_scip_arr = data['t_scip_arr']
     t_ofp_arr = data['t_ofp_arr']
 
 
@@ -90,13 +92,14 @@ with plt.rc_context(rc_context):
     r_feas_admm_fp_arr = [float(n_feas)/n_seeds*100. for n_feas in n_feas_admm_fp_arr]
     r_feas_admm_arr = [float(n_feas)/n_seeds*100. for n_feas in n_feas_admm_arr]
     r_feas_gurobi_arr = [float(n_feas)/n_seeds*100. for n_feas in n_feas_gurobi_arr]
+    r_feas_scip_arr = [float(n_feas)/n_seeds*100. for n_feas in n_feas_scip_arr]
     r_feas_ofp_arr = [float(n_feas)/n_seeds*100. for n_feas in n_feas_ofp_arr]
 
     # plot solution time vs sample factor for each solver
     box_width = 0.25
     gap_between_boxes = 0.05
     group_spacing = 0.8
-    n_groups = 4
+    n_groups = 5
     group_width = n_groups * box_width + (n_groups - 1) * gap_between_boxes
 
     group_center_positions = np.arange(len(N_arr)) * ((n_groups * box_width) + ((n_groups-1) * gap_between_boxes) + group_spacing)
@@ -112,6 +115,7 @@ with plt.rc_context(rc_context):
         t_ofp_arr[i] = [t for t in t_ofp_arr[i] if np.isfinite(t)]
         t_admm_arr[i] = [t for t in t_admm_arr[i] if np.isfinite(t)]
         t_gurobi_arr[i] = [t for t in t_gurobi_arr[i] if np.isfinite(t)]
+        t_scip_arr[i] = [t for t in t_scip_arr[i] if np.isfinite(t)]
 
     all_data = []
     for i in range(len(N_arr)):
@@ -119,6 +123,7 @@ with plt.rc_context(rc_context):
         all_data.append(t_ofp_arr[i])
         all_data.append(t_admm_arr[i])
         all_data.append(t_gurobi_arr[i])
+        all_data.append(t_scip_arr[i])
 
     ax = fig.add_subplot(gs[0])
     bp = ax.boxplot(
@@ -132,7 +137,7 @@ with plt.rc_context(rc_context):
         whis=(0., 100.) # whiskers cover all data
     )
 
-    colors = ['b', 'm', 'g', 'r']
+    colors = ['b', 'm', 'g', 'r', 'c']
     for i, box in enumerate(bp['boxes']):
         box.set_facecolor(colors[i % n_groups])
         box.set_alpha(0.5)
@@ -146,10 +151,10 @@ with plt.rc_context(rc_context):
     ax.set_xticklabels([str(N) for N in N_arr])
 
     legend_patches = [plt.Rectangle((0, 0), 1, 1, alpha=0.5, fc=color) for color in colors]
-    data_labels = [r'ADMM-FP', r'OFP', r'ADMM', r'Gurobi']
+    data_labels = [r'ADMM-FP', r'OFP', r'ADMM', r'Gurobi', r'SCIP']
 
     ax.legend(legend_patches, data_labels, bbox_to_anchor=(0., 1.25, 1., .102), loc=3,
-        ncol=4, mode="expand", borderaxespad=0., fontsize=textwidth_pt)
+        ncol=5, mode="expand", borderaxespad=0., fontsize=textwidth_pt)
 
     # plot rate of solution vs sample factor for each solver
     ax = fig.add_subplot(gs[1])
@@ -157,6 +162,7 @@ with plt.rc_context(rc_context):
     ax.plot(N_arr, r_feas_ofp_arr, color='m', marker='^', linestyle='-', alpha=0.5)
     ax.plot(N_arr, r_feas_admm_arr, color='g', marker='s', linestyle='-', alpha=0.5)
     ax.plot(N_arr, r_feas_gurobi_arr, color='r', marker='o', linestyle='-', alpha=0.5)
+    ax.plot(N_arr, r_feas_scip_arr, color='c', marker='d', linestyle='-', alpha=0.5)
     ax.set_title(r'Percentage of cases where solution is found', fontsize=textwidth_pt)
     ax.set_ylabel(r'[\%]', fontsize=textwidth_pt)
     ax.grid(which='major', alpha=0.2)
