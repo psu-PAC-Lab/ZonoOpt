@@ -24,45 +24,111 @@ namespace ZonoOpt
 {
     using namespace detail;
 
-    void ADMM_data::set(const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q,
-                        const Eigen::SparseMatrix<zono_float>& A, const Eigen::Vector<zono_float, -1>& b,
+    void ADMM_prob::set(Eigen::SparseMatrix<zono_float> P, Eigen::SparseMatrix<zono_float> A,
+                        Eigen::Vector<zono_float, -1> b, const zono_float rho)
+    {
+        this->m_n_x = static_cast<int>(P.rows()); // must precede the moves below
+        this->m_n_cons = static_cast<int>(A.rows());
+        this->m_rho = rho;
+        this->m_P = std::move(P);
+        this->m_A = std::move(A);
+        this->m_AT = this->m_A.transpose();
+        this->m_b = std::move(b);
+    }
+
+    const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& ADMM_prob::A_rm() const
+    {
+        std::call_once(this->m_A_rm_once, [this]
+        {
+            this->m_A_rm = this->m_A;
+            this->m_A_rm_ready.store(true, std::memory_order_release);
+        });
+        return this->m_A_rm;
+    }
+
+    const LDLT_data& ADMM_prob::ldlt_M() const
+    {
+        std::call_once(this->m_M_once, [this] { this->build_ldlt_M(); });
+        return this->m_ldlt_M;
+    }
+
+    const LDLT_data& ADMM_prob::ldlt_AAT() const
+    {
+        std::call_once(this->m_AAT_once, [this] { this->build_ldlt_AAT(); });
+        return this->m_ldlt_AAT;
+    }
+
+    void ADMM_prob::build_ldlt_M() const
+    {
+        // factorize system matrix
+        Eigen::SimplicialLDLT<Eigen::SparseMatrix<zono_float>> ldlt_solver_M;
+        {
+            // scoped so M is released before get_LDLT_data copies the factor out
+            Eigen::SparseMatrix<zono_float> M(this->m_n_x + this->m_n_cons, this->m_n_x + this->m_n_cons);
+            {
+                // rho*I folded into triplets (setFromTriplets sums duplicates) to avoid I/Phi temporaries
+                std::vector<Eigen::Triplet<zono_float>> triplets;
+                triplets.reserve(static_cast<size_t>(this->m_P.nonZeros())
+                                 + static_cast<size_t>(this->m_n_x)
+                                 + 2u * static_cast<size_t>(this->m_A.nonZeros()));
+
+                get_triplets_offset<zono_float>(this->m_P, triplets, 0, 0);
+                for (int i = 0; i < this->m_n_x; ++i)
+                    triplets.emplace_back(i, i, this->m_rho);
+                get_triplets_offset<zono_float>(this->m_A, triplets, this->m_n_x, 0);
+                get_triplets_offset<zono_float>(this->m_AT, triplets, 0, this->m_n_x);
+                M.setFromTriplets(triplets.begin(), triplets.end());
+            }
+
+            ldlt_solver_M.compute(M);
+            if (ldlt_solver_M.info() != Eigen::Success)
+                throw std::runtime_error(
+                    "ADMM: factorization of problem data failed, most likely A is not full row rank");
+        }
+
+        get_LDLT_data(ldlt_solver_M, this->m_ldlt_M);
+        this->m_M_ready.store(true, std::memory_order_release);
+    }
+
+    void ADMM_prob::build_ldlt_AAT() const
+    {
+        // factorize A*AT
+        Eigen::SimplicialLDLT<Eigen::SparseMatrix<zono_float>> ldlt_solver_AAT;
+        {
+            // scoped so AAT is released before get_LDLT_data copies the factor out
+            const Eigen::SparseMatrix<zono_float> AAT = this->m_A * this->m_AT;
+            ldlt_solver_AAT.compute(AAT);
+            if (ldlt_solver_AAT.info() != Eigen::Success)
+                throw std::runtime_error(
+                    "ADMM: factorization of A*A^T failed, most likely A is not full row rank");
+        }
+        get_LDLT_data(ldlt_solver_AAT, this->m_ldlt_AAT);
+        this->m_AAT_ready.store(true, std::memory_order_release);
+    }
+
+    void ADMM_data::set(Eigen::SparseMatrix<zono_float> P, Eigen::Vector<zono_float, -1> q,
+                        Eigen::SparseMatrix<zono_float> A, Eigen::Vector<zono_float, -1> b,
                         const Eigen::Vector<zono_float, -1>& x_l, const Eigen::Vector<zono_float, -1>& x_u,
                         const zono_float c, const OptSettings& settings)
     {
-        this->P = P;
-        this->q = q;
-        this->A = A;
-        this->AT = A.transpose();
-        this->A_rm = A;
-        this->b = b;
-        this->c(0) = c;
+        if (!settings.settings_valid()) throw std::invalid_argument("ADMM data: invalid settings.");
 
         this->n_x = static_cast<int>(P.rows());
         this->n_cons = static_cast<int>(A.rows());
         this->sqrt_n_x = std::sqrt(static_cast<zono_float>(this->n_x));
 
+        this->prob = std::make_shared<const ADMM_prob>(std::move(P), std::move(A), std::move(b), settings.rho);
+        this->q = std::move(q);
+        this->c(0) = c;
         this->x_box = std::make_shared<Box>(x_l, x_u);
-
-        if (!settings.settings_valid()) throw std::invalid_argument("ADMM data: invalid settings.");
         this->settings = settings;
     }
 
     ADMM_data* ADMM_data::clone() const
     {
-        const auto new_data = new ADMM_data(*this);
+        const auto new_data = new ADMM_data(*this); // shares prob
         new_data->x_box = std::make_shared<Box>(*this->x_box);
         return new_data;
-    }
-
-    ADMM_solver::ADMM_solver(const ADMM_data& data)
-    {
-        // store data and settings
-        this->data = std::make_shared<ADMM_data>(data);
-        this->eps_prim = data.settings.eps_prim;
-        this->eps_dual = data.settings.eps_dual;
-
-        // flags
-        this->is_warmstarted = false;
     }
 
     ADMM_solver::ADMM_solver(const std::shared_ptr<ADMM_data>& data)
@@ -99,13 +165,22 @@ namespace ZonoOpt
 
     void ADMM_solver::factorize()
     {
+        const ADMM_prob& prob = *this->data->prob;
+
+        // ldlt_data_M/AAT are shared across every clone in this solve; rho must match what the
+        // shared factorization was built with, or the factorization would be invalid.
+        if (this->data->settings.rho != prob.rho())
+            throw std::runtime_error(
+                "ADMM: settings.rho differs from the value the problem was built with; the shared "
+                "factorization would be invalid.");
+
         auto t0 = std::chrono::high_resolution_clock::now();
         double run_time;
         std::stringstream ss;
-        if (!this->data->ldlt_data_M.factorized)
+        if (!prob.M_ready())
         {
             t0 = std::chrono::high_resolution_clock::now();
-            this->factorize_M();
+            prob.ldlt_M();
             if (this->data->settings.verbose)
             {
                 run_time = 1e-6 * static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(
@@ -114,10 +189,10 @@ namespace ZonoOpt
                 print_str(ss);
             }
         }
-        if (!this->data->ldlt_data_AAT.factorized)
+        if (!prob.AAT_ready())
         {
             t0 = std::chrono::high_resolution_clock::now();
-            this->factorize_AAT();
+            prob.ldlt_AAT();
             if (this->data->settings.verbose)
             {
                 run_time = 1e-6 * static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(
@@ -173,17 +248,18 @@ namespace ZonoOpt
         bool contractor_feasible = true;
         if (this->data->settings.use_interval_contractor)
         {
+            const ADMM_prob& prob = *this->data->prob;
             const auto t0 = std::chrono::high_resolution_clock::now();
             if (contract_inds.empty())
             {
-                contractor_feasible = x_box.contract(this->data->A_rm, this->data->b,
+                contractor_feasible = x_box.contract(prob.A_rm(), prob.b(),
                                                      this->data->settings.contractor_iter);
             }
             else
             {
-                contractor_feasible = x_box.contract_subset(this->data->A_rm, this->data->b,
+                contractor_feasible = x_box.contract_subset(prob.A_rm(), prob.b(),
                                                             this->data->settings.contractor_iter,
-                                                            this->data->A, contract_inds,
+                                                            prob.A(), contract_inds,
                                                             this->data->settings.contractor_tree_search_depth);
             }
 
@@ -245,6 +321,9 @@ namespace ZonoOpt
             return;
         }
 
+        const ADMM_prob& prob = *this->data->prob;
+        const LDLT_data& ldlt_M = prob.ldlt_M();
+
         // initial values
         Eigen::Vector<zono_float, -1> xk, zk, uk, zkm1, rhs, x_nu;
         if (this->is_warmstarted)
@@ -259,7 +338,7 @@ namespace ZonoOpt
         }
         zk = xk;
         rhs = Eigen::Vector<zono_float, -1>::Zero(this->data->n_x + this->data->n_cons);
-        rhs.segment(this->data->n_x, this->data->n_cons) = this->data->b; // unchanging
+        rhs.segment(this->data->n_x, this->data->n_cons) = prob.b(); // unchanging
         zkm1 = zk;
 
         // init residuals
@@ -278,7 +357,7 @@ namespace ZonoOpt
         {
             // x update
             rhs.segment(0, this->data->n_x) = -this->data->q + this->data->settings.rho * (zk - uk);
-            x_nu = solve_LDLT(this->data->ldlt_data_M, rhs);
+            x_nu = solve_LDLT(ldlt_M, rhs);
             xk = x_nu.segment(0, this->data->n_x);
 
             // z update
@@ -358,7 +437,7 @@ namespace ZonoOpt
         solution.x = xk;
         solution.z = zk;
         solution.u = uk;
-        solution.J = (0.5 * zk.transpose() * this->data->P * zk + this->data->q.transpose() * zk + this->data->c)(0);
+        solution.J = (0.5 * zk.transpose() * prob.P() * zk + this->data->q.transpose() * zk + this->data->c)(0);
         solution.primal_residual = rp_k;
         solution.dual_residual = rd_k;
         solution.run_time = run_time + solution.startup_time;
@@ -367,48 +446,15 @@ namespace ZonoOpt
         solution.infeasible = infeasible;
     }
 
-    void ADMM_solver::factorize_M() const
-    {
-        // system matrix
-        Eigen::SparseMatrix<zono_float> M(this->data->n_x + this->data->n_cons, this->data->n_x + this->data->n_cons);
-
-        Eigen::SparseMatrix<zono_float> I(this->data->n_x, this->data->n_x);
-        I.setIdentity();
-        Eigen::SparseMatrix<zono_float> Phi = this->data->P + this->data->settings.rho * I;
-
-        std::vector<Eigen::Triplet<zono_float>> triplets;
-        get_triplets_offset<zono_float>(Phi, triplets, 0, 0);
-        get_triplets_offset<zono_float>(this->data->A, triplets, this->data->n_x, 0);
-        get_triplets_offset<zono_float>(this->data->AT, triplets, 0, this->data->n_x);
-        M.setFromTriplets(triplets.begin(), triplets.end());
-
-        // factorize system matrix
-        Eigen::SimplicialLDLT<Eigen::SparseMatrix<zono_float>> ldlt_solver_M;
-        ldlt_solver_M.compute(M);
-        if (ldlt_solver_M.info() != Eigen::Success)
-            throw std::runtime_error("ADMM: factorization of problem data failed, most likely A is not full row rank");
-
-        get_LDLT_data(ldlt_solver_M, this->data->ldlt_data_M);
-    }
-
-    void ADMM_solver::factorize_AAT() const
-    {
-        // factorize A*AT
-        const Eigen::SparseMatrix<zono_float> AAT = this->data->A * this->data->AT;
-        Eigen::SimplicialLDLT<Eigen::SparseMatrix<zono_float>> ldlt_solver_AAT;
-        ldlt_solver_AAT.compute(AAT);
-        if (ldlt_solver_AAT.info() != Eigen::Success)
-            throw std::runtime_error("ADMM: factorization of A*A^T failed, most likely A is not full row rank");
-        get_LDLT_data(ldlt_solver_AAT, this->data->ldlt_data_AAT);
-    }
-
     bool ADMM_solver::is_infeasibility_certificate(const Eigen::Vector<zono_float, -1>& ek,
                                                    const Eigen::Vector<zono_float, -1>& xk, const Box& x_box) const
     {
+        const ADMM_prob& prob = *this->data->prob;
+
         // project ek onto row space of A (i.e. column space of AT)
-        Eigen::Vector<zono_float, -1> A_e = this->data->A * ek;
-        Eigen::Vector<zono_float, -1> AAT_inv_A_e = solve_LDLT(this->data->ldlt_data_AAT, A_e);
-        Eigen::Vector<zono_float, -1> ek_proj = this->data->AT * AAT_inv_A_e;
+        Eigen::Vector<zono_float, -1> A_e = prob.A() * ek;
+        Eigen::Vector<zono_float, -1> AAT_inv_A_e = solve_LDLT(prob.ldlt_AAT(), A_e);
+        Eigen::Vector<zono_float, -1> ek_proj = prob.AT() * AAT_inv_A_e;
 
         // check if this is an infeasibility certificate
         const zono_float e_x = ek_proj.dot(xk);
@@ -418,10 +464,10 @@ namespace ZonoOpt
 
     bool ADMM_solver::check_problem_dimensions() const
     {
-        const bool prob_data_consistent = (this->data->P.rows() == this->data->n_x && this->data->P.cols() == this->data
-            ->n_x &&
-            this->data->q.size() == this->data->n_x && this->data->A.rows() == this->data->n_cons &&
-            this->data->A.cols() == this->data->n_x && this->data->b.size() == this->data->n_cons &&
+        const ADMM_prob& prob = *this->data->prob;
+        const bool prob_data_consistent = (prob.P().rows() == this->data->n_x && prob.P().cols() == this->data->n_x &&
+            this->data->q.size() == this->data->n_x && prob.A().rows() == this->data->n_cons &&
+            prob.A().cols() == this->data->n_x && prob.b().size() == this->data->n_cons &&
             this->data->x_box->size() == static_cast<size_t>(this->data->n_x));
 
         bool warm_start_consistent;
@@ -518,12 +564,6 @@ namespace ZonoOpt
         this->init_rand_gen();
     }
 
-    ADMM_FP_solver::ADMM_FP_solver(const ADMM_data& data)
-        : ADMM_solver(data)
-    {
-        this->init_rand_gen();
-    }
-
     void ADMM_FP_solver::solve_core(const Box& x_box, OptSolution& solution, std::atomic<bool>* stop)
     {
         // handle zero-dimensional case
@@ -572,6 +612,13 @@ namespace ZonoOpt
         const auto start = std::chrono::high_resolution_clock::now();
         std::stringstream ss;
 
+        const ADMM_prob& prob = *this->data->prob;
+        const LDLT_data& ldlt_M = prob.ldlt_M();
+        const LDLT_data& ldlt_AAT = prob.ldlt_AAT();
+        const Eigen::SparseMatrix<zono_float>& A = prob.A();
+        const Eigen::SparseMatrix<zono_float>& AT = prob.AT();
+        const Eigen::Vector<zono_float, -1>& b_vec = prob.b();
+
         // initial values
         Eigen::Vector<zono_float, -1> xk, zk, zkm1, uk, rhs, x_nu;
         if (this->is_warmstarted)
@@ -586,7 +633,7 @@ namespace ZonoOpt
         }
         zk = xk;
         rhs = Eigen::Vector<zono_float, -1>::Zero(this->data->n_x + this->data->n_cons);
-        rhs.segment(this->data->n_x, this->data->n_cons) = this->data->b; // unchanging
+        rhs.segment(this->data->n_x, this->data->n_cons) = b_vec; // unchanging
         zkm1 = zk;
 
         // init residuals
@@ -615,12 +662,12 @@ namespace ZonoOpt
             {
             case Phase1:
                 rhs.segment(0, this->data->n_x) = -this->data->q + this->data->settings.rho * (zk - uk);
-                x_nu = solve_LDLT(this->data->ldlt_data_M, rhs);
+                x_nu = solve_LDLT(ldlt_M, rhs);
                 xk = x_nu.segment(0, this->data->n_x);
                 break;
             case Phase2:
                 xk = zk - uk;
-                affine_set_projection(xk, this->data->A, this->data->AT, this->data->b, this->data->ldlt_data_AAT);
+                affine_set_projection(xk, A, AT, b_vec, ldlt_AAT);
                 break;
             default:
                 throw std::invalid_argument("Unknown phase type");
@@ -729,7 +776,7 @@ namespace ZonoOpt
         solution.x = xk;
         solution.z = zk;
         solution.u = uk;
-        solution.J = (0.5 * zk.transpose() * this->data->P * zk + this->data->q.transpose() * zk + this->data->c)(0);
+        solution.J = (0.5 * zk.transpose() * prob.P() * zk + this->data->q.transpose() * zk + this->data->c)(0);
         solution.primal_residual = rp_k;
         solution.dual_residual = rd_k; // for logging only, not used for convergence check
         solution.run_time += run_time;

@@ -620,8 +620,8 @@ namespace ZonoOpt
         zono_float delta_c = (0.5 * this->c.transpose() * P * this->c + q.transpose() * this->c)(0);
 
         // solve MIQP
-        OptSolution sol = this->mi_opt(P_fact, q_fact, c + delta_c, this->A, this->b, settings, solution,
-                                       warm_start_params);
+        OptSolution sol = this->mi_opt(std::move(P_fact), std::move(q_fact), c + delta_c, this->A, this->b,
+                                       settings, solution, warm_start_params);
         if (sol.infeasible)
             return Eigen::Vector<zono_float, -1>(this->nG);
         else
@@ -644,7 +644,8 @@ namespace ZonoOpt
         Eigen::Vector<zono_float, -1> q = this->G.transpose() * (this->c - x);
 
         // solve MIQP
-        const OptSolution sol = this->mi_opt(P, q, 0, this->A, this->b, settings, solution, warm_start_params);
+        const OptSolution sol = this->mi_opt(std::move(P), std::move(q), 0, this->A, this->b, settings, solution,
+                                             warm_start_params);
         if (sol.infeasible)
             throw std::runtime_error("Point projection: infeasible");
 
@@ -665,7 +666,7 @@ namespace ZonoOpt
 
         // solve
         const std::vector<OptSolution> sol_vec = this->
-            mi_opt_multisol(P, q, 0, this->A, this->b, 1, settings, solution);
+            mi_opt_multisol(std::move(P), std::move(q), 0, this->A, this->b, 1, settings, solution);
         if (sol_vec.size() > 0)
             return sol_vec[0].infeasible;
         else
@@ -693,14 +694,15 @@ namespace ZonoOpt
         b.segment(this->nC, this->n) = x - this->c;
 
         // solve MIQP
-        const OptSolution sol = this->mi_opt(P, q, 0, A, b, settings, solution, warm_start_params);
+        const OptSolution sol = this->mi_opt(std::move(P), std::move(q), 0, std::move(A), std::move(b), settings,
+                                             solution, warm_start_params);
         return !(sol.infeasible);
     }
 
 
-    OptSolution HybZono::mi_opt(const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q,
-                                const zono_float c, const Eigen::SparseMatrix<zono_float>& A,
-                                const Eigen::Vector<zono_float, -1>& b,
+    OptSolution HybZono::mi_opt(Eigen::SparseMatrix<zono_float> P, Eigen::Vector<zono_float, -1> q,
+                                const zono_float c, Eigen::SparseMatrix<zono_float> A,
+                                Eigen::Vector<zono_float, -1> b,
                                 const SolverSettings& settings, std::shared_ptr<OptSolution>* solution,
                                 const WarmStartParams& warm_start_params) const
     {
@@ -738,7 +740,8 @@ namespace ZonoOpt
                 ? static_cast<const OptSettings&>(settings)
                 : default_opt;
 
-        const auto admm_data = std::make_shared<ADMM_data>(P, q, A, b, xi_lb, xi_ub, c, opt_settings);
+        const auto admm_data = std::make_shared<ADMM_data>(std::move(P), std::move(q), std::move(A), std::move(b),
+                                                           xi_lb, xi_ub, c, opt_settings);
 
         // mixed integer data
         MI_data mi_data;
@@ -763,10 +766,10 @@ namespace ZonoOpt
         return sol;
     }
 
-    std::vector<OptSolution> HybZono::mi_opt_multisol(const Eigen::SparseMatrix<zono_float>& P,
-                                                      const Eigen::Vector<zono_float, -1>& q,
-                                                      const zono_float c, const Eigen::SparseMatrix<zono_float>& A,
-                                                      const Eigen::Vector<zono_float, -1>& b, int n_sols,
+    std::vector<OptSolution> HybZono::mi_opt_multisol(Eigen::SparseMatrix<zono_float> P,
+                                                      Eigen::Vector<zono_float, -1> q,
+                                                      const zono_float c, Eigen::SparseMatrix<zono_float> A,
+                                                      Eigen::Vector<zono_float, -1> b, int n_sols,
                                                       const SolverSettings& settings,
                                                       std::shared_ptr<OptSolution>* solution) const
     {
@@ -806,7 +809,8 @@ namespace ZonoOpt
                 ? static_cast<const OptSettings&>(settings)
                 : default_opt;
 
-        const auto admm_data = std::make_shared<ADMM_data>(P, q, A, b, xi_lb, xi_ub, c, opt_settings);
+        const auto admm_data = std::make_shared<ADMM_data>(std::move(P), std::move(q), std::move(A), std::move(b),
+                                                           xi_lb, xi_ub, c, opt_settings);
 
         // mixed integer data
         MI_data mi_data;
@@ -962,11 +966,11 @@ namespace ZonoOpt
         // optimize over P=I, q=0
         Eigen::SparseMatrix<zono_float> P(this->nG, this->nG);
         P.setIdentity();
-        const Eigen::Vector<zono_float, -1> q = Eigen::Vector<zono_float, -1>::Zero(this->nG);
+        Eigen::Vector<zono_float, -1> q = Eigen::Vector<zono_float, -1>::Zero(this->nG);
 
         // solve
-        std::vector<OptSolution> sol_vec = this->mi_opt_multisol(P, q, 0, this->A, this->b, n_leaves, settings,
-                                                                 solution);
+        std::vector<OptSolution> sol_vec = this->mi_opt_multisol(std::move(P), std::move(q), 0, this->A, this->b,
+                                                                 n_leaves, settings, solution);
 
         // get leaves as conzonos
         std::vector<Eigen::Vector<zono_float, -1>> bin_leaves;
@@ -1202,12 +1206,13 @@ namespace ZonoOpt
         }
 
         // cost
-        const Eigen::SparseMatrix<zono_float> P(this->nG, this->nG);
-        const Eigen::Vector<zono_float, -1> q = -this->G.transpose() * d;
+        Eigen::SparseMatrix<zono_float> P(this->nG, this->nG);
+        Eigen::Vector<zono_float, -1> q = -this->G.transpose() * d;
         const zono_float c_cost = this->c.dot(d);
 
         // solve MIQP
-        const OptSolution sol = this->mi_opt(P, q, c_cost, this->A, this->b, settings, solution, warm_start_params);
+        const OptSolution sol = this->mi_opt(std::move(P), std::move(q), c_cost, this->A, this->b, settings,
+                                             solution, warm_start_params);
 
         // check feasibility and return solution
         if (sol.infeasible) // Z is empty
@@ -1258,7 +1263,8 @@ namespace ZonoOpt
             q = -this->G.transpose() * d;
 
             // solve
-            OptSolution sol = this->mi_opt(P, q, 0, this->A, this->b, settings, &sol_in, warm_start_params);
+            OptSolution sol = this->mi_opt(P, std::move(q), 0, this->A, this->b, settings, &sol_in,
+                                           warm_start_params);
             if (sol.infeasible)
                 throw std::invalid_argument("Bounding box: Z is empty");
             else
@@ -1272,7 +1278,7 @@ namespace ZonoOpt
             q = -this->G.transpose() * d;
 
             // solve
-            sol = this->mi_opt(P, q, 0, this->A, this->b, settings, &sol_in, warm_start_params);
+            sol = this->mi_opt(P, std::move(q), 0, this->A, this->b, settings, &sol_in, warm_start_params);
             if (sol.infeasible)
                 throw std::invalid_argument("Bounding box: Z is empty");
             else
