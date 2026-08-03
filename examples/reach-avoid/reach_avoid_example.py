@@ -4,12 +4,20 @@ import scipy.sparse as sp
 import matplotlib.pyplot as plt
 import subprocess
 import json
+import ctypes
+import ctypes.util
+import multiprocessing as mp
+import warnings
 from shapely.geometry import Polygon
 
 ### flags
 
 # options: 'default', 'admm_fp_multirun', 'heuristic_test'
 MODE = 'heuristic_test'
+
+# quick end-to-end check of the heuristic_test pipeline: few seeds, short time limit,
+# results written to a separate file so the full dataset isn't overwritten
+SMOKE_TEST = True
 
 try:
     import polypartition
@@ -33,6 +41,116 @@ def is_latex_installed():
         return True
     except (subprocess.CalledProcessError, FileNotFoundError):
         return False
+
+### peak memory measurement
+#
+# The solvers allocate in C++ and the pybind11 bindings hold the GIL for the duration of the
+# solve, so neither tracemalloc nor a Python sampler thread can see the memory a solve uses.
+# Instead read the kernel's peak-RSS watermark around the solve: malloc_trim returns heap freed
+# during problem construction to the OS, and writing 5 to /proc/self/clear_refs
+# (CLEAR_REFS_MMAP_HIWATER_RSS) resets VmHWM so the watermark reflects the solve alone.
+#
+# Both mechanisms are Linux/glibc specific and neither is required for the rest of this script:
+# where they are unavailable a warning is issued, the memory measurement reports nan, and
+# everything else runs as before. Where /proc works but malloc_trim doesn't, the measurement
+# still works but may under-report a solve that reuses heap freed during problem construction.
+
+def _load_malloc_trim():
+    """Return glibc's malloc_trim, or None where it isn't available."""
+    try:
+        libc = ctypes.CDLL(ctypes.util.find_library('c') or 'libc.so.6')
+        return libc.malloc_trim
+    except (OSError, AttributeError) as e:
+        warnings.warn(f'malloc_trim unavailable ({e}); peak memory measurements may under-report.',
+                      RuntimeWarning)
+        return None
+
+_malloc_trim = _load_malloc_trim()
+
+def _proc_status_kb(key):
+    """Read a memory field (e.g. 'VmRSS:') out of /proc/self/status, in kB."""
+    with open('/proc/self/status') as f:
+        for line in f:
+            if line.startswith(key):
+                return int(line.split()[1])
+    raise KeyError(key)
+
+def begin_mem_measurement():
+    """Reset the peak-RSS watermark. Returns baseline RSS in kB, or None if unsupported."""
+    try:
+        if _malloc_trim is not None:
+            _malloc_trim(0)
+        with open('/proc/self/clear_refs', 'w') as f:
+            f.write('5\n')
+        return _proc_status_kb('VmRSS:')
+    except Exception as e:
+        warnings.warn(f'peak memory measurement unavailable ({e}); memory results will be nan.',
+                      RuntimeWarning)
+        return None
+
+def end_mem_measurement(base_kb):
+    """Peak memory in MB used since the matching begin_mem_measurement call."""
+    if base_kb is None:
+        return np.nan
+    try:
+        return (_proc_status_kb('VmHWM:') - base_kb) / 1024.
+    except Exception as e:
+        warnings.warn(f'could not read peak memory ({e}); memory result will be nan.', RuntimeWarning)
+        return np.nan
+
+# probe once at startup so an unsupported platform warns here rather than mid-run
+# (warnings are reported once per call site, so the solve loop below stays quiet)
+begin_mem_measurement()
+
+def run_case_in_subprocess(seed, sample_factor, settings, solver_flag):
+    """Run one reach-avoid case in a forked child process.
+
+    Isolation matters for the memory measurement: SCIP's block memory pools and Gurobi's
+    environment hold on to freed memory, so a second solve by the same solver in the same
+    process would reuse resident pages and report far too little. Forking gives every solve a
+    clean heap. Solve times are unaffected -- they come from the solvers' own internal timers.
+
+    Returns a dict with converged / run_time / J / iter / mem_mb.
+    """
+
+    failed = {'converged': False, 'run_time': np.nan, 'J': np.nan, 'iter': 0, 'mem_mb': np.nan}
+
+    def worker(conn):
+        try:
+            _, _, _, _, sol, _, mem_mb = reach_avoid_problem(seed, sample_factor, settings, solver_flag)
+            conn.send({'converged': sol.converged, 'run_time': sol.run_time,
+                       'J': sol.J, 'iter': sol.iter, 'mem_mb': mem_mb})
+        except Exception as e:
+            conn.send(dict(failed, error=repr(e)))
+        finally:
+            conn.close()
+
+    # fork so that the (unpicklable) settings object and the already imported zonoopt module
+    # are inherited rather than re-created
+    ctx = mp.get_context('fork')
+    recv_conn, send_conn = ctx.Pipe(False)
+    p = ctx.Process(target=worker, args=(send_conn,))
+    p.start()
+    send_conn.close() # so a dead child gives EOFError instead of blocking forever
+
+    try:
+        res = recv_conn.recv()
+    except EOFError:
+        print(f'{solver_flag} solve died without returning a result (seed {seed}, sample factor {sample_factor})')
+        res = failed
+    finally:
+        recv_conn.close()
+
+    p.join(settings.t_max + 60.)
+    if p.is_alive():
+        print(f'{solver_flag} solve exceeded its time limit and was terminated (seed {seed}, sample factor {sample_factor})')
+        p.terminate()
+        p.join()
+
+    if 'error' in res:
+        print(f'{solver_flag} solve raised an exception (seed {seed}, sample factor {sample_factor}): {res["error"]}')
+
+    return res
 
 def random_poly(center, n_verts, min_radius, max_radius, rng=None):
     """Makes random polytope"""
@@ -149,9 +267,12 @@ def zono_planning_prob(x0, xr, A, B, Q, R, QN, N, X, U, XN, X_map, solver_flag, 
             c += 0.5*xr[k].dot(Q.dot(xr[k]))
 
     # solve
+    # memory measurement brackets the solve call only, so it excludes the set operations above
     if solver_flag == 'zonoopt':
+        mem_base = begin_mem_measurement()
         xopt = Z.optimize_over(P, q, c=c, settings=settings, solution=sol)
-    
+        mem_mb = end_mem_measurement(mem_base)
+
     elif solver_flag == 'gurobi':
 
         # solve using ZonoOpt's built-in Gurobi solver support
@@ -163,12 +284,14 @@ def zono_planning_prob(x0, xr, A, B, Q, R, QN, N, X, U, XN, X_map, solver_flag, 
         gurobi_settings.TimeLimit = settings.t_max
         gurobi_settings.FeasibilityTol = settings.eps_prim
 
+        mem_base = begin_mem_measurement()
         xopt = Z.optimize_over(P, q, c=c, settings=gurobi_settings, solution=sol)
+        mem_mb = end_mem_measurement(mem_base)
 
         if not sol.converged:
             print('Gurobi did not find a feasible solution')
             sol.infeasible = True
-            return None, None, None
+            return None, None, None, mem_mb
 
     elif solver_flag == 'scip':
 
@@ -181,12 +304,14 @@ def zono_planning_prob(x0, xr, A, B, Q, R, QN, N, X, U, XN, X_map, solver_flag, 
         scip_settings.TimeLimit = settings.t_max
         scip_settings.FeasibilityTol = settings.eps_prim
 
+        mem_base = begin_mem_measurement()
         xopt = Z.optimize_over(P, q, c=c, settings=scip_settings, solution=sol)
+        mem_mb = end_mem_measurement(mem_base)
 
         if not sol.converged:
             print('SCIP did not find a feasible solution')
             sol.infeasible = True
-            return None, None, None
+            return None, None, None, mem_mb
 
     elif solver_flag == 'ofp':
         # settings
@@ -209,7 +334,9 @@ def zono_planning_prob(x0, xr, A, B, Q, R, QN, N, X, U, XN, X_map, solver_flag, 
         if not Z.is_0_1_form():
             Z.convert_form()
         solver = ofp.OFP_Solver(q_tilde, Z.get_A(), Z.get_b(), Z.get_b(), np.zeros(Z.get_nG()), np.ones(Z.get_nG()), bins, settings=ofp_settings)
+        mem_base = begin_mem_measurement()
         success = solver.solve()
+        mem_mb = end_mem_measurement(mem_base)
 
         if not success:
             print('OFP did not find a feasible solution')
@@ -256,7 +383,7 @@ def zono_planning_prob(x0, xr, A, B, Q, R, QN, N, X, U, XN, X_map, solver_flag, 
         u_traj.append(xopt[idx])
 
     # return
-    return x_traj, u_traj, Z
+    return x_traj, u_traj, Z, mem_mb
 
 
 ### make map
@@ -372,8 +499,8 @@ def reach_avoid_problem(seed, sample_factor, settings, solver_flag):
 
     # solve motion planning problem
     sol = zono.OptSolution()
-    x_traj, u_traj, Z_mpc = zono_planning_prob(x, xr, A, B, Q, R, QN, N, X, U, XN, Z_map, solver_flag, settings=settings, sol=sol)
-    return [x_traj, u_traj, Z_mpc, Z_map, sol, XN]
+    x_traj, u_traj, Z_mpc, mem_mb = zono_planning_prob(x, xr, A, B, Q, R, QN, N, X, U, XN, Z_map, solver_flag, settings=settings, sol=sol)
+    return [x_traj, u_traj, Z_mpc, Z_map, sol, XN, mem_mb]
 
 ### main execution
 if MODE == 'admm_fp_multirun':
@@ -405,7 +532,7 @@ if MODE == 'admm_fp_multirun':
         print(f'Running test {rng_seed+1} / {n_tests}')
 
         settings.rng_seed = rng_seed
-        x_traj, u_traj, Z_mpc, Z_map, sol, XN = reach_avoid_problem(seed, sample_factor, settings, 'zonoopt')
+        x_traj, u_traj, Z_mpc, Z_map, sol, XN, _ = reach_avoid_problem(seed, sample_factor, settings, 'zonoopt')
         if sol.converged:
             x_traj_arr.append(x_traj)
             sol_time_arr.append(sol.run_time)
@@ -416,7 +543,7 @@ if MODE == 'admm_fp_multirun':
     settings.n_threads_admm_fp = 0
     settings.eps_r = 0.0
     settings.eps_a = 0.0
-    x_traj_global, u_traj, Z_mpc, Z_map, sol, XN = reach_avoid_problem(seed, sample_factor, settings, 'gurobi')
+    x_traj_global, u_traj, Z_mpc, Z_map, sol, XN, _ = reach_avoid_problem(seed, sample_factor, settings, 'gurobi')
     objective_global = sol.J
 
     J_rel = lambda J : np.abs(J - objective_global) / np.abs(J)
@@ -505,7 +632,17 @@ elif MODE == 'heuristic_test':
     # loop through seeds, trials, sample factors
     n_seeds = 100
     sample_factor_arr = [i for i in range(1,11)]
-    
+    results_file = 'reach_avoid_results.json'
+
+    # abbreviated run for checking the pipeline end to end
+    if SMOKE_TEST:
+        n_seeds = 2
+        sample_factor_arr = [1, 3, 5, 7, 9]
+        settings.t_max = 5.
+        results_file = 'reach_avoid_results_smoke.json'
+        print(f'SMOKE_TEST enabled: {n_seeds} seeds, sample factors {sample_factor_arr}, '
+              f't_max = {settings.t_max} s, writing to {results_file}')
+
     n_feas_admm_fp_arr = []
     n_feas_admm_arr = []
     n_feas_gurobi_arr = []
@@ -516,6 +653,11 @@ elif MODE == 'heuristic_test':
     t_gurobi_arr = []
     t_scip_arr = []
     t_ofp_arr = []
+    m_admm_fp_arr = []
+    m_admm_arr = []
+    m_gurobi_arr = []
+    m_scip_arr = []
+    m_ofp_arr = []
 
     for sample_factor in sample_factor_arr:
 
@@ -530,6 +672,11 @@ elif MODE == 'heuristic_test':
         t_gurobi = []
         t_scip = []
         t_ofp = []
+        m_admm_fp = []
+        m_admm = []
+        m_gurobi = []
+        m_scip = []
+        m_ofp = []
 
         for seed in range(n_seeds):
             
@@ -542,13 +689,17 @@ elif MODE == 'heuristic_test':
             settings.k_max_admm_fp_ph2 = int(1e7) # large number
 
             # build and solve motion planning problem
-            x_traj, u_traj, Z_mpc, Z_map, sol, XN = reach_avoid_problem(seed, sample_factor, settings, 'zonoopt')
+            # each solve runs in its own process so that the memory measurement isn't polluted
+            # by memory the previous solver kept hold of
+            res = run_case_in_subprocess(seed, sample_factor, settings, 'zonoopt')
 
-            if sol.converged:
+            if res['converged']:
                 n_feas_admm_fp += 1
-                t_admm_fp.append(sol.run_time)
+                t_admm_fp.append(res['run_time'])
+                m_admm_fp.append(res['mem_mb'])
             else:
                 t_admm_fp.append(np.nan)
+                m_admm_fp.append(np.nan)
 
             # ADMM
             settings.enable_perturb_admm_fp = False
@@ -557,44 +708,52 @@ elif MODE == 'heuristic_test':
             settings.k_max_admm_fp_ph2 = 0
 
             # build and solve motion planning problem
-            x_traj, u_traj, Z_mpc, Z_map, sol, XN = reach_avoid_problem(seed, sample_factor, settings, 'zonoopt')
+            res = run_case_in_subprocess(seed, sample_factor, settings, 'zonoopt')
 
-            if sol.converged:
+            if res['converged']:
                 n_feas_admm += 1
-                t_admm.append(sol.run_time)
+                t_admm.append(res['run_time'])
+                m_admm.append(res['mem_mb'])
             else:
                 t_admm.append(np.nan)
+                m_admm.append(np.nan)
 
             # run with Gurobi for comparison
             # build and solve motion planning problem
-            x_traj, u_traj, Z_mpc, Z_map, sol, XN = reach_avoid_problem(seed, sample_factor, settings, 'gurobi')
+            res = run_case_in_subprocess(seed, sample_factor, settings, 'gurobi')
 
-            if sol.converged:
+            if res['converged']:
                 n_feas_gurobi += 1
-                t_gurobi.append(sol.run_time)
+                t_gurobi.append(res['run_time'])
+                m_gurobi.append(res['mem_mb'])
             else:
                 t_gurobi.append(np.nan)
+                m_gurobi.append(np.nan)
 
             # run with SCIP for comparison
             # build and solve motion planning problem
-            x_traj, u_traj, Z_mpc, Z_map, sol, XN = reach_avoid_problem(seed, sample_factor, settings, 'scip')
+            res = run_case_in_subprocess(seed, sample_factor, settings, 'scip')
 
-            if sol.converged:
+            if res['converged']:
                 n_feas_scip += 1
-                t_scip.append(sol.run_time)
+                t_scip.append(res['run_time'])
+                m_scip.append(res['mem_mb'])
             else:
                 t_scip.append(np.nan)
+                m_scip.append(np.nan)
 
             # run with OFP for comparison
             # build and solve motion planning problem
-            x_traj, u_traj, Z_mpc, Z_map, sol, XN = reach_avoid_problem(seed, sample_factor, settings, 'ofp')
+            res = run_case_in_subprocess(seed, sample_factor, settings, 'ofp')
 
-            if sol.converged:
+            if res['converged']:
                 n_feas_ofp += 1
-                t_ofp.append(sol.run_time)
+                t_ofp.append(res['run_time'])
+                m_ofp.append(res['mem_mb'])
             else:
                 t_ofp.append(np.nan)
-            
+                m_ofp.append(np.nan)
+
 
         # log results
         n_feas_admm_fp_arr.append(n_feas_admm_fp)
@@ -607,13 +766,24 @@ elif MODE == 'heuristic_test':
         t_gurobi_arr.append(t_gurobi)
         t_scip_arr.append(t_scip)
         t_ofp_arr.append(t_ofp)
+        m_admm_fp_arr.append(m_admm_fp)
+        m_admm_arr.append(m_admm)
+        m_gurobi_arr.append(m_gurobi)
+        m_scip_arr.append(m_scip)
+        m_ofp_arr.append(m_ofp)
 
         # print results
-        print(f'ADMM-FP feasible in {n_feas_admm_fp} / {n_seeds} cases -> {n_feas_admm_fp/(n_seeds)*100:.2f}%, average solution time = {np.mean(t_admm_fp_arr[-1]) if len(t_admm_fp_arr[-1]) > 0 else np.nan} s')
-        print(f'ADMM feasible in {n_feas_admm} / {n_seeds} cases -> {n_feas_admm/(n_seeds)*100:.2f}%, average solution time = {np.mean(t_admm_arr[-1]) if len(t_admm_arr[-1]) > 0 else np.nan} s')
-        print(f'Gurobi feasible in {n_feas_gurobi} / {n_seeds} cases -> {n_feas_gurobi/(n_seeds)*100:.2f}%, average solution time = {np.mean(t_gurobi_arr[-1]) if len(t_gurobi_arr[-1]) > 0 else np.nan} s')
-        print(f'SCIP feasible in {n_feas_scip} / {n_seeds} cases -> {n_feas_scip/(n_seeds)*100:.2f}%, average solution time = {np.mean(t_scip_arr[-1]) if len(t_scip_arr[-1]) > 0 else np.nan} s')
-        print(f'OFP feasible in {n_feas_ofp} / {n_seeds} cases -> {n_feas_ofp/(n_seeds)*100:.2f}%, average solution time = {np.mean(t_ofp_arr[-1]) if len(t_ofp_arr[-1]) > 0 else np.nan} s')
+        # nanmean over an all-nan sample factor warns rather than failing, so silence that case
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', RuntimeWarning)
+            for label, n_feas, t, m in [('ADMM-FP', n_feas_admm_fp, t_admm_fp, m_admm_fp),
+                                        ('ADMM', n_feas_admm, t_admm, m_admm),
+                                        ('Gurobi', n_feas_gurobi, t_gurobi, m_gurobi),
+                                        ('SCIP', n_feas_scip, t_scip, m_scip),
+                                        ('OFP', n_feas_ofp, t_ofp, m_ofp)]:
+                print(f'{label} feasible in {n_feas} / {n_seeds} cases -> {n_feas/(n_seeds)*100:.2f}%, '
+                      f'average solution time = {np.nanmean(t) if len(t) > 0 else np.nan} s, '
+                      f'median peak memory = {np.nanmedian(m) if len(m) > 0 else np.nan} MB')
 
     # Save results as JSON
     results_dict = {
@@ -628,17 +798,21 @@ elif MODE == 'heuristic_test':
         't_admm_arr': t_admm_arr,
         't_gurobi_arr': t_gurobi_arr,
         't_scip_arr': t_scip_arr,
-        't_ofp_arr': t_ofp_arr
+        't_ofp_arr': t_ofp_arr,
+        'm_admm_fp_arr': m_admm_fp_arr,
+        'm_admm_arr': m_admm_arr,
+        'm_gurobi_arr': m_gurobi_arr,
+        'm_scip_arr': m_scip_arr,
+        'm_ofp_arr': m_ofp_arr
     }
 
-    with open('reach_avoid_results.json', 'w') as json_file:
+    with open(results_file, 'w') as json_file:
         json.dump(results_dict, json_file, indent=4)
-
-    
+    print(f'Results written to {results_file}')
 
     ### plots ###
     try:
-        subprocess.run(['python', './plot_heuristic_data.py'])
+        subprocess.run(['python', './plot_heuristic_data.py', results_file])
     except Exception as e:
         print(f'Error running plotting script: {e}')
 
@@ -685,7 +859,7 @@ elif MODE == 'heuristic_test':
                 print(f'Plotting map for seed {seed}')
                 converged = False
                 while not converged:
-                    x_traj, u_traj, Z_mpc, Z_map, sol, XN = reach_avoid_problem(seed, sample_factor, settings, 'zonoopt')
+                    x_traj, u_traj, Z_mpc, Z_map, sol, XN, _ = reach_avoid_problem(seed, sample_factor, settings, 'zonoopt')
                     converged = sol.converged
 
                 ax = fig.add_subplot(gs[row,col])
@@ -726,7 +900,7 @@ else:
     # build and solve motion planning problem
     seed = 13
     sample_factor = 4
-    x_traj, u_traj, Z_mpc, Z_map, sol, XN = reach_avoid_problem(seed, sample_factor, settings, 'zonoopt')
+    x_traj, u_traj, Z_mpc, Z_map, sol, XN, _ = reach_avoid_problem(seed, sample_factor, settings, 'zonoopt')
 
     print(f'solution time = {sol.run_time} s, startup time = {sol.startup_time} s, number of nodes evaluated = {sol.iter}')
     print(f'Z_mpc number of continuous variables = {Z_mpc.get_nGc()}, number of binary variables = {Z_mpc.get_nGb()}, number of constraints = {Z_mpc.get_nC()}')

@@ -4,6 +4,7 @@ import numpy as np
 import subprocess
 import ast
 import json
+import sys
 
 def is_latex_installed():
     try:
@@ -13,7 +14,8 @@ def is_latex_installed():
         return False
 
 # load json data
-with open('reach_avoid_results.json', 'r') as f:
+results_file = sys.argv[1] if len(sys.argv) > 1 else 'reach_avoid_results.json'
+with open(results_file, 'r') as f:
     data = json.load(f)
 
     sample_factor_arr = data['sample_factor_arr']
@@ -28,10 +30,21 @@ with open('reach_avoid_results.json', 'r') as f:
     t_gurobi_arr = data['t_gurobi_arr']
     t_scip_arr = data['t_scip_arr']
     t_ofp_arr = data['t_ofp_arr']
+    m_admm_fp_arr = data.get('m_admm_fp_arr')
+    m_admm_arr = data.get('m_admm_arr')
+    m_gurobi_arr = data.get('m_gurobi_arr')
+    m_scip_arr = data.get('m_scip_arr')
+    m_ofp_arr = data.get('m_ofp_arr')
+
+    m_arrs = [m_admm_fp_arr, m_admm_arr, m_gurobi_arr, m_scip_arr, m_ofp_arr]
+    have_mem = all(m is not None for m in m_arrs) and \
+        any(np.isfinite(mi) for m in m_arrs for m_sample_factor in m for mi in m_sample_factor)
+    if not have_mem:
+        print(f'No peak memory data in {results_file}; plotting solution time and solution rate only.')
 
 
 # max improvement in convergence rate for ADMM-FP compared to ADMM
-d_conv_arr = [n_feas_admm_fp_arr[i]/n_feas_admm_arr[i] for i in range(len(sample_factor_arr))]
+d_conv_arr = [n_feas_admm_fp_arr[i]/n_feas_admm_arr[i] if n_feas_admm_arr[i] > 0 else np.inf for i in range(len(sample_factor_arr))]
 print(f'Max improvement in convergence rate for ADMM-FP compared to ADMM: {np.max(d_conv_arr)}')
 
 
@@ -56,6 +69,28 @@ for i, sample_factor in enumerate(sample_factor_arr):
 print('ADMM-FP sol time / ADMM sol time for cases where both produce feasible solutions:')
 print(f'median = {np.median(sol_time_ratios)}, min = {np.min(sol_time_ratios)}, max = {np.max(sol_time_ratios)}')
 
+### statistics on peak memory use ###
+if have_mem:
+    for label, m_ref_arr in [('ADMM', m_admm_arr), ('Gurobi', m_gurobi_arr), ('SCIP', m_scip_arr)]:
+        mem_ratios = np.array([])
+        for i, sample_factor in enumerate(sample_factor_arr):
+            m_admm_fp = np.array(m_admm_fp_arr[i])
+            m_ref = np.array(m_ref_arr[i])
+
+            # only compare cases where both solvers produced a feasible solution
+            valid_indices = np.isfinite(m_admm_fp) & np.isfinite(m_ref)
+            if not np.any(valid_indices):
+                continue
+
+            mem_ratios = np.concatenate((mem_ratios, m_ref[valid_indices] / m_admm_fp[valid_indices]))
+
+        if len(mem_ratios) == 0:
+            print(f'No cases where both ADMM-FP and {label} produce feasible solutions.')
+            continue
+
+        print(f'{label} peak memory / ADMM-FP peak memory for cases where both produce feasible solutions:')
+        print(f'median = {np.median(mem_ratios)}, min = {np.min(mem_ratios)}, max = {np.max(mem_ratios)}')
+
 ### plots ###
 
 # generate plots
@@ -79,11 +114,13 @@ inches_per_pt = 1 / 72.27
 
 with plt.rc_context(rc_context):
 
-    # solution time / rate of solution comparison plot
+    # solution time / peak memory / rate of solution comparison plot
     figwidth_pt = 505.89
-    figsize = (figwidth_pt * inches_per_pt, 0.5*figwidth_pt * inches_per_pt)  # Convert pt to inches
+    fig_height_frac = 0.75 if have_mem else 0.5
+    figsize = (figwidth_pt * inches_per_pt, fig_height_frac*figwidth_pt * inches_per_pt)  # Convert pt to inches
     fig = plt.figure(constrained_layout=True, figsize=figsize)
-    gs = fig.add_gridspec(nrows=2, figure=fig, height_ratios=[2,1])
+    gs = fig.add_gridspec(nrows=3 if have_mem else 2, figure=fig,
+                          height_ratios=[2,2,1] if have_mem else [2,1])
 
     # time steps
     N_arr = [sample_factor * 10 for sample_factor in sample_factor_arr]
@@ -109,7 +146,10 @@ with plt.rc_context(rc_context):
         group_positions = [start_pos + i * (box_width + gap_between_boxes) for i in range(n_groups)]
         positions.extend(group_positions)
 
-    # remove infinities from time data for boxplot
+    colors = ['b', 'm', 'g', 'r', 'c']
+    data_labels = [r'ADMM-FP', r'OFP', r'ADMM', r'Gurobi', r'SCIP']
+
+    # remove infinities from time and memory data for boxplot
     for i in range(len(N_arr)):
         t_admm_fp_arr[i] = [t for t in t_admm_fp_arr[i] if np.isfinite(t)]
         t_ofp_arr[i] = [t for t in t_ofp_arr[i] if np.isfinite(t)]
@@ -117,47 +157,63 @@ with plt.rc_context(rc_context):
         t_gurobi_arr[i] = [t for t in t_gurobi_arr[i] if np.isfinite(t)]
         t_scip_arr[i] = [t for t in t_scip_arr[i] if np.isfinite(t)]
 
-    all_data = []
-    for i in range(len(N_arr)):
-        all_data.append(t_admm_fp_arr[i])
-        all_data.append(t_ofp_arr[i])
-        all_data.append(t_admm_arr[i])
-        all_data.append(t_gurobi_arr[i])
-        all_data.append(t_scip_arr[i])
+        if have_mem:
+            m_admm_fp_arr[i] = [m for m in m_admm_fp_arr[i] if np.isfinite(m)]
+            m_ofp_arr[i] = [m for m in m_ofp_arr[i] if np.isfinite(m)]
+            m_admm_arr[i] = [m for m in m_admm_arr[i] if np.isfinite(m)]
+            m_gurobi_arr[i] = [m for m in m_gurobi_arr[i] if np.isfinite(m)]
+            m_scip_arr[i] = [m for m in m_scip_arr[i] if np.isfinite(m)]
+
+    def grouped_boxplot(ax, arrs, title, ylabel):
+        """One boxplot group per horizon, one box per solver within a group."""
+
+        all_data = []
+        for i in range(len(N_arr)):
+            for arr in arrs:
+                all_data.append(arr[i])
+
+        bp = ax.boxplot(
+            all_data,
+            positions=positions,
+            widths=box_width,
+            patch_artist=True,
+            medianprops={'color': 'black'},
+            showfliers=True,
+            sym='k.',
+            whis=(0., 100.) # whiskers cover all data
+        )
+
+        for i, box in enumerate(bp['boxes']):
+            box.set_facecolor(colors[i % n_groups])
+            box.set_alpha(0.5)
+
+        ax.set_title(title, fontsize=textwidth_pt)
+        ax.set_ylabel(ylabel, fontsize=textwidth_pt)
+        ax.set_yscale('log')
+        ax.grid(alpha=0.2)
+
+        ax.set_xticks(group_center_positions)
+        ax.set_xticklabels([str(N) for N in N_arr])
+
+        return bp
 
     ax = fig.add_subplot(gs[0])
-    bp = ax.boxplot(
-        all_data,
-        positions=positions,
-        widths=box_width,
-        patch_artist=True,
-        medianprops={'color': 'black'},
-        showfliers=True,
-        sym='k.',
-        whis=(0., 100.) # whiskers cover all data
-    )
-
-    colors = ['b', 'm', 'g', 'r', 'c']
-    for i, box in enumerate(bp['boxes']):
-        box.set_facecolor(colors[i % n_groups])
-        box.set_alpha(0.5)
-
-    ax.set_title(r'Time to find a feasible solution', fontsize=textwidth_pt)
-    ax.set_ylabel(r'[sec]', fontsize=textwidth_pt)
-    ax.set_yscale('log')
-    ax.grid(alpha=0.2)
-
-    ax.set_xticks(group_center_positions)
-    ax.set_xticklabels([str(N) for N in N_arr])
+    grouped_boxplot(ax, [t_admm_fp_arr, t_ofp_arr, t_admm_arr, t_gurobi_arr, t_scip_arr],
+                    r'Time to find a feasible solution', r'[sec]')
 
     legend_patches = [plt.Rectangle((0, 0), 1, 1, alpha=0.5, fc=color) for color in colors]
-    data_labels = [r'ADMM-FP', r'OFP', r'ADMM', r'Gurobi', r'SCIP']
 
     ax.legend(legend_patches, data_labels, bbox_to_anchor=(0., 1.25, 1., .102), loc=3,
         ncol=5, mode="expand", borderaxespad=0., fontsize=textwidth_pt)
 
+    # plot peak memory per solve vs sample factor for each solver
+    if have_mem:
+        ax = fig.add_subplot(gs[1])
+        grouped_boxplot(ax, [m_admm_fp_arr, m_ofp_arr, m_admm_arr, m_gurobi_arr, m_scip_arr],
+                        r'Peak memory use of the solve', r'[MB]')
+
     # plot rate of solution vs sample factor for each solver
-    ax = fig.add_subplot(gs[1])
+    ax = fig.add_subplot(gs[2] if have_mem else gs[1])
     ax.plot(N_arr, r_feas_admm_fp_arr, color='b', marker='x', linestyle='-', alpha=0.5)
     ax.plot(N_arr, r_feas_ofp_arr, color='m', marker='^', linestyle='-', alpha=0.5)
     ax.plot(N_arr, r_feas_admm_arr, color='g', marker='s', linestyle='-', alpha=0.5)
