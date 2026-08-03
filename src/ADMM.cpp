@@ -46,13 +46,13 @@ namespace ZonoOpt
         return this->m_A_rm;
     }
 
-    const LDLT_data& ADMM_prob::ldlt_M() const
+    const LDLT_solver& ADMM_prob::ldlt_M() const
     {
         std::call_once(this->m_M_once, [this] { this->build_ldlt_M(); });
         return this->m_ldlt_M;
     }
 
-    const LDLT_data& ADMM_prob::ldlt_AAT() const
+    const LDLT_solver& ADMM_prob::ldlt_AAT() const
     {
         std::call_once(this->m_AAT_once, [this] { this->build_ldlt_AAT(); });
         return this->m_ldlt_AAT;
@@ -60,10 +60,9 @@ namespace ZonoOpt
 
     void ADMM_prob::build_ldlt_M() const
     {
-        // factorize system matrix
-        Eigen::SimplicialLDLT<Eigen::SparseMatrix<zono_float>> ldlt_solver_M;
+        // factorize system matrix directly into m_ldlt_M -- no separate solver-then-copy step
         {
-            // scoped so M is released before get_LDLT_data copies the factor out
+            // scoped so M is released once compute() returns
             Eigen::SparseMatrix<zono_float> M(this->m_n_x + this->m_n_cons, this->m_n_x + this->m_n_cons);
             {
                 // rho*I folded into triplets (setFromTriplets sums duplicates) to avoid I/Phi temporaries
@@ -80,29 +79,25 @@ namespace ZonoOpt
                 M.setFromTriplets(triplets.begin(), triplets.end());
             }
 
-            ldlt_solver_M.compute(M);
-            if (ldlt_solver_M.info() != Eigen::Success)
+            this->m_ldlt_M.compute(M);
+            if (this->m_ldlt_M.info() != Eigen::Success)
                 throw std::runtime_error(
                     "ADMM: factorization of problem data failed, most likely A is not full row rank");
         }
 
-        get_LDLT_data(ldlt_solver_M, this->m_ldlt_M);
         this->m_M_ready.store(true, std::memory_order_release);
     }
 
     void ADMM_prob::build_ldlt_AAT() const
     {
-        // factorize A*AT
-        Eigen::SimplicialLDLT<Eigen::SparseMatrix<zono_float>> ldlt_solver_AAT;
+        // factorize A*AT directly into m_ldlt_AAT
         {
-            // scoped so AAT is released before get_LDLT_data copies the factor out
             const Eigen::SparseMatrix<zono_float> AAT = this->m_A * this->m_AT;
-            ldlt_solver_AAT.compute(AAT);
-            if (ldlt_solver_AAT.info() != Eigen::Success)
+            this->m_ldlt_AAT.compute(AAT);
+            if (this->m_ldlt_AAT.info() != Eigen::Success)
                 throw std::runtime_error(
                     "ADMM: factorization of A*A^T failed, most likely A is not full row rank");
         }
-        get_LDLT_data(ldlt_solver_AAT, this->m_ldlt_AAT);
         this->m_AAT_ready.store(true, std::memory_order_release);
     }
 
@@ -322,7 +317,7 @@ namespace ZonoOpt
         }
 
         const ADMM_prob& prob = *this->data->prob;
-        const LDLT_data& ldlt_M = prob.ldlt_M();
+        const LDLT_solver& ldlt_M = prob.ldlt_M();
 
         // initial values
         Eigen::Vector<zono_float, -1> xk, zk, uk, zkm1, rhs, x_nu;
@@ -357,7 +352,7 @@ namespace ZonoOpt
         {
             // x update
             rhs.segment(0, this->data->n_x) = -this->data->q + this->data->settings.rho * (zk - uk);
-            x_nu = solve_LDLT(ldlt_M, rhs);
+            x_nu = ldlt_M.solve(rhs);
             xk = x_nu.segment(0, this->data->n_x);
 
             // z update
@@ -453,7 +448,7 @@ namespace ZonoOpt
 
         // project ek onto row space of A (i.e. column space of AT)
         Eigen::Vector<zono_float, -1> A_e = prob.A() * ek;
-        Eigen::Vector<zono_float, -1> AAT_inv_A_e = solve_LDLT(prob.ldlt_AAT(), A_e);
+        Eigen::Vector<zono_float, -1> AAT_inv_A_e = prob.ldlt_AAT().solve(A_e);
         Eigen::Vector<zono_float, -1> ek_proj = prob.AT() * AAT_inv_A_e;
 
         // check if this is an infeasibility certificate
@@ -613,8 +608,8 @@ namespace ZonoOpt
         std::stringstream ss;
 
         const ADMM_prob& prob = *this->data->prob;
-        const LDLT_data& ldlt_M = prob.ldlt_M();
-        const LDLT_data& ldlt_AAT = prob.ldlt_AAT();
+        const LDLT_solver& ldlt_M = prob.ldlt_M();
+        const LDLT_solver& ldlt_AAT = prob.ldlt_AAT();
         const Eigen::SparseMatrix<zono_float>& A = prob.A();
         const Eigen::SparseMatrix<zono_float>& AT = prob.AT();
         const Eigen::Vector<zono_float, -1>& b_vec = prob.b();
@@ -662,7 +657,7 @@ namespace ZonoOpt
             {
             case Phase1:
                 rhs.segment(0, this->data->n_x) = -this->data->q + this->data->settings.rho * (zk - uk);
-                x_nu = solve_LDLT(ldlt_M, rhs);
+                x_nu = ldlt_M.solve(rhs);
                 xk = x_nu.segment(0, this->data->n_x);
                 break;
             case Phase2:

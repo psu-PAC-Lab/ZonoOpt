@@ -75,8 +75,8 @@ namespace ZonoOpt
 
             // lazily built, thread safe
             const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A_rm() const;
-            const LDLT_data& ldlt_M() const;
-            const LDLT_data& ldlt_AAT() const;
+            const LDLT_solver& ldlt_M() const;
+            const LDLT_solver& ldlt_AAT() const;
 
             // non-blocking readiness probes (verbosity/timing and tests only)
             bool M_ready() const { return m_M_ready.load(std::memory_order_acquire); }
@@ -90,7 +90,7 @@ namespace ZonoOpt
             zono_float m_rho = 0;
 
             mutable Eigen::SparseMatrix<zono_float, Eigen::RowMajor> m_A_rm;
-            mutable LDLT_data m_ldlt_M, m_ldlt_AAT;
+            mutable LDLT_solver m_ldlt_M, m_ldlt_AAT;
             mutable std::once_flag m_A_rm_once, m_M_once, m_AAT_once;
             mutable std::atomic<bool> m_M_ready{false}, m_AAT_ready{false}, m_A_rm_ready{false};
 
