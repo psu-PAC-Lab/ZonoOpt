@@ -9,7 +9,7 @@ from shapely.geometry import Polygon
 ### flags
 
 # options: 'default', 'admm_fp_multirun', 'heuristic_test'
-MODE = 'default'
+MODE = 'heuristic_test'
 
 try:
     import polypartition
