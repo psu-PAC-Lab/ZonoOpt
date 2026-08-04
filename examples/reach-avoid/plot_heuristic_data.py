@@ -43,8 +43,8 @@ LINESTYLES = {
 parser = argparse.ArgumentParser(description='Plot reach-avoid heuristic comparison data.')
 parser.add_argument('results_file', nargs='?', default='reach_avoid_results.json',
                      help='Path to the results JSON file (default: reach_avoid_results.json).')
-parser.add_argument('--style', choices=['box', 'band'], default='box',
-                     help='"band" (default) draws median + IQR bands; "box" draws grouped boxplots.')
+parser.add_argument('--style', choices=['box', 'band', 'mixed'], default='box',
+                     help='"band" (default) draws median + IQR bands; "box" draws grouped boxplots; "mixed" does box plot for solution time and band plot for memory use')
 args = parser.parse_args()
 
 # load json data
@@ -235,26 +235,33 @@ with plt.rc_context(rc_context):
 
         return bp
 
-    def band_plot(ax, arrs_by_key, title, ylabel):
-        """Median line with a 25th-75th percentile band, one per solver.
+    def band_plot(ax, arrs_by_key, title, ylabel, x=None):
+        """Median line with a band for all data, one per solver.
 
         Avoids the narrow-box readability problem entirely, and stays
         readable regardless of how many horizons/solvers are plotted.
+
+        `x` defaults to the actual horizon values (N_arr); pass the
+        boxplot's categorical group_center_positions instead when this panel
+        must share its x-axis with a boxplot panel, whose x positions are
+        index-based rather than the horizon values themselves.
         """
+        if x is None:
+            x = N_arr
 
         for key, _, color, marker in active_solvers:
             arr = arrs_by_key[key]
             med = [np.median(a) if len(a) else np.nan for a in arr]
-            lo = [np.percentile(a, 25) if len(a) else np.nan for a in arr]
-            hi = [np.percentile(a, 75) if len(a) else np.nan for a in arr]
+            lo = [np.min(a) if len(a) else np.nan for a in arr]
+            hi = [np.max(a) if len(a) else np.nan for a in arr]
 
-            ax.fill_between(N_arr, lo, hi, color=color, alpha=0.15, lw=0)
+            ax.fill_between(x, lo, hi, color=color, alpha=0.15, lw=0)
             # hollow markers: some solvers have only 1-2 valid seeds per horizon
             # (e.g. ADMM often has just one), so their "median" is an isolated
             # point that can land almost exactly on another solver's line/marker.
             # A filled marker would simply hide underneath; an open marker's
             # outline stays visible no matter which one is drawn on top.
-            ax.plot(N_arr, med, color=color, marker=marker, linestyle=LINESTYLES[key],
+            ax.plot(x, med, color=color, marker=marker, linestyle=LINESTYLES[key],
                     markersize=4.5, markerfacecolor='none', markeredgewidth=1.1,
                     linewidth=1.0, alpha=0.5)
 
@@ -263,21 +270,34 @@ with plt.rc_context(rc_context):
         ax.set_yscale('log')
         ax.grid(alpha=0.2)
 
-        ax.set_xticks(N_arr)
+        ax.set_xticks(x)
         ax.set_xticklabels([str(N) for N in N_arr])
 
         return ax
 
-    plot_panel = grouped_boxplot if args.style == 'box' else band_plot
+    # "mixed" pairs a boxplot for solution time with a band plot for memory
+    # use, so the two panels are selected independently rather than sharing
+    # a single plot_panel function.
+    time_panel = grouped_boxplot if args.style in ('box', 'mixed') else band_plot
+    mem_panel = grouped_boxplot if args.style == 'box' else band_plot
 
-    ax = fig.add_subplot(gs[0])
-    plot_panel(ax, t_arr, r'Time to find a feasible solution', r'[sec]')
+    # Whenever the time panel is a boxplot, its x positions are the
+    # categorical group_center_positions (0, 1, 2, ...) rather than the
+    # horizon values themselves; the other two panels must plot on that same
+    # categorical axis for sharex below to align them correctly.
+    categorical_x = args.style in ('box', 'mixed')
+    shared_x = group_center_positions if categorical_x else N_arr
+
+    ax0 = fig.add_subplot(gs[0])
+    time_panel(ax0, t_arr, r'Time to find a feasible solution', r'[sec]')
 
     # single figure-level legend, shared by all panels: color identifies the
     # solver and marker is a redundant, colorblind- and grayscale-safe cue.
     # The legend handle must depict the encoding actually drawn in each style,
     # so it is built per style rather than always using a plain Line2D.
-    if args.style == 'box':
+    # "mixed" still shows boxes (in the time panel), so it uses the same
+    # composite handle as "box".
+    if args.style in ('box', 'mixed'):
         # composite handle: a swatch matching the box exactly (same helper as
         # the boxes themselves, so they cannot visually drift apart) plus the
         # dashed/hollow marker used by the rate panel below.
@@ -295,30 +315,41 @@ with plt.rc_context(rc_context):
     fig.legend(handles, labels, loc='outside upper center', ncol=n_groups,
                fontsize=textwidth_pt, handler_map=handler_map)
 
-    # plot peak memory per solve vs sample factor for each solver
+    # plot peak memory per solve vs sample factor for each solver. Shares the
+    # time panel's x-axis (sharex=ax0) so the two line up exactly; the time
+    # panel itself is left as the unshared reference, per its denser boxplot
+    # view needing no adjustment.
     if have_mem:
-        ax = fig.add_subplot(gs[1])
-        plot_panel(ax, m_arr, r'Peak memory use', r'[MB]')
+        ax1 = fig.add_subplot(gs[1], sharex=ax0)
+        if mem_panel is band_plot:
+            mem_panel(ax1, m_arr, r'Peak memory use', r'[MB]', x=shared_x)
+        else:
+            mem_panel(ax1, m_arr, r'Peak memory use', r'[MB]')
+        # sharex ties ax1's minor x-locator to ax0/ax2's (same underlying
+        # Ticker object), so ax2's minorticks_on() below would otherwise leak
+        # minor x-ticks onto this panel too.
+        ax1.tick_params(axis='x', which='minor', bottom=False)
 
-    # plot rate of solution vs sample factor for each solver
-    ax = fig.add_subplot(gs[2] if have_mem else gs[1])
+    # plot rate of solution vs sample factor for each solver. Also shares the
+    # time panel's x-axis.
+    ax2 = fig.add_subplot(gs[2] if have_mem else gs[1], sharex=ax0)
     for key, _, color, marker in active_solvers:
         # dashed lines + hollow markers, matching band_plot: several solvers
         # sit at exactly 100% for low N, so filled markers/solid lines would
         # otherwise stack and hide one another here too.
-        ax.plot(N_arr, r_feas_arr[key], color=color, marker=marker, linestyle=LINESTYLES[key],
+        ax2.plot(shared_x, r_feas_arr[key], color=color, marker=marker, linestyle=LINESTYLES[key],
                 markersize=4.5, markerfacecolor='none', markeredgewidth=1.1,
                 linewidth=1.0, alpha=0.5)
-    ax.set_title(r'Percentage of cases where solution is found', fontsize=textwidth_pt)
-    ax.set_ylabel(r'[\%]', fontsize=textwidth_pt)
-    ax.grid(which='major', alpha=0.2)
-    ax.grid(which='minor', axis='y', alpha=0.1)
-    ax.minorticks_on()
-    ax.yaxis.set_minor_locator(tck.AutoMinorLocator())
+    ax2.set_title(r'Percentage of cases where solution is found', fontsize=textwidth_pt)
+    ax2.set_ylabel(r'[\%]', fontsize=textwidth_pt)
+    ax2.grid(which='major', alpha=0.2)
+    ax2.grid(which='minor', axis='y', alpha=0.1)
+    ax2.minorticks_on()
+    ax2.yaxis.set_minor_locator(tck.AutoMinorLocator())
 
-    ax.set_xticks([N for N in N_arr])
-    ax.set_xticklabels([str(N) for N in N_arr])
-    ax.tick_params(axis='x', which='minor', bottom=False)
+    ax2.set_xticks(shared_x)
+    ax2.set_xticklabels([str(N) for N in N_arr])
+    ax2.tick_params(axis='x', which='minor', bottom=False)
 
     # labels
     fig.supxlabel(r'Planning horizon $N$', fontsize=textwidth_pt)

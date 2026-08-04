@@ -17,7 +17,7 @@ MODE = 'heuristic_test'
 
 # quick end-to-end check of the heuristic_test pipeline: few seeds, short time limit,
 # results written to a separate file so the full dataset isn't overwritten
-SMOKE_TEST = True
+SMOKE_TEST = False
 
 try:
     import polypartition
@@ -630,7 +630,7 @@ elif MODE == 'heuristic_test':
     settings.n_threads_admm_fp = 0
     
     # loop through seeds, trials, sample factors
-    n_seeds = 100
+    n_seeds = 50 # 100
     sample_factor_arr = [2*i-1 for i in range(1,6)]
     results_file = 'reach_avoid_results.json'
 
