@@ -17,7 +17,7 @@ MODE = 'heuristic_test'
 
 # quick end-to-end check of the heuristic_test pipeline: few seeds, short time limit,
 # results written to a separate file so the full dataset isn't overwritten
-SMOKE_TEST = True
+SMOKE_TEST = False
 
 try:
     import polypartition

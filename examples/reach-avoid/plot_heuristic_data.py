@@ -210,7 +210,7 @@ with plt.rc_context(rc_context):
     if have_mem:
         ax = fig.add_subplot(gs[1])
         grouped_boxplot(ax, [m_admm_fp_arr, m_ofp_arr, m_admm_arr, m_gurobi_arr, m_scip_arr],
-                        r'Peak memory use of the solve', r'[MB]')
+                        r'Peak memory use', r'[MB]')
 
     # plot rate of solution vs sample factor for each solver
     ax = fig.add_subplot(gs[2] if have_mem else gs[1])
