@@ -631,13 +631,12 @@ elif MODE == 'heuristic_test':
     
     # loop through seeds, trials, sample factors
     n_seeds = 100
-    sample_factor_arr = [i for i in range(1,11)]
+    sample_factor_arr = [2*i-1 for i in range(1,6)]
     results_file = 'reach_avoid_results.json'
 
     # abbreviated run for checking the pipeline end to end
     if SMOKE_TEST:
-        n_seeds = 2
-        sample_factor_arr = [1, 3, 5, 7, 9]
+        n_seeds = 5
         settings.t_max = 5.
         results_file = 'reach_avoid_results_smoke.json'
         print(f'SMOKE_TEST enabled: {n_seeds} seeds, sample factors {sample_factor_arr}, '
@@ -834,81 +833,6 @@ elif MODE == 'heuristic_test':
         json.dump(results_dict, json_file, indent=4)
     print(f'Results written to {results_file}')
 
-    ### plots ###
-    try:
-        subprocess.run(['python', './plot_heuristic_data.py', results_file])
-    except Exception as e:
-        print(f'Error running plotting script: {e}')
-
-    # generate plots
-    textwidth_pt = 10.
-    if is_latex_installed():
-        rc_context = {
-            "text.usetex": True,
-            "font.size": textwidth_pt,
-            "font.family": "serif",  # Choose a serif font like 'Times New Roman' or 'Computer Modern'
-            "pgf.texsystem": "pdflatex",
-            "pgf.rcfonts": False,
-        }
-    else:
-        print("LaTeX not installed, using default font.")
-        rc_context = {
-            "font.size": textwidth_pt,
-        }
-
-    inches_per_pt = 1 / 72.27
-
-    with plt.rc_context(rc_context):
-
-        # figure
-        settings.enable_perturb_admm_fp = True
-        settings.k_max_admm_fp_ph1 = 10000 # default
-        settings.k_max_admm_fp_ph2 = int(1e7) # large number
-        sample_factor = 5
-        seed_arr = [33, 66, 99]
-
-        figwidth_pt = 505.89
-        figsize = (figwidth_pt * inches_per_pt, 0.4*figwidth_pt * inches_per_pt)  # Convert pt to inches
-        fig = plt.figure(constrained_layout=True, figsize=figsize)
-
-        width_col_pt = (figwidth_pt / 3.) - textwidth_pt
-        gs = fig.add_gridspec(nrows=1, ncols=3, figure=fig, width_ratios=[1,1,1], height_ratios=[1])
-
-        for row in range(1):
-            for col in range(3):
-
-                # build and solve motion planning problem
-                settings.enable_perturb_admm_fp = True
-                seed = seed_arr[row*3 + col]
-                print(f'Plotting map for seed {seed}')
-                converged = False
-                while not converged:
-                    x_traj, u_traj, Z_mpc, Z_map, sol, XN, _ = reach_avoid_problem(seed, sample_factor, settings, 'zonoopt')
-                    converged = sol.converged
-
-                ax = fig.add_subplot(gs[row,col])
-
-                # time-varying state constraints (spatio-temporal corridor)
-                zono.plot(Z_map, ax=ax, color='b', alpha=0.25, edgecolor='b', linewidth=1.0)
-                zono.plot(zono.intersection(zono.project_onto_dims(XN, [0,1]), Z_map), ax=ax, color='g', alpha=0.5, edgecolor='g', linewidth=1.0)
-
-                # solution
-                x_vec = np.array(x_traj)
-                ax.plot(x_vec[:,0], x_vec[:,1], '.r', markersize=5)
-                
-                # axes
-                ax.axis('equal')
-                ax.grid(alpha=0.2)
-
-                # title
-                ax.set_title(f'seed = {seed}', fontsize=textwidth_pt)
-
-        # axis labels
-        fig.supxlabel(r'$x$ [m]', fontsize=textwidth_pt)
-        fig.supylabel(r'$y$ [m]', fontsize=textwidth_pt)
-
-        # show
-        plt.show()
 
 else:
 
