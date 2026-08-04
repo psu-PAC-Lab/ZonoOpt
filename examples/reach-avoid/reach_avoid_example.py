@@ -17,7 +17,7 @@ MODE = 'heuristic_test'
 
 # quick end-to-end check of the heuristic_test pipeline: few seeds, short time limit,
 # results written to a separate file so the full dataset isn't overwritten
-SMOKE_TEST = False
+SMOKE_TEST = True
 
 try:
     import polypartition
@@ -643,18 +643,38 @@ elif MODE == 'heuristic_test':
         print(f'SMOKE_TEST enabled: {n_seeds} seeds, sample factors {sample_factor_arr}, '
               f't_max = {settings.t_max} s, writing to {results_file}')
 
+    # configurations for different ADMM tests
+    settings_admm_fp = settings.copy()
+    settings_admm_fp.enable_perturb_admm_fp = True
+    settings_admm_fp.enable_restart_admm_fp = True
+    settings_admm_fp.k_max_admm_fp_ph1 = 10000 # default
+    settings_admm_fp.k_max_admm_fp_ph2 = int(1e7) # large number
+
+    settings_admm = settings.copy()
+    settings_admm.enable_perturb_admm_fp = False
+    settings_admm.enable_restart_admm_fp = False
+    settings_admm.k_max_admm_fp_ph1 = int(1e7) # large number
+    settings_admm.k_max_admm_fp_ph2 = 0
+
+    settings_admm_rnd = settings_admm.copy()
+    settings_admm_rnd.k_max_admm_fp_ph1 = 1000 # small number
+    settings_admm_rnd.polish = True
+
     n_feas_admm_fp_arr = []
     n_feas_admm_arr = []
+    n_feas_admm_rnd_arr = []
     n_feas_gurobi_arr = []
     n_feas_scip_arr = []
     n_feas_ofp_arr = []
     t_admm_fp_arr = []
     t_admm_arr = []
+    t_admm_rnd_arr = []
     t_gurobi_arr = []
     t_scip_arr = []
     t_ofp_arr = []
     m_admm_fp_arr = []
     m_admm_arr = []
+    m_admm_rnd_arr = []
     m_gurobi_arr = []
     m_scip_arr = []
     m_ofp_arr = []
@@ -664,16 +684,19 @@ elif MODE == 'heuristic_test':
         # reset counters
         n_feas_admm = 0
         n_feas_admm_fp = 0
+        n_feas_admm_rnd = 0
         n_feas_gurobi = 0
         n_feas_scip = 0
         n_feas_ofp = 0
         t_admm_fp = []
         t_admm = []
+        t_admm_rnd = []
         t_gurobi = []
         t_scip = []
         t_ofp = []
         m_admm_fp = []
         m_admm = []
+        m_admm_rnd = []
         m_gurobi = []
         m_scip = []
         m_ofp = []
@@ -683,15 +706,7 @@ elif MODE == 'heuristic_test':
             print(f'Running sample factor {sample_factor}, seed {seed}')
 
             # ADMM-FP
-            settings.enable_perturb_admm_fp = True
-            settings.enable_restart_admm_fp = True
-            settings.k_max_admm_fp_ph1 = 10000 # default
-            settings.k_max_admm_fp_ph2 = int(1e7) # large number
-
-            # build and solve motion planning problem
-            # each solve runs in its own process so that the memory measurement isn't polluted
-            # by memory the previous solver kept hold of
-            res = run_case_in_subprocess(seed, sample_factor, settings, 'zonoopt')
+            res = run_case_in_subprocess(seed, sample_factor, settings_admm_fp, 'zonoopt')
 
             if res['converged']:
                 n_feas_admm_fp += 1
@@ -702,13 +717,7 @@ elif MODE == 'heuristic_test':
                 m_admm_fp.append(np.nan)
 
             # ADMM
-            settings.enable_perturb_admm_fp = False
-            settings.enable_restart_admm_fp = False
-            settings.k_max_admm_fp_ph1 = int(1e7) # large number
-            settings.k_max_admm_fp_ph2 = 0
-
-            # build and solve motion planning problem
-            res = run_case_in_subprocess(seed, sample_factor, settings, 'zonoopt')
+            res = run_case_in_subprocess(seed, sample_factor, settings_admm, 'zonoopt')
 
             if res['converged']:
                 n_feas_admm += 1
@@ -718,8 +727,18 @@ elif MODE == 'heuristic_test':
                 t_admm.append(np.nan)
                 m_admm.append(np.nan)
 
+            # ADMM with reduced iterations and rounding
+            res = run_case_in_subprocess(seed, sample_factor, settings_admm_rnd, 'zonoopt')
+            
+            if res['converged']:
+                n_feas_admm_rnd += 1
+                t_admm_rnd.append(res['run_time'])
+                m_admm_rnd.append(res['mem_mb'])
+            else:
+                t_admm_rnd.append(np.nan)
+                m_admm_rnd.append(np.nan)
+
             # run with Gurobi for comparison
-            # build and solve motion planning problem
             res = run_case_in_subprocess(seed, sample_factor, settings, 'gurobi')
 
             if res['converged']:
@@ -731,7 +750,6 @@ elif MODE == 'heuristic_test':
                 m_gurobi.append(np.nan)
 
             # run with SCIP for comparison
-            # build and solve motion planning problem
             res = run_case_in_subprocess(seed, sample_factor, settings, 'scip')
 
             if res['converged']:
@@ -743,7 +761,6 @@ elif MODE == 'heuristic_test':
                 m_scip.append(np.nan)
 
             # run with OFP for comparison
-            # build and solve motion planning problem
             res = run_case_in_subprocess(seed, sample_factor, settings, 'ofp')
 
             if res['converged']:
@@ -758,16 +775,19 @@ elif MODE == 'heuristic_test':
         # log results
         n_feas_admm_fp_arr.append(n_feas_admm_fp)
         n_feas_admm_arr.append(n_feas_admm)
+        n_feas_admm_rnd_arr.append(n_feas_admm_rnd)
         n_feas_gurobi_arr.append(n_feas_gurobi)
         n_feas_scip_arr.append(n_feas_scip)
         n_feas_ofp_arr.append(n_feas_ofp)
         t_admm_fp_arr.append(t_admm_fp)
         t_admm_arr.append(t_admm)
+        t_admm_rnd_arr.append(t_admm_rnd)
         t_gurobi_arr.append(t_gurobi)
         t_scip_arr.append(t_scip)
         t_ofp_arr.append(t_ofp)
         m_admm_fp_arr.append(m_admm_fp)
         m_admm_arr.append(m_admm)
+        m_admm_rnd_arr.append(m_admm_rnd)
         m_gurobi_arr.append(m_gurobi)
         m_scip_arr.append(m_scip)
         m_ofp_arr.append(m_ofp)
@@ -778,6 +798,7 @@ elif MODE == 'heuristic_test':
             warnings.simplefilter('ignore', RuntimeWarning)
             for label, n_feas, t, m in [('ADMM-FP', n_feas_admm_fp, t_admm_fp, m_admm_fp),
                                         ('ADMM', n_feas_admm, t_admm, m_admm),
+                                        ('ADMM-RND', n_feas_admm_rnd, t_admm_rnd, m_admm_rnd),
                                         ('Gurobi', n_feas_gurobi, t_gurobi, m_gurobi),
                                         ('SCIP', n_feas_scip, t_scip, m_scip),
                                         ('OFP', n_feas_ofp, t_ofp, m_ofp)]:
@@ -791,16 +812,19 @@ elif MODE == 'heuristic_test':
         'n_seeds': n_seeds,
         'n_feas_admm_fp_arr': n_feas_admm_fp_arr,
         'n_feas_admm_arr': n_feas_admm_arr,
+        'n_feas_admm_rnd_arr': n_feas_admm_rnd_arr,
         'n_feas_gurobi_arr': n_feas_gurobi_arr,
         'n_feas_scip_arr': n_feas_scip_arr,
         'n_feas_ofp_arr': n_feas_ofp_arr,
         't_admm_fp_arr': t_admm_fp_arr,
         't_admm_arr': t_admm_arr,
+        't_admm_rnd_arr': t_admm_rnd_arr,
         't_gurobi_arr': t_gurobi_arr,
         't_scip_arr': t_scip_arr,
         't_ofp_arr': t_ofp_arr,
         'm_admm_fp_arr': m_admm_fp_arr,
         'm_admm_arr': m_admm_arr,
+        'm_admm_rnd_arr': m_admm_rnd_arr,
         'm_gurobi_arr': m_gurobi_arr,
         'm_scip_arr': m_scip_arr,
         'm_ofp_arr': m_ofp_arr

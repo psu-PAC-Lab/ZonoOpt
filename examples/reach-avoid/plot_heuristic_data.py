@@ -22,21 +22,24 @@ with open(results_file, 'r') as f:
     n_seeds = data['n_seeds']
     n_feas_admm_fp_arr = data['n_feas_admm_fp_arr']
     n_feas_admm_arr = data['n_feas_admm_arr']
+    n_feas_admm_rnd_arr = data['n_feas_admm_rnd_arr']
     n_feas_gurobi_arr = data['n_feas_gurobi_arr']
     n_feas_scip_arr = data['n_feas_scip_arr']
     n_feas_ofp_arr = data['n_feas_ofp_arr']
     t_admm_fp_arr = data['t_admm_fp_arr']
     t_admm_arr = data['t_admm_arr']
+    t_admm_rnd_arr = data['t_admm_rnd_arr']
     t_gurobi_arr = data['t_gurobi_arr']
     t_scip_arr = data['t_scip_arr']
     t_ofp_arr = data['t_ofp_arr']
     m_admm_fp_arr = data.get('m_admm_fp_arr')
     m_admm_arr = data.get('m_admm_arr')
+    m_admm_rnd_arr = data.get('m_admm_rnd_arr')
     m_gurobi_arr = data.get('m_gurobi_arr')
     m_scip_arr = data.get('m_scip_arr')
     m_ofp_arr = data.get('m_ofp_arr')
 
-    m_arrs = [m_admm_fp_arr, m_admm_arr, m_gurobi_arr, m_scip_arr, m_ofp_arr]
+    m_arrs = [m_admm_fp_arr, m_admm_arr, m_admm_rnd_arr, m_gurobi_arr, m_scip_arr, m_ofp_arr]
     have_mem = all(m is not None for m in m_arrs) and \
         any(np.isfinite(mi) for m in m_arrs for m_sample_factor in m for mi in m_sample_factor)
     if not have_mem:
@@ -71,7 +74,7 @@ print(f'median = {np.median(sol_time_ratios)}, min = {np.min(sol_time_ratios)}, 
 
 ### statistics on peak memory use ###
 if have_mem:
-    for label, m_ref_arr in [('ADMM', m_admm_arr), ('Gurobi', m_gurobi_arr), ('SCIP', m_scip_arr)]:
+    for label, m_ref_arr in [('ADMM', m_admm_arr), ('ADMM-RND', m_admm_rnd_arr), ('Gurobi', m_gurobi_arr), ('SCIP', m_scip_arr)]:
         mem_ratios = np.array([])
         for i, sample_factor in enumerate(sample_factor_arr):
             m_admm_fp = np.array(m_admm_fp_arr[i])
@@ -120,7 +123,7 @@ with plt.rc_context(rc_context):
     figsize = (figwidth_pt * inches_per_pt, fig_height_frac*figwidth_pt * inches_per_pt)  # Convert pt to inches
     fig = plt.figure(constrained_layout=True, figsize=figsize)
     gs = fig.add_gridspec(nrows=3 if have_mem else 2, figure=fig,
-                          height_ratios=[2,2,1] if have_mem else [2,1])
+                          height_ratios=[2,1,1] if have_mem else [2,1])
 
     # time steps
     N_arr = [sample_factor * 10 for sample_factor in sample_factor_arr]
@@ -128,6 +131,7 @@ with plt.rc_context(rc_context):
     # percent feasible solutions
     r_feas_admm_fp_arr = [float(n_feas)/n_seeds*100. for n_feas in n_feas_admm_fp_arr]
     r_feas_admm_arr = [float(n_feas)/n_seeds*100. for n_feas in n_feas_admm_arr]
+    r_feas_admm_rnd_arr = [float(n_feas)/n_seeds*100. for n_feas in n_feas_admm_rnd_arr]
     r_feas_gurobi_arr = [float(n_feas)/n_seeds*100. for n_feas in n_feas_gurobi_arr]
     r_feas_scip_arr = [float(n_feas)/n_seeds*100. for n_feas in n_feas_scip_arr]
     r_feas_ofp_arr = [float(n_feas)/n_seeds*100. for n_feas in n_feas_ofp_arr]
@@ -136,7 +140,7 @@ with plt.rc_context(rc_context):
     box_width = 0.25
     gap_between_boxes = 0.05
     group_spacing = 0.8
-    n_groups = 5
+    n_groups = 6
     group_width = n_groups * box_width + (n_groups - 1) * gap_between_boxes
 
     group_center_positions = np.arange(len(N_arr)) * ((n_groups * box_width) + ((n_groups-1) * gap_between_boxes) + group_spacing)
@@ -146,14 +150,15 @@ with plt.rc_context(rc_context):
         group_positions = [start_pos + i * (box_width + gap_between_boxes) for i in range(n_groups)]
         positions.extend(group_positions)
 
-    colors = ['b', 'm', 'g', 'r', 'c']
-    data_labels = [r'ADMM-FP', r'OFP', r'ADMM', r'Gurobi', r'SCIP']
+    colors = ['b', 'm', 'g', 'orange', 'r', 'c']
+    data_labels = [r'ADMM-FP', r'OFP', r'ADMM', r'ADMM-RND', r'Gurobi', r'SCIP']
 
     # remove infinities from time and memory data for boxplot
     for i in range(len(N_arr)):
         t_admm_fp_arr[i] = [t for t in t_admm_fp_arr[i] if np.isfinite(t)]
         t_ofp_arr[i] = [t for t in t_ofp_arr[i] if np.isfinite(t)]
         t_admm_arr[i] = [t for t in t_admm_arr[i] if np.isfinite(t)]
+        t_admm_rnd_arr[i] = [t for t in t_admm_rnd_arr[i] if np.isfinite(t)]
         t_gurobi_arr[i] = [t for t in t_gurobi_arr[i] if np.isfinite(t)]
         t_scip_arr[i] = [t for t in t_scip_arr[i] if np.isfinite(t)]
 
@@ -161,6 +166,7 @@ with plt.rc_context(rc_context):
             m_admm_fp_arr[i] = [m for m in m_admm_fp_arr[i] if np.isfinite(m)]
             m_ofp_arr[i] = [m for m in m_ofp_arr[i] if np.isfinite(m)]
             m_admm_arr[i] = [m for m in m_admm_arr[i] if np.isfinite(m)]
+            m_admm_rnd_arr[i] = [m for m in m_admm_rnd_arr[i] if np.isfinite(m)]
             m_gurobi_arr[i] = [m for m in m_gurobi_arr[i] if np.isfinite(m)]
             m_scip_arr[i] = [m for m in m_scip_arr[i] if np.isfinite(m)]
 
@@ -198,18 +204,18 @@ with plt.rc_context(rc_context):
         return bp
 
     ax = fig.add_subplot(gs[0])
-    grouped_boxplot(ax, [t_admm_fp_arr, t_ofp_arr, t_admm_arr, t_gurobi_arr, t_scip_arr],
+    grouped_boxplot(ax, [t_admm_fp_arr, t_ofp_arr, t_admm_arr, t_admm_rnd_arr, t_gurobi_arr, t_scip_arr],
                     r'Time to find a feasible solution', r'[sec]')
 
     legend_patches = [plt.Rectangle((0, 0), 1, 1, alpha=0.5, fc=color) for color in colors]
 
     ax.legend(legend_patches, data_labels, bbox_to_anchor=(0., 1.25, 1., .102), loc=3,
-        ncol=5, mode="expand", borderaxespad=0., fontsize=textwidth_pt)
+        ncol=n_groups, mode="expand", borderaxespad=0., fontsize=textwidth_pt)
 
     # plot peak memory per solve vs sample factor for each solver
     if have_mem:
         ax = fig.add_subplot(gs[1])
-        grouped_boxplot(ax, [m_admm_fp_arr, m_ofp_arr, m_admm_arr, m_gurobi_arr, m_scip_arr],
+        grouped_boxplot(ax, [m_admm_fp_arr, m_ofp_arr, m_admm_arr, m_admm_rnd_arr, m_gurobi_arr, m_scip_arr],
                         r'Peak memory use', r'[MB]')
 
     # plot rate of solution vs sample factor for each solver
@@ -217,6 +223,7 @@ with plt.rc_context(rc_context):
     ax.plot(N_arr, r_feas_admm_fp_arr, color='b', marker='x', linestyle='-', alpha=0.5)
     ax.plot(N_arr, r_feas_ofp_arr, color='m', marker='^', linestyle='-', alpha=0.5)
     ax.plot(N_arr, r_feas_admm_arr, color='g', marker='s', linestyle='-', alpha=0.5)
+    ax.plot(N_arr, r_feas_admm_rnd_arr, color='orange', marker='*', linestyle='-', alpha=0.5)
     ax.plot(N_arr, r_feas_gurobi_arr, color='r', marker='o', linestyle='-', alpha=0.5)
     ax.plot(N_arr, r_feas_scip_arr, color='c', marker='d', linestyle='-', alpha=0.5)
     ax.set_title(r'Percentage of cases where solution is found', fontsize=textwidth_pt)
