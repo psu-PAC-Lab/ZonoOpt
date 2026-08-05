@@ -245,7 +245,7 @@ namespace ZonoOpt::detail
             const int admm_fp_iter = sol.iter;
 
             // optionally polish
-            if (sol.converged && this->data.admm_data->settings.polish)
+            if (this->data.admm_data->settings.polish)
             {
                 const std::shared_ptr<ADMM_data> convex_node_data(this->bnb_data->clone());
                 // copies over matrix factorization
