@@ -125,7 +125,19 @@ if have_mem:
         print(f'{label} peak memory / ADMM-FP peak memory for cases where both produce feasible solutions:')
         print(f'median = {np.median(mem_ratios)}, min = {np.min(mem_ratios)}, max = {np.max(mem_ratios)}')
 
+### ADMM-RND solve counts (printed instead of plotted, see plot_solvers below) ###
+if 'admm_rnd' in n_feas_arr:
+    print('Number of cases ADMM-RND found a solution, by planning horizon N:')
+    for sample_factor, n_feas in zip(sample_factor_arr, n_feas_arr['admm_rnd']):
+        print(f'  N = {sample_factor * 10}: {n_feas} / {n_seeds}')
+
 ### plots ###
+
+# ADMM-RND is reported above via stdout rather than plotted, so it's excluded
+# from the solver set used to draw the figure; n_groups/box geometry below
+# must reflect only the solvers actually drawn.
+plot_solvers = [s for s in active_solvers if s[0] != 'admm_rnd']
+n_groups = len(plot_solvers)
 
 # generate plots
 textwidth_pt = 10.
@@ -160,10 +172,10 @@ with plt.rc_context(rc_context):
     N_arr = [sample_factor * 10 for sample_factor in sample_factor_arr]
 
     # percent feasible solutions
-    r_feas_arr = {key: [float(n_feas)/n_seeds*100. for n_feas in n_feas_arr[key]] for key, *_ in active_solvers}
+    r_feas_arr = {key: [float(n_feas)/n_seeds*100. for n_feas in n_feas_arr[key]] for key, *_ in plot_solvers}
 
     # remove non-finite entries from time and memory data before plotting
-    for key, *_ in active_solvers:
+    for key, *_ in plot_solvers:
         t_arr[key] = [[t for t in sample if np.isfinite(t)] for sample in t_arr[key]]
         if have_mem:
             m_arr[key] = [[m for m in sample if np.isfinite(m)] for sample in m_arr[key]]
@@ -199,7 +211,7 @@ with plt.rc_context(rc_context):
 
         all_data = []
         for i in range(len(N_arr)):
-            for key, *_ in active_solvers:
+            for key, *_ in plot_solvers:
                 all_data.append(arrs_by_key[key][i])
 
         bp = ax.boxplot(
@@ -216,7 +228,7 @@ with plt.rc_context(rc_context):
         )
 
         for i, box in enumerate(bp['boxes']):
-            _, _, color, _ = active_solvers[i % n_groups]
+            _, _, color, _ = plot_solvers[i % n_groups]
             box.set(**box_face_kwargs(color))
 
         # shade alternating horizon groups so each reads as one visual unit
@@ -249,7 +261,7 @@ with plt.rc_context(rc_context):
         if x is None:
             x = N_arr
 
-        for key, _, color, marker in active_solvers:
+        for key, _, color, marker in plot_solvers:
             arr = arrs_by_key[key]
             med = [np.median(a) if len(a) else np.nan for a in arr]
             lo = [np.min(a) if len(a) else np.nan for a in arr]
@@ -304,14 +316,14 @@ with plt.rc_context(rc_context):
         handles = [(Patch(**box_face_kwargs(color)),
                     Line2D([0], [0], color=color, marker=marker, linestyle=LINESTYLES[key],
                            markersize=4, markerfacecolor='none', markeredgewidth=1.1))
-                   for key, _, color, marker in active_solvers]
+                   for key, _, color, marker in plot_solvers]
         handler_map = {tuple: HandlerTuple(ndivide=None, pad=0.4)}
     else:
         handles = [Line2D([0], [0], color=color, marker=marker, linestyle=LINESTYLES[key],
                            markersize=5, markerfacecolor='none', markeredgewidth=1.1)
-                   for key, _, color, marker in active_solvers]
+                   for key, _, color, marker in plot_solvers]
         handler_map = None
-    labels = [label for _, label, _, _ in active_solvers]
+    labels = [label for _, label, _, _ in plot_solvers]
     fig.legend(handles, labels, loc='outside upper center', ncol=n_groups,
                fontsize=textwidth_pt, handler_map=handler_map)
 
@@ -333,7 +345,7 @@ with plt.rc_context(rc_context):
     # plot rate of solution vs sample factor for each solver. Also shares the
     # time panel's x-axis.
     ax2 = fig.add_subplot(gs[2] if have_mem else gs[1], sharex=ax0)
-    for key, _, color, marker in active_solvers:
+    for key, _, color, marker in plot_solvers:
         # dashed lines + hollow markers, matching band_plot: several solvers
         # sit at exactly 100% for low N, so filled markers/solid lines would
         # otherwise stack and hide one another here too.
@@ -350,6 +362,16 @@ with plt.rc_context(rc_context):
     ax2.set_xticks(shared_x)
     ax2.set_xticklabels([str(N) for N in N_arr])
     ax2.tick_params(axis='x', which='minor', bottom=False)
+
+    # tighten x-axis to the plotted extent: the default 5% autoscale margin
+    # leaves visible whitespace before the first and after the last
+    # box/point. ax0 is the sharex root for ax1/ax2, so setting its xlim
+    # propagates to the other panels.
+    if categorical_x:
+        x_pad = 0.5  # matches the half-width used by axvspan group shading
+    else:
+        x_pad = (shared_x[-1] - shared_x[0]) / (len(shared_x) - 1) / 2 if len(shared_x) > 1 else 1
+    ax0.set_xlim(shared_x[0] - x_pad, shared_x[-1] + x_pad)
 
     # labels
     fig.supxlabel(r'Planning horizon $N$', fontsize=textwidth_pt)
