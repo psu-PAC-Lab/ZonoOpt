@@ -630,14 +630,14 @@ elif MODE == 'heuristic_test':
     settings.n_threads_admm_fp = 0
     
     # loop through seeds, trials, sample factors
-    n_seeds = 50 # 100
+    n_seeds = 100
     sample_factor_arr = [2*i-1 for i in range(1,6)]
     results_file = 'reach_avoid_results.json'
 
     # abbreviated run for checking the pipeline end to end
     if SMOKE_TEST:
         n_seeds = 5
-        settings.t_max = 5.
+        settings.t_max = 1.
         results_file = 'reach_avoid_results_smoke.json'
         print(f'SMOKE_TEST enabled: {n_seeds} seeds, sample factors {sample_factor_arr}, '
               f't_max = {settings.t_max} s, writing to {results_file}')
