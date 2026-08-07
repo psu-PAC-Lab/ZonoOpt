@@ -19,11 +19,11 @@ def is_latex_installed():
 # solver key, legend label, color (Okabe-Ito colorblind-safe palette), marker
 SOLVERS = [
     ('admm_fp',  r'ADMM-FP',  '#0072B2', 'x'),  # blue
-    ('ofp',      r'OFP',      '#CC79A7', '^'),  # reddish purple
-    ('admm',     r'ADMM',     '#009E73', 's'),  # bluish green
-    ('admm_rnd', r'ADMM-RND', '#E69F00', '*'),  # orange
+    ('ofp',      r'OFP',      '#E69F00', '*'),  # orange
+    ('admm',     r'ADMM',     '#009E73', 's'),  # bluish green 
     ('gurobi',   r'Gurobi',   '#D55E00', 'o'),  # vermillion
-    ('scip',     r'SCIP',     '#56B4E9', 'd'),  # sky blue
+    ('scip',     r'SCIP',     '#CC79A7', '^'),  # reddish purple
+    ('admm_rnd', r'ADMM-RND', '#56B4E9', 'd'),  # sky blue
 ]
 
 # distinct dash pattern per solver for band_plot: when two series have nearly
@@ -35,10 +35,11 @@ LINESTYLES = {
     'admm_fp':  '-',
     'ofp':      '--',
     'admm':     '-.',
-    'admm_rnd': ':',
     'gurobi':   (0, (3, 1, 1, 1)),  # densely dash-dotted
-    'scip':     (0, (5, 1)),        # densely dashed
+    'scip':     (0, (5, 1)), # densely dashed        
+    'admm_rnd': ':'
 }
+ 
 
 parser = argparse.ArgumentParser(description='Plot reach-avoid heuristic comparison data.')
 parser.add_argument('results_file', nargs='?', default='reach_avoid_results.json',
@@ -275,7 +276,7 @@ with plt.rc_context(rc_context):
             # outline stays visible no matter which one is drawn on top.
             ax.plot(x, med, color=color, marker=marker, linestyle=LINESTYLES[key],
                     markersize=4.5, markerfacecolor='none', markeredgewidth=1.1,
-                    linewidth=1.0, alpha=0.5)
+                    linewidth=1.0, alpha=1.0)
 
         ax.set_title(title, fontsize=textwidth_pt)
         ax.set_ylabel(ylabel, fontsize=textwidth_pt)
@@ -301,7 +302,7 @@ with plt.rc_context(rc_context):
     shared_x = group_center_positions if categorical_x else N_arr
 
     ax0 = fig.add_subplot(gs[0])
-    time_panel(ax0, t_arr, r'Time to find a feasible solution', r'[sec]')
+    time_panel(ax0, t_arr, r'(a) Time to find a feasible solution', r'[sec]')
 
     # single figure-level legend, shared by all panels: color identifies the
     # solver and marker is a redundant, colorblind- and grayscale-safe cue.
@@ -334,9 +335,9 @@ with plt.rc_context(rc_context):
     if have_mem:
         ax1 = fig.add_subplot(gs[1], sharex=ax0)
         if mem_panel is band_plot:
-            mem_panel(ax1, m_arr, r'Peak memory use', r'[MB]', x=shared_x)
+            mem_panel(ax1, m_arr, r'(b) Peak memory use', r'[MB]', x=shared_x)
         else:
-            mem_panel(ax1, m_arr, r'Peak memory use', r'[MB]')
+            mem_panel(ax1, m_arr, r'(b) Peak memory use', r'[MB]')
         # sharex ties ax1's minor x-locator to ax0/ax2's (same underlying
         # Ticker object), so ax2's minorticks_on() below would otherwise leak
         # minor x-ticks onto this panel too.
@@ -351,8 +352,8 @@ with plt.rc_context(rc_context):
         # otherwise stack and hide one another here too.
         ax2.plot(shared_x, r_feas_arr[key], color=color, marker=marker, linestyle=LINESTYLES[key],
                 markersize=4.5, markerfacecolor='none', markeredgewidth=1.1,
-                linewidth=1.0, alpha=0.5)
-    ax2.set_title(r'Percentage of cases where solution is found', fontsize=textwidth_pt)
+                linewidth=1.0, alpha=1.0)
+    ax2.set_title(r'(c) Percentage of cases where solution is found', fontsize=textwidth_pt)
     ax2.set_ylabel(r'[\%]', fontsize=textwidth_pt)
     ax2.grid(which='major', alpha=0.2)
     ax2.grid(which='minor', axis='y', alpha=0.1)
@@ -378,6 +379,6 @@ with plt.rc_context(rc_context):
 
     # save
     if is_latex_installed():
-        plt.savefig(f'motion_planning_fp_heuristic_comp_{args.style}.pgf')
+        plt.savefig(f'motion_planning_fp_heuristic_comp.pgf')
 
     plt.show()
