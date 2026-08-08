@@ -532,6 +532,18 @@ if MODE == 'representative':
     except Exception as e:
         print(f"Error creating animation: {e}, likely FFMpeg not installed")
 
+    # print solution tolerance
+    x_tol = abs(Z_prob.get_G()) @ np.ones(Z_prob.get_nG())*settings.eps_prim
+    pos_tol_max = 0. # init
+    for idx in idx_x:
+        xp_tol = x_tol[idx][0]
+        yp_tol = x_tol[idx][1]
+        if xp_tol > pos_tol_max:
+            pos_tol_max = xp_tol
+        if yp_tol > pos_tol_max:
+            pos_tol_max = yp_tol
+    print(f'Position error tolerance = {pos_tol_max}')
+
 elif MODE == 'multi-run':
     settings.verbose = False
 
