@@ -6,16 +6,7 @@ try:
 except ImportError as e:
     print("Need to pip install OFP from https://github.com/jrobbins11/objective-feasibility-pump")
     raise e
-import matplotlib.pyplot as plt
-import matplotlib.ticker as tck
-import subprocess
-
-def is_latex_installed():
-    try:
-        subprocess.run(["latex", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
-        return True
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        return False
+import json
 
 def random_sparse_matrix(m, n, density, val_range):
     assert(density > 0 and density <= 1)
@@ -172,6 +163,24 @@ def get_objective(Z, xi, P, q, c):
     return 0.5*x.dot(P.dot(x)) + q.dot(x) + c
 
 
+# solver key, legend label, color (Okabe-Ito colorblind-safe palette), marker
+SOLVERS = [
+    ('admm_fp',  r'ADMM-FP',  '#0072B2', 'x'),  # blue
+    ('ofp',      r'OFP',      '#CC79A7', '^'),  # reddish purple
+    ('admm',     r'ADMM',     '#009E73', 's'),  # bluish green
+    ('gurobi',   r'Gurobi',   '#D55E00', 'o'),  # vermillion
+    ('scip',     r'SCIP',     '#56B4E9', 'd'),  # sky blue
+]
+
+SOLVE_FNS = {
+    'admm_fp': admm_fp_solve,
+    'ofp': ofp_solve,
+    'admm': admm_solve,
+    'gurobi': lambda Z, P, q, c, settings, seed: gurobi_solve(Z, P, q, c, settings, seed, find_global_opt=False),
+    'scip': lambda Z, P, q, c, settings, seed: scip_solve(Z, P, q, c, settings, seed, find_global_opt=False),
+}
+
+
 ### MAIN ###
 n = 100
 nGc = 200
@@ -184,21 +193,9 @@ settings = zono.OptSettings()
 settings.t_max = 1.0
 settings.verbose = False
 
-t_admm_fp_arr = []
-t_admm_arr = []
-t_ofp_arr = []
-t_gurobi_arr = []
-t_scip_arr = []
-rel_obj_admm_fp_arr = []
-rel_obj_admm_arr = []
-rel_obj_ofp_arr = []
-rel_obj_gurobi_arr = []
-rel_obj_scip_arr = []
-iter_admm_fp_arr = []
-iter_admm_arr = []
-iter_ofp_arr = []
-iter_gurobi_arr = []
-iter_scip_arr = []
+t_arr = {key: [] for key, *_ in SOLVERS}
+rel_obj_arr = {key: [] for key, *_ in SOLVERS}
+iter_arr = {key: [] for key, *_ in SOLVERS}
 
 n_trials = 100
 trial = 0
@@ -212,183 +209,49 @@ while trial < n_trials:
     q = random_vector(n, 1.0)
     c = 0.0
 
-    admm_fp_feas, admm_fp_time, admm_fp_xi, admm_fp_iter = admm_fp_solve(Z, P, q, c, settings, seed=seed)
-    admm_feas, admm_time, admm_xi, admm_iter = admm_solve(Z, P, q, c, settings, seed=seed)
-    ofp_feas, ofp_time, ofp_xi, ofp_iter = ofp_solve(Z, P, q, c, settings, seed=seed)
-    gurobi_feas, gurobi_time, gurobi_xi, gurobi_iter = gurobi_solve(Z, P, q, c, settings, seed=seed, find_global_opt=False)
-    scip_feas, scip_time, scip_xi, scip_iter = scip_solve(Z, P, q, c, settings, seed=seed, find_global_opt=False)
-    global_feas, global_time, global_xi, global_iter = gurobi_solve(Z, P, q, c, settings, seed=seed, find_global_opt=True, t_max_global_opt=10.0)
+    feas, time_, xi, iters = {}, {}, {}, {}
+    for key, *_ in SOLVERS:
+        feas[key], time_[key], xi[key], iters[key] = SOLVE_FNS[key](Z, P, q, c, settings, seed=seed)
 
-    admm_fp_obj = get_objective(Z, admm_fp_xi, P, q, c) if admm_fp_feas else np.inf
-    admm_obj = get_objective(Z, admm_xi, P, q, c) if admm_feas else np.inf
-    ofp_obj = get_objective(Z, ofp_xi, P, q, c) if ofp_feas else np.inf
-    gurobi_obj = get_objective(Z, gurobi_xi, P, q, c) if gurobi_feas else np.inf
-    scip_obj = get_objective(Z, scip_xi, P, q, c) if scip_feas else np.inf
+    global_feas, global_time, global_xi, global_iter = gurobi_solve(Z, P, q, c, settings, seed=seed, find_global_opt=True, t_max_global_opt=10.0)
     global_obj = get_objective(Z, global_xi, P, q, c) if global_feas else np.inf
 
-    admm_fp_rel_obj = 100.*np.abs(admm_fp_obj-global_obj)/np.abs(admm_fp_obj) if admm_fp_feas else np.inf
-    admm_rel_obj = 100.*np.abs(admm_obj-global_obj)/np.abs(admm_obj) if admm_feas else np.inf
-    ofp_rel_obj = 100.*np.abs(ofp_obj-global_obj)/np.abs(ofp_obj) if ofp_feas else np.inf
-    gurobi_rel_obj = 100.*np.abs(gurobi_obj-global_obj)/np.abs(gurobi_obj) if gurobi_feas else np.inf
-    scip_rel_obj = 100.*np.abs(scip_obj-global_obj)/np.abs(scip_obj) if scip_feas else np.inf
+    obj, rel_obj = {}, {}
+    for key, *_ in SOLVERS:
+        obj[key] = get_objective(Z, xi[key], P, q, c) if feas[key] else np.inf
+        rel_obj[key] = 100.*np.abs(obj[key]-global_obj)/np.abs(obj[key]) if feas[key] else np.inf
 
-    print(f'ADMM-FP:   feas={admm_fp_feas}, time={admm_fp_time:.4f}s, computed residual = {get_residual(Z, admm_fp_xi):.4e}, percent suboptimality = {admm_fp_rel_obj:.4e}')
-    print(f'ADMM:      feas={admm_feas}, time={admm_time:.4f}s, computed residual = {get_residual(Z, admm_xi):.4e}, percent suboptimality = {admm_rel_obj:.4e}')
-    print(f'OFP:      feas={ofp_feas}, time={ofp_time:.4f}s, computed residual = {get_residual(Z, ofp_xi):.4e}, percent suboptimality = {ofp_rel_obj:.4e}')
-    print(f'Gurobi:   feas={gurobi_feas}, time={gurobi_time:.4f}s, computed residual = {get_residual(Z, gurobi_xi):.4e}, percent suboptimality = {gurobi_rel_obj:.4e}')
-    print(f'SCIP:     feas={scip_feas}, time={scip_time:.4f}s, computed residual = {get_residual(Z, scip_xi):.4e}, percent suboptimality = {scip_rel_obj:.4e}')
+    for key, label, *_ in SOLVERS:
+        print(f'{label}: feas={feas[key]}, time={time_[key]:.4f}s, computed residual = {get_residual(Z, xi[key]):.4e}, percent suboptimality = {rel_obj[key]:.4e}')
 
-    if admm_fp_feas or admm_feas or ofp_feas or gurobi_feas or scip_feas:
-        if admm_fp_feas:
-            t_admm_fp_arr.append(admm_fp_time)
-            rel_obj_admm_fp_arr.append(admm_fp_rel_obj)
-            iter_admm_fp_arr.append(admm_fp_iter)
-        if admm_feas:
-            t_admm_arr.append(admm_time)
-            rel_obj_admm_arr.append(admm_rel_obj)
-            iter_admm_arr.append(admm_iter)
-        if ofp_feas:
-            t_ofp_arr.append(ofp_time)
-            rel_obj_ofp_arr.append(ofp_rel_obj)
-            iter_ofp_arr.append(ofp_iter)
-        if gurobi_feas:
-            t_gurobi_arr.append(gurobi_time)
-            rel_obj_gurobi_arr.append(gurobi_rel_obj)
-            iter_gurobi_arr.append(gurobi_iter)
-        if scip_feas:
-            t_scip_arr.append(scip_time)
-            rel_obj_scip_arr.append(scip_rel_obj)
-            iter_scip_arr.append(scip_iter)
+    if any(feas[key] for key, *_ in SOLVERS):
+        for key, *_ in SOLVERS:
+            if feas[key]:
+                t_arr[key].append(time_[key])
+                rel_obj_arr[key].append(rel_obj[key])
+                iter_arr[key].append(iters[key])
         trial += 1
     seed += 1
 
 # print number of cases where solution is found
 print(f'Out of {n_trials} trials:')
-print(f'  ADMM-FP found feasible solution in {len(t_admm_fp_arr)} cases.')
-print(f'  ADMM found feasible solution in {len(t_admm_arr)} cases.')
-print(f'  OFP found feasible solution in {len(t_ofp_arr)} cases.')
-print(f'  Gurobi found feasible solution in {len(t_gurobi_arr)} cases.')
-print(f'  SCIP found feasible solution in {len(t_scip_arr)} cases.')
+for key, label, *_ in SOLVERS:
+    print(f'  {label} found feasible solution in {len(t_arr[key])} cases.')
 
-# plot results
-textwidth_pt = 10.
-if is_latex_installed():
-    rc_context = {
-        "text.usetex": True,
-        "font.size": textwidth_pt,
-        "font.family": "serif",  # Choose a serif font like 'Times New Roman' or 'Computer Modern'
-        "pgf.texsystem": "pdflatex",
-        "pgf.rcfonts": False,
-    }
-else:
-    print("LaTeX not installed, using default font.")
-    rc_context = {
-        "font.size": textwidth_pt,
-    }
+# Save results as JSON
+results_dict = {
+    'n': n,
+    'nGc': nGc,
+    'nGb': nGb,
+    'nC': nC,
+    'hz_density': hz_density,
+    'n_trials': n_trials,
+    't_arr': t_arr,
+    'rel_obj_arr': rel_obj_arr,
+    'iter_arr': iter_arr,
+}
 
-
-inches_per_pt = 1 / 72.27
-
-with plt.rc_context(rc_context):
-
-    data_labels = [r'ADMM-FP', r'OFP', r'ADMM', r'Gurobi', r'SCIP']
-    colors = ['b', 'm', 'g', 'r', 'c']
-
-    # solution time / rate of solution comparison plot
-    figwidth_pt = 245.71
-    figsize = (figwidth_pt * inches_per_pt, 1.3*figwidth_pt * inches_per_pt)  # Convert pt to inches
-    fig = plt.figure(constrained_layout=True, figsize=figsize)
-    gs = fig.add_gridspec(ncols=1, nrows=4, height_ratios=[1, 2, 2, 2])
-
-    ax = fig.add_subplot(gs[0,0])
-    ax.bar(range(5),
-           [len(t_admm_fp_arr)*(100./n_trials), len(t_ofp_arr)*(100./n_trials), len(t_admm_arr)*(100./n_trials), len(t_gurobi_arr)*(100./n_trials), len(t_scip_arr)*(100./n_trials)],
-           color=colors,
-           alpha=0.5)
-    ax.set_xticklabels([])
-    ax.set_ylabel(r'[\%]', fontsize=textwidth_pt)
-    ax.set_title(r'Percent trials with feasible solution found', fontsize=textwidth_pt)
-    ax.grid(axis='y', which='major', alpha=0.2)
-
-
-    # suboptimality of found solution
-    ax = fig.add_subplot(gs[1,0])
-
-    all_data = [rel_obj_admm_fp_arr, rel_obj_ofp_arr, rel_obj_admm_arr, rel_obj_gurobi_arr, rel_obj_scip_arr]
-    bp = ax.boxplot(
-        all_data,
-        patch_artist=True,
-        medianprops={'color': 'black'},
-        showfliers=True,
-        sym='k.',
-        whis=(0., 100.) # whiskers cover all data
-    )
-
-    for i, box in enumerate(bp['boxes']):
-        box.set_facecolor(colors[i])
-        box.set_alpha(0.5)
-
-    ax.set_title(r'Suboptimality of found solution', fontsize=textwidth_pt)
-    ax.set_ylabel(r'[\%]', fontsize=textwidth_pt)
-
-    ax.grid(axis='y', which='major', alpha=0.2)
-
-    ax.set_xticklabels([])
-
-
-    # time to find a feasible solution
-    ax = fig.add_subplot(gs[2,0])
-
-    all_data = [t_admm_fp_arr, t_ofp_arr, t_admm_arr, t_gurobi_arr, t_scip_arr]
-    bp = ax.boxplot(
-        all_data,
-        patch_artist=True,
-        medianprops={'color': 'black'},
-        showfliers=True,
-        sym='k.',
-        whis=(0., 100.) # whiskers cover all data
-    )
-
-    for i, box in enumerate(bp['boxes']):
-        box.set_facecolor(colors[i])
-        box.set_alpha(0.5)
-
-    ax.set_title(r'Time to find a feasible solution', fontsize=textwidth_pt)
-    ax.set_ylabel(r'[sec]', fontsize=textwidth_pt)
-    ax.set_yscale('log')
-
-    ax.grid(axis='y', which='major', alpha=0.2)
-
-    ax.set_xticklabels([])
-
-
-    # number of iterations to find a feasible solution
-    ax = fig.add_subplot(gs[3,0])
-
-    all_data = [iter_admm_fp_arr, iter_ofp_arr, iter_admm_arr, iter_gurobi_arr, iter_scip_arr]
-    bp = ax.boxplot(
-        all_data,
-        patch_artist=True,
-        medianprops={'color': 'black'},
-        showfliers=True,
-        sym='k.',
-        whis=(0., 100.), # whiskers cover all data
-        tick_labels=data_labels
-    )
-
-    for i, box in enumerate(bp['boxes']):
-        box.set_facecolor(colors[i])
-        box.set_alpha(0.5)
-
-    ax.set_title(r'Number of iterations', fontsize=textwidth_pt)
-    ax.set_ylabel(r'[num]', fontsize=textwidth_pt)
-    ax.set_yscale('log')
-
-    ax.grid(axis='y', which='major', alpha=0.2)
-
-    ax.tick_params(axis='x', which='minor', bottom=False)
-
-    if is_latex_installed():
-        plt.savefig('heuristic_comparison.pgf')
-
-    plt.show()
+results_file = 'heuristic_comparison_results.json'
+with open(results_file, 'w') as json_file:
+    json.dump(results_dict, json_file, indent=4)
+print(f'Results written to {results_file}')
