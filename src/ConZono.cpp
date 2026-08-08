@@ -123,8 +123,8 @@ namespace ZonoOpt
         zono_float delta_c = (0.5 * this->c.transpose() * P * this->c + q.transpose() * this->c)(0);
 
         // solve QP
-        OptSolution sol = this->qp_opt(P_fact, q_fact, c + delta_c, this->A, this->b, settings, solution,
-                                       warm_start_params);
+        OptSolution sol = this->qp_opt(std::move(P_fact), std::move(q_fact), c + delta_c, this->A, this->b,
+                                       settings, solution, warm_start_params);
 
         // check feasibility and return solution
         if (sol.infeasible)
@@ -149,7 +149,8 @@ namespace ZonoOpt
         Eigen::Vector<zono_float, -1> q = this->G.transpose() * (this->c - x);
 
         // solve QP
-        const OptSolution sol = this->qp_opt(P, q, 0, this->A, this->b, settings, solution, warm_start_params);
+        const OptSolution sol = this->qp_opt(std::move(P), std::move(q), 0, this->A, this->b, settings, solution,
+                                             warm_start_params);
 
         // check feasibility and return solution
         if (sol.infeasible)
@@ -171,7 +172,8 @@ namespace ZonoOpt
         Eigen::Vector<zono_float, -1> q = Eigen::Vector<zono_float, -1>::Zero(this->nG);
 
         // solve QP
-        OptSolution sol = this->qp_opt(P, q, 0, this->A, this->b, settings, solution, warm_start_params);
+        OptSolution sol = this->qp_opt(std::move(P), std::move(q), 0, this->A, this->b, settings, solution,
+                                       warm_start_params);
 
         // check infeasibility flag
         return sol.infeasible;
@@ -192,7 +194,8 @@ namespace ZonoOpt
         Eigen::Vector<zono_float, -1> q = -this->G.transpose() * d;
 
         // solve QP
-        const OptSolution sol = this->qp_opt(P, q, 0, this->A, this->b, settings, solution, warm_start_params);
+        const OptSolution sol = this->qp_opt(std::move(P), std::move(q), 0, this->A, this->b, settings, solution,
+                                             warm_start_params);
 
         // check feasibility and return solution
         if (sol.infeasible) // Z is empty
@@ -221,15 +224,16 @@ namespace ZonoOpt
         b.segment(0, this->nC) = this->b;
         b.segment(this->nC, this->n) = x - this->c;
 
-        const OptSolution sol = this->qp_opt(P, q, 0, A, b, settings, solution, warm_start_params);
+        const OptSolution sol = this->qp_opt(std::move(P), std::move(q), 0, std::move(A), std::move(b), settings,
+                                             solution, warm_start_params);
 
         // check feasibility and return solution
         return !(sol.infeasible);
     }
 
-    OptSolution ConZono::qp_opt(const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q,
-                                const zono_float c, const Eigen::SparseMatrix<zono_float>& A,
-                                const Eigen::Vector<zono_float, -1>& b,
+    OptSolution ConZono::qp_opt(Eigen::SparseMatrix<zono_float> P, Eigen::Vector<zono_float, -1> q,
+                                const zono_float c, Eigen::SparseMatrix<zono_float> A,
+                                Eigen::Vector<zono_float, -1> b,
                                 const SolverSettings& settings, std::shared_ptr<OptSolution>* solution,
                                 const WarmStartParams& warm_start_params) const
     {
@@ -263,7 +267,8 @@ namespace ZonoOpt
                 ? static_cast<const OptSettings&>(settings)
                 : default_opt;
 
-        const auto data = std::make_shared<ADMM_data>(P, q, A, b, xi_lb, xi_ub, c, opt_settings);
+        const auto data = std::make_shared<ADMM_data>(std::move(P), std::move(q), std::move(A), std::move(b),
+                                                      xi_lb, xi_ub, c, opt_settings);
         ADMM_solver solver(data);
 
         // warm start if applicable

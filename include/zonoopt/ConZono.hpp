@@ -132,9 +132,9 @@ namespace ZonoOpt
         void operator*=(HybZono& other) = delete;
 
     protected:
-        OptSolution qp_opt(const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q,
-                           zono_float c, const Eigen::SparseMatrix<zono_float>& A,
-                           const Eigen::Vector<zono_float, -1>& b,
+        OptSolution qp_opt(Eigen::SparseMatrix<zono_float> P, Eigen::Vector<zono_float, -1> q,
+                           zono_float c, Eigen::SparseMatrix<zono_float> A,
+                           Eigen::Vector<zono_float, -1> b,
                            const SolverSettings& settings = get_default_solver_settings(),
                            std::shared_ptr<OptSolution>* solution = nullptr,
                            const WarmStartParams& warm_start_params = WarmStartParams()) const;

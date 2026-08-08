@@ -1,8 +1,12 @@
+import argparse
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tck
+from matplotlib.colors import to_rgb
+from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
+from matplotlib.legend_handler import HandlerTuple
 import numpy as np
 import subprocess
-import ast
 import json
 
 def is_latex_installed():
@@ -12,26 +16,68 @@ def is_latex_installed():
     except (subprocess.CalledProcessError, FileNotFoundError):
         return False
 
+# solver key, legend label, color (Okabe-Ito colorblind-safe palette), marker
+SOLVERS = [
+    ('admm_fp',  r'ADMM-FP',  '#0072B2', 'x'),  # blue
+    ('ofp',      r'OFP',      '#E69F00', '*'),  # orange
+    ('admm',     r'ADMM',     '#009E73', 's'),  # bluish green 
+    ('gurobi',   r'Gurobi',   '#D55E00', 'o'),  # vermillion
+    ('scip',     r'SCIP',     '#CC79A7', '^'),  # reddish purple
+    ('admm_rnd', r'ADMM-RND', '#56B4E9', 'd'),  # sky blue
+]
+
+# distinct dash pattern per solver for band_plot: when two series have nearly
+# identical values (e.g. ADMM-FP vs ADMM memory use), alpha alone can't
+# separate coincident lines, since the topmost one still dominates the shared
+# pixels. A differing dash phase lets the other color show through the gaps,
+# without displacing either curve from its true value.
+LINESTYLES = {
+    'admm_fp':  '-',
+    'ofp':      '--',
+    'admm':     '-.',
+    'gurobi':   (0, (3, 1, 1, 1)),  # densely dash-dotted
+    'scip':     (0, (5, 1)), # densely dashed        
+    'admm_rnd': ':'
+}
+ 
+
+parser = argparse.ArgumentParser(description='Plot reach-avoid heuristic comparison data.')
+parser.add_argument('results_file', nargs='?', default='reach_avoid_results.json',
+                     help='Path to the results JSON file (default: reach_avoid_results.json).')
+parser.add_argument('--style', choices=['box', 'band', 'mixed'], default='box',
+                     help='"band" (default) draws median + IQR bands; "box" draws grouped boxplots; "mixed" does box plot for solution time and band plot for memory use')
+args = parser.parse_args()
+
 # load json data
-with open('reach_avoid_results.json', 'r') as f:
+with open(args.results_file, 'r') as f:
     data = json.load(f)
 
-    sample_factor_arr = data['sample_factor_arr']
-    n_seeds = data['n_seeds']
-    n_feas_admm_fp_arr = data['n_feas_admm_fp_arr']
-    n_feas_admm_arr = data['n_feas_admm_arr']
-    n_feas_gurobi_arr = data['n_feas_gurobi_arr']
-    n_feas_scip_arr = data['n_feas_scip_arr']
-    n_feas_ofp_arr = data['n_feas_ofp_arr']
-    t_admm_fp_arr = data['t_admm_fp_arr']
-    t_admm_arr = data['t_admm_arr']
-    t_gurobi_arr = data['t_gurobi_arr']
-    t_scip_arr = data['t_scip_arr']
-    t_ofp_arr = data['t_ofp_arr']
+sample_factor_arr = data['sample_factor_arr']
+n_seeds = data['n_seeds']
+
+# only keep solvers that are actually present in this results file, so older
+# result files that predate a given solver (e.g. ADMM-RND) still plot.
+active_solvers = []
+for key, label, color, marker in SOLVERS:
+    if f'n_feas_{key}_arr' not in data or f't_{key}_arr' not in data:
+        print(f'No data for {label} in {args.results_file}; omitting from plots.')
+        continue
+    active_solvers.append((key, label, color, marker))
+n_groups = len(active_solvers)
+
+n_feas_arr = {key: data[f'n_feas_{key}_arr'] for key, *_ in active_solvers}
+t_arr = {key: data[f't_{key}_arr'] for key, *_ in active_solvers}
+m_arr = {key: data.get(f'm_{key}_arr') for key, *_ in active_solvers}
+
+have_mem = all(m_arr[key] is not None for key, *_ in active_solvers) and \
+    any(np.isfinite(mi) for key, *_ in active_solvers for m_sample_factor in m_arr[key] for mi in m_sample_factor)
+if not have_mem:
+    print(f'No peak memory data in {args.results_file}; plotting solution time and solution rate only.')
 
 
 # max improvement in convergence rate for ADMM-FP compared to ADMM
-d_conv_arr = [n_feas_admm_fp_arr[i]/n_feas_admm_arr[i] for i in range(len(sample_factor_arr))]
+d_conv_arr = [n_feas_arr['admm_fp'][i]/n_feas_arr['admm'][i] if n_feas_arr['admm'][i] > 0 else np.inf
+              for i in range(len(sample_factor_arr))]
 print(f'Max improvement in convergence rate for ADMM-FP compared to ADMM: {np.max(d_conv_arr)}')
 
 
@@ -39,10 +85,10 @@ print(f'Max improvement in convergence rate for ADMM-FP compared to ADMM: {np.ma
 ### statistics on ADMM-FP vs ADMM solves times ###
 sol_time_ratios = np.array([])
 for i, sample_factor in enumerate(sample_factor_arr):
-    t_admm_fp = np.array(t_admm_fp_arr[i])
-    t_admm = np.array(t_admm_arr[i])
+    t_admm_fp = np.array(t_arr['admm_fp'][i])
+    t_admm = np.array(t_arr['admm'][i])
 
-    # filter out failed solves (represented as np.inf)
+    # filter out failed solves (represented as NaN/inf)
     valid_indices = np.isfinite(t_admm_fp) & np.isfinite(t_admm)
     t_admm_fp_valid = t_admm_fp[valid_indices]
     t_admm_valid = t_admm[valid_indices]
@@ -56,7 +102,43 @@ for i, sample_factor in enumerate(sample_factor_arr):
 print('ADMM-FP sol time / ADMM sol time for cases where both produce feasible solutions:')
 print(f'median = {np.median(sol_time_ratios)}, min = {np.min(sol_time_ratios)}, max = {np.max(sol_time_ratios)}')
 
+### statistics on peak memory use ###
+if have_mem:
+    for key, label, *_ in active_solvers:
+        if key in ('admm_fp', 'ofp'):  # not compared against themselves / not included in this stat
+            continue
+        mem_ratios = np.array([])
+        for i, sample_factor in enumerate(sample_factor_arr):
+            m_admm_fp = np.array(m_arr['admm_fp'][i])
+            m_ref = np.array(m_arr[key][i])
+
+            # only compare cases where both solvers produced a feasible solution
+            valid_indices = np.isfinite(m_admm_fp) & np.isfinite(m_ref)
+            if not np.any(valid_indices):
+                continue
+
+            mem_ratios = np.concatenate((mem_ratios, m_ref[valid_indices] / m_admm_fp[valid_indices]))
+
+        if len(mem_ratios) == 0:
+            print(f'No cases where both ADMM-FP and {label} produce feasible solutions.')
+            continue
+
+        print(f'{label} peak memory / ADMM-FP peak memory for cases where both produce feasible solutions:')
+        print(f'median = {np.median(mem_ratios)}, min = {np.min(mem_ratios)}, max = {np.max(mem_ratios)}')
+
+### ADMM-RND solve counts (printed instead of plotted, see plot_solvers below) ###
+if 'admm_rnd' in n_feas_arr:
+    print('Number of cases ADMM-RND found a solution, by planning horizon N:')
+    for sample_factor, n_feas in zip(sample_factor_arr, n_feas_arr['admm_rnd']):
+        print(f'  N = {sample_factor * 10}: {n_feas} / {n_seeds}')
+
 ### plots ###
+
+# ADMM-RND is reported above via stdout rather than plotted, so it's excluded
+# from the solver set used to draw the figure; n_groups/box geometry below
+# must reflect only the solvers actually drawn.
+plot_solvers = [s for s in active_solvers if s[0] != 'admm_rnd']
+n_groups = len(plot_solvers)
 
 # generate plots
 textwidth_pt = 10.
@@ -79,106 +161,224 @@ inches_per_pt = 1 / 72.27
 
 with plt.rc_context(rc_context):
 
-    # solution time / rate of solution comparison plot
+    # solution time / peak memory / rate of solution comparison plot
     figwidth_pt = 505.89
-    figsize = (figwidth_pt * inches_per_pt, 0.5*figwidth_pt * inches_per_pt)  # Convert pt to inches
+    fig_height_frac = 0.75 if have_mem else 0.5
+    figsize = (figwidth_pt * inches_per_pt, fig_height_frac*figwidth_pt * inches_per_pt)  # Convert pt to inches
     fig = plt.figure(constrained_layout=True, figsize=figsize)
-    gs = fig.add_gridspec(nrows=2, figure=fig, height_ratios=[2,1])
+    gs = fig.add_gridspec(nrows=3 if have_mem else 2, figure=fig,
+                          height_ratios=[2,1,1] if have_mem else [2,1])
 
     # time steps
     N_arr = [sample_factor * 10 for sample_factor in sample_factor_arr]
 
     # percent feasible solutions
-    r_feas_admm_fp_arr = [float(n_feas)/n_seeds*100. for n_feas in n_feas_admm_fp_arr]
-    r_feas_admm_arr = [float(n_feas)/n_seeds*100. for n_feas in n_feas_admm_arr]
-    r_feas_gurobi_arr = [float(n_feas)/n_seeds*100. for n_feas in n_feas_gurobi_arr]
-    r_feas_scip_arr = [float(n_feas)/n_seeds*100. for n_feas in n_feas_scip_arr]
-    r_feas_ofp_arr = [float(n_feas)/n_seeds*100. for n_feas in n_feas_ofp_arr]
+    r_feas_arr = {key: [float(n_feas)/n_seeds*100. for n_feas in n_feas_arr[key]] for key, *_ in plot_solvers}
 
-    # plot solution time vs sample factor for each solver
-    box_width = 0.25
-    gap_between_boxes = 0.05
-    group_spacing = 0.8
-    n_groups = 5
-    group_width = n_groups * box_width + (n_groups - 1) * gap_between_boxes
+    # remove non-finite entries from time and memory data before plotting
+    for key, *_ in plot_solvers:
+        t_arr[key] = [[t for t in sample if np.isfinite(t)] for sample in t_arr[key]]
+        if have_mem:
+            m_arr[key] = [[m for m in sample if np.isfinite(m)] for sample in m_arr[key]]
 
-    group_center_positions = np.arange(len(N_arr)) * ((n_groups * box_width) + ((n_groups-1) * gap_between_boxes) + group_spacing)
+    # geometry for the grouped boxplot: box_width is derived from n_groups so it
+    # adapts automatically as solvers are added/removed, rather than being
+    # hardcoded independently of n_groups.
+    GROUP_FILL = 0.82       # fraction of each unit-wide horizon group covered by boxes
+    BOX_GAP_FRAC = 0.12     # gap between adjacent boxes, as a fraction of box_width
+    box_width = GROUP_FILL / (n_groups + (n_groups - 1) * BOX_GAP_FRAC)
+    box_pitch = box_width * (1 + BOX_GAP_FRAC)
+
+    group_center_positions = np.arange(len(N_arr))
     positions = []
     for center in group_center_positions:
-        start_pos = center - (group_width / 2) + box_width / 2
-        group_positions = [start_pos + i * (box_width + gap_between_boxes) for i in range(n_groups)]
-        positions.extend(group_positions)
+        start_pos = center - GROUP_FILL / 2 + box_width / 2
+        positions.extend(start_pos + i * box_pitch for i in range(n_groups))
 
-    # remove infinities from time data for boxplot
-    for i in range(len(N_arr)):
-        t_admm_fp_arr[i] = [t for t in t_admm_fp_arr[i] if np.isfinite(t)]
-        t_ofp_arr[i] = [t for t in t_ofp_arr[i] if np.isfinite(t)]
-        t_admm_arr[i] = [t for t in t_admm_arr[i] if np.isfinite(t)]
-        t_gurobi_arr[i] = [t for t in t_gurobi_arr[i] if np.isfinite(t)]
-        t_scip_arr[i] = [t for t in t_scip_arr[i] if np.isfinite(t)]
+    BOX_FILL_SATURATION = 0.65  # 1.0 = full color, 0.0 = white
 
-    all_data = []
-    for i in range(len(N_arr)):
-        all_data.append(t_admm_fp_arr[i])
-        all_data.append(t_ofp_arr[i])
-        all_data.append(t_admm_arr[i])
-        all_data.append(t_gurobi_arr[i])
-        all_data.append(t_scip_arr[i])
+    def fill_color(color, saturation=BOX_FILL_SATURATION):
+        """Blend a color toward white for use as a solid box fill."""
+        rgb = np.array(to_rgb(color))
+        return tuple(1 - saturation * (1 - rgb))
 
-    ax = fig.add_subplot(gs[0])
-    bp = ax.boxplot(
-        all_data,
-        positions=positions,
-        widths=box_width,
-        patch_artist=True,
-        medianprops={'color': 'black'},
-        showfliers=True,
-        sym='k.',
-        whis=(0., 100.) # whiskers cover all data
-    )
+    def box_face_kwargs(color):
+        """Appearance shared by the plotted boxes and their legend swatch,
+        so the two cannot visually drift apart."""
+        return {'facecolor': fill_color(color), 'edgecolor': color, 'linewidth': 0.6}
 
-    colors = ['b', 'm', 'g', 'r', 'c']
-    for i, box in enumerate(bp['boxes']):
-        box.set_facecolor(colors[i % n_groups])
-        box.set_alpha(0.5)
+    def grouped_boxplot(ax, arrs_by_key, title, ylabel):
+        """One boxplot group per horizon, one box per solver within a group."""
 
-    ax.set_title(r'Time to find a feasible solution', fontsize=textwidth_pt)
-    ax.set_ylabel(r'[sec]', fontsize=textwidth_pt)
-    ax.set_yscale('log')
-    ax.grid(alpha=0.2)
+        all_data = []
+        for i in range(len(N_arr)):
+            for key, *_ in plot_solvers:
+                all_data.append(arrs_by_key[key][i])
 
-    ax.set_xticks(group_center_positions)
-    ax.set_xticklabels([str(N) for N in N_arr])
+        bp = ax.boxplot(
+            all_data,
+            positions=positions,
+            widths=box_width,
+            patch_artist=True,
+            boxprops={'linewidth': 0.6},
+            whiskerprops={'linewidth': 0.6},
+            capprops={'linewidth': 0.6},
+            capwidths=0.6 * box_width,
+            medianprops={'color': 'black', 'linewidth': 0.9},
+            whis=(0., 100.)  # whiskers cover all data
+        )
 
-    legend_patches = [plt.Rectangle((0, 0), 1, 1, alpha=0.5, fc=color) for color in colors]
-    data_labels = [r'ADMM-FP', r'OFP', r'ADMM', r'Gurobi', r'SCIP']
+        for i, box in enumerate(bp['boxes']):
+            _, _, color, _ = plot_solvers[i % n_groups]
+            box.set(**box_face_kwargs(color))
 
-    ax.legend(legend_patches, data_labels, bbox_to_anchor=(0., 1.25, 1., .102), loc=3,
-        ncol=5, mode="expand", borderaxespad=0., fontsize=textwidth_pt)
+        # shade alternating horizon groups so each reads as one visual unit
+        for i, center in enumerate(group_center_positions):
+            if i % 2 == 1:
+                ax.axvspan(center - 0.5, center + 0.5, color='0.5', alpha=0.06, zorder=0, lw=0)
 
-    # plot rate of solution vs sample factor for each solver
-    ax = fig.add_subplot(gs[1])
-    ax.plot(N_arr, r_feas_admm_fp_arr, color='b', marker='x', linestyle='-', alpha=0.5)
-    ax.plot(N_arr, r_feas_ofp_arr, color='m', marker='^', linestyle='-', alpha=0.5)
-    ax.plot(N_arr, r_feas_admm_arr, color='g', marker='s', linestyle='-', alpha=0.5)
-    ax.plot(N_arr, r_feas_gurobi_arr, color='r', marker='o', linestyle='-', alpha=0.5)
-    ax.plot(N_arr, r_feas_scip_arr, color='c', marker='d', linestyle='-', alpha=0.5)
-    ax.set_title(r'Percentage of cases where solution is found', fontsize=textwidth_pt)
-    ax.set_ylabel(r'[\%]', fontsize=textwidth_pt)
-    ax.grid(which='major', alpha=0.2)
-    ax.grid(which='minor', axis='y', alpha=0.1)
-    ax.minorticks_on()
-    ax.yaxis.set_minor_locator(tck.AutoMinorLocator())
+        ax.set_title(title, fontsize=textwidth_pt)
+        ax.set_ylabel(ylabel, fontsize=textwidth_pt)
+        ax.set_yscale('log')
+        ax.grid(alpha=0.2)
 
-    ax.set_xticks([N for N in N_arr])
-    ax.set_xticklabels([str(N) for N in N_arr])
-    ax.tick_params(axis='x', which='minor', bottom=False)
+        ax.set_xticks(group_center_positions)
+        ax.set_xticklabels([str(N) for N in N_arr])
+        ax.tick_params(axis='x', which='both', length=0)
+
+        return bp
+
+    def band_plot(ax, arrs_by_key, title, ylabel, x=None):
+        """Median line with a band for all data, one per solver.
+
+        Avoids the narrow-box readability problem entirely, and stays
+        readable regardless of how many horizons/solvers are plotted.
+
+        `x` defaults to the actual horizon values (N_arr); pass the
+        boxplot's categorical group_center_positions instead when this panel
+        must share its x-axis with a boxplot panel, whose x positions are
+        index-based rather than the horizon values themselves.
+        """
+        if x is None:
+            x = N_arr
+
+        for key, _, color, marker in plot_solvers:
+            arr = arrs_by_key[key]
+            med = [np.median(a) if len(a) else np.nan for a in arr]
+            lo = [np.min(a) if len(a) else np.nan for a in arr]
+            hi = [np.max(a) if len(a) else np.nan for a in arr]
+
+            ax.fill_between(x, lo, hi, color=color, alpha=0.15, lw=0)
+            # hollow markers: some solvers have only 1-2 valid seeds per horizon
+            # (e.g. ADMM often has just one), so their "median" is an isolated
+            # point that can land almost exactly on another solver's line/marker.
+            # A filled marker would simply hide underneath; an open marker's
+            # outline stays visible no matter which one is drawn on top.
+            ax.plot(x, med, color=color, marker=marker, linestyle=LINESTYLES[key],
+                    markersize=4.5, markerfacecolor='none', markeredgewidth=1.1,
+                    linewidth=1.0, alpha=1.0)
+
+        ax.set_title(title, fontsize=textwidth_pt)
+        ax.set_ylabel(ylabel, fontsize=textwidth_pt)
+        ax.set_yscale('log')
+        ax.grid(alpha=0.2)
+
+        ax.set_xticks(x)
+        ax.set_xticklabels([str(N) for N in N_arr])
+
+        return ax
+
+    # "mixed" pairs a boxplot for solution time with a band plot for memory
+    # use, so the two panels are selected independently rather than sharing
+    # a single plot_panel function.
+    time_panel = grouped_boxplot if args.style in ('box', 'mixed') else band_plot
+    mem_panel = grouped_boxplot if args.style == 'box' else band_plot
+
+    # Whenever the time panel is a boxplot, its x positions are the
+    # categorical group_center_positions (0, 1, 2, ...) rather than the
+    # horizon values themselves; the other two panels must plot on that same
+    # categorical axis for sharex below to align them correctly.
+    categorical_x = args.style in ('box', 'mixed')
+    shared_x = group_center_positions if categorical_x else N_arr
+
+    ax0 = fig.add_subplot(gs[0])
+    time_panel(ax0, t_arr, r'(a) Time to find a feasible solution', r'[sec]')
+
+    # single figure-level legend, shared by all panels: color identifies the
+    # solver and marker is a redundant, colorblind- and grayscale-safe cue.
+    # The legend handle must depict the encoding actually drawn in each style,
+    # so it is built per style rather than always using a plain Line2D.
+    # "mixed" still shows boxes (in the time panel), so it uses the same
+    # composite handle as "box".
+    if args.style in ('box', 'mixed'):
+        # composite handle: a swatch matching the box exactly (same helper as
+        # the boxes themselves, so they cannot visually drift apart) plus the
+        # dashed/hollow marker used by the rate panel below.
+        handles = [(Patch(**box_face_kwargs(color)),
+                    Line2D([0], [0], color=color, marker=marker, linestyle=LINESTYLES[key],
+                           markersize=4, markerfacecolor='none', markeredgewidth=1.1))
+                   for key, _, color, marker in plot_solvers]
+        handler_map = {tuple: HandlerTuple(ndivide=None, pad=0.4)}
+    else:
+        handles = [Line2D([0], [0], color=color, marker=marker, linestyle=LINESTYLES[key],
+                           markersize=5, markerfacecolor='none', markeredgewidth=1.1)
+                   for key, _, color, marker in plot_solvers]
+        handler_map = None
+    labels = [label for _, label, _, _ in plot_solvers]
+    fig.legend(handles, labels, loc='outside upper center', ncol=n_groups,
+               fontsize=textwidth_pt, handler_map=handler_map)
+
+    # plot peak memory per solve vs sample factor for each solver. Shares the
+    # time panel's x-axis (sharex=ax0) so the two line up exactly; the time
+    # panel itself is left as the unshared reference, per its denser boxplot
+    # view needing no adjustment.
+    if have_mem:
+        ax1 = fig.add_subplot(gs[1], sharex=ax0)
+        if mem_panel is band_plot:
+            mem_panel(ax1, m_arr, r'(b) Peak memory use', r'[MB]', x=shared_x)
+        else:
+            mem_panel(ax1, m_arr, r'(b) Peak memory use', r'[MB]')
+        # sharex ties ax1's minor x-locator to ax0/ax2's (same underlying
+        # Ticker object), so ax2's minorticks_on() below would otherwise leak
+        # minor x-ticks onto this panel too.
+        ax1.tick_params(axis='x', which='minor', bottom=False)
+
+    # plot rate of solution vs sample factor for each solver. Also shares the
+    # time panel's x-axis.
+    ax2 = fig.add_subplot(gs[2] if have_mem else gs[1], sharex=ax0)
+    for key, _, color, marker in plot_solvers:
+        # dashed lines + hollow markers, matching band_plot: several solvers
+        # sit at exactly 100% for low N, so filled markers/solid lines would
+        # otherwise stack and hide one another here too.
+        ax2.plot(shared_x, r_feas_arr[key], color=color, marker=marker, linestyle=LINESTYLES[key],
+                markersize=4.5, markerfacecolor='none', markeredgewidth=1.1,
+                linewidth=1.0, alpha=1.0)
+    ax2.set_title(r'(c) Percentage of cases where solution is found', fontsize=textwidth_pt)
+    ax2.set_ylabel(r'[\%]', fontsize=textwidth_pt)
+    ax2.grid(which='major', alpha=0.2)
+    ax2.grid(which='minor', axis='y', alpha=0.1)
+    ax2.minorticks_on()
+    ax2.yaxis.set_minor_locator(tck.AutoMinorLocator())
+
+    ax2.set_xticks(shared_x)
+    ax2.set_xticklabels([str(N) for N in N_arr])
+    ax2.tick_params(axis='x', which='minor', bottom=False)
+
+    # tighten x-axis to the plotted extent: the default 5% autoscale margin
+    # leaves visible whitespace before the first and after the last
+    # box/point. ax0 is the sharex root for ax1/ax2, so setting its xlim
+    # propagates to the other panels.
+    if categorical_x:
+        x_pad = 0.5  # matches the half-width used by axvspan group shading
+    else:
+        x_pad = (shared_x[-1] - shared_x[0]) / (len(shared_x) - 1) / 2 if len(shared_x) > 1 else 1
+    ax0.set_xlim(shared_x[0] - x_pad, shared_x[-1] + x_pad)
 
     # labels
     fig.supxlabel(r'Planning horizon $N$', fontsize=textwidth_pt)
 
     # save
     if is_latex_installed():
-        plt.savefig('motion_planning_fp_heuristic_comp.pgf')
+        plt.savefig(f'motion_planning_fp_heuristic_comp.pgf')
 
     plt.show()
