@@ -644,16 +644,18 @@ elif MODE == 'admm_fp_warmstart_sweep':
     settings.k_max_admm_fp_ph2 = int(1e7)  # massive number, just let max time be limiting factor
 
     # build and solve motion planning problem (same instance as admm_fp_multirun)
-    seed = 2231
+    seed = 23
     sample_factor = 4
     base_rng_seed = 0
 
     # eps_prim ladder, loosest to tightest, paired with their colorbar tick labels
     eps_stage = [
         (1e-1, r'$10^{-1}$'),
-        (3e-2, r'$3\times10^{-2}$'),
+        (7e-2, r''),
+        (3e-2, r''),
         (1e-2, r'$10^{-2}$'),
-        (3e-3, r'$3\times10^{-3}$'),
+        (7e-3, r''),
+        (3e-3, r''),
         (1e-3, r'$10^{-3}$'),
     ]
 
@@ -717,9 +719,10 @@ elif MODE == 'admm_fp_warmstart_sweep':
     inches_per_pt = 1 / 72.27
     figsize = (245.71 * inches_per_pt, 0.8*245.71 * inches_per_pt)  # Convert pt to inches
 
-    # color/marker-size ladder, loosest (lightest/largest) to tightest (darkest/smallest);
-    # Reds_r so the tightest (smallest) eps_prim maps to the darkest color under LogNorm
-    cmap = plt.cm.Wistia
+    # color/marker-size ladder
+    cmap_floor = 0.3  # truncate Reds so the lightest stage doesn't wash out to white
+    cmap = mcolors.LinearSegmentedColormap.from_list(
+        'Reds_truncated', plt.cm.Reds(np.linspace(cmap_floor, 1.0, 256)))
     norm = mcolors.LogNorm(vmin=eps_stage[-1][0], vmax=eps_stage[0][0])
     colors = cmap(norm([eps for eps, _ in eps_stage]))
     markersizes = np.linspace(5.0, 3.0, len(eps_stage))
