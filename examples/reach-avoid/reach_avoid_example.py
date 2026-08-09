@@ -4,6 +4,7 @@ import scipy.sparse as sp
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.colors as mcolors
+import matplotlib.patches as mpatches
 import subprocess
 import json
 import ctypes
@@ -644,20 +645,12 @@ elif MODE == 'admm_fp_warmstart_sweep':
     settings.k_max_admm_fp_ph2 = int(1e7)  # massive number, just let max time be limiting factor
 
     # build and solve motion planning problem (same instance as admm_fp_multirun)
-    seed = 23
+    seed = 30
     sample_factor = 4
     base_rng_seed = 0
 
     # eps_prim ladder, loosest to tightest, paired with their colorbar tick labels
-    eps_stage = [
-        (1e-1, r'$10^{-1}$'),
-        (7e-2, r''),
-        (3e-2, r''),
-        (1e-2, r'$10^{-2}$'),
-        (7e-3, r''),
-        (3e-3, r''),
-        (1e-3, r'$10^{-3}$'),
-    ]
+    eps_stage = [1e-1, 6.7e-2, 3.3e-2, 1e-2, 6.7e-3, 3.3e-3, 1e-3]
 
     # sweep, warm-starting each stage from the previous stage's solution
     ws = None
@@ -665,7 +658,7 @@ elif MODE == 'admm_fp_warmstart_sweep':
     stats = []  # (eps, primal_residual, J, stage_iter, cum_iter, cum_time)
     cum_iter = 0
     cum_time = 0.0
-    for i, (eps, label) in enumerate(eps_stage):
+    for i, eps in enumerate(eps_stage):
         print(f'Running stage {i+1} / {len(eps_stage)}: eps_prim = {eps}')
 
         settings.eps_prim = eps
@@ -717,29 +710,34 @@ elif MODE == 'admm_fp_warmstart_sweep':
         }
 
     inches_per_pt = 1 / 72.27
-    figsize = (245.71 * inches_per_pt, 0.8*245.71 * inches_per_pt)  # Convert pt to inches
+    figsize = (245.71 * inches_per_pt, 0.7*245.71 * inches_per_pt)  # Convert pt to inches
 
-    # color/marker-size ladder
-    cmap_floor = 0.3  # truncate Reds so the lightest stage doesn't wash out to white
+    # color/marker-size ladder, colored by each stage's actual primal residual (not its
+    # convergence tolerance) so the ladder reflects how converged each solution really was
     cmap = mcolors.LinearSegmentedColormap.from_list(
-        'Reds_truncated', plt.cm.Reds(np.linspace(cmap_floor, 1.0, 256)))
-    norm = mcolors.LogNorm(vmin=eps_stage[-1][0], vmax=eps_stage[0][0])
-    colors = cmap(norm([eps for eps, _ in eps_stage]))
-    markersizes = np.linspace(5.0, 3.0, len(eps_stage))
+        'Reds_truncated', plt.cm.Reds_r(np.linspace(0.0, 0.7, 256)))
+    r_p_stage = [r_p for _, r_p, _, _, _, _ in stats]
+    norm = mcolors.LogNorm(vmin=min(r_p_stage), vmax=max(r_p_stage + eps_stage))
+    colors = cmap(norm(r_p_stage))
+    markersizes = np.linspace(4., 3.5, len(eps_stage))
 
     # plot
     with plt.rc_context(rc_context):
 
-        # figure
+        # figure -- colorbar gets its own gridspec row so its length comes from the
+        # gridspec column width (fixed) rather than from ax's rendered width, which
+        # shrinks/grows with figsize height once box_aspect is applied to ax below
         fig = plt.figure(constrained_layout=True, figsize=figsize)
-        ax = fig.add_subplot(111)
+        gs = fig.add_gridspec(2, 1, height_ratios=[0.05, 1], hspace=0.05)
+        cax = fig.add_subplot(gs[0])
+        ax = fig.add_subplot(gs[1])
 
         # plot map and terminal constraint
         zono.plot(Z_map, ax=ax, color='b', alpha=0.25, edgecolor='b', linewidth=1.0)
         zono.plot(zono.intersection(zono.project_onto_dims(XN, [0,1]), Z_map), ax=ax, color='g', alpha=0.5, edgecolor='g', linewidth=1.0)
 
         # trajectory solution at each stage, loosest to tightest so the tightest ends up on top
-        for (eps, _), x_traj, color, ms in zip(eps_stage, x_traj_arr, colors, markersizes):
+        for eps, x_traj, color, ms in zip(eps_stage, x_traj_arr, colors, markersizes):
             x_vec = np.array(x_traj)
             ax.plot(x_vec[:,0], x_vec[:,1], '.', color=color, markersize=ms)
 
@@ -759,16 +757,30 @@ elif MODE == 'admm_fp_warmstart_sweep':
         ax.set_ylim(y0, y1)
         ax.set_box_aspect((y1 - y0) / (x1 - x0))
 
-        # colorbar for the eps_prim ladder, with ticks at the actual solved stages
-        sm = cm.ScalarMappable(norm=norm, cmap=cmap)
-        cbar = fig.colorbar(sm, ax=ax, orientation='horizontal', location='top', fraction=0.046, pad=0.04)
-        cbar.set_ticks([eps for eps, _ in eps_stage])
-        cbar.set_ticklabels([lbl for _, lbl in eps_stage])
-        cbar.set_label(r'$\epsilon_p$')
+        # colorbar for the primal-residual ladder. fig.colorbar()'s fill is a QuadMesh,
+        # which the pgf backend cannot draw as vector paths -- it rasterizes it to a PNG
+        # and places that image by its own coordinate computation, which lands a fraction
+        # of a point off from cax's vector-drawn spines. That's what shows up as the color
+        # bleeding past (or not reaching) the border once pdflatex compiles it. Drawing the
+        # fill as ordinary Rectangle patches on cax instead keeps it fully vector, so it
+        # shares the exact same coordinate path as cax's border and lands on it exactly.
+        n_swatches = 128
+        edges = np.logspace(np.log10(norm.vmin), np.log10(norm.vmax), n_swatches + 1)
+        for x_lo, x_hi in zip(edges[:-1], edges[1:]):
+            swatch_color = cmap(norm(np.sqrt(x_lo * x_hi)))
+            cax.add_patch(mpatches.Rectangle((x_lo, 0), x_hi - x_lo, 1,
+                                              facecolor=swatch_color, edgecolor='none', linewidth=0))
+        cax.set_xscale('log')
+        cax.set_xlim(norm.vmin, norm.vmax)
+        cax.set_ylim(0, 1)
+        cax.set_yticks([])
+        cax.xaxis.set_ticks_position('top')
+        cax.xaxis.set_label_position('top')
+        cax.set_xlabel(r'$r_p$')
 
         # save
         if is_latex_installed():
-            plt.savefig('reach_avoid_warmstart_sweep.pgf')
+            plt.savefig('reach_avoid_partial_solutions.pgf')
 
         plt.show()
 
