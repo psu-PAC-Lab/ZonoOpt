@@ -2,6 +2,9 @@ import zonoopt as zono
 import numpy as np
 import scipy.sparse as sp
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import matplotlib.colors as mcolors
+import matplotlib.patches as mpatches
 import subprocess
 import json
 import ctypes
@@ -12,8 +15,8 @@ from shapely.geometry import Polygon
 
 ### flags
 
-# options: 'default', 'admm_fp_multirun', 'heuristic_test'
-MODE = 'heuristic_test'
+# options: 'default', 'admm_fp_multirun', 'admm_fp_warmstart_sweep', 'heuristic_test'
+MODE = 'admm_fp_warmstart_sweep'
 
 # quick end-to-end check of the heuristic_test pipeline: few seeds, short time limit,
 # results written to a separate file so the full dataset isn't overwritten
@@ -195,7 +198,7 @@ def shapely_poly_2_vrep(P):
 
     return V
 
-def zono_planning_prob(x0, xr, A, B, Q, R, QN, N, X, U, XN, X_map, solver_flag, settings=zono.OptSettings(), sol=zono.OptSolution()):
+def zono_planning_prob(x0, xr, A, B, Q, R, QN, N, X, U, XN, X_map, solver_flag, settings=zono.OptSettings(), sol=zono.OptSolution(), warm_start_params=None):
     """Build and solve MPC problem using zonoopt set operations.
     x0 = initial state
     xr = reference trajectory (N+1 x n numpy array)
@@ -211,6 +214,8 @@ def zono_planning_prob(x0, xr, A, B, Q, R, QN, N, X, U, XN, X_map, solver_flag, 
     X_map = map constraints (obs avoidance)
     settings = zonoopt.OptSettings object
     sol = zonoopt.OptSolution object
+    warm_start_params = optional zonoopt.WarmStartParams object (zonoopt solver only); used to
+        resume an ADMM-FP solve from a previous solution's (z, u) rather than a cold start
     """
 
     # dims
@@ -270,7 +275,10 @@ def zono_planning_prob(x0, xr, A, B, Q, R, QN, N, X, U, XN, X_map, solver_flag, 
     # memory measurement brackets the solve call only, so it excludes the set operations above
     if solver_flag == 'zonoopt':
         mem_base = begin_mem_measurement()
-        xopt = Z.optimize_over(P, q, c=c, settings=settings, solution=sol)
+        if warm_start_params is not None:
+            xopt = Z.optimize_over(P, q, c=c, settings=settings, solution=sol, warm_start_params=warm_start_params)
+        else:
+            xopt = Z.optimize_over(P, q, c=c, settings=settings, solution=sol)
         mem_mb = end_mem_measurement(mem_base)
 
     elif solver_flag == 'gurobi':
@@ -387,7 +395,7 @@ def zono_planning_prob(x0, xr, A, B, Q, R, QN, N, X, U, XN, X_map, solver_flag, 
 
 
 ### make map
-def reach_avoid_problem(seed, sample_factor, settings, solver_flag):
+def reach_avoid_problem(seed, sample_factor, settings, solver_flag, warm_start_params=None):
     
     # map parameters
     min_radius = 1.0
@@ -499,7 +507,7 @@ def reach_avoid_problem(seed, sample_factor, settings, solver_flag):
 
     # solve motion planning problem
     sol = zono.OptSolution()
-    x_traj, u_traj, Z_mpc, mem_mb = zono_planning_prob(x, xr, A, B, Q, R, QN, N, X, U, XN, Z_map, solver_flag, settings=settings, sol=sol)
+    x_traj, u_traj, Z_mpc, mem_mb = zono_planning_prob(x, xr, A, B, Q, R, QN, N, X, U, XN, Z_map, solver_flag, settings=settings, sol=sol, warm_start_params=warm_start_params)
     return [x_traj, u_traj, Z_mpc, Z_map, sol, XN, mem_mb]
 
 ### main execution
@@ -606,6 +614,173 @@ if MODE == 'admm_fp_multirun':
         # save
         if is_latex_installed():
             plt.savefig('reach_avoid_traj.pgf')
+
+        plt.show()
+
+elif MODE == 'admm_fp_warmstart_sweep':
+
+    # This mode illustrates that ADMM-FP's incumbent is already a reasonable trajectory well
+    # before the solve converges, by tightening eps_prim in stages and warm-starting each stage
+    # from the previous stage's (z, u) rather than restarting from scratch. The pump only checks
+    # the primal residual for convergence (eps_dual is logged, not enforced), so eps_prim is the
+    # single knob driving the ladder.
+    #
+    # Chaining warm-started calls approximates one continuous solve but is not bit-identical to
+    # one: each call constructs a fresh ADMM_FP_solver, which reseeds its RNG and resets the
+    # cycle-detection buffer / restart counter. The RNG seed is advanced per stage below so the
+    # perturbation/restart stream at least doesn't repeat itself across stages.
+
+    # settings
+    settings = zono.OptSettings()
+    settings.t_max = 10.0
+    settings.verbose = False
+    settings.verbosity_interval = 1000
+
+    # parameters to do single-threaded, one-shot ADMM-FP solution; single_threaded_admm_fp must
+    # be True or warm_start_params is silently discarded and the pump is seeded from the root
+    # relaxation instead
+    settings.single_threaded_admm_fp = True
+    settings.polish = False  # plot the pump's raw incumbent, not a binaries-fixed polish
+    settings.enable_rng_seed = True
+    settings.k_max_admm_fp_ph2 = int(1e7)  # massive number, just let max time be limiting factor
+
+    # build and solve motion planning problem (same instance as admm_fp_multirun)
+    seed = 30
+    sample_factor = 4
+    base_rng_seed = 0
+
+    # eps_prim ladder, loosest to tightest, paired with their colorbar tick labels
+    eps_stage = [1e-1, 6.7e-2, 3.3e-2, 1e-2, 6.7e-3, 3.3e-3, 1e-3]
+
+    # sweep, warm-starting each stage from the previous stage's solution
+    ws = None
+    x_traj_arr = []
+    stats = []  # (eps, primal_residual, J, stage_iter, cum_iter, cum_time)
+    cum_iter = 0
+    cum_time = 0.0
+    for i, eps in enumerate(eps_stage):
+        print(f'Running stage {i+1} / {len(eps_stage)}: eps_prim = {eps}')
+
+        settings.eps_prim = eps
+        settings.rng_seed = base_rng_seed + i
+        x_traj, u_traj, Z_mpc, Z_map, sol, XN, _ = reach_avoid_problem(seed, sample_factor, settings, 'zonoopt', warm_start_params=ws)
+
+        if not sol.converged:
+            print(f'  WARNING: stage did not converge to eps_prim = {eps} (primal residual = {sol.primal_residual})')
+
+        cum_iter += sol.iter
+        cum_time += sol.run_time - (sol.startup_time if i > 0 else 0.0)
+        x_traj_arr.append(x_traj)
+        stats.append((eps, sol.primal_residual, sol.J, sol.iter, cum_iter, cum_time))
+
+        # warm start the next stage from this stage's incumbent (factor-space z, u)
+        ws = zono.WarmStartParams()
+        ws.z = sol.z
+        ws.u = sol.u
+
+    # get global optimum for comparison with Gurobi
+    settings.n_threads_bnb = 1
+    settings.n_threads_admm_fp = 0
+    settings.eps_r = 0.0
+    settings.eps_a = 0.0
+    x_traj_global, u_traj, Z_mpc, Z_map, sol, XN, _ = reach_avoid_problem(seed, sample_factor, settings, 'gurobi')
+    objective_global = sol.J
+
+    J_rel = lambda J : np.abs(J - objective_global) / np.abs(objective_global)
+
+    # print results
+    print(f'{"eps_prim":>10}  {"primal res":>10}  {"sub-opt %":>10}  {"stage iter":>10}  {"cum iter":>10}  {"cum time (s)":>12}')
+    for eps, r_p, J, stage_iter, iters, t in stats:
+        print(f'{eps:>10.1e}  {r_p:>10.2e}  {J_rel(J)*100:>10.3f}  {stage_iter:>10d}  {iters:>10d}  {t:>12.4f}')
+
+    ### plot ###
+    textwidth_pt = 10.
+    if is_latex_installed():
+        rc_context = {
+            "text.usetex": True,
+            "font.size": textwidth_pt,
+            "font.family": "serif",  # Choose a serif font like 'Times New Roman' or 'Computer Modern'
+            "pgf.texsystem": "pdflatex",
+            "pgf.rcfonts": False,
+        }
+    else:
+        print("LaTeX not installed, using default font.")
+        rc_context = {
+            "font.size": textwidth_pt,
+        }
+
+    inches_per_pt = 1 / 72.27
+    figsize = (245.71 * inches_per_pt, 0.7*245.71 * inches_per_pt)  # Convert pt to inches
+
+    # color/marker-size ladder, colored by each stage's actual primal residual (not its
+    # convergence tolerance) so the ladder reflects how converged each solution really was
+    cmap = mcolors.LinearSegmentedColormap.from_list(
+        'Reds_truncated', plt.cm.Reds_r(np.linspace(0.0, 0.7, 256)))
+    r_p_stage = [r_p for _, r_p, _, _, _, _ in stats]
+    norm = mcolors.LogNorm(vmin=min(r_p_stage), vmax=max(r_p_stage + eps_stage))
+    colors = cmap(norm(r_p_stage))
+    markersizes = np.linspace(4., 3.5, len(eps_stage))
+
+    # plot
+    with plt.rc_context(rc_context):
+
+        # figure -- colorbar gets its own gridspec row so its length comes from the
+        # gridspec column width (fixed) rather than from ax's rendered width, which
+        # shrinks/grows with figsize height once box_aspect is applied to ax below
+        fig = plt.figure(constrained_layout=True, figsize=figsize)
+        gs = fig.add_gridspec(2, 1, height_ratios=[0.05, 1], hspace=0.05)
+        cax = fig.add_subplot(gs[0])
+        ax = fig.add_subplot(gs[1])
+
+        # plot map and terminal constraint
+        zono.plot(Z_map, ax=ax, color='b', alpha=0.25, edgecolor='b', linewidth=1.0)
+        zono.plot(zono.intersection(zono.project_onto_dims(XN, [0,1]), Z_map), ax=ax, color='g', alpha=0.5, edgecolor='g', linewidth=1.0)
+
+        # trajectory solution at each stage, loosest to tightest so the tightest ends up on top
+        for eps, x_traj, color, ms in zip(eps_stage, x_traj_arr, colors, markersizes):
+            x_vec = np.array(x_traj)
+            ax.plot(x_vec[:,0], x_vec[:,1], '.', color=color, markersize=ms)
+
+        # axes
+        ax.set_xlabel(r'$x$ [m]')
+        ax.set_ylabel(r'$y$ [m]')
+        ax.grid(alpha=0.2)
+
+        # zoom the y-axis to its middle 50% for readability, then set the box aspect (rather than
+        # ax.axis('equal'), which fights constrained_layout's colorbar placement and silently
+        # reverts the zoom at draw time) so x and y keep an equal data scale
+        x0, x1 = ax.get_xlim()
+        y0, y1 = ax.get_ylim()
+        y_mid = 0.5 * (y0 + y1)
+        y0, y1 = y_mid - 0.25 * (y1 - y0), y_mid + 0.25 * (y1 - y0)  # middle 50%
+        ax.set_xlim(x0, x1)
+        ax.set_ylim(y0, y1)
+        ax.set_box_aspect((y1 - y0) / (x1 - x0))
+
+        # colorbar for the primal-residual ladder. fig.colorbar()'s fill is a QuadMesh,
+        # which the pgf backend cannot draw as vector paths -- it rasterizes it to a PNG
+        # and places that image by its own coordinate computation, which lands a fraction
+        # of a point off from cax's vector-drawn spines. That's what shows up as the color
+        # bleeding past (or not reaching) the border once pdflatex compiles it. Drawing the
+        # fill as ordinary Rectangle patches on cax instead keeps it fully vector, so it
+        # shares the exact same coordinate path as cax's border and lands on it exactly.
+        n_swatches = 128
+        edges = np.logspace(np.log10(norm.vmin), np.log10(norm.vmax), n_swatches + 1)
+        for x_lo, x_hi in zip(edges[:-1], edges[1:]):
+            swatch_color = cmap(norm(np.sqrt(x_lo * x_hi)))
+            cax.add_patch(mpatches.Rectangle((x_lo, 0), x_hi - x_lo, 1,
+                                              facecolor=swatch_color, edgecolor='none', linewidth=0))
+        cax.set_xscale('log')
+        cax.set_xlim(norm.vmin, norm.vmax)
+        cax.set_ylim(0, 1)
+        cax.set_yticks([])
+        cax.xaxis.set_ticks_position('top')
+        cax.xaxis.set_label_position('top')
+        cax.set_xlabel(r'$r_p$')
+
+        # save
+        if is_latex_installed():
+            plt.savefig('reach_avoid_partial_solutions.pgf')
 
         plt.show()
 
