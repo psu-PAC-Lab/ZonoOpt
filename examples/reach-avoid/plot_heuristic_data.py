@@ -163,7 +163,7 @@ with plt.rc_context(rc_context):
 
     # solution time / peak memory / rate of solution comparison plot
     figwidth_pt = 505.89
-    fig_height_frac = 0.75 if have_mem else 0.5
+    fig_height_frac = 0.6 if have_mem else 0.5
     figsize = (figwidth_pt * inches_per_pt, fig_height_frac*figwidth_pt * inches_per_pt)  # Convert pt to inches
     fig = plt.figure(constrained_layout=True, figsize=figsize)
     gs = fig.add_gridspec(nrows=3 if have_mem else 2, figure=fig,

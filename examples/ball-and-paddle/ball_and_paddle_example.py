@@ -241,7 +241,7 @@ class BallPlot:
 
             # make figure
             figwidth_pt = 245.71
-            figsize = (figwidth_pt * inches_per_pt, 0.8*figwidth_pt * inches_per_pt)  # Convert pt to inches
+            figsize = (figwidth_pt * inches_per_pt, 0.7*figwidth_pt * inches_per_pt)  # Convert pt to inches
             fig = plt.figure(constrained_layout=True, figsize=figsize)
             
             nrows = int(np.ceil(len(k_list) / ncols))
@@ -272,8 +272,13 @@ class BallPlot:
 
                 if j != 0:
                     ax.set_yticklabels([])
+
                 ax.set_xticks([-0.25, 0., 0.25])
-                ax.set_xticklabels(['-0.25', '0', '0.25'])
+                if i == nrows - 1:
+                    ax.set_xticklabels(['-0.25', '0', '0.25'])
+                else:
+                    ax.set_xticklabels([])
+                
                 ax.set_title(r'$k=' + str(k) + '$', fontsize=textwidth_pt)
 
                 j += 1

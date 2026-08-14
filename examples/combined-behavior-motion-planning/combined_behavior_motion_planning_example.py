@@ -470,7 +470,7 @@ def motion_planning_problem(settings=zono.OptSettings(), rng_seed=None, plot_con
     
     if plot_constraints:
         fig_width_pt = 245.71
-        figsize = (fig_width_pt * INCHES_PER_POINT, 0.6 * fig_width_pt * INCHES_PER_POINT)
+        figsize = (fig_width_pt * INCHES_PER_POINT, 0.5 * fig_width_pt * INCHES_PER_POINT)
 
         with plt.rc_context(RC_CONTEXT):
             fig = plt.figure(constrained_layout=True, figsize=figsize)  
@@ -774,7 +774,7 @@ if MODE == 'warmstart_test':
 elif MODE == 'plot_scenario':
     settings.verbose = True
 
-    x_traj, u_traj, z_opt, Z_prob, P, q, c, idx_x, idx_u, sol_cr, scenario = motion_planning_problem(settings, plot_constraints=False)
+    x_traj, u_traj, z_opt, Z_prob, P, q, c, idx_x, idx_u, sol_cr, scenario = motion_planning_problem(settings, plot_constraints=True)
     plot_scenario(scenario, x_traj, 6, n_cols=2, height_ratio=0.35)
 
 else:
