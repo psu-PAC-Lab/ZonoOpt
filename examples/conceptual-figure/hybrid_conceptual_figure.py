@@ -150,7 +150,7 @@ else:
     }
 
 inches_per_pt = 1 / 72.27
-figsize = (245.71 * inches_per_pt, 0.7*245.71 * inches_per_pt)  # Convert pt to inches
+figsize = (245.71 * inches_per_pt, 0.65*245.71 * inches_per_pt)  # Convert pt to inches
 
 
 with plt.rc_context(rc_context):

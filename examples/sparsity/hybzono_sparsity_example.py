@@ -29,7 +29,7 @@ def plot_reach_sets(X_arr, title=None):
         }
 
     inches_per_pt = 1 / 72.27
-    figsize = (245.71 * inches_per_pt, 0.8*245.71 * inches_per_pt)  # Convert pt to inches
+    figsize = (245.71 * inches_per_pt, 0.65*245.71 * inches_per_pt)  # Convert pt to inches
 
     with plt.rc_context(rc_context):
 
@@ -198,7 +198,8 @@ X0 = zono.Zono(np.array([[0.25, -0.19],
                 np.array([-1.31, 2.55]))
 
 # auxiliary variable set
-W_cvx = zono.interval_2_zono(zono.Box([-5.25, -5.25, 0.], [5.25, 4.74, 1.]))
+# W_cvx = zono.interval_2_zono(zono.Box([-5.25, -5.25, 0.], [5.25, 4.74, 1.]))
+W_cvx = S * zono.interval_2_zono(zono.Box([0.], [1.])) # modified from HYSDEL / zonoLAB to match domain of PWA - now apples to apples
 W = zono.HybZono(W_cvx.get_G()[:, 0:2], W_cvx.get_G()[:,2], W_cvx.get_c(),
                  np.zeros((0,2)), np.zeros((0,1)), np.zeros(0))                           
 

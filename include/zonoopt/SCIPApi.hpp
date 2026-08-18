@@ -48,6 +48,8 @@ public:
     static constexpr int SCIP_STATUS_INFEASIBLE = 2;
     static constexpr int SCIP_STATUS_UNBOUNDED  = 3;
     static constexpr int SCIP_STATUS_INFORUNBD  = 4;
+    static constexpr int SCIP_STATUS_GAPLIMIT   = 25;
+    static constexpr int SCIP_STATUS_SOLLIMIT   = 28;
 
     // Loaded SCIP version. Zero if no library was successfully loaded.
     int scip_major = 0;

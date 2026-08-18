@@ -18,20 +18,13 @@
 
 namespace ZonoOpt::detail {
 
-    struct LDLT_data
-    {
-        Eigen::SparseMatrix<zono_float> L;
-        Eigen::DiagonalMatrix<zono_float, -1> Dinv;
-        Eigen::PermutationMatrix<-1, -1, int> P, Pinv;
-        bool factorized = false;
-    };
-
-    void get_LDLT_data(const Eigen::SimplicialLDLT<Eigen::SparseMatrix<zono_float>>& solver, LDLT_data& data);
-
-    Eigen::Vector<zono_float, -1> solve_LDLT(const LDLT_data& data, const Eigen::Vector<zono_float, -1>& b);
+    // The completed SimplicialLDLT factorization; stored directly rather than through an extracted
+    // copy of L, so factorizing and reading back out don't momentarily double the size of the
+    // (possibly much larger) L factor. Not copyable; always held through shared_ptr<const ...>.
+    using LDLT_solver = Eigen::SimplicialLDLT<Eigen::SparseMatrix<zono_float>>;
 
     void affine_set_projection(Eigen::Ref<Eigen::Vector<zono_float, -1>> z, const Eigen::SparseMatrix<zono_float>& A,
-        const Eigen::SparseMatrix<zono_float>& AT, const Eigen::Vector<zono_float, -1>& b, const LDLT_data& AAT_ldlt);
+        const Eigen::SparseMatrix<zono_float>& AT, const Eigen::Vector<zono_float, -1>& b, const LDLT_solver& AAT_ldlt);
 
 } // end namespace detail
 // end namespace ZonoOpt

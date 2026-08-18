@@ -776,12 +776,12 @@ class HybZono
 
         static void remove_cols(Eigen::SparseMatrix<zono_float>& M, const std::set<int>& idx_to_remove);
         static std::set<int> find_unused_generators(const Eigen::SparseMatrix<zono_float>& G, const Eigen::SparseMatrix<zono_float>& A);
-        OptSolution mi_opt(const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q,
-            zono_float c, const Eigen::SparseMatrix<zono_float>& A, const Eigen::Vector<zono_float, -1>& b,
+        OptSolution mi_opt(Eigen::SparseMatrix<zono_float> P, Eigen::Vector<zono_float, -1> q,
+            zono_float c, Eigen::SparseMatrix<zono_float> A, Eigen::Vector<zono_float, -1> b,
             const SolverSettings &settings=get_default_solver_settings(), std::shared_ptr<OptSolution>* solution=nullptr,
             const WarmStartParams& warm_start_params=WarmStartParams()) const;
-        std::vector<OptSolution> mi_opt_multisol(const Eigen::SparseMatrix<zono_float>& P, const Eigen::Vector<zono_float, -1>& q,
-            zono_float c, const Eigen::SparseMatrix<zono_float>& A, const Eigen::Vector<zono_float, -1>& b, int n_sols,
+        std::vector<OptSolution> mi_opt_multisol(Eigen::SparseMatrix<zono_float> P, Eigen::Vector<zono_float, -1> q,
+            zono_float c, Eigen::SparseMatrix<zono_float> A, Eigen::Vector<zono_float, -1> b, int n_sols,
             const SolverSettings &settings=get_default_solver_settings(), std::shared_ptr<OptSolution>* solution=nullptr) const;
 
     private:
