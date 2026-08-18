@@ -87,6 +87,8 @@ with plt.rc_context(rc_context):
            color=colors,
            alpha=0.5)
     ax.set_xticklabels([])
+    ax.set_yticks([0, 25, 50, 75, 100])
+    ax.set_yticklabels(['0', '', '', '', '100'])
     ax.set_ylabel(r'[\%]', fontsize=textwidth_pt)
     ax.set_title(r'Percent trials with feasible solution found', fontsize=textwidth_pt)
     ax.grid(axis='y', which='major', alpha=0.2)
@@ -111,6 +113,8 @@ with plt.rc_context(rc_context):
 
     ax.set_title(r'Suboptimality of found solution', fontsize=textwidth_pt)
     ax.set_ylabel(r'[\%]', fontsize=textwidth_pt)
+    ax.set_yticks([0, 25, 50, 75, 100])
+    ax.set_yticklabels(['0', '', '', '', '100'])
 
     ax.grid(axis='y', which='major', alpha=0.2)
 
