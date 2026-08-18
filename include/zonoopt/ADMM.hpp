@@ -13,6 +13,7 @@
 
 #include <memory>
 #include <atomic>
+#include <exception>
 #include <mutex>
 #include <random>
 
@@ -43,8 +44,12 @@ namespace ZonoOpt
          * instead of once per clone.
          *
          * Accessors are const and thread safe; the lazily-built members (A_rm, both LDLT
-         * factorizations) are guarded by std::once_flag so concurrent B&B / ADMM-FP threads may
-         * share one instance.
+         * factorizations) are guarded by a mutex plus a ready flag so concurrent B&B / ADMM-FP
+         * threads may share one instance. std::call_once is deliberately not used here: the
+         * builders throw when factorization fails, and libstdc++ implements call_once with
+         * pthread_once, which cannot propagate an exception out of the callable on musl
+         * (the process aborts instead). If a builder throws, the failure is cached and rethrown
+         * to every later caller.
          */
         class ADMM_prob
         {
@@ -91,7 +96,8 @@ namespace ZonoOpt
 
             mutable Eigen::SparseMatrix<zono_float, Eigen::RowMajor> m_A_rm;
             mutable LDLT_solver m_ldlt_M, m_ldlt_AAT;
-            mutable std::once_flag m_A_rm_once, m_M_once, m_AAT_once;
+            mutable std::mutex m_A_rm_mtx, m_M_mtx, m_AAT_mtx;
+            mutable std::exception_ptr m_A_rm_error, m_M_error, m_AAT_error;
             mutable std::atomic<bool> m_M_ready{false}, m_AAT_ready{false}, m_A_rm_ready{false};
 
             void build_ldlt_M() const;

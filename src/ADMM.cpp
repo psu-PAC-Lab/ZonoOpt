@@ -1,8 +1,10 @@
 #include <atomic>
 #include <chrono>
 #include <cmath>
+#include <exception>
 #include <limits>
 #include <memory>
+#include <mutex>
 #include <random>
 #include <set>
 #include <sstream>
@@ -36,25 +38,56 @@ namespace ZonoOpt
         this->m_b = std::move(b);
     }
 
+    namespace
+    {
+        /**
+         * @brief Runs build() at most once, propagating any exception it throws to every caller.
+         *
+         * Stands in for std::call_once, which cannot be used with a throwing callable: libstdc++
+         * implements it via pthread_once, and on musl an exception escaping the callable
+         * terminates the process rather than unwinding to the caller.
+         *
+         * The builder is responsible for setting @p ready once it has succeeded.
+         */
+        template <typename Builder>
+        void build_once(Builder&& build, std::mutex& mtx, const std::atomic<bool>& ready,
+                        std::exception_ptr& error)
+        {
+            if (ready.load(std::memory_order_acquire)) return; // fast path, no locking
+            std::lock_guard<std::mutex> lock(mtx);
+            if (ready.load(std::memory_order_acquire)) return;
+            if (error) std::rethrow_exception(error); // a previous attempt failed
+            try
+            {
+                build();
+            }
+            catch (...)
+            {
+                error = std::current_exception();
+                throw;
+            }
+        }
+    }
+
     const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& ADMM_prob::A_rm() const
     {
-        std::call_once(this->m_A_rm_once, [this]
+        build_once([this]
         {
             this->m_A_rm = this->m_A;
             this->m_A_rm_ready.store(true, std::memory_order_release);
-        });
+        }, this->m_A_rm_mtx, this->m_A_rm_ready, this->m_A_rm_error);
         return this->m_A_rm;
     }
 
     const LDLT_solver& ADMM_prob::ldlt_M() const
     {
-        std::call_once(this->m_M_once, [this] { this->build_ldlt_M(); });
+        build_once([this] { this->build_ldlt_M(); }, this->m_M_mtx, this->m_M_ready, this->m_M_error);
         return this->m_ldlt_M;
     }
 
     const LDLT_solver& ADMM_prob::ldlt_AAT() const
     {
-        std::call_once(this->m_AAT_once, [this] { this->build_ldlt_AAT(); });
+        build_once([this] { this->build_ldlt_AAT(); }, this->m_AAT_mtx, this->m_AAT_ready, this->m_AAT_error);
         return this->m_ldlt_AAT;
     }
 
