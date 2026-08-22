@@ -17,6 +17,15 @@
 namespace ZonoOpt {
     using namespace detail;
 
+    namespace
+    {
+        // canonical empty box of dimension n (lb > ub, no NaN)
+        Box make_empty_box(const Eigen::Index n)
+        {
+            return {Eigen::Vector<zono_float, -1>::Ones(n), Eigen::Vector<zono_float, -1>::Zero(n)};
+        }
+    }
+
     Box::Box(const size_t size)
     {
         x_lb.resize(static_cast<Eigen::Index>(size));
@@ -129,7 +138,9 @@ namespace ZonoOpt {
 
     bool Box::is_empty() const
     {
-        return this->size() > 0 ? (x_lb.array() > x_ub.array()).any() : true;
+        if (this->size() == 0)
+            return true;
+        return ((x_lb.array() > x_ub.array()) || x_lb.array().isNaN() || x_ub.array().isNaN()).any();
     }
 
     bool Box::is_single_valued() const
@@ -183,6 +194,57 @@ namespace ZonoOpt {
                 return false;
         }
         return true;
+    }
+
+    Box Box::cartesian_product(const Box& other) const
+    {
+        const Eigen::Index n1 = x_lb.size(), n2 = other.x_lb.size();
+        Eigen::Vector<zono_float, -1> lb(n1 + n2), ub(n1 + n2);
+        lb << x_lb, other.x_lb;
+        ub << x_ub, other.x_ub;
+        return {lb, ub};
+    }
+
+    Box Box::minkowski_sum(const Box& other) const
+    {
+        if (this->size() != other.size())
+            throw std::invalid_argument("Box Minkowski sum: inconsistent dimensions");
+        return *this + other;
+    }
+
+    Box Box::pontry_diff(const Box& other) const
+    {
+        if (this->size() != other.size())
+            throw std::invalid_argument("Box Pontryagin difference: inconsistent dimensions");
+
+        // matches HybZono::pontry_diff, which returns the minuend if either input is empty
+        if (this->is_empty() || other.is_empty())
+            return *this;
+
+        // [a,b] (-) [c,d] = [a-c, b-d]. Deliberately NOT Interval::operator-, which gives [a-d, b-c].
+        return {x_lb - other.x_lb, x_ub - other.x_ub};
+    }
+
+    Box Box::project_onto_dims(const std::vector<int>& dims) const
+    {
+        const auto n = static_cast<int>(this->size());
+        for (const int d : dims)
+        {
+            if (d < 0 || d >= n)
+                throw std::invalid_argument("Box project_onto_dims: dimension index out of range");
+        }
+
+        const auto m = static_cast<Eigen::Index>(dims.size());
+        if (this->is_empty())
+            return make_empty_box(m);
+
+        Eigen::Vector<zono_float, -1> lb(m), ub(m);
+        for (Eigen::Index k = 0; k < m; ++k)
+        {
+            lb(k) = x_lb(dims[static_cast<size_t>(k)]);
+            ub(k) = x_ub(dims[static_cast<size_t>(k)]);
+        }
+        return {lb, ub};
     }
 
     Box Box::operator+(const Box& other) const
@@ -525,6 +587,59 @@ namespace ZonoOpt {
         return y;
     }
 
+    Box Box::linear_map(const Eigen::SparseMatrix<zono_float>& A) const
+    {
+        // input handling
+        if (A.cols() != x_lb.size())
+            throw std::invalid_argument("Matrix A must have the same number of columns as the size of the Box");
+
+        // declare
+        Box y(A.rows());
+        for (int i = 0; i < A.rows(); i++)
+            y.set_element(i, Interval(0, 0));
+
+        // linear map
+        for (int j = 0; j < A.cols(); j++)
+        {
+            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(A, j); it; ++it)
+            {
+                const int i = static_cast<int>(it.row());
+                y.set_element(i, y.get_element(i) + this->get_element(j)*it.value());
+            }
+        }
+        return y;
+    }
+
+    Box Box::affine_map(const Eigen::Matrix<zono_float, -1, -1>& R, const Eigen::Vector<zono_float, -1>& s) const
+    {
+        if (R.cols() != x_lb.size() || (s.size() != 0 && s.size() != R.rows()))
+            throw std::invalid_argument("Box affine map: inconsistent dimensions");
+        if (this->is_empty())
+            return make_empty_box(R.rows());
+        Box out = this->linear_map(R);
+        return (s.size() == 0) ? out : out + s;
+    }
+
+    Box Box::affine_map(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& R, const Eigen::Vector<zono_float, -1>& s) const
+    {
+        if (R.cols() != x_lb.size() || (s.size() != 0 && s.size() != R.rows()))
+            throw std::invalid_argument("Box affine map: inconsistent dimensions");
+        if (this->is_empty())
+            return make_empty_box(R.rows());
+        Box out = this->linear_map(R);
+        return (s.size() == 0) ? out : out + s;
+    }
+
+    Box Box::affine_map(const Eigen::SparseMatrix<zono_float>& R, const Eigen::Vector<zono_float, -1>& s) const
+    {
+        if (R.cols() != x_lb.size() || (s.size() != 0 && s.size() != R.rows()))
+            throw std::invalid_argument("Box affine map: inconsistent dimensions");
+        if (this->is_empty())
+            return make_empty_box(R.rows());
+        Box out = this->linear_map(R);
+        return (s.size() == 0) ? out : out + s;
+    }
+
     Interval Box::dot(const Eigen::Vector<zono_float, -1>& x) const
     {
         // input handling
@@ -538,6 +653,13 @@ namespace ZonoOpt {
         for (int i = 0; i < this->x_lb.size(); i++)
             y = y + get_element(i)*x(i);
         return y;
+    }
+
+    zono_float Box::support(const Eigen::Vector<zono_float, -1>& d) const
+    {
+        if (d.size() != x_lb.size())
+            throw std::invalid_argument("Box support: inconsistent dimensions");
+        return this->dot(d).upper();
     }
 
     void Box::permute(const Eigen::PermutationMatrix<Eigen::Dynamic, Eigen::Dynamic>& P)
@@ -761,5 +883,55 @@ namespace ZonoOpt {
         success &= Box::contract_forward(A, b, constraints);
 
         return success;
+    }
+
+    Box cartesian_product(const Box& Z1, const Box& Z2)
+    {
+        return Z1.cartesian_product(Z2);
+    }
+
+    Box minkowski_sum(const Box& Z1, const Box& Z2)
+    {
+        return Z1.minkowski_sum(Z2);
+    }
+
+    Box pontry_diff(const Box& Z1, const Box& Z2)
+    {
+        return Z1.pontry_diff(Z2);
+    }
+
+    Box project_onto_dims(const Box& Z, const std::vector<int>& dims)
+    {
+        return Z.project_onto_dims(dims);
+    }
+
+    Box affine_map(const Box& Z, const Eigen::SparseMatrix<zono_float>& R, const Eigen::Vector<zono_float, -1>& s)
+    {
+        return Z.affine_map(R, s);
+    }
+
+    Box interval_hull(const Box& Z1, const Box& Z2)
+    {
+        return Z1.interval_hull(Z2);
+    }
+
+    Box interval_hull(const std::vector<Box>& boxes)
+    {
+        if (boxes.empty())
+            throw std::invalid_argument("Box interval hull: no boxes provided");
+
+        const auto n = boxes.front().size();
+        bool any = false;
+        Box out = make_empty_box(static_cast<Eigen::Index>(n));
+        for (const Box& b : boxes)
+        {
+            if (b.size() != n)
+                throw std::invalid_argument("Box interval hull: inconsistent dimensions");
+            if (b.is_empty())
+                continue;
+            out = any ? out.interval_hull(b) : b;
+            any = true;
+        }
+        return out;
     }
 }

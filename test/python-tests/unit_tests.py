@@ -1396,6 +1396,141 @@ def test_zono_hull():
     _test_inconsistent_dimensions()
     print('Passed: Zono Hull')
 
+def test_box_set_operations():
+
+    def _box_vertices(b):
+        n = b.size()
+        lb = b.lower()
+        ub = b.upper()
+        return [np.array([ub[i] if (mask & (1 << i)) else lb[i] for i in range(n)]) for mask in range(1 << n)]
+
+    # cartesian product
+    b1 = zono.Box(np.array([0.]), np.array([1.]))
+    b2 = zono.Box(np.array([2., 4.]), np.array([3., 5.]))
+    prod = b1.cartesian_product(b2)
+    assert prod.size() == 3, 'cartesian_product: wrong size'
+    for x in _box_vertices(b1):
+        for y in _box_vertices(b2):
+            assert prod.contains(np.concatenate([x, y])), 'cartesian_product: definitional containment failed'
+    assert zono.cartesian_product(b1, b2) == prod, 'cartesian_product: free/member mismatch'
+
+    # minkowski sum
+    b1 = zono.Box(np.array([0., -1.]), np.array([10., 4.]))
+    b2 = zono.Box(np.array([1., -2.]), np.array([2., 3.]))
+    summed = b1.minkowski_sum(b2)
+    assert summed == (b1 + b2), 'minkowski_sum: should equal operator+'
+    assert summed == zono.minkowski_sum(b1, b2), 'minkowski_sum: free/member mismatch'
+    for x in _box_vertices(b1):
+        for y in _box_vertices(b2):
+            assert summed.contains(x + y), 'minkowski_sum: definitional containment failed'
+
+    # pontryagin difference
+    b1 = zono.Box(np.array([0., -4.]), np.array([10., 4.]))
+    b2 = zono.Box(np.array([1., -1.]), np.array([2., 2.]))
+    diff = b1.pontry_diff(b2)
+    assert np.allclose(diff.lower(), [-1., -3.]) and np.allclose(diff.upper(), [8., 2.]), 'pontry_diff: wrong result'
+    # definitional: (b1 (-) b2) + b2 is contained in b1
+    assert b1.contains_set(diff.minkowski_sum(b2)), 'pontry_diff: definitional containment failed'
+    # must diverge from operator- (interval subtraction, not the Pontryagin difference)
+    assert not (diff == (b1 - b2)), 'pontry_diff: should differ from operator-'
+    assert zono.pontry_diff(b1, b2) == diff, 'pontry_diff: free/member mismatch'
+
+    # project_onto_dims
+    b = zono.Box(np.array([0., 1., 2.]), np.array([10., 11., 12.]))
+    proj = b.project_onto_dims([0, 2])
+    assert proj.size() == 2, 'project_onto_dims: wrong size'
+    for v in _box_vertices(b):
+        assert proj.contains(np.array([v[0], v[2]])), 'project_onto_dims: definitional containment failed'
+    assert zono.project_onto_dims(b, [0, 2]) == proj, 'project_onto_dims: free/member mismatch'
+    try:
+        b.project_onto_dims([-1])
+        raise AssertionError('project_onto_dims: expected negative index to throw')
+    except ValueError:
+        pass
+    try:
+        b.project_onto_dims([3])
+        raise AssertionError('project_onto_dims: expected out-of-range index to throw')
+    except ValueError:
+        pass
+
+    # affine_map
+    b = zono.Box(np.array([0., -1.]), np.array([10., 4.]))
+    A = np.array([[1., 2.], [-1., 0.5]])
+    s = np.array([1., -2.])
+    out_csc = b.affine_map(sparse.csc_matrix(A), s)
+    out_csr = b.affine_map(sparse.csr_matrix(A), s)
+    assert np.allclose(out_csc.lower(), out_csr.lower()) and np.allclose(out_csc.upper(), out_csr.upper()), \
+        'affine_map: csc/csr mismatch'
+    for v in _box_vertices(b):
+        assert out_csc.contains(A @ v + s), 'affine_map: definitional containment failed'
+    assert zono.affine_map(b, sparse.csc_matrix(A), s) == out_csc, 'affine_map: free/member mismatch'
+
+    # support
+    b = zono.Box(np.array([-1., 2., -3.]), np.array([4., 5., 1.]))
+    d = np.array([1., -1., 2.])
+    expected = max(v.dot(d) for v in _box_vertices(b))
+    assert np.isclose(b.support(d), expected), 'support: definitional check failed'
+
+    # interval_hull
+    b1 = zono.Box(np.array([0.]), np.array([1.]))
+    b2 = zono.Box(np.array([-2.]), np.array([0.5]))
+    b3 = zono.Box(np.array([3.]), np.array([4.]))
+    hull = zono.interval_hull([b1, b2, b3])
+    assert hull.contains_set(b1) and hull.contains_set(b2) and hull.contains_set(b3), \
+        'interval_hull: does not contain all inputs'
+    assert np.isclose(hull.lower()[0], -2.) and np.isclose(hull.upper()[0], 4.), 'interval_hull: wrong bounds'
+    assert zono.interval_hull(b1, b2) == b1.interval_hull(b2), 'interval_hull: free/member mismatch'
+    try:
+        zono.interval_hull([])
+        raise AssertionError('interval_hull: expected empty list to throw')
+    except ValueError:
+        pass
+
+    print('Passed: Box Set Operations')
+
+def test_box_operator_semantics():
+    a = np.array([0., -1.])
+    b = np.array([10., 4.])
+    c = np.array([1., -2.])
+    d = np.array([2., 3.])
+    b1 = zono.Box(a, b)
+    b2 = zono.Box(c, d)
+
+    # operator* stays elementwise interval multiplication, NOT Cartesian product
+    prod = b1 * b2
+    assert prod.size() == b1.size(), 'Box.__mul__ should remain elementwise, not Cartesian product'
+
+    # operator- stays interval subtraction [a-d, b-c], NOT Pontryagin difference [a-c, b-d]
+    diff_op = b1 - b2
+    diff_expected = zono.Box(a - d, b - c)
+    assert diff_op == diff_expected, 'Box.__sub__ should be interval subtraction [a-d, b-c]'
+    assert not (diff_op == b1.pontry_diff(b2)), 'Box.__sub__ should differ from pontry_diff'
+
+    # operator+ IS the Minkowski sum
+    assert (b1 + b2) == b1.minkowski_sum(b2), 'Box.__add__ should equal minkowski_sum'
+    assert (b1 + b2) == zono.minkowski_sum(b1, b2), 'Box.__add__ should equal free minkowski_sum'
+
+    print('Passed: Box Operator Semantics')
+
+def test_box_hybzono_overload_dispatch():
+    b1 = zono.Box(np.array([0., -1.]), np.array([10., 4.]))
+    b2 = zono.Box(np.array([1., -2.]), np.array([2., 3.]))
+    Z1 = zono.make_regular_zono_2D(1.0, 6)
+    Z2 = zono.make_regular_zono_2D(1.0, 6, False, np.array([5., 5.]))
+
+    assert isinstance(zono.cartesian_product(b1, b2), zono.Box), 'cartesian_product(Box, Box) should return a Box'
+    assert isinstance(zono.cartesian_product(Z1, Z2), zono.HybZono), \
+        'cartesian_product(HybZono, HybZono) should return a HybZono'
+
+    try:
+        zono.cartesian_product(b1, Z1)
+        raise AssertionError('cartesian_product(Box, HybZono) should raise TypeError: '
+                              'no implicit conversion should exist between Box and HybZono')
+    except TypeError:
+        pass
+
+    print('Passed: Box/HybZono Overload Dispatch')
+
 if __name__ == '__main__':
     tests = [
         test_vrep_2_hz,
@@ -1414,6 +1549,9 @@ if __name__ == '__main__':
         test_remove_redundancy,
         test_overapproximation,
         test_zono_hull,
+        test_box_set_operations,
+        test_box_operator_semantics,
+        test_box_hybzono_overload_dispatch,
     ]
 
     failures = []

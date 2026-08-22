@@ -7,7 +7,15 @@ import typing
 from typing import Any, ClassVar, overload
 
 class Box:
-    """Box (i.e., interval vector) class"""
+    """Box (i.e., interval vector) class.
+
+    Unlike HybZono and its subclasses, Box operators have interval-arithmetic
+    semantics, not set-operation semantics. Box.__mul__ is elementwise interval
+    multiplication (not Cartesian product) and Box.__sub__ is interval subtraction
+    [a,b] - [c,d] = [a-d, b-c] (not the Pontryagin difference [a-c, b-d]). Use the
+    named methods cartesian_product() and pontry_diff() for the set-operation
+    meanings. Box.__add__ is elementwise interval addition, which for boxes
+    coincides exactly with the Minkowski sum; minkowski_sum() is a named alias for it."""
     __array_priority__: ClassVar[float] = ...
     def __init__(self, x_lb: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], x_ub: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> None:
         '''__init__(self: zonoopt._core.Box, x_lb: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], x_ub: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> None
@@ -20,6 +28,81 @@ class Box:
                             x_ub (numpy.array): vector of upper bounds
             
         '''
+    @overload
+    def affine_map(self, R: scipy.sparse.csc_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'] = ...) -> Box:
+        '''affine_map(*args, **kwargs)
+        Overloaded function.
+
+        1. affine_map(self: zonoopt._core.Box, R: scipy.sparse.csc_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"] = array([], dtype=float64)) -> zonoopt._core.Box
+
+
+                        Affine map R*self + s of the box based on interval arithmetic
+
+                        Args:
+                            R (scipy.sparse.csc_matrix): affine map matrix
+                            s (numpy.array, optional): vector offset
+
+                        Returns:
+                            Box: affine mapped box
+            
+
+        2. affine_map(self: zonoopt._core.Box, R: scipy.sparse.csr_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"] = array([], dtype=float64)) -> zonoopt._core.Box
+
+
+                        Affine map R*self + s of the box based on interval arithmetic
+
+                        Args:
+                            R (scipy.sparse.csr_matrix): affine map matrix
+                            s (numpy.array, optional): vector offset
+
+                        Returns:
+                            Box: affine mapped box
+            
+        '''
+    @overload
+    def affine_map(self, R: scipy.sparse.csr_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'] = ...) -> Box:
+        '''affine_map(*args, **kwargs)
+        Overloaded function.
+
+        1. affine_map(self: zonoopt._core.Box, R: scipy.sparse.csc_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"] = array([], dtype=float64)) -> zonoopt._core.Box
+
+
+                        Affine map R*self + s of the box based on interval arithmetic
+
+                        Args:
+                            R (scipy.sparse.csc_matrix): affine map matrix
+                            s (numpy.array, optional): vector offset
+
+                        Returns:
+                            Box: affine mapped box
+            
+
+        2. affine_map(self: zonoopt._core.Box, R: scipy.sparse.csr_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"] = array([], dtype=float64)) -> zonoopt._core.Box
+
+
+                        Affine map R*self + s of the box based on interval arithmetic
+
+                        Args:
+                            R (scipy.sparse.csr_matrix): affine map matrix
+                            s (numpy.array, optional): vector offset
+
+                        Returns:
+                            Box: affine mapped box
+            
+        '''
+    def cartesian_product(self, other: Box) -> Box:
+        """cartesian_product(self: zonoopt._core.Box, other: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Cartesian product of two boxes
+
+                        Args:
+                            other (Box): other box
+
+                        Returns:
+                            Box: Cartesian product of self and other
+            
+        """
     def center(self) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
         '''center(self: zonoopt._core.Box) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
@@ -178,6 +261,32 @@ class Box:
                             numpy.array: lower bounds
             
         '''
+    def minkowski_sum(self, other: Box) -> Box:
+        """minkowski_sum(self: zonoopt._core.Box, other: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Minkowski sum of two boxes
+
+                        Args:
+                            other (Box): other box
+
+                        Returns:
+                            Box: Minkowski sum of self and other
+            
+        """
+    def pontry_diff(self, other: Box) -> Box:
+        """pontry_diff(self: zonoopt._core.Box, other: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                        Pontryagin difference of two boxes
+
+                        Args:
+                            other (Box): subtrahend
+
+                        Returns:
+                            Box: Pontryagin difference of self and other
+            
+        """
     def project(self, x: typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]', 'flags.writeable']) -> None:
         '''project(self: zonoopt._core.Box, x: typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]", "flags.writeable"]) -> None
 
@@ -188,6 +297,19 @@ class Box:
                             x (numpy.array): vector to be projected
             
         '''
+    def project_onto_dims(self, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> Box:
+        """project_onto_dims(self: zonoopt._core.Box, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> zonoopt._core.Box
+
+
+                        Projects the box onto the dimensions specified in dims
+
+                        Args:
+                            dims (list[int]): list of dimensions to project onto
+
+                        Returns:
+                            Box: box projected onto dims
+            
+        """
     def radius(self) -> Box:
         """radius(self: zonoopt._core.Box) -> zonoopt._core.Box
 
@@ -210,6 +332,19 @@ class Box:
                             int: size of box
             
         """
+    def support(self, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> float:
+        '''support(self: zonoopt._core.Box, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> float
+
+
+                        Computes the support function of the box in the direction d
+
+                        Args:
+                            d (numpy.array): vector defining direction for support function
+
+                        Returns:
+                            float: support
+            
+        '''
     def to_array(self) -> list[Interval]:
         """to_array(self: zonoopt._core.Box) -> list[zonoopt._core.Interval]
 
@@ -1681,7 +1816,7 @@ class HybZono:
             
         '''
     def bounding_box(self, settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> Box:
-        """bounding_box(self: zonoopt._core.HybZono, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x75efdaa701f0>) -> zonoopt._core.Box
+        """bounding_box(self: zonoopt._core.HybZono, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7e48287b7730>) -> zonoopt._core.Box
 
 
                         Computes a bounding box of the set object as a Box object.
@@ -1722,7 +1857,7 @@ class HybZono:
             
         '''
     def contains_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x75efdaa47bb0>) -> bool
+        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7e482a2888b0>) -> bool
 
 
                         Checks whether the point x is contained in the set object.
@@ -1949,7 +2084,7 @@ class HybZono:
             
         """
     def is_empty(self, settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        """is_empty(self: zonoopt._core.HybZono, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x75efdaa87eb0>) -> bool
+        """is_empty(self: zonoopt._core.HybZono, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7e482a280470>) -> bool
 
 
                         Returns true if the set is provably empty, false otherwise.
@@ -2014,7 +2149,7 @@ class HybZono:
             
         """
     def optimize_over(self, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], c: typing.SupportsFloat | typing.SupportsIndex = ..., settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x75efdaa67bb0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7e482a2a70f0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Solves optimization problem with quadratic objective over the current set
@@ -2034,7 +2169,7 @@ class HybZono:
             
         '''
     def project_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x75efdaa87cf0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7e482a7c5a30>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Returns the projection of the point x onto the set object.
@@ -2087,7 +2222,7 @@ class HybZono:
             
         '''
     def support(self, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> float:
-        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x75efdaa5feb0>) -> float
+        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7e482a6691b0>) -> float
 
 
                         Computes support function of the set in the direction d.
@@ -6686,8 +6821,12 @@ def affine_inclusion(Z: HybZono, R: IntervalMatrix, s: typing.Annotated[numpy.ty
                     HybZono: zonotopic set
         
     '''
+@overload
 def affine_map(Z: HybZono, R: scipy.sparse.csc_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'] = ...) -> HybZono:
-    '''affine_map(Z: zonoopt._core.HybZono, R: scipy.sparse.csc_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"] = array([], dtype=float64)) -> zonoopt._core.HybZono
+    '''affine_map(*args, **kwargs)
+    Overloaded function.
+
+    1. affine_map(Z: zonoopt._core.HybZono, R: scipy.sparse.csc_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"] = array([], dtype=float64)) -> zonoopt._core.HybZono
 
 
                 Returns affine map R*Z + s of set Z
@@ -6700,9 +6839,135 @@ def affine_map(Z: HybZono, R: scipy.sparse.csc_matrix[numpy.float64], s: typing.
                 Returns:
                     HybZono: zonotopic set
         
+
+    2. affine_map(Z: zonoopt._core.Box, R: scipy.sparse.csc_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"] = array([], dtype=float64)) -> zonoopt._core.Box
+
+
+                Returns affine map R*Z + s of box Z
+
+                Args:
+                    Z (Box): box
+                    R (scipy.sparse.csc_matrix): affine map matrix
+                    s (numpy.array, optional): vector offset
+
+                Returns:
+                    Box: box
+        
+
+    3. affine_map(Z: zonoopt._core.Box, R: scipy.sparse.csr_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"] = array([], dtype=float64)) -> zonoopt._core.Box
+
+
+                Returns affine map R*Z + s of box Z
+
+                Args:
+                    Z (Box): box
+                    R (scipy.sparse.csr_matrix): affine map matrix
+                    s (numpy.array, optional): vector offset
+
+                Returns:
+                    Box: box
+        
     '''
+@overload
+def affine_map(Z: Box, R: scipy.sparse.csc_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'] = ...) -> Box:
+    '''affine_map(*args, **kwargs)
+    Overloaded function.
+
+    1. affine_map(Z: zonoopt._core.HybZono, R: scipy.sparse.csc_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"] = array([], dtype=float64)) -> zonoopt._core.HybZono
+
+
+                Returns affine map R*Z + s of set Z
+            
+                Args:
+                    Z (HybZono): zonotopic set
+                    R (scipy.sparse.csc_matrix): affine map matrix
+                    s (numpy.array, optional): vector offset
+            
+                Returns:
+                    HybZono: zonotopic set
+        
+
+    2. affine_map(Z: zonoopt._core.Box, R: scipy.sparse.csc_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"] = array([], dtype=float64)) -> zonoopt._core.Box
+
+
+                Returns affine map R*Z + s of box Z
+
+                Args:
+                    Z (Box): box
+                    R (scipy.sparse.csc_matrix): affine map matrix
+                    s (numpy.array, optional): vector offset
+
+                Returns:
+                    Box: box
+        
+
+    3. affine_map(Z: zonoopt._core.Box, R: scipy.sparse.csr_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"] = array([], dtype=float64)) -> zonoopt._core.Box
+
+
+                Returns affine map R*Z + s of box Z
+
+                Args:
+                    Z (Box): box
+                    R (scipy.sparse.csr_matrix): affine map matrix
+                    s (numpy.array, optional): vector offset
+
+                Returns:
+                    Box: box
+        
+    '''
+@overload
+def affine_map(Z: Box, R: scipy.sparse.csr_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'] = ...) -> Box:
+    '''affine_map(*args, **kwargs)
+    Overloaded function.
+
+    1. affine_map(Z: zonoopt._core.HybZono, R: scipy.sparse.csc_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"] = array([], dtype=float64)) -> zonoopt._core.HybZono
+
+
+                Returns affine map R*Z + s of set Z
+            
+                Args:
+                    Z (HybZono): zonotopic set
+                    R (scipy.sparse.csc_matrix): affine map matrix
+                    s (numpy.array, optional): vector offset
+            
+                Returns:
+                    HybZono: zonotopic set
+        
+
+    2. affine_map(Z: zonoopt._core.Box, R: scipy.sparse.csc_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"] = array([], dtype=float64)) -> zonoopt._core.Box
+
+
+                Returns affine map R*Z + s of box Z
+
+                Args:
+                    Z (Box): box
+                    R (scipy.sparse.csc_matrix): affine map matrix
+                    s (numpy.array, optional): vector offset
+
+                Returns:
+                    Box: box
+        
+
+    3. affine_map(Z: zonoopt._core.Box, R: scipy.sparse.csr_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"] = array([], dtype=float64)) -> zonoopt._core.Box
+
+
+                Returns affine map R*Z + s of box Z
+
+                Args:
+                    Z (Box): box
+                    R (scipy.sparse.csr_matrix): affine map matrix
+                    s (numpy.array, optional): vector offset
+
+                Returns:
+                    Box: box
+        
+    '''
+@overload
 def cartesian_product(Z1: HybZono, Z2: HybZono) -> HybZono:
-    """cartesian_product(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+    """cartesian_product(*args, **kwargs)
+    Overloaded function.
+
+    1. cartesian_product(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono) -> zonoopt._core.HybZono
 
 
                 Computes the Cartesian product of two sets Z1 and Z2.
@@ -6713,6 +6978,50 @@ def cartesian_product(Z1: HybZono, Z2: HybZono) -> HybZono:
             
                 Returns:
                     HybZono: zonotopic set
+        
+
+    2. cartesian_product(Z1: zonoopt._core.Box, Z2: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                Computes the Cartesian product of two boxes Z1 and Z2.
+
+                Args:
+                    Z1 (Box): box
+                    Z2 (Box): box
+
+                Returns:
+                    Box: box
+        
+    """
+@overload
+def cartesian_product(Z1: Box, Z2: Box) -> Box:
+    """cartesian_product(*args, **kwargs)
+    Overloaded function.
+
+    1. cartesian_product(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+
+                Computes the Cartesian product of two sets Z1 and Z2.
+            
+                Args:
+                    Z1 (HybZono): zonotopic set
+                    Z2 (HybZono): zonotopic set
+            
+                Returns:
+                    HybZono: zonotopic set
+        
+
+    2. cartesian_product(Z1: zonoopt._core.Box, Z2: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                Computes the Cartesian product of two boxes Z1 and Z2.
+
+                Args:
+                    Z1 (Box): box
+                    Z2 (Box): box
+
+                Returns:
+                    Box: box
         
     """
 def constrain(Z: HybZono, H: scipy.sparse.csc_matrix[numpy.float64], f: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], direction: str, R: scipy.sparse.csc_matrix[numpy.float64] = ...) -> HybZono:
@@ -6835,6 +7144,66 @@ def interval_2_zono(box: Box) -> Zono:
                     Zono: zonotope
         
     """
+@overload
+def interval_hull(Z1: Box, Z2: Box) -> Box:
+    """interval_hull(*args, **kwargs)
+    Overloaded function.
+
+    1. interval_hull(Z1: zonoopt._core.Box, Z2: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                Computes the interval hull of two boxes.
+
+                Args:
+                    Z1 (Box): box
+                    Z2 (Box): box
+
+                Returns:
+                    Box: smallest box containing both Z1 and Z2
+        
+
+    2. interval_hull(boxes: collections.abc.Sequence[zonoopt._core.Box]) -> zonoopt._core.Box
+
+
+                Computes the interval hull of several boxes
+
+                Args:
+                    boxes (list[Box]): boxes for which the interval hull is to be computed
+
+                Returns:
+                    Box: smallest box containing all boxes
+        
+    """
+@overload
+def interval_hull(boxes: collections.abc.Sequence[Box]) -> Box:
+    """interval_hull(*args, **kwargs)
+    Overloaded function.
+
+    1. interval_hull(Z1: zonoopt._core.Box, Z2: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                Computes the interval hull of two boxes.
+
+                Args:
+                    Z1 (Box): box
+                    Z2 (Box): box
+
+                Returns:
+                    Box: smallest box containing both Z1 and Z2
+        
+
+    2. interval_hull(boxes: collections.abc.Sequence[zonoopt._core.Box]) -> zonoopt._core.Box
+
+
+                Computes the interval hull of several boxes
+
+                Args:
+                    boxes (list[Box]): boxes for which the interval hull is to be computed
+
+                Returns:
+                    Box: smallest box containing all boxes
+        
+    """
 def make_regular_zono_2D(radius: typing.SupportsFloat | typing.SupportsIndex, n_sides: typing.SupportsInt | typing.SupportsIndex, outer_approx: bool = ..., c: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[2, 1]'] = ...) -> Zono:
     '''make_regular_zono_2D(radius: typing.SupportsFloat | typing.SupportsIndex, n_sides: typing.SupportsInt | typing.SupportsIndex, outer_approx: bool = False, c: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[2, 1]"] = array([0., 0.])) -> zonoopt._core.Zono
 
@@ -6851,22 +7220,74 @@ def make_regular_zono_2D(radius: typing.SupportsFloat | typing.SupportsIndex, n_
                     Zono: zonotope
         
     '''
+@overload
 def minkowski_sum(Z1: HybZono, Z2: HybZono) -> HybZono:
-    """minkowski_sum(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+    """minkowski_sum(*args, **kwargs)
+    Overloaded function.
+
+    1. minkowski_sum(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono) -> zonoopt._core.HybZono
 
 
                 Computes Minkowski sum of two sets Z1 and Z2.
-            
+
                 Args:
                     Z1 (HybZono): zonotopic set
                     Z2 (HybZono): zonotopic set
-            
+
                 Returns:
                     HybZono: zonotopic set
         
+
+    2. minkowski_sum(Z1: zonoopt._core.Box, Z2: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                Computes the Minkowski sum of two boxes Z1 and Z2.
+
+                Args:
+                    Z1 (Box): box
+                    Z2 (Box): box
+
+                Returns:
+                    Box: box
+        
     """
+@overload
+def minkowski_sum(Z1: Box, Z2: Box) -> Box:
+    """minkowski_sum(*args, **kwargs)
+    Overloaded function.
+
+    1. minkowski_sum(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+
+
+                Computes Minkowski sum of two sets Z1 and Z2.
+
+                Args:
+                    Z1 (HybZono): zonotopic set
+                    Z2 (HybZono): zonotopic set
+
+                Returns:
+                    HybZono: zonotopic set
+        
+
+    2. minkowski_sum(Z1: zonoopt._core.Box, Z2: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                Computes the Minkowski sum of two boxes Z1 and Z2.
+
+                Args:
+                    Z1 (Box): box
+                    Z2 (Box): box
+
+                Returns:
+                    Box: box
+        
+    """
+@overload
 def pontry_diff(Z1: HybZono, Z2: Zono, exact: bool = ...) -> HybZono:
-    """pontry_diff(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.Zono, exact: bool = True) -> zonoopt._core.HybZono
+    """pontry_diff(*args, **kwargs)
+    Overloaded function.
+
+    1. pontry_diff(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.Zono, exact: bool = True) -> zonoopt._core.HybZono
 
 
                 Computes the Pontryagin difference Z1 - Z2.
@@ -6883,9 +7304,62 @@ def pontry_diff(Z1: HybZono, Z2: Zono, exact: bool = ...) -> HybZono:
                 Returns:
                     HybZono: zonotopic set
         
+
+    2. pontry_diff(Z1: zonoopt._core.Box, Z2: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                Computes the Pontryagin difference Z1 - Z2 of two boxes.
+
+                Args:
+                    Z1 (Box): minuend
+                    Z2 (Box): subtrahend
+
+                Returns:
+                    Box: box
+        
     """
+@overload
+def pontry_diff(Z1: Box, Z2: Box) -> Box:
+    """pontry_diff(*args, **kwargs)
+    Overloaded function.
+
+    1. pontry_diff(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.Zono, exact: bool = True) -> zonoopt._core.HybZono
+
+
+                Computes the Pontryagin difference Z1 - Z2.
+            
+                For inner approximations (exact = false), the algorithm from Vinod et. al. 2025 is used.
+                Note that this algorithm is exact when the minuend is a constrained zonotope and the matrix [G;A] is invertible.
+                Exact Pontryagin difference can only be computed when the subtrahend is a zonotope.
+            
+                Args:
+                    Z1 (HybZono): minuend
+                    Z2 (Zono): subtrahend
+                    exact (bool, optional): require output to be exact, otherwise inner approximation will be returned (default true)
+            
+                Returns:
+                    HybZono: zonotopic set
+        
+
+    2. pontry_diff(Z1: zonoopt._core.Box, Z2: zonoopt._core.Box) -> zonoopt._core.Box
+
+
+                Computes the Pontryagin difference Z1 - Z2 of two boxes.
+
+                Args:
+                    Z1 (Box): minuend
+                    Z2 (Box): subtrahend
+
+                Returns:
+                    Box: box
+        
+    """
+@overload
 def project_onto_dims(Z: HybZono, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> HybZono:
-    """project_onto_dims(Z: zonoopt._core.HybZono, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> zonoopt._core.HybZono
+    """project_onto_dims(*args, **kwargs)
+    Overloaded function.
+
+    1. project_onto_dims(Z: zonoopt._core.HybZono, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> zonoopt._core.HybZono
 
 
                 Projects set Z onto the dimensions specified in dims.
@@ -6896,6 +7370,50 @@ def project_onto_dims(Z: HybZono, dims: collections.abc.Sequence[typing.Supports
             
                 Returns:
                     HybZono: zonotopic set
+        
+
+    2. project_onto_dims(Z: zonoopt._core.Box, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> zonoopt._core.Box
+
+
+                Projects box Z onto the dimensions specified in dims.
+
+                Args:
+                    Z (Box): box
+                    dims (list[int]): list of dimensions to project onto
+
+                Returns:
+                    Box: box
+        
+    """
+@overload
+def project_onto_dims(Z: Box, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> Box:
+    """project_onto_dims(*args, **kwargs)
+    Overloaded function.
+
+    1. project_onto_dims(Z: zonoopt._core.HybZono, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> zonoopt._core.HybZono
+
+
+                Projects set Z onto the dimensions specified in dims.
+            
+                Args:
+                    Z (HybZono): zonotopic set
+                    dims (list[int]): list of dimensions to project onto
+            
+                Returns:
+                    HybZono: zonotopic set
+        
+
+    2. project_onto_dims(Z: zonoopt._core.Box, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> zonoopt._core.Box
+
+
+                Projects box Z onto the dimensions specified in dims.
+
+                Args:
+                    Z (Box): box
+                    dims (list[int]): list of dimensions to project onto
+
+                Returns:
+                    Box: box
         
     """
 def set_default_solver_settings(settings: SolverSettings) -> None:

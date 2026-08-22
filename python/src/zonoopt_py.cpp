@@ -884,7 +884,15 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
     ;
 
-    auto box_cl = py::class_<Box>(m, "Box", "Box (i.e., interval vector) class")
+    auto box_cl = py::class_<Box>(m, "Box",
+        "Box (i.e., interval vector) class.\n\n"
+        "Unlike HybZono and its subclasses, Box operators have interval-arithmetic\n"
+        "semantics, not set-operation semantics. Box.__mul__ is elementwise interval\n"
+        "multiplication (not Cartesian product) and Box.__sub__ is interval subtraction\n"
+        "[a,b] - [c,d] = [a-d, b-c] (not the Pontryagin difference [a-c, b-d]). Use the\n"
+        "named methods cartesian_product() and pontry_diff() for the set-operation\n"
+        "meanings. Box.__add__ is elementwise interval addition, which for boxes\n"
+        "coincides exactly with the Minkowski sum; minkowski_sum() is a named alias for it.")
         .def(py::init<const Eigen::Vector<zono_float, -1>&, const Eigen::Vector<zono_float, -1>&>(), py::arg("x_lb"), py::arg("x_ub"),
             R"pbdoc(
                 Constructor from intervals of lower and upper bounds
@@ -1058,6 +1066,30 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Box: linear mapped box
             )pbdoc")
+        .def("affine_map", [](const Box& self, const Eigen::SparseMatrix<zono_float>& R, const Eigen::Vector<zono_float, -1>& s) -> Box
+            { return self.affine_map(R, s); }, py::arg("R"), py::arg("s")=Eigen::Vector<zono_float, -1>(),
+            R"pbdoc(
+                Affine map R*self + s of the box based on interval arithmetic
+
+                Args:
+                    R (scipy.sparse.csc_matrix): affine map matrix
+                    s (numpy.array, optional): vector offset
+
+                Returns:
+                    Box: affine mapped box
+            )pbdoc")
+        .def("affine_map", [](const Box& self, const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& R, const Eigen::Vector<zono_float, -1>& s) -> Box
+            { return self.affine_map(R, s); }, py::arg("R"), py::arg("s")=Eigen::Vector<zono_float, -1>(),
+            R"pbdoc(
+                Affine map R*self + s of the box based on interval arithmetic
+
+                Args:
+                    R (scipy.sparse.csr_matrix): affine map matrix
+                    s (numpy.array, optional): vector offset
+
+                Returns:
+                    Box: affine mapped box
+            )pbdoc")
         .def("dot", &Box::dot, py::arg("x"),
             R"pbdoc(
                 Linear map with vector
@@ -1067,6 +1099,16 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     Interval: result of linear map of box with vector
+            )pbdoc")
+        .def("support", &Box::support, py::arg("d"),
+            R"pbdoc(
+                Computes the support function of the box in the direction d
+
+                Args:
+                    d (numpy.array): vector defining direction for support function
+
+                Returns:
+                    float: support
             )pbdoc")
         .def("interval_hull", &Box::interval_hull, py::arg("other"),
             R"pbdoc(
@@ -1087,6 +1129,46 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     Box: intersection of self and other
+            )pbdoc")
+        .def("cartesian_product", &Box::cartesian_product, py::arg("other"),
+            R"pbdoc(
+                Cartesian product of two boxes
+
+                Args:
+                    other (Box): other box
+
+                Returns:
+                    Box: Cartesian product of self and other
+            )pbdoc")
+        .def("minkowski_sum", &Box::minkowski_sum, py::arg("other"),
+            R"pbdoc(
+                Minkowski sum of two boxes
+
+                Args:
+                    other (Box): other box
+
+                Returns:
+                    Box: Minkowski sum of self and other
+            )pbdoc")
+        .def("pontry_diff", &Box::pontry_diff, py::arg("other"),
+            R"pbdoc(
+                Pontryagin difference of two boxes
+
+                Args:
+                    other (Box): subtrahend
+
+                Returns:
+                    Box: Pontryagin difference of self and other
+            )pbdoc")
+        .def("project_onto_dims", &Box::project_onto_dims, py::arg("dims"),
+            R"pbdoc(
+                Projects the box onto the dimensions specified in dims
+
+                Args:
+                    dims (list[int]): list of dimensions to project onto
+
+                Returns:
+                    Box: box projected onto dims
             )pbdoc")
         .def("__add__", [](const Box& self, const Box& other) -> Box { return self + other; },
             py::arg("other"),
@@ -3187,7 +3269,9 @@ PYBIND11_MODULE(_core, m)
     ;
 
     // set operations
-    m.def("affine_map", &affine_map, py::arg("Z"), py::arg("R"), py::arg("s")=Eigen::Vector<zono_float, -1>(),
+    m.def("affine_map",
+        py::overload_cast<const HybZono&, const Eigen::SparseMatrix<zono_float>&, const Eigen::Vector<zono_float, -1>&>(&affine_map),
+        py::arg("Z"), py::arg("R"), py::arg("s")=Eigen::Vector<zono_float, -1>(),
         R"pbdoc(
             Returns affine map R*Z + s of set Z
             
@@ -3198,6 +3282,36 @@ PYBIND11_MODULE(_core, m)
             
             Returns:
                 HybZono: zonotopic set
+        )pbdoc");
+    m.def("affine_map",
+        [](const Box& Z, const Eigen::SparseMatrix<zono_float>& R, const Eigen::Vector<zono_float, -1>& s) -> Box
+        { return Z.affine_map(R, s); },
+        py::arg("Z"), py::arg("R"), py::arg("s")=Eigen::Vector<zono_float, -1>(),
+        R"pbdoc(
+            Returns affine map R*Z + s of box Z
+
+            Args:
+                Z (Box): box
+                R (scipy.sparse.csc_matrix): affine map matrix
+                s (numpy.array, optional): vector offset
+
+            Returns:
+                Box: box
+        )pbdoc");
+    m.def("affine_map",
+        [](const Box& Z, const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& R, const Eigen::Vector<zono_float, -1>& s) -> Box
+        { return Z.affine_map(R, s); },
+        py::arg("Z"), py::arg("R"), py::arg("s")=Eigen::Vector<zono_float, -1>(),
+        R"pbdoc(
+            Returns affine map R*Z + s of box Z
+
+            Args:
+                Z (Box): box
+                R (scipy.sparse.csr_matrix): affine map matrix
+                s (numpy.array, optional): vector offset
+
+            Returns:
+                Box: box
         )pbdoc");
     m.def("affine_inclusion", &affine_inclusion, py::arg("Z"), py::arg("R"), py::arg("s")=Eigen::Vector<zono_float, -1>(),
         R"pbdoc(
@@ -3216,7 +3330,9 @@ PYBIND11_MODULE(_core, m)
             Returns:
                 HybZono: zonotopic set
         )pbdoc");
-    m.def("project_onto_dims", &project_onto_dims, py::arg("Z"), py::arg("dims"),
+    m.def("project_onto_dims",
+        py::overload_cast<const HybZono&, const std::vector<int>&>(&project_onto_dims),
+        py::arg("Z"), py::arg("dims"),
         R"pbdoc(
             Projects set Z onto the dimensions specified in dims.
             
@@ -3227,18 +3343,46 @@ PYBIND11_MODULE(_core, m)
             Returns:
                 HybZono: zonotopic set
         )pbdoc");
-    m.def("minkowski_sum", &minkowski_sum, py::arg("Z1"), py::arg("Z2"),
+    m.def("project_onto_dims", py::overload_cast<const Box&, const std::vector<int>&>(&project_onto_dims),
+        py::arg("Z"), py::arg("dims"),
+        R"pbdoc(
+            Projects box Z onto the dimensions specified in dims.
+
+            Args:
+                Z (Box): box
+                dims (list[int]): list of dimensions to project onto
+
+            Returns:
+                Box: box
+        )pbdoc");
+    m.def("minkowski_sum",
+        py::overload_cast<const HybZono&, HybZono&>(&minkowski_sum),
+        py::arg("Z1"), py::arg("Z2"),
         R"pbdoc(
             Computes Minkowski sum of two sets Z1 and Z2.
-            
+
             Args:
                 Z1 (HybZono): zonotopic set
                 Z2 (HybZono): zonotopic set
-            
+
             Returns:
                 HybZono: zonotopic set
         )pbdoc");
-    m.def("pontry_diff", &pontry_diff, py::arg("Z1"), py::arg("Z2"), py::arg("exact")=true,
+    m.def("minkowski_sum", py::overload_cast<const Box&, const Box&>(&minkowski_sum),
+        py::arg("Z1"), py::arg("Z2"),
+        R"pbdoc(
+            Computes the Minkowski sum of two boxes Z1 and Z2.
+
+            Args:
+                Z1 (Box): box
+                Z2 (Box): box
+
+            Returns:
+                Box: box
+        )pbdoc");
+    m.def("pontry_diff",
+        py::overload_cast<HybZono&, Zono&, bool>(&pontry_diff),
+        py::arg("Z1"), py::arg("Z2"), py::arg("exact")=true,
         R"pbdoc(
             Computes the Pontryagin difference Z1 - Z2.
             
@@ -3253,6 +3397,18 @@ PYBIND11_MODULE(_core, m)
             
             Returns:
                 HybZono: zonotopic set
+        )pbdoc");
+    m.def("pontry_diff", py::overload_cast<const Box&, const Box&>(&pontry_diff),
+        py::arg("Z1"), py::arg("Z2"),
+        R"pbdoc(
+            Computes the Pontryagin difference Z1 - Z2 of two boxes.
+
+            Args:
+                Z1 (Box): minuend
+                Z2 (Box): subtrahend
+
+            Returns:
+                Box: box
         )pbdoc");
     m.def("intersection", &intersection, py::arg("Z1"), py::arg("Z2"), py::arg("R")=Eigen::SparseMatrix<zono_float>(),
         R"pbdoc(
@@ -3322,7 +3478,9 @@ PYBIND11_MODULE(_core, m)
             Returns:
                 ConZono: constrained zonotop convex hull
         )pbdoc");
-    m.def("cartesian_product", &cartesian_product, py::arg("Z1"), py::arg("Z2"),
+    m.def("cartesian_product",
+        py::overload_cast<const HybZono&, HybZono&>(&cartesian_product),
+        py::arg("Z1"), py::arg("Z2"),
         R"pbdoc(
             Computes the Cartesian product of two sets Z1 and Z2.
             
@@ -3332,6 +3490,18 @@ PYBIND11_MODULE(_core, m)
             
             Returns:
                 HybZono: zonotopic set
+        )pbdoc");
+    m.def("cartesian_product", py::overload_cast<const Box&, const Box&>(&cartesian_product),
+        py::arg("Z1"), py::arg("Z2"),
+        R"pbdoc(
+            Computes the Cartesian product of two boxes Z1 and Z2.
+
+            Args:
+                Z1 (Box): box
+                Z2 (Box): box
+
+            Returns:
+                Box: box
         )pbdoc");
     m.def("constrain", &constrain, py::arg("Z"), py::arg("H"), py::arg("f"), py::arg("direction"), py::arg("R")=Eigen::SparseMatrix<zono_float>(),
         R"pbdoc(
@@ -3446,6 +3616,29 @@ PYBIND11_MODULE(_core, m)
             
             Returns:
                 Zono: zonotope
+        )pbdoc");
+    m.def("interval_hull", py::overload_cast<const Box&, const Box&>(&interval_hull),
+        py::arg("Z1"), py::arg("Z2"),
+        R"pbdoc(
+            Computes the interval hull of two boxes.
+
+            Args:
+                Z1 (Box): box
+                Z2 (Box): box
+
+            Returns:
+                Box: smallest box containing both Z1 and Z2
+        )pbdoc");
+    m.def("interval_hull", py::overload_cast<const std::vector<Box>&>(&interval_hull),
+        py::arg("boxes"),
+        R"pbdoc(
+            Computes the interval hull of several boxes
+
+            Args:
+                boxes (list[Box]): boxes for which the interval hull is to be computed
+
+            Returns:
+                Box: smallest box containing all boxes
         )pbdoc");
     m.def("to_json", &to_json, py::arg("Z"), py::arg("filename"),
         R"pbdoc(
