@@ -1066,8 +1066,9 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Box: linear mapped box
             )pbdoc")
-        .def("affine_map", [](const Box& self, const Eigen::SparseMatrix<zono_float>& R, const Eigen::Vector<zono_float, -1>& s) -> Box
-            { return self.affine_map(R, s); }, py::arg("R"), py::arg("s")=Eigen::Vector<zono_float, -1>(),
+        .def("affine_map",
+            py::overload_cast<const Eigen::SparseMatrix<zono_float>&, const Eigen::Vector<zono_float, -1>&>(&Box::affine_map, py::const_),
+            py::arg("R"), py::arg("s")=Eigen::Vector<zono_float, -1>(),
             R"pbdoc(
                 Affine map R*self + s of the box based on interval arithmetic
 
@@ -1078,8 +1079,9 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Box: affine mapped box
             )pbdoc")
-        .def("affine_map", [](const Box& self, const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& R, const Eigen::Vector<zono_float, -1>& s) -> Box
-            { return self.affine_map(R, s); }, py::arg("R"), py::arg("s")=Eigen::Vector<zono_float, -1>(),
+        .def("affine_map",
+            py::overload_cast<const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>&, const Eigen::Vector<zono_float, -1>&>(&Box::affine_map, py::const_),
+            py::arg("R"), py::arg("s")=Eigen::Vector<zono_float, -1>(),
             R"pbdoc(
                 Affine map R*self + s of the box based on interval arithmetic
 
@@ -3284,8 +3286,7 @@ PYBIND11_MODULE(_core, m)
                 HybZono: zonotopic set
         )pbdoc");
     m.def("affine_map",
-        [](const Box& Z, const Eigen::SparseMatrix<zono_float>& R, const Eigen::Vector<zono_float, -1>& s) -> Box
-        { return Z.affine_map(R, s); },
+        py::overload_cast<const Box&, const Eigen::SparseMatrix<zono_float>&, const Eigen::Vector<zono_float, -1>&>(&affine_map),
         py::arg("Z"), py::arg("R"), py::arg("s")=Eigen::Vector<zono_float, -1>(),
         R"pbdoc(
             Returns affine map R*Z + s of box Z

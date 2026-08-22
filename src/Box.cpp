@@ -24,6 +24,17 @@ namespace ZonoOpt {
         {
             return {Eigen::Vector<zono_float, -1>::Ones(n), Eigen::Vector<zono_float, -1>::Zero(n)};
         }
+
+        template <typename MatT>
+        Box affine_map_impl(const Box& box, const MatT& R, const Eigen::Vector<zono_float, -1>& s)
+        {
+            if (static_cast<size_t>(R.cols()) != box.size() || (s.size() != 0 && s.size() != R.rows()))
+                throw std::invalid_argument("Box affine map: inconsistent dimensions");
+            if (box.is_empty())
+                return make_empty_box(R.rows());
+            Box out = box.linear_map(R);
+            return (s.size() == 0) ? out : out + s;
+        }
     }
 
     Box::Box(const size_t size)
@@ -140,7 +151,9 @@ namespace ZonoOpt {
     {
         if (this->size() == 0)
             return true;
-        return ((x_lb.array() > x_ub.array()) || x_lb.array().isNaN() || x_ub.array().isNaN()).any();
+        // mirrors boost::numeric::interval's own is_empty(l, u) = !(l <= u), which is
+        // false under NaN comparison and so also catches the [NaN, NaN] empty encoding
+        return (!(x_lb.array() <= x_ub.array())).any();
     }
 
     bool Box::is_single_valued() const
@@ -612,32 +625,17 @@ namespace ZonoOpt {
 
     Box Box::affine_map(const Eigen::Matrix<zono_float, -1, -1>& R, const Eigen::Vector<zono_float, -1>& s) const
     {
-        if (R.cols() != x_lb.size() || (s.size() != 0 && s.size() != R.rows()))
-            throw std::invalid_argument("Box affine map: inconsistent dimensions");
-        if (this->is_empty())
-            return make_empty_box(R.rows());
-        Box out = this->linear_map(R);
-        return (s.size() == 0) ? out : out + s;
+        return affine_map_impl(*this, R, s);
     }
 
     Box Box::affine_map(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& R, const Eigen::Vector<zono_float, -1>& s) const
     {
-        if (R.cols() != x_lb.size() || (s.size() != 0 && s.size() != R.rows()))
-            throw std::invalid_argument("Box affine map: inconsistent dimensions");
-        if (this->is_empty())
-            return make_empty_box(R.rows());
-        Box out = this->linear_map(R);
-        return (s.size() == 0) ? out : out + s;
+        return affine_map_impl(*this, R, s);
     }
 
     Box Box::affine_map(const Eigen::SparseMatrix<zono_float>& R, const Eigen::Vector<zono_float, -1>& s) const
     {
-        if (R.cols() != x_lb.size() || (s.size() != 0 && s.size() != R.rows()))
-            throw std::invalid_argument("Box affine map: inconsistent dimensions");
-        if (this->is_empty())
-            return make_empty_box(R.rows());
-        Box out = this->linear_map(R);
-        return (s.size() == 0) ? out : out + s;
+        return affine_map_impl(*this, R, s);
     }
 
     Interval Box::dot(const Eigen::Vector<zono_float, -1>& x) const
@@ -659,7 +657,10 @@ namespace ZonoOpt {
     {
         if (d.size() != x_lb.size())
             throw std::invalid_argument("Box support: inconsistent dimensions");
-        return this->dot(d).upper();
+        zono_float y = 0;
+        for (Eigen::Index i = 0; i < d.size(); ++i)
+            y += (d(i) >= 0) ? d(i) * x_ub(i) : d(i) * x_lb(i);
+        return y;
     }
 
     void Box::permute(const Eigen::PermutationMatrix<Eigen::Dynamic, Eigen::Dynamic>& P)
@@ -921,16 +922,12 @@ namespace ZonoOpt {
             throw std::invalid_argument("Box interval hull: no boxes provided");
 
         const auto n = boxes.front().size();
-        bool any = false;
         Box out = make_empty_box(static_cast<Eigen::Index>(n));
         for (const Box& b : boxes)
         {
             if (b.size() != n)
                 throw std::invalid_argument("Box interval hull: inconsistent dimensions");
-            if (b.is_empty())
-                continue;
-            out = any ? out.interval_hull(b) : b;
-            any = true;
+            out = out.interval_hull(b);
         }
         return out;
     }
