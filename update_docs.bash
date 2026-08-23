@@ -9,6 +9,5 @@ cd ..
 cd python
 git rm -rf build
 make html
-sed -i 's/images/_static/g' build/html/index.html
 git add build
 cd ../..

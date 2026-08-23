@@ -3,7 +3,7 @@
 /**
  * @file Box.hpp
  * @author Josh Robbins (jrobbins@psu.edu)
- * @brief Box and MI_Box classes
+ * @brief Box classe
  * @version 1.0
  * @date 2026-03-18
  *
@@ -25,6 +25,11 @@
 namespace ZonoOpt
 {
     using namespace detail;
+
+    namespace detail
+    {
+        class MI_Box;
+    }
 
     /**
      * @brief Box (i.e., interval vector) class
@@ -232,8 +237,6 @@ namespace ZonoOpt
          *
          * @note Box::operator* is elementwise interval multiplication, NOT the Cartesian
          * product. This differs from HybZono, where operator* is the Cartesian product.
-         * @note When called on an MI_Box, integrality information is discarded and the
-         * result is a plain Box computed from the interval relaxation.
          */
         Box cartesian_product(const Box& other) const;
 
@@ -245,8 +248,6 @@ namespace ZonoOpt
          *
          * @note For boxes, the Minkowski sum coincides exactly with elementwise interval
          * addition, so this is a named alias for Box::operator+.
-         * @note When called on an MI_Box, integrality information is discarded and the
-         * result is a plain Box computed from the interval relaxation.
          * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         Box minkowski_sum(const Box& other) const;
@@ -260,8 +261,6 @@ namespace ZonoOpt
          * @warning Box::operator- is interval subtraction, i.e., [a,b] - [c,d] = [a-d, b-c],
          * which is NOT the Pontryagin difference [a-c, b-d]. This differs from HybZono,
          * where operator- is the Pontryagin difference.
-         * @note When called on an MI_Box, the interval relaxation is used and integrality
-         * information is discarded.
          * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         Box pontry_diff(const Box& other) const;
@@ -274,8 +273,6 @@ namespace ZonoOpt
          *
          * dims need not be sorted and may contain repeats.
          *
-         * @note When called on an MI_Box, integrality information is discarded and the
-         * result is a plain Box computed from the interval relaxation.
          * @throws std::invalid_argument if any entry in dims is not a valid dimension of the Box.
          */
         Box project_onto_dims(const std::vector<int>& dims) const;
@@ -754,78 +751,83 @@ namespace ZonoOpt
                                   int depth, int max_depth);
 
     private:
-        friend class MI_Box;
+        friend class detail::MI_Box;
     };
 
-    // mixed-integer box (some bounds are fixed)
-    /**
-     * @brief Mixed-integer box
-     *
-     * Extends Box class to include variables for which may only take their upper or lower bound
-     * (they may not take any value on the interior).
-     *
-     * @note The set-operation methods inherited from Box (cartesian_product, minkowski_sum,
-     * pontry_diff, project_onto_dims, affine_map) are not virtual and always return a plain
-     * Box computed from the interval relaxation; integrality information is discarded.
-     */
-    class MI_Box final : public Box
+    namespace detail 
     {
-    public:
-        // constructors
 
+        // mixed-integer box (some bounds are fixed)
         /**
-         * @brief default constructor
-         */
-        MI_Box() = default;
+        * @brief Mixed-integer box
+        *
+        * Extends Box class to include variables for which may only take their upper or lower bound
+        * (they may not take any value on the interior).
+        *
+        * @note The set-operation methods inherited from Box (cartesian_product, minkowski_sum,
+        * pontry_diff, project_onto_dims, affine_map) are not virtual and always return a plain
+        * Box computed from the interval relaxation; integrality information is discarded.
+        */
+        class MI_Box final : public Box
+        {
+        public:
+            // constructors
 
-        /**
-         * @brief Constructor for MI_Box
-         * @param x_lb vector of lower bounds
-         * @param x_ub vector of upper bounds
-         * @param idx_b indices of binary variables {start index, number of binaries}
-         * @param zero_one_form flag indicating whether binary variables are in {0,1} form (true) or {-1,1} form (false)
-         * @throws std::invalid_argument if x_lb and x_ub do not have the same size.
-         * @throws std::out_of_range if the binary indices in idx_b are outside [0, size()).
-         */
-        MI_Box(const Eigen::Vector<zono_float, -1>& x_lb, const Eigen::Vector<zono_float, -1>& x_ub,
-               const std::pair<int, int>& idx_b, bool zero_one_form);
+            /**
+            * @brief default constructor
+            */
+            MI_Box() = default;
 
-        /**
-         * @brief Constructor for MI_Box from vector of intervals
-         * @param intervals vector intervals
-         * @param idx_b indices of binary variables {start index, number of binaries}
-         * @param zero_one_form flag indicating whether binary variables are in {0,1} form (true) or {-1,1} form (false)
-         * @throws std::out_of_range if the binary indices in idx_b are outside [0, size()).
-         */
-        MI_Box(const std::vector<Interval>& intervals, const std::pair<int, int>& idx_b, bool zero_one_form);
+            /**
+            * @brief Constructor for MI_Box
+            * @param x_lb vector of lower bounds
+            * @param x_ub vector of upper bounds
+            * @param idx_b indices of binary variables {start index, number of binaries}
+            * @param zero_one_form flag indicating whether binary variables are in {0,1} form (true) or {-1,1} form (false)
+            * @throws std::invalid_argument if x_lb and x_ub do not have the same size.
+            * @throws std::out_of_range if the binary indices in idx_b are outside [0, size()).
+            */
+            MI_Box(const Eigen::Vector<zono_float, -1>& x_lb, const Eigen::Vector<zono_float, -1>& x_ub,
+                const std::pair<int, int>& idx_b, bool zero_one_form);
 
-        // clone operation
-        Box* clone() const override;
+            /**
+            * @brief Constructor for MI_Box from vector of intervals
+            * @param intervals vector intervals
+            * @param idx_b indices of binary variables {start index, number of binaries}
+            * @param zero_one_form flag indicating whether binary variables are in {0,1} form (true) or {-1,1} form (false)
+            * @throws std::out_of_range if the binary indices in idx_b are outside [0, size()).
+            */
+            MI_Box(const std::vector<Interval>& intervals, const std::pair<int, int>& idx_b, bool zero_one_form);
 
-        // project
-        void project(Eigen::Ref<Eigen::Vector<zono_float, -1>> x) const override;
+            // clone operation
+            Box* clone() const override;
 
-        // get binary indices
-        /**
-         * @brief Get binary indices
-         * @return reference to binary indices {start index, number of binaries}
-         */
-        const std::pair<int, int>& binary_indices() const { return idx_b; }
+            // project
+            void project(Eigen::Ref<Eigen::Vector<zono_float, -1>> x) const override;
 
-        // get binary range
-        zono_float get_bin_low() const { return bin_low; }
-        zono_float get_bin_high() const { return bin_high; }
+            // get binary indices
+            /**
+            * @brief Get binary indices
+            * @return reference to binary indices {start index, number of binaries}
+            */
+            const std::pair<int, int>& binary_indices() const { return idx_b; }
 
-    protected:
-        bool contract_helper(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A,
-                             const Eigen::Vector<zono_float, -1>& b, const int iter,
-                             const std::set<int>& constraints) override;
+            // get binary range
+            zono_float get_bin_low() const { return bin_low; }
+            zono_float get_bin_high() const { return bin_high; }
 
-    private:
-        /// binary variable indices
-        std::pair<int, int> idx_b;
-        zono_float bin_low = zero, bin_high = one;
-    };
+        protected:
+            bool contract_helper(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A,
+                                const Eigen::Vector<zono_float, -1>& b, const int iter,
+                                const std::set<int>& constraints) override;
+
+        private:
+            /// binary variable indices
+            std::pair<int, int> idx_b;
+            zono_float bin_low = zero, bin_high = one;
+        };
+
+    } // namespace detail
 
     // forward declarations
 
