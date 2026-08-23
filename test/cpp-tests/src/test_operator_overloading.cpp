@@ -327,6 +327,31 @@ TEST(OperatorOverloading, IntersectionAndUnion)
     EXPECT_TRUE(check_equal(*Z_set, *Z_op)) << "Union failed";
 }
 
+TEST(BoxOperatorSemantics, DivergeFromHybZono)
+{
+    Eigen::VectorXd a(2), b(2), c(2), d(2);
+    a << 0., -1.;
+    b << 10., 4.;
+    c << 1., -2.;
+    d << 2., 3.;
+    Box b1(a, b); // [0,10] x [-1,4]
+    Box b2(c, d); // [1,2] x [-2,3]
+
+    // operator* stays elementwise interval multiplication, NOT Cartesian product
+    const Box prod = b1 * b2;
+    EXPECT_EQ(prod.size(), b1.size());
+
+    // operator- stays interval subtraction [a-d, b-c], NOT Pontryagin difference [a-c, b-d]
+    const Box diff_op = b1 - b2;
+    const Box diff_expected(a - d, b - c);
+    EXPECT_TRUE(diff_op == diff_expected);
+    EXPECT_FALSE(diff_op == b1.pontry_diff(b2));
+
+    // operator+ IS the Minkowski sum
+    EXPECT_TRUE((b1 + b2) == b1.minkowski_sum(b2));
+    EXPECT_TRUE((b1 + b2) == minkowski_sum(b1, b2));
+}
+
 TEST(OperatorOverloading, UnaryMinus)
 {
     std::shared_ptr<Zono> Z1, Z2;

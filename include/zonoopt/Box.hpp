@@ -28,6 +28,14 @@ namespace ZonoOpt
 
     /**
      * @brief Box (i.e., interval vector) class
+     *
+     * @warning Unlike HybZono and its subclasses, Box operators have interval-arithmetic
+     * semantics, not set-operation semantics. Specifically, Box::operator* is elementwise
+     * interval multiplication (not Cartesian product) and Box::operator- is interval
+     * subtraction [a,b] - [c,d] = [a-d, b-c] (not the Pontryagin difference [a-c, b-d]).
+     * Use the named methods cartesian_product() and pontry_diff() for the set-operation
+     * meanings. Box::operator+ is elementwise interval addition, which for boxes coincides
+     * exactly with the Minkowski sum; minkowski_sum() is a named alias for it.
      */
     class Box
     {
@@ -215,6 +223,62 @@ namespace ZonoOpt
          * @throws std::invalid_argument if this and other have inconsistent dimensions.
          */
         bool contains_set(const Box& other) const;
+
+        /**
+         * @brief Cartesian product of this box and other
+         *
+         * @param other other box
+         * @return Box of dimension size() + other.size() with this box's intervals first
+         *
+         * @note Box::operator* is elementwise interval multiplication, NOT the Cartesian
+         * product. This differs from HybZono, where operator* is the Cartesian product.
+         * @note When called on an MI_Box, integrality information is discarded and the
+         * result is a plain Box computed from the interval relaxation.
+         */
+        Box cartesian_product(const Box& other) const;
+
+        /**
+         * @brief Minkowski sum of this box and other
+         *
+         * @param other other box
+         * @return Minkowski sum of this and other
+         *
+         * @note For boxes, the Minkowski sum coincides exactly with elementwise interval
+         * addition, so this is a named alias for Box::operator+.
+         * @note When called on an MI_Box, integrality information is discarded and the
+         * result is a plain Box computed from the interval relaxation.
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
+         */
+        Box minkowski_sum(const Box& other) const;
+
+        /**
+         * @brief Pontryagin difference of this box and other, i.e., {x : x + y is in this for all y in other}
+         *
+         * @param other subtrahend
+         * @return Pontryagin difference of this and other
+         *
+         * @warning Box::operator- is interval subtraction, i.e., [a,b] - [c,d] = [a-d, b-c],
+         * which is NOT the Pontryagin difference [a-c, b-d]. This differs from HybZono,
+         * where operator- is the Pontryagin difference.
+         * @note When called on an MI_Box, the interval relaxation is used and integrality
+         * information is discarded.
+         * @throws std::invalid_argument if this and other have inconsistent dimensions.
+         */
+        Box pontry_diff(const Box& other) const;
+
+        /**
+         * @brief Projects the box onto the dimensions specified in dims
+         *
+         * @param dims vector of dimensions
+         * @return Box of dimension dims.size() whose k-th interval is this box's dims[k]-th interval
+         *
+         * dims need not be sorted and may contain repeats.
+         *
+         * @note When called on an MI_Box, integrality information is discarded and the
+         * result is a plain Box computed from the interval relaxation.
+         * @throws std::invalid_argument if any entry in dims is not a valid dimension of the Box.
+         */
+        Box project_onto_dims(const std::vector<int>& dims) const;
 
         // operator overloading
 
@@ -553,12 +617,64 @@ namespace ZonoOpt
         Box linear_map(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& A) const;
 
         /**
+         * @brief Linear map of box based on interval arithmetic
+         * @param A map matrix (sparse column major)
+         * @return Linear mapped box
+         * @throws std::invalid_argument if A's number of columns does not equal the size of the Box.
+         */
+        Box linear_map(const Eigen::SparseMatrix<zono_float>& A) const;
+
+        /**
+         * @brief Affine map R*[x] + s of the box based on interval arithmetic
+         * @param R map matrix (dense)
+         * @param s vector offset, defaults to zero
+         * @return affine mapped box
+         * @throws std::invalid_argument if R, s, and the Box have inconsistent dimensions.
+         */
+        Box affine_map(const Eigen::Matrix<zono_float, -1, -1>& R,
+                       const Eigen::Vector<zono_float, -1>& s = Eigen::Vector<zono_float, -1>()) const;
+
+        /**
+         * @brief Affine map R*[x] + s of the box based on interval arithmetic
+         * @param R map matrix (sparse row major)
+         * @param s vector offset, defaults to zero
+         * @return affine mapped box
+         * @throws std::invalid_argument if R, s, and the Box have inconsistent dimensions.
+         */
+        Box affine_map(const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& R,
+                       const Eigen::Vector<zono_float, -1>& s = Eigen::Vector<zono_float, -1>()) const;
+
+        /**
+         * @brief Affine map R*[x] + s of the box based on interval arithmetic
+         * @param R map matrix (sparse column major)
+         * @param s vector offset, defaults to zero
+         * @return affine mapped box
+         * @throws std::invalid_argument if R, s, and the Box have inconsistent dimensions.
+         */
+        Box affine_map(const Eigen::SparseMatrix<zono_float>& R,
+                       const Eigen::Vector<zono_float, -1>& s = Eigen::Vector<zono_float, -1>()) const;
+
+        /**
          * @brief Linear map with vector
          * @param x vector
          * @return Interval
          * @throws std::invalid_argument if x does not have the same size as the Box.
          */
         Interval dot(const Eigen::Vector<zono_float, -1>& x) const;
+
+        /**
+         * @brief Computes the support function of the box in the direction d
+         *
+         * @param d vector defining direction for support function
+         * @return support
+         *
+         * Computes max_{x in [x]} <x, d>. Unlike HybZono::support this is exact and
+         * closed-form (no solver settings are required), since each variable appears
+         * exactly once in the sum and there is no dependency problem.
+         *
+         * @throws std::invalid_argument if d does not have the same size as the Box.
+         */
+        zono_float support(const Eigen::Vector<zono_float, -1>& d) const;
 
         /**
          * @brief Permutes in place using permutation matrix, i.e., [x] <- P*[x]
@@ -647,6 +763,10 @@ namespace ZonoOpt
      *
      * Extends Box class to include variables for which may only take their upper or lower bound
      * (they may not take any value on the interior).
+     *
+     * @note The set-operation methods inherited from Box (cartesian_product, minkowski_sum,
+     * pontry_diff, project_onto_dims, affine_map) are not virtual and always return a plain
+     * Box computed from the interval relaxation; integrality information is discarded.
      */
     class MI_Box final : public Box
     {
@@ -706,4 +826,92 @@ namespace ZonoOpt
         std::pair<int, int> idx_b;
         zono_float bin_low = zero, bin_high = one;
     };
+
+    // forward declarations
+
+    /**
+     * @brief Computes the Cartesian product of two boxes Z1 and Z2.
+     *
+     * @param Z1 box
+     * @param Z2 box
+     * @return box
+     * @ingroup ZonoOpt_SetOperations
+     * @see Box::cartesian_product
+     *
+     * @note Unlike the HybZono overload, Box::operator* does NOT compute the Cartesian product.
+     */
+    Box cartesian_product(const Box& Z1, const Box& Z2);
+
+    /**
+     * @brief Computes the Minkowski sum of two boxes Z1 and Z2.
+     *
+     * @param Z1 box
+     * @param Z2 box
+     * @return box
+     * @ingroup ZonoOpt_SetOperations
+     * @see Box::minkowski_sum
+     * @throws std::invalid_argument if Z1 and Z2 have different dimensions.
+     */
+    Box minkowski_sum(const Box& Z1, const Box& Z2);
+
+    /**
+     * @brief Computes the Pontryagin difference Z1 - Z2 of two boxes.
+     *
+     * @param Z1 minuend
+     * @param Z2 subtrahend
+     * @return box
+     * @ingroup ZonoOpt_SetOperations
+     * @see Box::pontry_diff
+     * @throws std::invalid_argument if Z1 and Z2 have different dimensions.
+     */
+    Box pontry_diff(const Box& Z1, const Box& Z2);
+
+    /**
+     * @brief Projects box Z onto the dimensions specified in dims.
+     *
+     * @param Z box
+     * @param dims vector of dimensions
+     * @return box
+     * @ingroup ZonoOpt_SetOperations
+     * @see Box::project_onto_dims
+     * @throws std::invalid_argument if any entry in dims is not a valid dimension of Z.
+     */
+    Box project_onto_dims(const Box& Z, const std::vector<int>& dims);
+
+    /**
+     * @brief Returns affine map R*Z + s of box Z
+     *
+     * @param Z box
+     * @param R affine map matrix
+     * @param s vector offset
+     * @return box
+     * @ingroup ZonoOpt_SetOperations
+     * @see Box::affine_map
+     * @throws std::invalid_argument if R, s, and Z have inconsistent dimensions.
+     */
+    Box affine_map(const Box& Z, const Eigen::SparseMatrix<zono_float>& R,
+                   const Eigen::Vector<zono_float, -1>& s = Eigen::Vector<zono_float, -1>());
+
+    /**
+     * @brief Computes the interval hull of two boxes.
+     *
+     * @param Z1 box
+     * @param Z2 box
+     * @return smallest box containing both Z1 and Z2
+     * @ingroup ZonoOpt_SetOperations
+     * @see Box::interval_hull
+     * @throws std::invalid_argument if Z1 and Z2 have different dimensions.
+     */
+    Box interval_hull(const Box& Z1, const Box& Z2);
+
+    /**
+     * @brief Computes the interval hull of several boxes
+     *
+     * @param boxes boxes for which the interval hull is to be computed
+     * @return smallest box containing all boxes
+     * @ingroup ZonoOpt_SetOperations
+     *
+     * @throws std::invalid_argument if boxes is empty or if its members have inconsistent dimensions.
+     */
+    Box interval_hull(const std::vector<Box>& boxes);
 }
