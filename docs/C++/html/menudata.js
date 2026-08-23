@@ -144,6 +144,7 @@ var menudata={children:[
 {text:"Related Symbols",url:"functions_rela.html",children:[
 {text:"a",url:"functions_rela.html#index_a"},
 {text:"c",url:"functions_rela.html#index_c"},
+{text:"d",url:"functions_rela.html#index_d"},
 {text:"h",url:"functions_rela.html#index_h"},
 {text:"i",url:"functions_rela.html#index_i"},
 {text:"m",url:"functions_rela.html#index_m"},

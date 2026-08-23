@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['union_5fof_5fmany_0',['union_of_many',['../classZonoOpt_1_1HybZono.html#aa9d2fc96ff1937d8a8f0b6af96da6e8d',1,'ZonoOpt::HybZono']]]
+  ['set_5fdiff_0',['set_diff',['../classZonoOpt_1_1HybZono.html#a5d33b67891eb0514d5f72966666bb6d3',1,'ZonoOpt::HybZono']]]
 ];

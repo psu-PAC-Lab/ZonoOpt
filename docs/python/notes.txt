@@ -3,4 +3,7 @@ To build the python documentation:
 - pip install the zonoopt module
 - from this directory, "make html"
 - open build/html/index.html
-  - find the image paths (images/*.svg) and replace "images" with "_static"
+
+Image paths from the included README.md resolve automatically via the
+docs/python/source/images symlink (-> ../../../images), so no manual
+path fixup is needed.

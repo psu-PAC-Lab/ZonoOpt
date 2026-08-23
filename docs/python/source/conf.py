@@ -51,7 +51,6 @@ autoclass_content = "both"
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'sphinx_rtd_theme'
-html_static_path = ['../../../images']
 
 def skip_special_members(app, what, name, obj, skip, options):
     if name.startswith('__') and name.endswith('__') and name not in ['__add__', 

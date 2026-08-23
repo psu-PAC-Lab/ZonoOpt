@@ -88,14 +88,22 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">Box.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Box and MI_Box classes.  
+<p>Box classe.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;<a class="el" href="Interval_8hpp_source.html">Interval.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &lt;vector&gt;</code><br />
+<code>#include &lt;set&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+<code>#include &lt;ostream&gt;</code><br />
+<code>#include &quot;Eigen/Dense&quot;</code><br />
+<code>#include &quot;Eigen/Sparse&quot;</code><br />
+<code>#include &quot;<a class="el" href="Interval_8hpp_source.html">Interval.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Defines_8hpp_source.html">Defines.hpp</a>&quot;</code><br />
 </div>
 <p><a href="Box_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -104,17 +112,38 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1Box.html">ZonoOpt::Box</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a> (i.e., interval vector) class.  <a href="classZonoOpt_1_1Box.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1MI__Box.html">ZonoOpt::MI_Box</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mixed-integer box.  <a href="classZonoOpt_1_1MI__Box.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespaceZonoOpt" id="r_namespaceZonoOpt"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html">ZonoOpt</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:gaa34e5a2c65612b0c3a6fb065a920bfbc" id="r_gaa34e5a2c65612b0c3a6fb065a920bfbc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#gaa34e5a2c65612b0c3a6fb065a920bfbc">ZonoOpt::affine_map</a> (const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;Z, const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;R, const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;s=Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt;())</td></tr>
+<tr class="memdesc:gaa34e5a2c65612b0c3a6fb065a920bfbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns affine map R*Z + s of box Z.  <br /></td></tr>
+<tr class="separator:gaa34e5a2c65612b0c3a6fb065a920bfbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab02e8499178027f5754ca49e8792686c" id="r_gab02e8499178027f5754ca49e8792686c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#gab02e8499178027f5754ca49e8792686c">ZonoOpt::cartesian_product</a> (const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;Z1, const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;Z2)</td></tr>
+<tr class="memdesc:gab02e8499178027f5754ca49e8792686c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the Cartesian product of two boxes Z1 and Z2.  <br /></td></tr>
+<tr class="separator:gab02e8499178027f5754ca49e8792686c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga69922cff8279dee7cc5daa184f8c1e98" id="r_ga69922cff8279dee7cc5daa184f8c1e98"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#ga69922cff8279dee7cc5daa184f8c1e98">ZonoOpt::interval_hull</a> (const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;Z1, const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;Z2)</td></tr>
+<tr class="memdesc:ga69922cff8279dee7cc5daa184f8c1e98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the interval hull of two boxes.  <br /></td></tr>
+<tr class="separator:ga69922cff8279dee7cc5daa184f8c1e98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4d12edb372732a48f4ae2aff1d6b2ed1" id="r_ga4d12edb372732a48f4ae2aff1d6b2ed1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#ga4d12edb372732a48f4ae2aff1d6b2ed1">ZonoOpt::interval_hull</a> (const std::vector&lt; <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &gt; &amp;boxes)</td></tr>
+<tr class="memdesc:ga4d12edb372732a48f4ae2aff1d6b2ed1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the interval hull of several boxes.  <br /></td></tr>
+<tr class="separator:ga4d12edb372732a48f4ae2aff1d6b2ed1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga091bbc330851183f01a31058c1444f29" id="r_ga091bbc330851183f01a31058c1444f29"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#ga091bbc330851183f01a31058c1444f29">ZonoOpt::minkowski_sum</a> (const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;Z1, const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;Z2)</td></tr>
+<tr class="memdesc:ga091bbc330851183f01a31058c1444f29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the Minkowski sum of two boxes Z1 and Z2.  <br /></td></tr>
+<tr class="separator:ga091bbc330851183f01a31058c1444f29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7c84e5284907fb375da8431b14ecf67d" id="r_ga7c84e5284907fb375da8431b14ecf67d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#ga7c84e5284907fb375da8431b14ecf67d">ZonoOpt::pontry_diff</a> (const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;Z1, const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;Z2)</td></tr>
+<tr class="memdesc:ga7c84e5284907fb375da8431b14ecf67d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the Pontryagin difference Z1 - Z2 of two boxes.  <br /></td></tr>
+<tr class="separator:ga7c84e5284907fb375da8431b14ecf67d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf228bd4eb68b5ca20601ca8f0df47381" id="r_gaf228bd4eb68b5ca20601ca8f0df47381"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#gaf228bd4eb68b5ca20601ca8f0df47381">ZonoOpt::project_onto_dims</a> (const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;Z, const std::vector&lt; int &gt; &amp;dims)</td></tr>
+<tr class="memdesc:gaf228bd4eb68b5ca20601ca8f0df47381"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects box Z onto the dimensions specified in dims.  <br /></td></tr>
+<tr class="separator:gaf228bd4eb68b5ca20601ca8f0df47381"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Box and MI_Box classes. </p>
+<div class="textblock"><p>Box classe. </p>
 <dl class="section author"><dt>Author</dt><dd>Josh Robbins (<a href="#" onclick="location.href='mai'+'lto:'+'jro'+'bb'+'ins'+'@p'+'su.'+'ed'+'u'; return false;">jrobb<span class="obfuscator">.nosp@m.</span>ins@<span class="obfuscator">.nosp@m.</span>psu.e<span class="obfuscator">.nosp@m.</span>du</a>) </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
 <dl class="section date"><dt>Date</dt><dd>2026-03-18</dd></dl>

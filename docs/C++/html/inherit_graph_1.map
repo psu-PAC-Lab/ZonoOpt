@@ -1,7 +1,7 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
 <area shape="rect" id="Node000000" href="$structZonoOpt_1_1ExternalSolverResults.html" title="Abstract base for external&#45;solver&#45;specific solution metadata." alt="" coords="5,31,235,56"/>
 <area shape="rect" id="Node000001" href="$structZonoOpt_1_1GurobiSolverResults.html" title="Solver&#45;native solution metadata produced by the Gurobi backend." alt="" coords="283,5,501,31"/>
-<area shape="poly" id="edge2_Node000000_Node000001" title=" " alt="" coords="248,29,282,26,283,31,248,34"/>
+<area shape="poly" id="edge1_Node000000_Node000001" title=" " alt="" coords="248,29,282,26,283,31,248,34"/>
 <area shape="rect" id="Node000002" href="$structZonoOpt_1_1SCIPSolverResults.html" title="Solver&#45;native solution metadata produced by the SCIP backend." alt="" coords="290,55,494,80"/>
-<area shape="poly" id="edge3_Node000000_Node000002" title=" " alt="" coords="248,52,290,56,290,61,248,57"/>
+<area shape="poly" id="edge2_Node000000_Node000002" title=" " alt="" coords="248,52,290,56,290,61,248,57"/>
 </map>

@@ -64,6 +64,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.__setitem__"><code class="docutils literal notranslate"><span class="pre">Box.__setitem__()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.__sub__"><code class="docutils literal notranslate"><span class="pre">Box.__sub__()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.__truediv__"><code class="docutils literal notranslate"><span class="pre">Box.__truediv__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.affine_map"><code class="docutils literal notranslate"><span class="pre">Box.affine_map()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.cartesian_product"><code class="docutils literal notranslate"><span class="pre">Box.cartesian_product()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.center"><code class="docutils literal notranslate"><span class="pre">Box.center()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.contains"><code class="docutils literal notranslate"><span class="pre">Box.contains()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.contains_set"><code class="docutils literal notranslate"><span class="pre">Box.contains_set()</span></code></a></li>
@@ -77,9 +79,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.is_single_valued"><code class="docutils literal notranslate"><span class="pre">Box.is_single_valued()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.linear_map"><code class="docutils literal notranslate"><span class="pre">Box.linear_map()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.lower"><code class="docutils literal notranslate"><span class="pre">Box.lower()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.minkowski_sum"><code class="docutils literal notranslate"><span class="pre">Box.minkowski_sum()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.pontry_diff"><code class="docutils literal notranslate"><span class="pre">Box.pontry_diff()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.project"><code class="docutils literal notranslate"><span class="pre">Box.project()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.project_onto_dims"><code class="docutils literal notranslate"><span class="pre">Box.project_onto_dims()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.radius"><code class="docutils literal notranslate"><span class="pre">Box.radius()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.size"><code class="docutils literal notranslate"><span class="pre">Box.size()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.support"><code class="docutils literal notranslate"><span class="pre">Box.support()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.to_array"><code class="docutils literal notranslate"><span class="pre">Box.to_array()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.upper"><code class="docutils literal notranslate"><span class="pre">Box.upper()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zonoopt.Box.width"><code class="docutils literal notranslate"><span class="pre">Box.width()</span></code></a></li>
@@ -392,6 +398,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#zonoopt.intersection"><code class="docutils literal notranslate"><span class="pre">intersection()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#zonoopt.intersection_over_dims"><code class="docutils literal notranslate"><span class="pre">intersection_over_dims()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#zonoopt.interval_2_zono"><code class="docutils literal notranslate"><span class="pre">interval_2_zono()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#zonoopt.interval_hull"><code class="docutils literal notranslate"><span class="pre">interval_hull()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#zonoopt.make_regular_zono_2D"><code class="docutils literal notranslate"><span class="pre">make_regular_zono_2D()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#zonoopt.minkowski_sum"><code class="docutils literal notranslate"><span class="pre">minkowski_sum()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#zonoopt.plot"><code class="docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
@@ -440,7 +447,14 @@ See the github page for documentation: <a class="reference external" href="https
 <dt class="sig sig-object py" id="zonoopt.Box">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zonoopt.</span></span><span class="sig-name descname"><span class="pre">Box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_lb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.ArrayLike</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.float64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'[m,</span> <span class="pre">1]'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_ub</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.ArrayLike</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.float64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'[m,</span> <span class="pre">1]'</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.Box" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
-<p>Box (i.e., interval vector) class</p>
+<p>Box (i.e., interval vector) class.</p>
+<p>Unlike HybZono and its subclasses, Box operators have interval-arithmetic
+semantics, not set-operation semantics. Box.__mul__ is elementwise interval
+multiplication (not Cartesian product) and Box.__sub__ is interval subtraction
+[a,b] - [c,d] = [a-d, b-c] (not the Pontryagin difference [a-c, b-d]). Use the
+named methods cartesian_product() and pontry_diff() for the set-operation
+meanings. Box.__add__ is elementwise interval addition, which for boxes
+coincides exactly with the Minkowski sum; minkowski_sum() is a named alias for it.</p>
 <p>Constructor from intervals of lower and upper bounds</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -935,6 +949,55 @@ See the github page for documentation: <a class="reference external" href="https
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.Box.affine_map">
+<span class="sig-name descname"><span class="pre">affine_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.Box.affine_map" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>affine_map(self: zonoopt._core.Box, R: scipy.sparse.csc_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, “[m, 1]”] = array([], dtype=float64)) -&gt; zonoopt._core.Box</p>
+<blockquote>
+<div><p>Affine map R*self + s of the box based on interval arithmetic</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>R (scipy.sparse.csc_matrix): affine map matrix
+s (numpy.array, optional): vector offset</p>
+</dd>
+<dt>Returns:</dt><dd><p>Box: affine mapped box</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>affine_map(self: zonoopt._core.Box, R: scipy.sparse.csr_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, “[m, 1]”] = array([], dtype=float64)) -&gt; zonoopt._core.Box</p>
+<blockquote>
+<div><p>Affine map R*self + s of the box based on interval arithmetic</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>R (scipy.sparse.csr_matrix): affine map matrix
+s (numpy.array, optional): vector offset</p>
+</dd>
+<dt>Returns:</dt><dd><p>Box: affine mapped box</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.Box.cartesian_product">
+<span class="sig-name descname"><span class="pre">cartesian_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></span><a class="headerlink" href="#zonoopt.Box.cartesian_product" title="Link to this definition"></a></dt>
+<dd><p>Cartesian product of two boxes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box"><em>Box</em></a>) – other box</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cartesian product of self and other</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box">Box</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.Box.center">
 <span class="sig-name descname"><span class="pre">center</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'[m,</span> <span class="pre">1]'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#zonoopt.Box.center" title="Link to this definition"></a></dt>
 <dd><p>Gets center of box (x_ub + x_lb) / 2</p>
@@ -1142,12 +1205,63 @@ If the contractor detects that the box does not intersect A*x=b, then this funct
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.Box.minkowski_sum">
+<span class="sig-name descname"><span class="pre">minkowski_sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></span><a class="headerlink" href="#zonoopt.Box.minkowski_sum" title="Link to this definition"></a></dt>
+<dd><p>Minkowski sum of two boxes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box"><em>Box</em></a>) – other box</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Minkowski sum of self and other</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box">Box</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.Box.pontry_diff">
+<span class="sig-name descname"><span class="pre">pontry_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></span><a class="headerlink" href="#zonoopt.Box.pontry_diff" title="Link to this definition"></a></dt>
+<dd><p>Pontryagin difference of two boxes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box"><em>Box</em></a>) – subtrahend</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pontryagin difference of self and other</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box">Box</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.Box.project">
 <span class="sig-name descname"><span class="pre">project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'[m,</span> <span class="pre">1]'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'flags.writeable'</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#zonoopt.Box.project" title="Link to this definition"></a></dt>
 <dd><p>Projects vector onto the Box (in place)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>x</strong> (<em>numpy.array</em>) – vector to be projected</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.Box.project_onto_dims">
+<span class="sig-name descname"><span class="pre">project_onto_dims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">SupportsInt</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsIndex</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></span><a class="headerlink" href="#zonoopt.Box.project_onto_dims" title="Link to this definition"></a></dt>
+<dd><p>Projects the box onto the dimensions specified in dims</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dims</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – list of dimensions to project onto</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>box projected onto dims</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.Box" title="zonoopt.Box">Box</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1177,6 +1291,23 @@ If the contractor detects that the box does not intersect A*x=b, then this funct
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zonoopt.Box.support">
+<span class="sig-name descname"><span class="pre">support</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.ArrayLike</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.float64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'[m,</span> <span class="pre">1]'</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#zonoopt.Box.support" title="Link to this definition"></a></dt>
+<dd><p>Computes the support function of the box in the direction d</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>d</strong> (<em>numpy.array</em>) – vector defining direction for support function</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>support</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1993,7 +2124,7 @@ The set dimension is n, and the number of equality constraints is nC.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.HybZono.bounding_box">
-<span class="sig-name descname"><span class="pre">bounding_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings:</span> <span class="pre">object</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7d0ddb2b96b0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></span><a class="headerlink" href="#zonoopt.HybZono.bounding_box" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">bounding_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings:</span> <span class="pre">object</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x752a0c34e530&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Box" title="zonoopt._core.Box"><span class="pre">zonoopt._core.Box</span></a></span></span><a class="headerlink" href="#zonoopt.HybZono.bounding_box" title="Link to this definition"></a></dt>
 <dd><p>Computes a bounding box of the set object as a Box object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2044,7 +2175,7 @@ X = {G xi + c | A xi = b, xi in [-1-delta_m, 1+delta+m]^{nG}}.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.HybZono.contains_point">
-<span class="sig-name descname"><span class="pre">contains_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">x:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">settings:</span> <span class="pre">object</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7d0ddb29f7f0&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#zonoopt.HybZono.contains_point" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">contains_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">x:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">settings:</span> <span class="pre">object</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x752a0ecbb170&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#zonoopt.HybZono.contains_point" title="Link to this definition"></a></dt>
 <dd><p>Checks whether the point x is contained in the set object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2349,7 +2480,7 @@ for ADMM-FP, these will instead be used for branch and bound search.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.HybZono.is_empty">
-<span class="sig-name descname"><span class="pre">is_empty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings:</span> <span class="pre">object</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7d0ddb2b9330&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#zonoopt.HybZono.is_empty" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">is_empty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings:</span> <span class="pre">object</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x752a0c3eae30&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#zonoopt.HybZono.is_empty" title="Link to this definition"></a></dt>
 <dd><p>Returns true if the set is provably empty, false otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2440,7 +2571,7 @@ for ADMM-FP, these will instead be used for branch and bound search.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.HybZono.optimize_over">
-<span class="sig-name descname"><span class="pre">optimize_over</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">P:</span> <span class="pre">scipy.sparse.csc_matrix[numpy.float64],</span> <span class="pre">q:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">c:</span> <span class="pre">typing.SupportsFloat</span> <span class="pre">|</span> <span class="pre">typing.SupportsIndex</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">settings:</span> <span class="pre">object</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7d0ddb29f030&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'[m,</span> <span class="pre">1]'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#zonoopt.HybZono.optimize_over" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">optimize_over</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">P:</span> <span class="pre">scipy.sparse.csc_matrix[numpy.float64],</span> <span class="pre">q:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">c:</span> <span class="pre">typing.SupportsFloat</span> <span class="pre">|</span> <span class="pre">typing.SupportsIndex</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">settings:</span> <span class="pre">object</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x752a0ecb9830&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'[m,</span> <span class="pre">1]'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#zonoopt.HybZono.optimize_over" title="Link to this definition"></a></dt>
 <dd><p>Solves optimization problem with quadratic objective over the current set</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2465,7 +2596,7 @@ for ADMM-FP, these will instead be used for branch and bound search.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.HybZono.project_point">
-<span class="sig-name descname"><span class="pre">project_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">x:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">settings:</span> <span class="pre">object</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7d0ddb2a77f0&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'[m,</span> <span class="pre">1]'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#zonoopt.HybZono.project_point" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">project_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">x:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">settings:</span> <span class="pre">object</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x752a0c34f4f0&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'[m,</span> <span class="pre">1]'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#zonoopt.HybZono.project_point" title="Link to this definition"></a></dt>
 <dd><p>Returns the projection of the point x onto the set object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2530,7 +2661,7 @@ Unused factors are also removed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="zonoopt.HybZono.support">
-<span class="sig-name descname"><span class="pre">support</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">d:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">settings:</span> <span class="pre">object</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7d0ddb2b94b0&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#zonoopt.HybZono.support" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">support</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">zonoopt._core.HybZono,</span> <span class="pre">d:</span> <span class="pre">typing.Annotated[numpy.typing.ArrayLike,</span> <span class="pre">numpy.float64,</span> <span class="pre">&quot;[m,</span> <span class="pre">1]&quot;],</span> <span class="pre">settings:</span> <span class="pre">object</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">solution:</span> <span class="pre">zonoopt._core.OptSolution</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">warm_start_params:</span> <span class="pre">zonoopt._core.WarmStartParams</span> <span class="pre">=</span> <span class="pre">&lt;zonoopt._core.WarmStartParams</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x752a0ec9f770&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#zonoopt.HybZono.support" title="Link to this definition"></a></dt>
 <dd><p>Computes support function of the set in the direction d.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -4936,43 +5067,81 @@ When Z is a hybrid zonotope, the convex relaxation is used to produce a constrai
 
 <dl class="py function">
 <dt class="sig sig-object py" id="zonoopt.affine_map">
-<span class="sig-prename descclassname"><span class="pre">zonoopt.</span></span><span class="sig-name descname"><span class="pre">affine_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt._core.HybZono"><span class="pre">zonoopt._core.HybZono</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">scipy.sparse.csc_matrix</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.ArrayLike</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.float64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'[m,</span> <span class="pre">1]'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">array([],</span> <span class="pre">dtype=float64)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt._core.HybZono"><span class="pre">zonoopt._core.HybZono</span></a></span></span><a class="headerlink" href="#zonoopt.affine_map" title="Link to this definition"></a></dt>
-<dd><p>Returns affine map R*Z + s of set Z</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>Z</strong> (<a class="reference internal" href="#zonoopt.HybZono" title="zonoopt.HybZono"><em>HybZono</em></a>) – zonotopic set</p></li>
-<li><p><strong>R</strong> (<em>scipy.sparse.csc_matrix</em>) – affine map matrix</p></li>
-<li><p><strong>s</strong> (<em>numpy.array</em><em>, </em><em>optional</em>) – vector offset</p></li>
-</ul>
+<span class="sig-prename descclassname"><span class="pre">zonoopt.</span></span><span class="sig-name descname"><span class="pre">affine_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.affine_map" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>affine_map(Z: zonoopt._core.HybZono, R: scipy.sparse.csc_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, “[m, 1]”] = array([], dtype=float64)) -&gt; zonoopt._core.HybZono</p>
+<blockquote>
+<div><p>Returns affine map R*Z + s of set Z</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>Z (HybZono): zonotopic set
+R (scipy.sparse.csc_matrix): affine map matrix
+s (numpy.array, optional): vector offset</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>zonotopic set</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt.HybZono">HybZono</a></p>
+<dt>Returns:</dt><dd><p>HybZono: zonotopic set</p>
 </dd>
 </dl>
+</div></blockquote>
+</li>
+<li><p>affine_map(Z: zonoopt._core.Box, R: scipy.sparse.csc_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, “[m, 1]”] = array([], dtype=float64)) -&gt; zonoopt._core.Box</p>
+<blockquote>
+<div><p>Returns affine map R*Z + s of box Z</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>Z (Box): box
+R (scipy.sparse.csc_matrix): affine map matrix
+s (numpy.array, optional): vector offset</p>
+</dd>
+<dt>Returns:</dt><dd><p>Box: box</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>affine_map(Z: zonoopt._core.Box, R: scipy.sparse.csr_matrix[numpy.float64], s: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, “[m, 1]”] = array([], dtype=float64)) -&gt; zonoopt._core.Box</p>
+<blockquote>
+<div><p>Returns affine map R*Z + s of box Z</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>Z (Box): box
+R (scipy.sparse.csr_matrix): affine map matrix
+s (numpy.array, optional): vector offset</p>
+</dd>
+<dt>Returns:</dt><dd><p>Box: box</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="zonoopt.cartesian_product">
-<span class="sig-prename descclassname"><span class="pre">zonoopt.</span></span><span class="sig-name descname"><span class="pre">cartesian_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Z1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt._core.HybZono"><span class="pre">zonoopt._core.HybZono</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt._core.HybZono"><span class="pre">zonoopt._core.HybZono</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt._core.HybZono"><span class="pre">zonoopt._core.HybZono</span></a></span></span><a class="headerlink" href="#zonoopt.cartesian_product" title="Link to this definition"></a></dt>
-<dd><p>Computes the Cartesian product of two sets Z1 and Z2.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>Z1</strong> (<a class="reference internal" href="#zonoopt.HybZono" title="zonoopt.HybZono"><em>HybZono</em></a>) – zonotopic set</p></li>
-<li><p><strong>Z2</strong> (<a class="reference internal" href="#zonoopt.HybZono" title="zonoopt.HybZono"><em>HybZono</em></a>) – zonotopic set</p></li>
-</ul>
+<span class="sig-prename descclassname"><span class="pre">zonoopt.</span></span><span class="sig-name descname"><span class="pre">cartesian_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.cartesian_product" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>cartesian_product(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono) -&gt; zonoopt._core.HybZono</p>
+<blockquote>
+<div><p>Computes the Cartesian product of two sets Z1 and Z2.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>Z1 (HybZono): zonotopic set
+Z2 (HybZono): zonotopic set</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>zonotopic set</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt.HybZono">HybZono</a></p>
+<dt>Returns:</dt><dd><p>HybZono: zonotopic set</p>
 </dd>
 </dl>
+</div></blockquote>
+</li>
+<li><p>cartesian_product(Z1: zonoopt._core.Box, Z2: zonoopt._core.Box) -&gt; zonoopt._core.Box</p>
+<blockquote>
+<div><p>Computes the Cartesian product of two boxes Z1 and Z2.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>Z1 (Box): box
+Z2 (Box): box</p>
+</dd>
+<dt>Returns:</dt><dd><p>Box: box</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
 </dd></dl>
 
 <dl class="py function">
@@ -5157,6 +5326,37 @@ until set_default_solver_settings is called again.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="zonoopt.interval_hull">
+<span class="sig-prename descclassname"><span class="pre">zonoopt.</span></span><span class="sig-name descname"><span class="pre">interval_hull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.interval_hull" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>interval_hull(Z1: zonoopt._core.Box, Z2: zonoopt._core.Box) -&gt; zonoopt._core.Box</p>
+<blockquote>
+<div><p>Computes the interval hull of two boxes.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>Z1 (Box): box
+Z2 (Box): box</p>
+</dd>
+<dt>Returns:</dt><dd><p>Box: smallest box containing both Z1 and Z2</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>interval_hull(boxes: collections.abc.Sequence[zonoopt._core.Box]) -&gt; zonoopt._core.Box</p>
+<blockquote>
+<div><p>Computes the interval hull of several boxes</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>boxes (list[Box]): boxes for which the interval hull is to be computed</p>
+</dd>
+<dt>Returns:</dt><dd><p>Box: smallest box containing all boxes</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="zonoopt.make_regular_zono_2D">
 <span class="sig-prename descclassname"><span class="pre">zonoopt.</span></span><span class="sig-name descname"><span class="pre">make_regular_zono_2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsIndex</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sides</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsInt</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsIndex</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outer_approx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.ArrayLike</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.float64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'[2,</span> <span class="pre">1]'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">array([0.,</span> <span class="pre">0.])</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.Zono" title="zonoopt._core.Zono"><span class="pre">zonoopt._core.Zono</span></a></span></span><a class="headerlink" href="#zonoopt.make_regular_zono_2D" title="Link to this definition"></a></dt>
 <dd><p>Builds a 2D regular zonotope with a given radius and number of sides.</p>
@@ -5180,22 +5380,34 @@ until set_default_solver_settings is called again.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="zonoopt.minkowski_sum">
-<span class="sig-prename descclassname"><span class="pre">zonoopt.</span></span><span class="sig-name descname"><span class="pre">minkowski_sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Z1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt._core.HybZono"><span class="pre">zonoopt._core.HybZono</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt._core.HybZono"><span class="pre">zonoopt._core.HybZono</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt._core.HybZono"><span class="pre">zonoopt._core.HybZono</span></a></span></span><a class="headerlink" href="#zonoopt.minkowski_sum" title="Link to this definition"></a></dt>
-<dd><p>Computes Minkowski sum of two sets Z1 and Z2.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>Z1</strong> (<a class="reference internal" href="#zonoopt.HybZono" title="zonoopt.HybZono"><em>HybZono</em></a>) – zonotopic set</p></li>
-<li><p><strong>Z2</strong> (<a class="reference internal" href="#zonoopt.HybZono" title="zonoopt.HybZono"><em>HybZono</em></a>) – zonotopic set</p></li>
-</ul>
+<span class="sig-prename descclassname"><span class="pre">zonoopt.</span></span><span class="sig-name descname"><span class="pre">minkowski_sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.minkowski_sum" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>minkowski_sum(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono) -&gt; zonoopt._core.HybZono</p>
+<blockquote>
+<div><p>Computes Minkowski sum of two sets Z1 and Z2.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>Z1 (HybZono): zonotopic set
+Z2 (HybZono): zonotopic set</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>zonotopic set</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt.HybZono">HybZono</a></p>
+<dt>Returns:</dt><dd><p>HybZono: zonotopic set</p>
 </dd>
 </dl>
+</div></blockquote>
+</li>
+<li><p>minkowski_sum(Z1: zonoopt._core.Box, Z2: zonoopt._core.Box) -&gt; zonoopt._core.Box</p>
+<blockquote>
+<div><p>Computes the Minkowski sum of two boxes Z1 and Z2.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>Z1 (Box): box
+Z2 (Box): box</p>
+</dd>
+<dt>Returns:</dt><dd><p>Box: box</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
 </dd></dl>
 
 <dl class="py function">
@@ -5224,46 +5436,70 @@ until set_default_solver_settings is called again.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="zonoopt.pontry_diff">
-<span class="sig-prename descclassname"><span class="pre">zonoopt.</span></span><span class="sig-name descname"><span class="pre">pontry_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Z1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt._core.HybZono"><span class="pre">zonoopt._core.HybZono</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.Zono" title="zonoopt._core.Zono"><span class="pre">zonoopt._core.Zono</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt._core.HybZono"><span class="pre">zonoopt._core.HybZono</span></a></span></span><a class="headerlink" href="#zonoopt.pontry_diff" title="Link to this definition"></a></dt>
-<dd><p>Computes the Pontryagin difference Z1 - Z2.</p>
+<span class="sig-prename descclassname"><span class="pre">zonoopt.</span></span><span class="sig-name descname"><span class="pre">pontry_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.pontry_diff" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>pontry_diff(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.Zono, exact: bool = True) -&gt; zonoopt._core.HybZono</p>
+<blockquote>
+<div><p>Computes the Pontryagin difference Z1 - Z2.</p>
 <p>For inner approximations (exact = false), the algorithm from Vinod et. al. 2025 is used.
 Note that this algorithm is exact when the minuend is a constrained zonotope and the matrix [G;A] is invertible.
 Exact Pontryagin difference can only be computed when the subtrahend is a zonotope.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>Z1</strong> (<a class="reference internal" href="#zonoopt.HybZono" title="zonoopt.HybZono"><em>HybZono</em></a>) – minuend</p></li>
-<li><p><strong>Z2</strong> (<a class="reference internal" href="#zonoopt.Zono" title="zonoopt.Zono"><em>Zono</em></a>) – subtrahend</p></li>
-<li><p><strong>exact</strong> (<em>bool</em><em>, </em><em>optional</em>) – require output to be exact, otherwise inner approximation will be returned (default true)</p></li>
-</ul>
+<dl class="simple">
+<dt>Args:</dt><dd><p>Z1 (HybZono): minuend
+Z2 (Zono): subtrahend
+exact (bool, optional): require output to be exact, otherwise inner approximation will be returned (default true)</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>zonotopic set</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt.HybZono">HybZono</a></p>
+<dt>Returns:</dt><dd><p>HybZono: zonotopic set</p>
 </dd>
 </dl>
+</div></blockquote>
+</li>
+<li><p>pontry_diff(Z1: zonoopt._core.Box, Z2: zonoopt._core.Box) -&gt; zonoopt._core.Box</p>
+<blockquote>
+<div><p>Computes the Pontryagin difference Z1 - Z2 of two boxes.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>Z1 (Box): minuend
+Z2 (Box): subtrahend</p>
+</dd>
+<dt>Returns:</dt><dd><p>Box: box</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="zonoopt.project_onto_dims">
-<span class="sig-prename descclassname"><span class="pre">zonoopt.</span></span><span class="sig-name descname"><span class="pre">project_onto_dims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt._core.HybZono"><span class="pre">zonoopt._core.HybZono</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">SupportsInt</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsIndex</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt._core.HybZono"><span class="pre">zonoopt._core.HybZono</span></a></span></span><a class="headerlink" href="#zonoopt.project_onto_dims" title="Link to this definition"></a></dt>
-<dd><p>Projects set Z onto the dimensions specified in dims.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>Z</strong> (<a class="reference internal" href="#zonoopt.HybZono" title="zonoopt.HybZono"><em>HybZono</em></a>) – zonotopic set</p></li>
-<li><p><strong>dims</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – list of dimensions to project onto</p></li>
-</ul>
+<span class="sig-prename descclassname"><span class="pre">zonoopt.</span></span><span class="sig-name descname"><span class="pre">project_onto_dims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zonoopt.project_onto_dims" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>project_onto_dims(Z: zonoopt._core.HybZono, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -&gt; zonoopt._core.HybZono</p>
+<blockquote>
+<div><p>Projects set Z onto the dimensions specified in dims.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>Z (HybZono): zonotopic set
+dims (list[int]): list of dimensions to project onto</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>zonotopic set</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#zonoopt.HybZono" title="zonoopt.HybZono">HybZono</a></p>
+<dt>Returns:</dt><dd><p>HybZono: zonotopic set</p>
 </dd>
 </dl>
+</div></blockquote>
+</li>
+<li><p>project_onto_dims(Z: zonoopt._core.Box, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -&gt; zonoopt._core.Box</p>
+<blockquote>
+<div><p>Projects box Z onto the dimensions specified in dims.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>Z (Box): box
+dims (list[int]): list of dimensions to project onto</p>
+</dd>
+<dt>Returns:</dt><dd><p>Box: box</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
 </dd></dl>
 
 <dl class="py function">

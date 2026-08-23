@@ -92,7 +92,27 @@ $(function() {
   <div class="headertitle"><div class="title">ADMM.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="ZonoOpt_8hpp_source.html">ZonoOpt.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &lt;atomic&gt;</code><br />
+<code>#include &lt;chrono&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;exception&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;mutex&gt;</code><br />
+<code>#include &lt;random&gt;</code><br />
+<code>#include &lt;set&gt;</code><br />
+<code>#include &lt;sstream&gt;</code><br />
+<code>#include &lt;stdexcept&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+<code>#include &quot;Eigen/Dense&quot;</code><br />
+<code>#include &quot;Eigen/Sparse&quot;</code><br />
+<code>#include &quot;<a class="el" href="ADMM_8hpp_source.html">zonoopt/ADMM.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="CholeskyUtilities_8hpp_source.html">zonoopt/CholeskyUtilities.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Defines_8hpp_source.html">zonoopt/Defines.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="GenUtilities_8hpp_source.html">zonoopt/GenUtilities.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="SparseMatrixUtilities_8hpp_source.html">zonoopt/SparseMatrixUtilities.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="SolverDataStructures_8hpp_source.html">zonoopt/SolverDataStructures.hpp</a>&quot;</code><br />
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
@@ -101,7 +121,7 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a6d071c860a0200fc223527285f2df4f2" id="r_a6d071c860a0200fc223527285f2df4f2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a6d071c860a0200fc223527285f2df4f2">ZonoOpt::perturb_binaries</a> (const <a class="el" href="classZonoOpt_1_1MI__Box.html">MI_Box</a> &amp;x_box, const Eigen::Ref&lt; const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &gt; xk, Eigen::Ref&lt; Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &gt; zk, const bool restart, std::mt19937 &amp;rand_gen)</td></tr>
+<tr class="memitem:a6d071c860a0200fc223527285f2df4f2" id="r_a6d071c860a0200fc223527285f2df4f2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceZonoOpt.html#a6d071c860a0200fc223527285f2df4f2">ZonoOpt::perturb_binaries</a> (const MI_Box &amp;x_box, const Eigen::Ref&lt; const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &gt; xk, Eigen::Ref&lt; Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &gt; zk, const bool restart, std::mt19937 &amp;rand_gen)</td></tr>
 <tr class="separator:a6d071c860a0200fc223527285f2df4f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->

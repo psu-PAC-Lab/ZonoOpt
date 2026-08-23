@@ -94,34 +94,26 @@ $(document).ready(function() { init_codefold(0); });
   <div class="headertitle"><div class="title">CholeskyUtilities.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="CholeskyUtilities_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef ZONOOPT_CHOLESKY_UTILITIES_HPP_</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define ZONOOPT_CHOLESKY_UTILITIES_HPP_</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;Eigen/Sparse&quot;</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;Eigen/Dense&quot;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span>ZonoOpt::detail {</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">struct </span>LDLT_data</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    {</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        Eigen::SparseMatrix&lt;zono_float&gt; L;</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        Eigen::DiagonalMatrix&lt;<a class="code hl_define" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1&gt; Dinv;</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        Eigen::PermutationMatrix&lt;-1, -1, <span class="keywordtype">int</span>&gt; P, Pinv;</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordtype">bool</span> factorized = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    };</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordtype">void</span> get_LDLT_data(<span class="keyword">const</span> Eigen::SimplicialLDLT&lt;Eigen::SparseMatrix&lt;zono_float&gt;&gt;&amp; solver, LDLT_data&amp; data);</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    Eigen::Vector&lt;<a class="code hl_define" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1&gt; solve_LDLT(<span class="keyword">const</span> LDLT_data&amp; data, <span class="keyword">const</span> Eigen::Vector&lt;zono_float, -1&gt;&amp; b);</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">void</span> affine_set_projection(Eigen::Ref&lt;Eigen::Vector&lt;zono_float, -1&gt;&gt; z, <span class="keyword">const</span> Eigen::SparseMatrix&lt;zono_float&gt;&amp; A,</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keyword">const</span> Eigen::SparseMatrix&lt;zono_float&gt;&amp; AT, <span class="keyword">const</span> Eigen::Vector&lt;zono_float, -1&gt;&amp; b, <span class="keyword">const</span> LDLT_data&amp; AAT_ldlt);</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>} <span class="comment">// end namespace detail</span></div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="comment">// end namespace ZonoOpt</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="agroup__ZonoOpt__PreprocessorMacros_html_ga10f9d95aa3b7fa4dca1699582aa53598"><div class="ttname"><a href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a></div><div class="ttdeci">#define zono_float</div><div class="ttdoc">Defines the floating-point type used in ZonoOpt.</div><div class="ttdef"><b>Definition</b> ZonoOpt.hpp:45</div></div>
+<a href="CholeskyUtilities_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;Eigen/Sparse&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;Eigen/Dense&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="Defines_8hpp.html">Defines.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span>ZonoOpt::detail {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="comment">// The completed SimplicialLDLT factorization; stored directly rather than through an extracted</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="comment">// copy of L, so factorizing and reading back out don&#39;t momentarily double the size of the</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="comment">// (possibly much larger) L factor. Not copyable; always held through shared_ptr&lt;const ...&gt;.</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">using </span>LDLT_solver = Eigen::SimplicialLDLT&lt;Eigen::SparseMatrix&lt;zono_float&gt;&gt;;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordtype">void</span> affine_set_projection(Eigen::Ref&lt;Eigen::Vector&lt;zono_float, -1&gt;&gt; z, <span class="keyword">const</span> Eigen::SparseMatrix&lt;zono_float&gt;&amp; A,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keyword">const</span> Eigen::SparseMatrix&lt;zono_float&gt;&amp; AT, <span class="keyword">const</span> Eigen::Vector&lt;zono_float, -1&gt;&amp; b, <span class="keyword">const</span> LDLT_solver&amp; AAT_ldlt);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>} <span class="comment">// end namespace detail</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment">// end namespace ZonoOpt</span></div>
+<div class="ttc" id="aDefines_8hpp_html"><div class="ttname"><a href="Defines_8hpp.html">Defines.hpp</a></div><div class="ttdoc">Defines for ZonoOpt library.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
