@@ -189,7 +189,7 @@ def plot(Z, ax=None, settings=None, t_max=60.0, enable_progress_bar=True, **kwar
     Plots zonotopic set using matplotlib.
 
     Args:
-        Z (HybZono): zonotopic set to be plotted
+        Z (HybZono | Box): zonotopic set to be plotted
         ax (matplotlib.axes.Axes, optional): Axes to plot on. If None, current axes are used.
         settings (SolverSettings, optional): Settings for the optimization. Defaults to get_default_solver_settings().
         t_max (float, optional): Maximum time to spend on finding vertices. Defaults to 60.0 seconds.
@@ -208,6 +208,9 @@ def plot(Z, ax=None, settings=None, t_max=60.0, enable_progress_bar=True, **kwar
 
     if settings is None:
         settings = get_default_solver_settings()
+
+    if isinstance(Z, Box):
+        return plot(interval_2_zono(Z), ax=ax, settings=settings, t_max=t_max, enable_progress_bar=enable_progress_bar, **kwargs)
 
     if Z.get_n() < 2 or Z.get_n() > 3:
         raise ValueError("Plot only implemented in 2D or 3D")
