@@ -212,6 +212,19 @@ namespace ZonoOpt
         Box interval_hull(const Box& other) const;
 
         /**
+         * @brief Box intersection over a subset of dimensions
+         *
+         * @param other other box, must have size equal to dims.size()
+         * @param dims dimensions of this box over which the intersection is computed
+         * @return intersection of this and other over the specified dimensions
+         * @throws std::invalid_argument if dims.size() does not equal other.size(), or if any entry in dims is not a valid dimension of this box.
+         *
+         * This computes the exact intersection {x in this : x(dims) in other}. Repeated
+         * indices in dims are intersected cumulatively.
+         */
+        Box intersection_over_dims(const Box& other, const std::vector<int>& dims) const;
+
+        /**
          * @brief Check vector continment
          *
          * @param v vector
@@ -916,4 +929,40 @@ namespace ZonoOpt
      * @throws std::invalid_argument if boxes is empty or if its members have inconsistent dimensions.
      */
     Box interval_hull(const std::vector<Box>& boxes);
+
+    /**
+     * @brief Computes the generalized intersection of boxes Z1 and Z2 over the matrix R.
+     *
+     * @param Z1 box
+     * @param Z2 box
+     * @param R affine map matrix; if not provided, the identity map is used (R must then be square)
+     * @param contractor_iter number of interval contractor iterations to run when R is not the identity;
+     *                         ignored when R is left at its default value
+     * @return box
+     * @ingroup ZonoOpt_SetOperations
+     * @see Box::intersect
+     * @see Box::intersection_over_dims
+     * @throws std::invalid_argument if R is provided and its dimensions are inconsistent with Z1 and Z2,
+     * or if R is omitted and Z1, Z2 have different dimensions.
+     *
+     * @note An interval contractor is used to compute the over-approximation of the generalized intersection
+     * when an exact intersection is not available.
+     */
+    Box intersection(const Box& Z1, const Box& Z2,
+                     const Eigen::SparseMatrix<zono_float>& R = Eigen::SparseMatrix<zono_float>(),
+                     int contractor_iter = 10);
+
+    /**
+     * @brief Computes the intersection of boxes Z1 and Z2 over the specified dimensions.
+     *
+     * @param Z1 box
+     * @param Z2 box, must have size equal to dims.size()
+     * @param dims dimensions of Z1 over which the intersection is computed
+     * @return box
+     * @ingroup ZonoOpt_SetOperations
+     * @see Box::intersection_over_dims
+     * @throws std::invalid_argument if dims.size() does not equal Z2.size(), or if any entry in dims is
+     * not a valid dimension of Z1.
+     */
+    Box intersection_over_dims(const Box& Z1, const Box& Z2, const std::vector<int>& dims);
 }
