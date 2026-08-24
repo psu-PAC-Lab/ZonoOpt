@@ -1132,6 +1132,17 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     Box: intersection of self and other
             )pbdoc")
+        .def("intersection_over_dims", &Box::intersection_over_dims, py::arg("other"), py::arg("dims"),
+            R"pbdoc(
+                Intersection of two boxes over a subset of dimensions
+
+                Args:
+                    other (Box): other box, must have size equal to len(dims)
+                    dims (list[int]): dimensions of self over which the intersection is computed
+
+                Returns:
+                    Box: intersection of self and other over the specified dimensions
+            )pbdoc")
         .def("cartesian_product", &Box::cartesian_product, py::arg("other"),
             R"pbdoc(
                 Cartesian product of two boxes
@@ -3411,29 +3422,65 @@ PYBIND11_MODULE(_core, m)
             Returns:
                 Box: box
         )pbdoc");
-    m.def("intersection", &intersection, py::arg("Z1"), py::arg("Z2"), py::arg("R")=Eigen::SparseMatrix<zono_float>(),
+    m.def("intersection",
+        py::overload_cast<const HybZono&, HybZono&, const Eigen::SparseMatrix<zono_float>&>(&intersection),
+        py::arg("Z1"), py::arg("Z2"), py::arg("R")=Eigen::SparseMatrix<zono_float>(),
         R"pbdoc(
             Computes the generalized intersection of sets Z1 and Z2 over the matrix R.
-            
+
             Args:
                 Z1 (HybZono): zonotopic set
                 Z2 (HybZono): zonotopic set
                 R (scipy.sparse.csc_matrix, optional): affine map matrix
-            
+
             Returns:
                 HybZono: zonotopic set
         )pbdoc");
-    m.def("intersection_over_dims", &intersection_over_dims, py::arg("Z1"), py::arg("Z2"), py::arg("dims"),
+    m.def("intersection",
+        py::overload_cast<const Box&, const Box&, const Eigen::SparseMatrix<zono_float>&, int>(&intersection),
+        py::arg("Z1"), py::arg("Z2"), py::arg("R")=Eigen::SparseMatrix<zono_float>(), py::arg("contractor_iter")=10,
+        R"pbdoc(
+            Computes the generalized intersection of boxes Z1 and Z2 over the matrix R.
+
+            An interval contractor is used to compute the over-approximation of the generalized intersection
+            when an exact intersection is not available.
+
+            Args:
+                Z1 (Box): box
+                Z2 (Box): box
+                R (scipy.sparse.csc_matrix, optional): affine map matrix; if not provided, the identity map is used (R must then be square)
+                contractor_iter (int, optional): number of interval contractor iterations to run when R is not the identity or a selection matrix
+
+            Returns:
+                Box: box
+        )pbdoc");
+    m.def("intersection_over_dims",
+        py::overload_cast<const HybZono&, HybZono&, const std::vector<int>&>(&intersection_over_dims),
+        py::arg("Z1"), py::arg("Z2"), py::arg("dims"),
         R"pbdoc(
             Computes the intersection of sets Z1 and Z2 over the specified dimensions.
-            
+
             Args:
                 Z1 (HybZono): zonotopic set
                 Z2 (HybZono): zonotopic set
                 dims (list[int]): list of dimensions
-            
+
             Returns:
                 HybZono: zonotopic set
+        )pbdoc");
+    m.def("intersection_over_dims",
+        py::overload_cast<const Box&, const Box&, const std::vector<int>&>(&intersection_over_dims),
+        py::arg("Z1"), py::arg("Z2"), py::arg("dims"),
+        R"pbdoc(
+            Computes the intersection of boxes Z1 and Z2 over the specified dimensions.
+
+            Args:
+                Z1 (Box): box
+                Z2 (Box): box, must have size equal to len(dims)
+                dims (list[int]): dimensions of Z1 over which the intersection is computed
+
+            Returns:
+                Box: box
         )pbdoc");
     m.def("halfspace_intersection", &halfspace_intersection, py::arg("Z"), py::arg("H"), py::arg("f"), py::arg("R")=Eigen::SparseMatrix<zono_float>(),
         R"pbdoc(

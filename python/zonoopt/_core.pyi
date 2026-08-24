@@ -205,6 +205,20 @@ class Box:
                             Box: intersection of self and other
             
         """
+    def intersection_over_dims(self, other: Box, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> Box:
+        """intersection_over_dims(self: zonoopt._core.Box, other: zonoopt._core.Box, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> zonoopt._core.Box
+
+
+                        Intersection of two boxes over a subset of dimensions
+
+                        Args:
+                            other (Box): other box, must have size equal to len(dims)
+                            dims (list[int]): dimensions of self over which the intersection is computed
+
+                        Returns:
+                            Box: intersection of self and other over the specified dimensions
+            
+        """
     def interval_hull(self, other: Box) -> Box:
         """interval_hull(self: zonoopt._core.Box, other: zonoopt._core.Box) -> zonoopt._core.Box
 
@@ -1816,7 +1830,7 @@ class HybZono:
             
         '''
     def bounding_box(self, settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> Box:
-        """bounding_box(self: zonoopt._core.HybZono, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7e8d64fc6d30>) -> zonoopt._core.Box
+        """bounding_box(self: zonoopt._core.HybZono, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7081d83bbcf0>) -> zonoopt._core.Box
 
 
                         Computes a bounding box of the set object as a Box object.
@@ -1857,7 +1871,7 @@ class HybZono:
             
         '''
     def contains_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7e8d66f7ebf0>) -> bool
+        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7081da781af0>) -> bool
 
 
                         Checks whether the point x is contained in the set object.
@@ -2084,7 +2098,7 @@ class HybZono:
             
         """
     def is_empty(self, settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        """is_empty(self: zonoopt._core.HybZono, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7e8d64fc68b0>) -> bool
+        """is_empty(self: zonoopt._core.HybZono, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7081d83bb930>) -> bool
 
 
                         Returns true if the set is provably empty, false otherwise.
@@ -2149,7 +2163,7 @@ class HybZono:
             
         """
     def optimize_over(self, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], c: typing.SupportsFloat | typing.SupportsIndex = ..., settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7e8d64fc65b0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7081da36f930>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Solves optimization problem with quadratic objective over the current set
@@ -2169,7 +2183,7 @@ class HybZono:
             
         '''
     def project_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7e8d64fc6730>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7081d83bb830>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Returns the projection of the point x onto the set object.
@@ -2222,7 +2236,7 @@ class HybZono:
             
         '''
     def support(self, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> float:
-        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7e8d655c98b0>) -> float
+        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7081da39bb70>) -> float
 
 
                         Computes support function of the set in the direction d.
@@ -7101,34 +7115,144 @@ def halfspace_intersection(Z: HybZono, H: scipy.sparse.csc_matrix[numpy.float64]
                     HybZono: zonotopic set
         
     '''
+@overload
 def intersection(Z1: HybZono, Z2: HybZono, R: scipy.sparse.csc_matrix[numpy.float64] = ...) -> HybZono:
-    """intersection(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono, R: scipy.sparse.csc_matrix[numpy.float64] = <Compressed Sparse Column sparse matrix of dtype 'float64' with 0 stored elements and shape (0, 0)>) -> zonoopt._core.HybZono
+    """intersection(*args, **kwargs)
+    Overloaded function.
+
+    1. intersection(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono, R: scipy.sparse.csc_matrix[numpy.float64] = <Compressed Sparse Column sparse matrix of dtype 'float64' with 0 stored elements and shape (0, 0)>) -> zonoopt._core.HybZono
 
 
                 Computes the generalized intersection of sets Z1 and Z2 over the matrix R.
-            
+
                 Args:
                     Z1 (HybZono): zonotopic set
                     Z2 (HybZono): zonotopic set
                     R (scipy.sparse.csc_matrix, optional): affine map matrix
-            
+
                 Returns:
                     HybZono: zonotopic set
         
+
+    2. intersection(Z1: zonoopt._core.Box, Z2: zonoopt._core.Box, R: scipy.sparse.csc_matrix[numpy.float64] = <Compressed Sparse Column sparse matrix of dtype 'float64' with 0 stored elements and shape (0, 0)>, contractor_iter: typing.SupportsInt | typing.SupportsIndex = 10) -> zonoopt._core.Box
+
+
+                Computes the generalized intersection of boxes Z1 and Z2 over the matrix R.
+
+                An interval contractor is used to compute the over-approximation of the generalized intersection
+                when an exact intersection is not available.
+
+                Args:
+                    Z1 (Box): box
+                    Z2 (Box): box
+                    R (scipy.sparse.csc_matrix, optional): affine map matrix; if not provided, the identity map is used (R must then be square)
+                    contractor_iter (int, optional): number of interval contractor iterations to run when R is not the identity or a selection matrix
+
+                Returns:
+                    Box: box
+        
     """
+@overload
+def intersection(Z1: Box, Z2: Box, R: scipy.sparse.csc_matrix[numpy.float64] = ..., contractor_iter: typing.SupportsInt | typing.SupportsIndex = ...) -> Box:
+    """intersection(*args, **kwargs)
+    Overloaded function.
+
+    1. intersection(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono, R: scipy.sparse.csc_matrix[numpy.float64] = <Compressed Sparse Column sparse matrix of dtype 'float64' with 0 stored elements and shape (0, 0)>) -> zonoopt._core.HybZono
+
+
+                Computes the generalized intersection of sets Z1 and Z2 over the matrix R.
+
+                Args:
+                    Z1 (HybZono): zonotopic set
+                    Z2 (HybZono): zonotopic set
+                    R (scipy.sparse.csc_matrix, optional): affine map matrix
+
+                Returns:
+                    HybZono: zonotopic set
+        
+
+    2. intersection(Z1: zonoopt._core.Box, Z2: zonoopt._core.Box, R: scipy.sparse.csc_matrix[numpy.float64] = <Compressed Sparse Column sparse matrix of dtype 'float64' with 0 stored elements and shape (0, 0)>, contractor_iter: typing.SupportsInt | typing.SupportsIndex = 10) -> zonoopt._core.Box
+
+
+                Computes the generalized intersection of boxes Z1 and Z2 over the matrix R.
+
+                An interval contractor is used to compute the over-approximation of the generalized intersection
+                when an exact intersection is not available.
+
+                Args:
+                    Z1 (Box): box
+                    Z2 (Box): box
+                    R (scipy.sparse.csc_matrix, optional): affine map matrix; if not provided, the identity map is used (R must then be square)
+                    contractor_iter (int, optional): number of interval contractor iterations to run when R is not the identity or a selection matrix
+
+                Returns:
+                    Box: box
+        
+    """
+@overload
 def intersection_over_dims(Z1: HybZono, Z2: HybZono, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> HybZono:
-    """intersection_over_dims(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> zonoopt._core.HybZono
+    """intersection_over_dims(*args, **kwargs)
+    Overloaded function.
+
+    1. intersection_over_dims(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> zonoopt._core.HybZono
 
 
                 Computes the intersection of sets Z1 and Z2 over the specified dimensions.
-            
+
                 Args:
                     Z1 (HybZono): zonotopic set
                     Z2 (HybZono): zonotopic set
                     dims (list[int]): list of dimensions
-            
+
                 Returns:
                     HybZono: zonotopic set
+        
+
+    2. intersection_over_dims(Z1: zonoopt._core.Box, Z2: zonoopt._core.Box, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> zonoopt._core.Box
+
+
+                Computes the intersection of boxes Z1 and Z2 over the specified dimensions.
+
+                Args:
+                    Z1 (Box): box
+                    Z2 (Box): box, must have size equal to len(dims)
+                    dims (list[int]): dimensions of Z1 over which the intersection is computed
+
+                Returns:
+                    Box: box
+        
+    """
+@overload
+def intersection_over_dims(Z1: Box, Z2: Box, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> Box:
+    """intersection_over_dims(*args, **kwargs)
+    Overloaded function.
+
+    1. intersection_over_dims(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> zonoopt._core.HybZono
+
+
+                Computes the intersection of sets Z1 and Z2 over the specified dimensions.
+
+                Args:
+                    Z1 (HybZono): zonotopic set
+                    Z2 (HybZono): zonotopic set
+                    dims (list[int]): list of dimensions
+
+                Returns:
+                    HybZono: zonotopic set
+        
+
+    2. intersection_over_dims(Z1: zonoopt._core.Box, Z2: zonoopt._core.Box, dims: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> zonoopt._core.Box
+
+
+                Computes the intersection of boxes Z1 and Z2 over the specified dimensions.
+
+                Args:
+                    Z1 (Box): box
+                    Z2 (Box): box, must have size equal to len(dims)
+                    dims (list[int]): dimensions of Z1 over which the intersection is computed
+
+                Returns:
+                    Box: box
         
     """
 def interval_2_zono(box: Box) -> Zono:

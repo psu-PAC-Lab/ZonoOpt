@@ -349,3 +349,204 @@ TEST(BoxSetOperations, IntervalHullMany)
     // two-arg free function agrees with member
     EXPECT_TRUE(interval_hull(b1, b2) == b1.interval_hull(b2));
 }
+
+TEST(BoxSetOperations, Intersection)
+{
+    Eigen::Vector<zono_float, -1> lb1(2), ub1(2), lb2(2), ub2(2);
+    lb1 << 0., 0.; ub1 << 10., 10.;
+    lb2 << 5., -5.; ub2 << 15., 5.;
+    Box b1(lb1, ub1), b2(lb2, ub2);
+
+    Box result = intersection(b1, b2);
+    EXPECT_TRUE(result == b1.intersect(b2));
+    EXPECT_TRUE(result == (b1 & b2));
+    EXPECT_TRUE(result.get_element(0) == Interval(5., 10.));
+    EXPECT_TRUE(result.get_element(1) == Interval(0., 5.));
+
+    // definitional: every vertex of the result is in both b1 and b2
+    for (const auto& v : box_vertices(result))
+    {
+        EXPECT_TRUE(b1.contains(v));
+        EXPECT_TRUE(b2.contains(v));
+    }
+
+    // definitional converse: a point in both b1 and b2 lies in the result
+    Eigen::Vector<zono_float, -1> p(2);
+    p << 7., 2.;
+    ASSERT_TRUE(b1.contains(p) && b2.contains(p));
+    EXPECT_TRUE(result.contains(p));
+
+    // a point in b1 but not b2 is excluded from the result
+    Eigen::Vector<zono_float, -1> q(2);
+    q << 1., 1.;
+    ASSERT_TRUE(b1.contains(q) && !b2.contains(q));
+    EXPECT_FALSE(result.contains(q));
+}
+
+TEST(BoxSetOperations, IntersectionDisjoint)
+{
+    Box b1(Eigen::Vector<zono_float, -1>::Constant(1, 0.), Eigen::Vector<zono_float, -1>::Constant(1, 1.));
+    Box b2(Eigen::Vector<zono_float, -1>::Constant(1, 2.), Eigen::Vector<zono_float, -1>::Constant(1, 3.));
+    EXPECT_TRUE(intersection(b1, b2).is_empty());
+}
+
+TEST(BoxSetOperations, IntersectionEmptyInput)
+{
+    Box b1(Eigen::Vector<zono_float, -1>::Constant(2, 0.), Eigen::Vector<zono_float, -1>::Constant(2, 1.));
+    Box b_empty(Eigen::Vector<zono_float, -1>::Constant(2, 1.), Eigen::Vector<zono_float, -1>::Constant(2, 0.));
+
+    Box result = intersection(b1, b_empty);
+    EXPECT_TRUE(result.is_empty());
+    EXPECT_EQ(result.size(), b1.size());
+
+    // also with an explicit (identity) R
+    Eigen::SparseMatrix<zono_float> R(2, 2);
+    R.setIdentity();
+    Box result_R = intersection(b1, b_empty, R);
+    EXPECT_TRUE(result_R.is_empty());
+    EXPECT_EQ(result_R.size(), b1.size());
+}
+
+TEST(BoxSetOperations, IntersectionThrows)
+{
+    Box b1(Eigen::Vector<zono_float, -1>::Zero(2), Eigen::Vector<zono_float, -1>::Ones(2));
+    Box b2(Eigen::Vector<zono_float, -1>::Zero(3), Eigen::Vector<zono_float, -1>::Ones(3));
+
+    // default (identity) R requires matching dimensions
+    EXPECT_THROW(intersection(b1, b2), std::invalid_argument);
+
+    // explicit R with the wrong shape (should be Z2.size() x Z1.size() = 3x2)
+    Eigen::SparseMatrix<zono_float> R(3, 3);
+    R.setIdentity();
+    EXPECT_THROW(intersection(b1, b2, R), std::invalid_argument);
+}
+
+TEST(BoxSetOperations, IntersectionSelectionRMatchesOverDims)
+{
+    Eigen::Vector<zono_float, -1> lb1(3), ub1(3);
+    lb1 << 0., 1., 2.; ub1 << 10., 11., 12.;
+    Box b1(lb1, ub1);
+
+    Eigen::Vector<zono_float, -1> lb2(2), ub2(2);
+    lb2 << 5., 3.; ub2 << 9., 20.;
+    Box b2(lb2, ub2);
+
+    const std::vector<int> dims{0, 2};
+
+    // selection matrix R (2x3): row k picks out dims[k]
+    Eigen::SparseMatrix<zono_float> R(static_cast<Eigen::Index>(dims.size()), static_cast<Eigen::Index>(b1.size()));
+    std::vector<Eigen::Triplet<zono_float>> trips;
+    for (size_t k = 0; k < dims.size(); ++k)
+        trips.emplace_back(static_cast<int>(k), dims[k], static_cast<zono_float>(1.));
+    R.setFromTriplets(trips.begin(), trips.end());
+
+    // a selection R makes the generalized intersection exact, so it must agree exactly
+    // with intersection_over_dims (both member and free forms)
+    Box via_R = intersection(b1, b2, R);
+    Box via_member_over_dims = b1.intersection_over_dims(b2, dims);
+    Box via_free_over_dims = intersection_over_dims(b1, b2, dims);
+
+    EXPECT_TRUE(via_R == via_member_over_dims);
+    EXPECT_TRUE(via_member_over_dims == via_free_over_dims);
+}
+
+TEST(BoxSetOperations, IntersectionGeneralR)
+{
+    // R is not a selection matrix: constrain Z1 (2D) via x0 + x1 in Z2 (1D)
+    Eigen::Vector<zono_float, -1> lb1(2), ub1(2);
+    lb1 << 0., 0.; ub1 << 10., 10.;
+    Box b1(lb1, ub1);
+
+    Box b2(Eigen::Vector<zono_float, -1>::Constant(1, 5.), Eigen::Vector<zono_float, -1>::Constant(1, 6.));
+
+    Eigen::SparseMatrix<zono_float> R(1, 2);
+    std::vector<Eigen::Triplet<zono_float>> trips{{0, 0, static_cast<zono_float>(1.)}, {0, 1, static_cast<zono_float>(1.)}};
+    R.setFromTriplets(trips.begin(), trips.end());
+
+    Box result = intersection(b1, b2, R);
+
+    // soundness: the contractor only narrows, so the result must stay within b1
+    EXPECT_TRUE(b1.contains_set(result));
+
+    // soundness: every point of b1 satisfying x0 + x1 in b2 must remain in the result,
+    // since the interval contractor is guaranteed not to remove valid points
+    for (zono_float x0 = 0.; x0 <= 10.; x0 += 1.)
+    {
+        for (zono_float x1 = 0.; x1 <= 10.; x1 += 1.)
+        {
+            if (x0 + x1 < 5. || x0 + x1 > 6.)
+                continue;
+            Eigen::Vector<zono_float, -1> x(2);
+            x << x0, x1;
+            EXPECT_TRUE(result.contains(x));
+        }
+    }
+
+    // tightness cross-check: the exact generalized intersection on the zonotope path is a
+    // ConZono, whose bounding box is by definition the tightest box enclosing the exact
+    // feasible set; since the box-contractor result also encloses that same feasible set,
+    // it must contain that tightest bounding box
+    auto Z1 = interval_2_zono(b1);
+    auto Z2 = interval_2_zono(b2);
+    const auto Z_int = intersection(*Z1, *Z2, R);
+    const Box zono_bb = Z_int->bounding_box();
+    EXPECT_TRUE(result.contains_set(zono_bb));
+}
+
+TEST(BoxSetOperations, IntersectionOverDims)
+{
+    Eigen::Vector<zono_float, -1> lb(3), ub(3);
+    lb << 0., 1., 2.; ub << 10., 11., 12.;
+    Box b(lb, ub);
+
+    Eigen::Vector<zono_float, -1> lb2(2), ub2(2);
+    lb2 << 5., 3.; ub2 << 20., 8.;
+    Box other(lb2, ub2);
+
+    const std::vector<int> dims{0, 2};
+    Box result = b.intersection_over_dims(other, dims);
+    EXPECT_EQ(result.size(), b.size());
+
+    // touched dims are intersected with the corresponding element of other
+    EXPECT_TRUE(result.get_element(0) == Interval(5., 10.));
+    EXPECT_TRUE(result.get_element(2) == Interval(3., 8.));
+    // untouched dim is unaffected
+    EXPECT_TRUE(result.get_element(1) == b.get_element(1));
+
+    // definitional: every vertex of the result is in b, and its selected components
+    // are in other
+    for (const auto& v : box_vertices(result))
+    {
+        EXPECT_TRUE(b.contains(v));
+        Eigen::Vector<zono_float, -1> selected(2);
+        selected << v(0), v(2);
+        EXPECT_TRUE(other.contains(selected));
+    }
+
+    EXPECT_TRUE(intersection_over_dims(b, other, dims) == result);
+}
+
+TEST(BoxSetOperations, IntersectionOverDimsDuplicateDims)
+{
+    Box b(Eigen::Vector<zono_float, -1>::Zero(3), Eigen::Vector<zono_float, -1>::Constant(3, 10.));
+
+    Eigen::Vector<zono_float, -1> lb2(2), ub2(2);
+    lb2 << 2., 6.; ub2 << 8., 12.;
+    Box other(lb2, ub2);
+
+    // repeated index: dim 1 is intersected cumulatively with both entries of other
+    Box result = b.intersection_over_dims(other, {1, 1});
+    EXPECT_TRUE(result.get_element(1) == Interval(6., 8.));
+    EXPECT_TRUE(result.get_element(0) == b.get_element(0));
+    EXPECT_TRUE(result.get_element(2) == b.get_element(2));
+}
+
+TEST(BoxSetOperations, IntersectionOverDimsThrows)
+{
+    Box b(Eigen::Vector<zono_float, -1>::Zero(3), Eigen::Vector<zono_float, -1>::Ones(3));
+    Box other(Eigen::Vector<zono_float, -1>::Zero(2), Eigen::Vector<zono_float, -1>::Ones(2));
+
+    EXPECT_THROW(b.intersection_over_dims(other, {-1, 0}), std::invalid_argument);
+    EXPECT_THROW(b.intersection_over_dims(other, {3, 0}), std::invalid_argument);
+    EXPECT_THROW(b.intersection_over_dims(other, {0}), std::invalid_argument); // dims.size() != other.size()
+}

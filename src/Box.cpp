@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cmath>
 #include <ostream>
 #include <set>
@@ -13,6 +14,7 @@
 #include "zonoopt/Box.hpp"
 #include "zonoopt/Defines.hpp"
 #include "zonoopt/Interval.hpp"
+#include "zonoopt/SparseMatrixUtilities.hpp"
 
 namespace ZonoOpt {
     using namespace detail;
@@ -34,6 +36,26 @@ namespace ZonoOpt {
                 return make_empty_box(R.rows());
             Box out = box.linear_map(R);
             return (s.size() == 0) ? out : out + s;
+        }
+
+        // if R is a selection matrix (one unit entry per row), fills dims s.t. R*x == x(dims) and returns true
+        bool try_get_selection_dims(const Eigen::SparseMatrix<zono_float>& R, std::vector<int>& dims)
+        {
+            dims.assign(static_cast<size_t>(R.rows()), -1);
+            std::vector<int> nnz_per_row(static_cast<size_t>(R.rows()), 0);
+            for (int k = 0; k < R.outerSize(); ++k)
+            {
+                for (Eigen::SparseMatrix<zono_float>::InnerIterator it(R, k); it; ++it)
+                {
+                    if (std::abs(it.value() - one) > zono_eps)
+                        return false;
+                    const auto row = static_cast<size_t>(it.row());
+                    if (++nnz_per_row[row] > 1)
+                        return false;
+                    dims[row] = static_cast<int>(it.col());
+                }
+            }
+            return std::all_of(nnz_per_row.begin(), nnz_per_row.end(), [](const int c) { return c == 1; });
         }
     }
 
@@ -181,6 +203,27 @@ namespace ZonoOpt {
         for (int i = 0; i < static_cast<int>(this->size()); ++i)
         {
             out.set_element(i, get_element(i).interval_hull(other.get_element(i)));
+        }
+        return out;
+    }
+
+    Box Box::intersection_over_dims(const Box& other, const std::vector<int>& dims) const
+    {
+        if (dims.size() != other.size())
+            throw std::invalid_argument("Box intersection over dims: dims.size() must equal other.size()");
+
+        const auto n = static_cast<int>(this->size());
+        for (const int d : dims)
+        {
+            if (d < 0 || d >= n)
+                throw std::invalid_argument("Box intersection over dims: dimension index out of range");
+        }
+
+        Box out = *this;
+        for (size_t k = 0; k < dims.size(); ++k)
+        {
+            const int d = dims[k];
+            out.set_element(d, out.get_element(d).intersect(other.get_element(static_cast<int>(k))));
         }
         return out;
     }
@@ -930,5 +973,69 @@ namespace ZonoOpt {
             out = out.interval_hull(b);
         }
         return out;
+    }
+
+    Box intersection(const Box& Z1, const Box& Z2, const Eigen::SparseMatrix<zono_float>& R,
+                     const int contractor_iter)
+    {
+        // handle default (identity map) argument: exact
+        if (R.rows() == 0 && R.cols() == 0)
+        {
+            return Z1.intersect(Z2);
+        }
+
+        const auto n = static_cast<Eigen::Index>(Z1.size());
+        const auto m = static_cast<Eigen::Index>(Z2.size());
+        if (R.rows() != m || R.cols() != n)
+        {
+            throw std::invalid_argument("Box intersection: inconsistent input dimensions");
+        }
+
+        // exact fast path: a selection R makes the generalized intersection box-representable
+        std::vector<int> dims;
+        if (try_get_selection_dims(R, dims))
+        {
+            return Z1.intersection_over_dims(Z2, dims);
+        }
+
+        // early exit
+        if (Z1.is_empty() || Z2.is_empty())
+        {
+            return make_empty_box(n);
+        }
+
+        // R is not a selection matrix here, so {x in Z1 : R*x in Z2} is a polytope, not a
+        // box in general; stack variables [x; s], x in Z1, s in Z2, and contract against
+        // R*x - s = 0 to get an over-approximation.
+        Box z = Z1.cartesian_product(Z2);
+
+        std::vector<Eigen::Triplet<zono_float>> tripvec;
+        tripvec.reserve(static_cast<size_t>(R.nonZeros()) + static_cast<size_t>(m));
+        get_triplets_offset<zono_float>(R, tripvec, 0, 0);
+        for (Eigen::Index i = 0; i < m; ++i)
+        {
+            tripvec.emplace_back(static_cast<int>(i), static_cast<int>(n + i), static_cast<zono_float>(-1));
+        }
+        Eigen::SparseMatrix<zono_float, Eigen::RowMajor> A(m, n + m);
+        A.setFromTriplets(tripvec.begin(), tripvec.end());
+
+        const Eigen::Vector<zono_float, -1> b = Eigen::Vector<zono_float, -1>::Zero(m);
+
+        if (!z.contract(A, b, contractor_iter))
+        {
+            return make_empty_box(n);
+        }
+
+        std::vector<int> proj_dims(static_cast<size_t>(n));
+        for (Eigen::Index i = 0; i < n; ++i)
+        {
+            proj_dims[static_cast<size_t>(i)] = static_cast<int>(i);
+        }
+        return z.project_onto_dims(proj_dims);
+    }
+
+    Box intersection_over_dims(const Box& Z1, const Box& Z2, const std::vector<int>& dims)
+    {
+        return Z1.intersection_over_dims(Z2, dims);
     }
 }

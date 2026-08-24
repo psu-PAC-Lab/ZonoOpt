@@ -159,6 +159,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a67f381b247d4d3b62bb819617e3772b9" id="r_a67f381b247d4d3b62bb819617e3772b9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1Box.html#a67f381b247d4d3b62bb819617e3772b9">intersect</a> (const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;other) const</td></tr>
 <tr class="memdesc:a67f381b247d4d3b62bb819617e3772b9"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a> intersection.  <br /></td></tr>
 <tr class="separator:a67f381b247d4d3b62bb819617e3772b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ec3ac55d16b9d98d215bb31d6d8d720" id="r_a4ec3ac55d16b9d98d215bb31d6d8d720"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1Box.html#a4ec3ac55d16b9d98d215bb31d6d8d720">intersection_over_dims</a> (const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;other, const std::vector&lt; int &gt; &amp;dims) const</td></tr>
+<tr class="memdesc:a4ec3ac55d16b9d98d215bb31d6d8d720"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a> intersection over a subset of dimensions.  <br /></td></tr>
+<tr class="separator:a4ec3ac55d16b9d98d215bb31d6d8d720"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9359a1b7c1402d5f679440cd7a6816bc" id="r_a9359a1b7c1402d5f679440cd7a6816bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classZonoOpt_1_1Box.html#a9359a1b7c1402d5f679440cd7a6816bc">interval_hull</a> (const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;other) const</td></tr>
 <tr class="memdesc:a9359a1b7c1402d5f679440cd7a6816bc"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a> interval hull.  <br /></td></tr>
 <tr class="separator:a9359a1b7c1402d5f679440cd7a6816bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1079,6 +1082,51 @@ Friends</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a4ec3ac55d16b9d98d215bb31d6d8d720" name="a4ec3ac55d16b9d98d215bb31d6d8d720"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ec3ac55d16b9d98d215bb31d6d8d720">&#9670;&#160;</a></span>intersection_over_dims()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1Box.html">Box</a> ZonoOpt::Box::intersection_over_dims </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dims</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classZonoOpt_1_1Box.html" title="Box (i.e., interval vector) class.">Box</a> intersection over a subset of dimensions. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>other box, must have size equal to dims.size() </td></tr>
+    <tr><td class="paramname">dims</td><td>dimensions of this box over which the intersection is computed </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>intersection of this and other over the specified dimensions </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if dims.size() does not equal other.size(), or if any entry in dims is not a valid dimension of this box.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>This computes the exact intersection {x in this : x(dims) in other}. Repeated indices in dims are intersected cumulatively. </p>
 
 </div>
 </div>

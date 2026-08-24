@@ -117,9 +117,15 @@ Functions</h2></td></tr>
 <tr class="memitem:gaa29e9313fc492754b671299f91166ea0" id="r_gaa29e9313fc492754b671299f91166ea0"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#gaa29e9313fc492754b671299f91166ea0">ZonoOpt::halfspace_intersection</a> (<a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z, const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;H, const Eigen::Vector&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>, -1 &gt; &amp;f, const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;R=Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt;())</td></tr>
 <tr class="memdesc:gaa29e9313fc492754b671299f91166ea0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the intersection generalized intersection of set Z with halfspace H*x &lt;= f over matrix R.  <br /></td></tr>
 <tr class="separator:gaa29e9313fc492754b671299f91166ea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga502a33fbe099bc5d4627ef3417e9f6e0" id="r_ga502a33fbe099bc5d4627ef3417e9f6e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#ga502a33fbe099bc5d4627ef3417e9f6e0">ZonoOpt::intersection</a> (const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;Z1, const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;Z2, const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;R=Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt;(), int contractor_iter=10)</td></tr>
+<tr class="memdesc:ga502a33fbe099bc5d4627ef3417e9f6e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the generalized intersection of boxes Z1 and Z2 over the matrix R.  <br /></td></tr>
+<tr class="separator:ga502a33fbe099bc5d4627ef3417e9f6e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga791d82941cf98f5440cb2d361376992d" id="r_ga791d82941cf98f5440cb2d361376992d"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#ga791d82941cf98f5440cb2d361376992d">ZonoOpt::intersection</a> (const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z1, <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z2, const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;R=Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt;())</td></tr>
 <tr class="memdesc:ga791d82941cf98f5440cb2d361376992d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the generalized intersection of sets Z1 and Z2 over the matrix R.  <br /></td></tr>
 <tr class="separator:ga791d82941cf98f5440cb2d361376992d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad81b69a5b1af00628914aa66c5bc6364" id="r_gad81b69a5b1af00628914aa66c5bc6364"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classZonoOpt_1_1Box.html">Box</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#gad81b69a5b1af00628914aa66c5bc6364">ZonoOpt::intersection_over_dims</a> (const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;Z1, const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;Z2, const std::vector&lt; int &gt; &amp;dims)</td></tr>
+<tr class="memdesc:gad81b69a5b1af00628914aa66c5bc6364"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the intersection of boxes Z1 and Z2 over the specified dimensions.  <br /></td></tr>
+<tr class="separator:gad81b69a5b1af00628914aa66c5bc6364"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae333f8da54d1d8b47cbdf3ff02b8244c" id="r_gae333f8da54d1d8b47cbdf3ff02b8244c"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ZonoOpt__SetOperations.html#gae333f8da54d1d8b47cbdf3ff02b8244c">ZonoOpt::intersection_over_dims</a> (const <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z1, <a class="el" href="classZonoOpt_1_1HybZono.html">HybZono</a> &amp;Z2, const std::vector&lt; int &gt; &amp;dims)</td></tr>
 <tr class="memdesc:gae333f8da54d1d8b47cbdf3ff02b8244c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the generalized intersection of sets Z1 and Z2 over the specified dimensions.  <br /></td></tr>
 <tr class="separator:gae333f8da54d1d8b47cbdf3ff02b8244c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -559,8 +565,70 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="ga502a33fbe099bc5d4627ef3417e9f6e0" name="ga502a33fbe099bc5d4627ef3417e9f6e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga502a33fbe099bc5d4627ef3417e9f6e0">&#9670;&#160;</a></span>intersection() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1Box.html">Box</a> ZonoOpt::intersection </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>Z1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>Z2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::SparseMatrix&lt; <a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>R</em> = <code>Eigen::SparseMatrix&lt;<a class="el" href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a>&gt;()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>contractor_iter</em> = <code>10</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the generalized intersection of boxes Z1 and Z2 over the matrix R. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Z1</td><td>box </td></tr>
+    <tr><td class="paramname">Z2</td><td>box </td></tr>
+    <tr><td class="paramname">R</td><td>affine map matrix; if not provided, the identity map is used (R must then be square) </td></tr>
+    <tr><td class="paramname">contractor_iter</td><td>number of interval contractor iterations to run when R is not the identity; ignored when R is left at its default value </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>box</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classZonoOpt_1_1Box.html#a67f381b247d4d3b62bb819617e3772b9" title="Box intersection.">Box::intersect</a> </dd>
+<dd>
+<a class="el" href="classZonoOpt_1_1Box.html#a4ec3ac55d16b9d98d215bb31d6d8d720" title="Box intersection over a subset of dimensions.">Box::intersection_over_dims</a> </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if R is provided and its dimensions are inconsistent with Z1 and Z2, or if R is omitted and Z1, Z2 have different dimensions.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>An interval contractor is used to compute the over-approximation of the generalized intersection when an exact intersection is not available. </dd></dl>
+
+</div>
+</div>
 <a id="ga791d82941cf98f5440cb2d361376992d" name="ga791d82941cf98f5440cb2d361376992d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga791d82941cf98f5440cb2d361376992d">&#9670;&#160;</a></span>intersection()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ga791d82941cf98f5440cb2d361376992d">&#9670;&#160;</a></span>intersection() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -610,8 +678,60 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="gad81b69a5b1af00628914aa66c5bc6364" name="gad81b69a5b1af00628914aa66c5bc6364"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad81b69a5b1af00628914aa66c5bc6364">&#9670;&#160;</a></span>intersection_over_dims() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classZonoOpt_1_1Box.html">Box</a> ZonoOpt::intersection_over_dims </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>Z1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classZonoOpt_1_1Box.html">Box</a> &amp;&#160;</td>
+          <td class="paramname"><em>Z2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dims</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the intersection of boxes Z1 and Z2 over the specified dimensions. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Z1</td><td>box </td></tr>
+    <tr><td class="paramname">Z2</td><td>box, must have size equal to dims.size() </td></tr>
+    <tr><td class="paramname">dims</td><td>dimensions of Z1 over which the intersection is computed </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>box</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classZonoOpt_1_1Box.html#a4ec3ac55d16b9d98d215bb31d6d8d720" title="Box intersection over a subset of dimensions.">Box::intersection_over_dims</a> </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if dims.size() does not equal Z2.size(), or if any entry in dims is not a valid dimension of Z1. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="gae333f8da54d1d8b47cbdf3ff02b8244c" name="gae333f8da54d1d8b47cbdf3ff02b8244c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gae333f8da54d1d8b47cbdf3ff02b8244c">&#9670;&#160;</a></span>intersection_over_dims()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#gae333f8da54d1d8b47cbdf3ff02b8244c">&#9670;&#160;</a></span>intersection_over_dims() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
