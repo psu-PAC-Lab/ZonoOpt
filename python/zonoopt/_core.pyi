@@ -1569,6 +1569,11 @@ class ConZono(HybZono):
                 Optionally, in 0-1 form, the factors are xi in [0,1].
                 The set dimension is n, and the number of equality constraints is nC.
             """
+    A: scipy.sparse.csc_matrix[numpy.float64]
+    G: scipy.sparse.csc_matrix[numpy.float64]
+    b: typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']
+    c: typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']
+    zero_one_form: bool
     def __init__(self, G: scipy.sparse.csc_matrix[numpy.float64], c: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], A: scipy.sparse.csc_matrix[numpy.float64], b: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], zero_one_form: bool = ...) -> None:
         '''__init__(self: zonoopt._core.ConZono, G: scipy.sparse.csc_matrix[numpy.float64], c: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], A: scipy.sparse.csc_matrix[numpy.float64], b: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], zero_one_form: bool = False) -> None
 
@@ -1724,6 +1729,56 @@ class ConZono(HybZono):
 
         4. __imul__(self: zonoopt._core.ConZono, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
         """
+    @property
+    def Ab(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: binary constraint matrix
+        (arg0: zonoopt._core.ConZono) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def Ac(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: continuous constraint matrix
+        (arg0: zonoopt._core.ConZono) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def Gb(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: binary generator matrix
+        (arg0: zonoopt._core.ConZono) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def Gc(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: continuous generator matrix
+        (arg0: zonoopt._core.ConZono) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def n(self) -> int:
+        """int: dimension of the set
+        (arg0: zonoopt._core.ConZono) -> int
+        """
+    @property
+    def nC(self) -> int:
+        """int: number of equality constraints
+        (arg0: zonoopt._core.ConZono) -> int
+        """
+    @property
+    def nG(self) -> int:
+        """int: total number of generators
+        (arg0: zonoopt._core.ConZono) -> int
+        """
+    @property
+    def nGb(self) -> int:
+        """int: number of binary generators
+        (arg0: zonoopt._core.ConZono) -> int
+        """
+    @property
+    def nGc(self) -> int:
+        """int: number of continuous generators
+        (arg0: zonoopt._core.ConZono) -> int
+        """
+    @property
+    def sharp(self) -> bool:
+        """bool: true if set is known to be sharp
+        (arg0: zonoopt._core.ConZono) -> bool
+        """
 
 class EmptySet(ConZono):
     """
@@ -1740,6 +1795,81 @@ class EmptySet(ConZono):
                         Args:
                             n (int): dimension
             
+        """
+    @property
+    def A(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: constraint matrix
+        (arg0: zonoopt._core.EmptySet) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def Ab(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: binary constraint matrix
+        (arg0: zonoopt._core.EmptySet) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def Ac(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: continuous constraint matrix
+        (arg0: zonoopt._core.EmptySet) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def G(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: generator matrix
+        (arg0: zonoopt._core.EmptySet) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def Gb(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: binary generator matrix
+        (arg0: zonoopt._core.EmptySet) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def Gc(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: continuous generator matrix
+        (arg0: zonoopt._core.EmptySet) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def b(self) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
+        '''numpy.array: constraint vector
+        (arg0: zonoopt._core.EmptySet) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''
+    @property
+    def c(self) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
+        '''numpy.array: center vector
+        (arg0: zonoopt._core.EmptySet) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''
+    @property
+    def n(self) -> int:
+        """int: dimension of the set
+        (arg0: zonoopt._core.EmptySet) -> int
+        """
+    @property
+    def nC(self) -> int:
+        """int: number of equality constraints
+        (arg0: zonoopt._core.EmptySet) -> int
+        """
+    @property
+    def nG(self) -> int:
+        """int: total number of generators
+        (arg0: zonoopt._core.EmptySet) -> int
+        """
+    @property
+    def nGb(self) -> int:
+        """int: number of binary generators
+        (arg0: zonoopt._core.EmptySet) -> int
+        """
+    @property
+    def nGc(self) -> int:
+        """int: number of continuous generators
+        (arg0: zonoopt._core.EmptySet) -> int
+        """
+    @property
+    def sharp(self) -> bool:
+        """bool: true if set is known to be sharp
+        (arg0: zonoopt._core.EmptySet) -> bool
+        """
+    @property
+    def zero_one_form(self) -> bool:
+        """bool: true if factors are in range [0,1], false if they are in range [-1,1]
+        (arg0: zonoopt._core.EmptySet) -> bool
         """
 
 class ExternalSolverResults:
@@ -1812,6 +1942,13 @@ class HybZono:
             The set dimension is n, and the number of equality constraints is nC.
         """
     __array_priority__: ClassVar[float] = ...
+    Ab: scipy.sparse.csc_matrix[numpy.float64]
+    Ac: scipy.sparse.csc_matrix[numpy.float64]
+    Gb: scipy.sparse.csc_matrix[numpy.float64]
+    Gc: scipy.sparse.csc_matrix[numpy.float64]
+    b: typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']
+    c: typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']
+    zero_one_form: bool
     def __init__(self, Gc: scipy.sparse.csc_matrix[numpy.float64], Gb: scipy.sparse.csc_matrix[numpy.float64], c: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], Ac: scipy.sparse.csc_matrix[numpy.float64], Ab: scipy.sparse.csc_matrix[numpy.float64], b: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], zero_one_form: bool = ..., sharp: bool = ...) -> None:
         '''__init__(self: zonoopt._core.HybZono, Gc: scipy.sparse.csc_matrix[numpy.float64], Gb: scipy.sparse.csc_matrix[numpy.float64], c: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], Ac: scipy.sparse.csc_matrix[numpy.float64], Ab: scipy.sparse.csc_matrix[numpy.float64], b: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], zero_one_form: bool = False, sharp: bool = False) -> None
 
@@ -1830,7 +1967,7 @@ class HybZono:
             
         '''
     def bounding_box(self, settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> Box:
-        """bounding_box(self: zonoopt._core.HybZono, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x72fcdebce870>) -> zonoopt._core.Box
+        """bounding_box(self: zonoopt._core.HybZono, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7443cbfbe7b0>) -> zonoopt._core.Box
 
 
                         Computes a bounding box of the set object as a Box object.
@@ -1871,7 +2008,7 @@ class HybZono:
             
         '''
     def contains_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x72fce0d16ff0>) -> bool
+        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7443cbf46530>) -> bool
 
 
                         Checks whether the point x is contained in the set object.
@@ -1894,8 +2031,8 @@ class HybZono:
 
 
                         Converts the set representation between -1-1 and 0-1 forms.
-                
-                        This method converts the set representation between -1-1 and 0-1 forms. 
+
+                        This method converts the set representation between -1-1 and 0-1 forms.
                         If the set is in -1-1 form, then xi_c in [-1,1] and xi_b in {-1,1}.
                         If the set is in 0-1 form, then xi_c in [0,1] and xi_b in {0,1}.
             
@@ -2098,7 +2235,7 @@ class HybZono:
             
         """
     def is_empty(self, settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        """is_empty(self: zonoopt._core.HybZono, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x72fce0dc5230>) -> bool
+        """is_empty(self: zonoopt._core.HybZono, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7443cbfbe1f0>) -> bool
 
 
                         Returns true if the set is provably empty, false otherwise.
@@ -2163,7 +2300,7 @@ class HybZono:
             
         """
     def optimize_over(self, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], c: typing.SupportsFloat | typing.SupportsIndex = ..., settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x72fce08653b0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7443d0e169b0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Solves optimization problem with quadratic objective over the current set
@@ -2183,7 +2320,7 @@ class HybZono:
             
         '''
     def project_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x72fce08652b0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7443d127deb0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Returns the projection of the point x onto the set object.
@@ -2236,7 +2373,7 @@ class HybZono:
             
         '''
     def support(self, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> float:
-        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x72fce1571870>) -> float
+        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7443cbfbe430>) -> float
 
 
                         Computes support function of the set in the direction d.
@@ -2253,6 +2390,20 @@ class HybZono:
                         Solves max_{z in Z} <z, d> where <., .> is the inner product
             
         '''
+    def to_0_1_form(self) -> None:
+        """to_0_1_form(self: zonoopt._core.HybZono) -> None
+
+
+                        Converts the set to [0,1] form. No-op if already in [0,1] form.
+            
+        """
+    def to_canonical_form(self) -> None:
+        """to_canonical_form(self: zonoopt._core.HybZono) -> None
+
+
+                        Converts the set to canonical [-1,1] form. No-op if already in [-1,1] form.
+            
+        """
     @overload
     def __add__(self, other: HybZono) -> HybZono:
         '''__add__(*args, **kwargs)
@@ -3206,6 +3357,46 @@ class HybZono:
                         HybZono
             
         '''
+    @property
+    def A(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: constraint matrix
+        (arg0: zonoopt._core.HybZono) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def G(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: generator matrix
+        (arg0: zonoopt._core.HybZono) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def n(self) -> int:
+        """int: dimension of the set
+        (arg0: zonoopt._core.HybZono) -> int
+        """
+    @property
+    def nC(self) -> int:
+        """int: number of equality constraints
+        (arg0: zonoopt._core.HybZono) -> int
+        """
+    @property
+    def nG(self) -> int:
+        """int: total number of generators
+        (arg0: zonoopt._core.HybZono) -> int
+        """
+    @property
+    def nGb(self) -> int:
+        """int: number of binary generators
+        (arg0: zonoopt._core.HybZono) -> int
+        """
+    @property
+    def nGc(self) -> int:
+        """int: number of continuous generators
+        (arg0: zonoopt._core.HybZono) -> int
+        """
+    @property
+    def sharp(self) -> bool:
+        """bool: true if set is known to be sharp
+        (arg0: zonoopt._core.HybZono) -> bool
+        """
 
 class Interval:
     """
@@ -6137,6 +6328,7 @@ class Point(Zono):
                 
                 A point is defined entirely by the center vector c.
             """
+    c: typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']
     def __init__(self, c: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]']) -> None:
         '''__init__(self: zonoopt._core.Point, c: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"]) -> None
 
@@ -6294,6 +6486,76 @@ class Point(Zono):
 
         3. __isub__(self: zonoopt._core.Point, box: zonoopt._core.Box) -> zonoopt._core.HybZono
         '''
+    @property
+    def A(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: constraint matrix
+        (arg0: zonoopt._core.Point) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def Ab(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: binary constraint matrix
+        (arg0: zonoopt._core.Point) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def Ac(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: continuous constraint matrix
+        (arg0: zonoopt._core.Point) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def G(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: generator matrix
+        (arg0: zonoopt._core.Point) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def Gb(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: binary generator matrix
+        (arg0: zonoopt._core.Point) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def Gc(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: continuous generator matrix
+        (arg0: zonoopt._core.Point) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def b(self) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
+        '''numpy.array: constraint vector
+        (arg0: zonoopt._core.Point) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''
+    @property
+    def n(self) -> int:
+        """int: dimension of the set
+        (arg0: zonoopt._core.Point) -> int
+        """
+    @property
+    def nC(self) -> int:
+        """int: number of equality constraints
+        (arg0: zonoopt._core.Point) -> int
+        """
+    @property
+    def nG(self) -> int:
+        """int: total number of generators
+        (arg0: zonoopt._core.Point) -> int
+        """
+    @property
+    def nGb(self) -> int:
+        """int: number of binary generators
+        (arg0: zonoopt._core.Point) -> int
+        """
+    @property
+    def nGc(self) -> int:
+        """int: number of continuous generators
+        (arg0: zonoopt._core.Point) -> int
+        """
+    @property
+    def sharp(self) -> bool:
+        """bool: true if set is known to be sharp
+        (arg0: zonoopt._core.Point) -> bool
+        """
+    @property
+    def zero_one_form(self) -> bool:
+        """bool: true if factors are in range [0,1], false if they are in range [-1,1]
+        (arg0: zonoopt._core.Point) -> bool
+        """
 
 class SCIPSettings(SolverSettings):
     """Settings for the dynamically-loaded SCIP solver backend. Every typed field is Optional; leave it as None to use SCIP's default. For SCIP parameters not exposed as typed fields, use the bool/int/longint/real/char/str_params dicts keyed by SCIP's documented parameter name (e.g., 'limits/time', 'numerics/feastol').
@@ -6392,6 +6654,9 @@ class Zono(ConZono):
                 Optionally, in 0-1 form, the factors are xi in [0,1].
                 The set dimension is n, and the number of generators is nG.
             """
+    G: scipy.sparse.csc_matrix[numpy.float64]
+    c: typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']
+    zero_one_form: bool
     def __init__(self, G: scipy.sparse.csc_matrix[numpy.float64], c: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], zero_one_form: bool = ...) -> None:
         '''__init__(self: zonoopt._core.Zono, G: scipy.sparse.csc_matrix[numpy.float64], c: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], zero_one_form: bool = False) -> None
 
@@ -6555,6 +6820,66 @@ class Zono(ConZono):
         3. __imul__(self: zonoopt._core.Zono, box: zonoopt._core.Box) -> zonoopt._core.Zono
 
         4. __imul__(self: zonoopt._core.Zono, other: zonoopt._core.HybZono) -> zonoopt._core.HybZono
+        """
+    @property
+    def A(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: constraint matrix
+        (arg0: zonoopt._core.Zono) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def Ab(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: binary constraint matrix
+        (arg0: zonoopt._core.Zono) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def Ac(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: continuous constraint matrix
+        (arg0: zonoopt._core.Zono) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def Gb(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: binary generator matrix
+        (arg0: zonoopt._core.Zono) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def Gc(self) -> scipy.sparse.csc_matrix[numpy.float64]:
+        """scipy.sparse.csc_matrix: continuous generator matrix
+        (arg0: zonoopt._core.Zono) -> scipy.sparse.csc_matrix[numpy.float64]
+        """
+    @property
+    def b(self) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
+        '''numpy.array: constraint vector
+        (arg0: zonoopt._core.Zono) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''
+    @property
+    def n(self) -> int:
+        """int: dimension of the set
+        (arg0: zonoopt._core.Zono) -> int
+        """
+    @property
+    def nC(self) -> int:
+        """int: number of equality constraints
+        (arg0: zonoopt._core.Zono) -> int
+        """
+    @property
+    def nG(self) -> int:
+        """int: total number of generators
+        (arg0: zonoopt._core.Zono) -> int
+        """
+    @property
+    def nGb(self) -> int:
+        """int: number of binary generators
+        (arg0: zonoopt._core.Zono) -> int
+        """
+    @property
+    def nGc(self) -> int:
+        """int: number of continuous generators
+        (arg0: zonoopt._core.Zono) -> int
+        """
+    @property
+    def sharp(self) -> bool:
+        """bool: true if set is known to be sharp
+        (arg0: zonoopt._core.Zono) -> bool
         """
 
 class _GurobiDblParams:

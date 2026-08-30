@@ -213,6 +213,16 @@ class HybZono
         virtual void convert_form();
 
         /**
+         * @brief Converts the set to [0,1] form. No-op if already in [0,1] form.
+         */
+        void to_0_1_form() { if (!this->zero_one_form) this->convert_form(); }
+
+        /**
+         * @brief Converts the set to canonical [-1,1] form. No-op if already in [-1,1] form.
+         */
+        void to_canonical_form() { if (this->zero_one_form) this->convert_form(); }
+
+        /**
          * @brief Removes redundant constraints and any unused generators
          * @param contractor_iter number of interval contractor iterations to run
          * @returns set with redundancies removed
