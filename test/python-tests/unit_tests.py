@@ -1531,6 +1531,154 @@ def test_box_hybzono_overload_dispatch():
 
     print('Passed: Box/HybZono Overload Dispatch')
 
+def test_properties():
+
+    # read parity: properties must return exactly what the get_*()/is_*() methods return
+
+    HZ = TestUtilities.random_hybzono(3, 4, 2, 2, 0.7, -2., 2.)
+    assert HZ.n == HZ.get_n() and HZ.nC == HZ.get_nC() and HZ.nG == HZ.get_nG() \
+        and HZ.nGc == HZ.get_nGc() and HZ.nGb == HZ.get_nGb(), 'HybZono: dimension property/get mismatch'
+    assert TestUtilities.eq_mats(HZ.G.toarray(), HZ.get_G().toarray()), 'HybZono: G property/get mismatch'
+    assert TestUtilities.eq_mats(HZ.Gc.toarray(), HZ.get_Gc().toarray()), 'HybZono: Gc property/get mismatch'
+    assert TestUtilities.eq_mats(HZ.Gb.toarray(), HZ.get_Gb().toarray()), 'HybZono: Gb property/get mismatch'
+    assert TestUtilities.eq_mats(HZ.A.toarray(), HZ.get_A().toarray()), 'HybZono: A property/get mismatch'
+    assert TestUtilities.eq_mats(HZ.Ac.toarray(), HZ.get_Ac().toarray()), 'HybZono: Ac property/get mismatch'
+    assert TestUtilities.eq_mats(HZ.Ab.toarray(), HZ.get_Ab().toarray()), 'HybZono: Ab property/get mismatch'
+    assert TestUtilities.eq_vecs(HZ.c, HZ.get_c()), 'HybZono: c property/get mismatch'
+    assert TestUtilities.eq_vecs(HZ.b, HZ.get_b()), 'HybZono: b property/get mismatch'
+    assert HZ.sharp == HZ.is_sharp() and HZ.zero_one_form == HZ.is_0_1_form(), \
+        'HybZono: flag property/get mismatch'
+
+    CZ = TestUtilities.random_conzono(3, 4, 2, 0.7, -2., 2.)
+    assert CZ.n == CZ.get_n() and CZ.nC == CZ.get_nC() and CZ.nG == CZ.get_nG(), \
+        'ConZono: dimension property/get mismatch'
+    assert TestUtilities.eq_mats(CZ.G.toarray(), CZ.get_G().toarray()), 'ConZono: G property/get mismatch'
+    assert TestUtilities.eq_mats(CZ.A.toarray(), CZ.get_A().toarray()), 'ConZono: A property/get mismatch'
+    assert TestUtilities.eq_vecs(CZ.c, CZ.get_c()), 'ConZono: c property/get mismatch'
+    assert TestUtilities.eq_vecs(CZ.b, CZ.get_b()), 'ConZono: b property/get mismatch'
+    assert CZ.sharp == CZ.is_sharp() and CZ.zero_one_form == CZ.is_0_1_form(), \
+        'ConZono: flag property/get mismatch'
+
+    Z = TestUtilities.random_zono(3, 4, 0.7, -2., 2.)
+    assert Z.n == Z.get_n() and Z.nG == Z.get_nG(), 'Zono: dimension property/get mismatch'
+    assert TestUtilities.eq_mats(Z.G.toarray(), Z.get_G().toarray()), 'Zono: G property/get mismatch'
+    assert TestUtilities.eq_vecs(Z.c, Z.get_c()), 'Zono: c property/get mismatch'
+    assert Z.sharp == Z.is_sharp() and Z.zero_one_form == Z.is_0_1_form(), 'Zono: flag property/get mismatch'
+
+    P = zono.Point(np.array([1., 2., 3.]))
+    assert P.n == P.get_n(), 'Point: dimension property/get mismatch'
+    assert TestUtilities.eq_vecs(P.c, P.get_c()), 'Point: c property/get mismatch'
+
+    # valid assignment: dimension-changing assignment updates the dependent dimension fields
+
+    Z.G = TestUtilities.random_sparse_matrix(3, 6, 0.7, -2., 2.)
+    assert Z.nG == 6, 'Zono: G assignment did not update nG'
+
+    b_new = TestUtilities.random_vector(CZ.nC, -2., 2.)
+    CZ.b = b_new
+    assert TestUtilities.eq_vecs(CZ.b, b_new), 'ConZono: b assignment did not take effect'
+
+    Gc_new = TestUtilities.random_sparse_matrix(HZ.n, HZ.nGc, 0.7, -2., 2.)
+    HZ.Gc = Gc_new
+    assert TestUtilities.eq_mats(HZ.Gc.toarray(), Gc_new.toarray()), 'HybZono: Gc assignment did not take effect'
+
+    P.c = np.array([4., 5.])
+    assert P.n == 2 and TestUtilities.eq_vecs(P.c, np.array([4., 5.])), \
+        'Point: c assignment did not update n'
+
+    # dimension rejection: mismatched assignment raises ValueError, leaves object unchanged
+
+    try:
+        Z.c = np.zeros(Z.n + 1)
+        raise AssertionError('Zono: c assignment with wrong length should raise ValueError')
+    except ValueError:
+        pass
+
+    try:
+        CZ.A = TestUtilities.random_sparse_matrix(CZ.nC, CZ.nG + 1, 0.7, -2., 2.)
+        raise AssertionError('ConZono: A assignment with wrong number of columns should raise ValueError')
+    except ValueError:
+        pass
+
+    try:
+        HZ.b = np.zeros(HZ.nC + 1)
+        raise AssertionError('HybZono: b assignment with wrong length should raise ValueError')
+    except ValueError:
+        pass
+
+    # read-only enforcement: aggregate/derived fields cannot be assigned
+
+    try:
+        HZ.G = HZ.G
+        raise AssertionError('HybZono: G should be read-only')
+    except AttributeError:
+        pass
+
+    try:
+        CZ.Gb = CZ.Gb
+        raise AssertionError('ConZono: Gb should be read-only')
+    except AttributeError:
+        pass
+
+    try:
+        Z.A = Z.A
+        raise AssertionError('Zono: A should be read-only')
+    except AttributeError:
+        pass
+
+    ES = zono.EmptySet(3)
+    try:
+        ES.c = np.zeros(3)
+        raise AssertionError('EmptySet: c should be read-only')
+    except AttributeError:
+        pass
+    try:
+        ES.G = ES.G
+        raise AssertionError('EmptySet: G should be read-only')
+    except AttributeError:
+        pass
+
+    # form conversion: zero_one_form assignment matches convert_form(), and is idempotent
+
+    Z = TestUtilities.random_zono(3, 4, 0.7, -2., 2.)
+    ref = Z.copy()
+    ref.convert_form()
+
+    Z.zero_one_form = True
+    assert Z.zero_one_form and TestUtilities.eq_hzs(Z, ref), \
+        'Zono: zero_one_form=True does not match convert_form()'
+
+    snapshot = Z.copy()
+    Z.zero_one_form = True  # no-op
+    assert TestUtilities.eq_hzs(Z, snapshot) and Z.zero_one_form, \
+        'Zono: repeated zero_one_form=True should be a no-op'
+
+    Z.zero_one_form = False
+    assert not Z.zero_one_form, 'Zono: zero_one_form=False did not flip flag'
+
+    # to_0_1_form / to_canonical_form: idempotent, same effect as the property setter
+
+    HZ.to_0_1_form()
+    after_first = HZ.copy()
+    HZ.to_0_1_form()
+    assert TestUtilities.eq_hzs(HZ, after_first), 'HybZono: to_0_1_form should be idempotent'
+    HZ.to_canonical_form()
+    after_first = HZ.copy()
+    HZ.to_canonical_form()
+    assert TestUtilities.eq_hzs(HZ, after_first), 'HybZono: to_canonical_form should be idempotent'
+
+    # Point: zero_one_form is always false and read-only
+
+    P = zono.Point(np.array([1., 2.]))
+    assert not P.zero_one_form, 'Point: zero_one_form should always be False'
+    try:
+        P.zero_one_form = True
+        raise AssertionError('Point: zero_one_form should be read-only')
+    except AttributeError:
+        pass
+
+    print('Passed: Properties')
+
 if __name__ == '__main__':
     tests = [
         test_vrep_2_hz,
@@ -1552,6 +1700,7 @@ if __name__ == '__main__':
         test_box_set_operations,
         test_box_operator_semantics,
         test_box_hybzono_overload_dispatch,
+        test_properties,
     ]
 
     failures = []

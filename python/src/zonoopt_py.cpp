@@ -29,6 +29,30 @@ const SolverSettings& resolve_solver_settings(const py::object& obj)
     if (obj.is_none()) return get_default_solver_settings();
     return obj.cast<const SolverSettings&>();
 }
+
+// Attaches HybZono's field set as read-only properties to any class in the
+// hierarchy. Subclasses that want a subset writable re-declare those names
+// afterward, which replaces the read-only definition for that name only.
+template <typename Cls>
+void bind_set_readonly_props(Cls& cl)
+{
+    cl.def_property_readonly("n", &HybZono::get_n, "int: dimension of the set")
+      .def_property_readonly("nC", &HybZono::get_nC, "int: number of equality constraints")
+      .def_property_readonly("nG", &HybZono::get_nG, "int: total number of generators")
+      .def_property_readonly("nGc", &HybZono::get_nGc, "int: number of continuous generators")
+      .def_property_readonly("nGb", &HybZono::get_nGb, "int: number of binary generators")
+      .def_property_readonly("G", &HybZono::get_G, "scipy.sparse.csc_matrix: generator matrix")
+      .def_property_readonly("Gc", &HybZono::get_Gc, "scipy.sparse.csc_matrix: continuous generator matrix")
+      .def_property_readonly("Gb", &HybZono::get_Gb, "scipy.sparse.csc_matrix: binary generator matrix")
+      .def_property_readonly("A", &HybZono::get_A, "scipy.sparse.csc_matrix: constraint matrix")
+      .def_property_readonly("Ac", &HybZono::get_Ac, "scipy.sparse.csc_matrix: continuous constraint matrix")
+      .def_property_readonly("Ab", &HybZono::get_Ab, "scipy.sparse.csc_matrix: binary constraint matrix")
+      .def_property_readonly("c", &HybZono::get_c, "numpy.array: center vector")
+      .def_property_readonly("b", &HybZono::get_b, "numpy.array: constraint vector")
+      .def_property_readonly("sharp", &HybZono::is_sharp, "bool: true if set is known to be sharp")
+      .def_property_readonly("zero_one_form", &HybZono::is_0_1_form,
+          "bool: true if factors are in range [0,1], false if they are in range [-1,1]");
+}
 } // anonymous namespace
 
 PYBIND11_MODULE(_core, m)
@@ -2419,13 +2443,21 @@ PYBIND11_MODULE(_core, m)
                 Returns:
                     scipy.sparse.csc_matrix: Ab
             )pbdoc")
-        .def("convert_form", &HybZono::convert_form, 
+        .def("convert_form", &HybZono::convert_form,
             R"pbdoc(
                 Converts the set representation between -1-1 and 0-1 forms.
-                
-                This method converts the set representation between -1-1 and 0-1 forms. 
+
+                This method converts the set representation between -1-1 and 0-1 forms.
                 If the set is in -1-1 form, then xi_c in [-1,1] and xi_b in {-1,1}.
                 If the set is in 0-1 form, then xi_c in [0,1] and xi_b in {0,1}.
+            )pbdoc")
+        .def("to_0_1_form", &HybZono::to_0_1_form,
+            R"pbdoc(
+                Converts the set to [0,1] form. No-op if already in [0,1] form.
+            )pbdoc")
+        .def("to_canonical_form", &HybZono::to_canonical_form,
+            R"pbdoc(
+                Converts the set to canonical [-1,1] form. No-op if already in [-1,1] form.
             )pbdoc")
         .def("remove_redundancy", &HybZono::remove_redundancy, py::arg("contractor_iter")=10,
             R"pbdoc(
@@ -3067,8 +3099,52 @@ PYBIND11_MODULE(_core, m)
 
     hz_cl.attr("__array_priority__") = 100.;
 
+    // hybzono field properties; read-only fields come from bind_set_readonly_props,
+    // writable fields are overridden below
+    bind_set_readonly_props(hz_cl);
+    hz_cl.def_property("Gc", &HybZono::get_Gc,
+            [](HybZono& self, const Eigen::SparseMatrix<zono_float>& Gc)
+            {
+                self = HybZono(Gc, self.get_Gb(), self.get_c(), self.get_Ac(), self.get_Ab(),
+                    self.get_b(), self.is_0_1_form(), self.is_sharp());
+            }, "scipy.sparse.csc_matrix: continuous generator matrix")
+        .def_property("Gb", &HybZono::get_Gb,
+            [](HybZono& self, const Eigen::SparseMatrix<zono_float>& Gb)
+            {
+                self = HybZono(self.get_Gc(), Gb, self.get_c(), self.get_Ac(), self.get_Ab(),
+                    self.get_b(), self.is_0_1_form(), self.is_sharp());
+            }, "scipy.sparse.csc_matrix: binary generator matrix")
+        .def_property("Ac", &HybZono::get_Ac,
+            [](HybZono& self, const Eigen::SparseMatrix<zono_float>& Ac)
+            {
+                self = HybZono(self.get_Gc(), self.get_Gb(), self.get_c(), Ac, self.get_Ab(),
+                    self.get_b(), self.is_0_1_form(), self.is_sharp());
+            }, "scipy.sparse.csc_matrix: continuous constraint matrix")
+        .def_property("Ab", &HybZono::get_Ab,
+            [](HybZono& self, const Eigen::SparseMatrix<zono_float>& Ab)
+            {
+                self = HybZono(self.get_Gc(), self.get_Gb(), self.get_c(), self.get_Ac(), Ab,
+                    self.get_b(), self.is_0_1_form(), self.is_sharp());
+            }, "scipy.sparse.csc_matrix: binary constraint matrix")
+        .def_property("c", &HybZono::get_c,
+            [](HybZono& self, const Eigen::Vector<zono_float, -1>& c)
+            {
+                self = HybZono(self.get_Gc(), self.get_Gb(), c, self.get_Ac(), self.get_Ab(),
+                    self.get_b(), self.is_0_1_form(), self.is_sharp());
+            }, "numpy.array: center vector")
+        .def_property("b", &HybZono::get_b,
+            [](HybZono& self, const Eigen::Vector<zono_float, -1>& b)
+            {
+                self = HybZono(self.get_Gc(), self.get_Gb(), self.get_c(), self.get_Ac(), self.get_Ab(),
+                    b, self.is_0_1_form(), self.is_sharp());
+            }, "numpy.array: constraint vector")
+        .def_property("zero_one_form", &HybZono::is_0_1_form,
+            [](HybZono& self, bool flag) { if (flag) self.to_0_1_form(); else self.to_canonical_form(); },
+            "bool: true if factors are in range [0,1], false if they are in range [-1,1]")
+    ;
+
     // conzono class
-    py::class_<ConZono, HybZono /* parent type */, py::smart_holder>(m, "ConZono",
+    auto cz_cl = py::class_<ConZono, HybZono /* parent type */, py::smart_holder>(m, "ConZono",
             R"pbdoc(
                 Constrained zonotope class
                 
@@ -3140,8 +3216,37 @@ PYBIND11_MODULE(_core, m)
             py::arg("other"), py::is_operator())
     ;
 
+    // conzono field properties; G, A, c, b, zero_one_form are writable (routed
+    // through the ConZono constructor); Gc/Gb/Ac/Ab stay read-only since ConZono
+    // requires nGb == 0 and splitting G/A into those would risk violating that
+    bind_set_readonly_props(cz_cl);
+    cz_cl.def_property("G", &ConZono::get_G,
+            [](ConZono& self, const Eigen::SparseMatrix<zono_float>& G)
+            {
+                self = ConZono(G, self.get_c(), self.get_A(), self.get_b(), self.is_0_1_form());
+            }, "scipy.sparse.csc_matrix: generator matrix")
+        .def_property("A", &ConZono::get_A,
+            [](ConZono& self, const Eigen::SparseMatrix<zono_float>& A)
+            {
+                self = ConZono(self.get_G(), self.get_c(), A, self.get_b(), self.is_0_1_form());
+            }, "scipy.sparse.csc_matrix: constraint matrix")
+        .def_property("c", &ConZono::get_c,
+            [](ConZono& self, const Eigen::Vector<zono_float, -1>& c)
+            {
+                self = ConZono(self.get_G(), c, self.get_A(), self.get_b(), self.is_0_1_form());
+            }, "numpy.array: center vector")
+        .def_property("b", &ConZono::get_b,
+            [](ConZono& self, const Eigen::Vector<zono_float, -1>& b)
+            {
+                self = ConZono(self.get_G(), self.get_c(), self.get_A(), b, self.is_0_1_form());
+            }, "numpy.array: constraint vector")
+        .def_property("zero_one_form", &ConZono::is_0_1_form,
+            [](ConZono& self, bool flag) { if (flag) self.to_0_1_form(); else self.to_canonical_form(); },
+            "bool: true if factors are in range [0,1], false if they are in range [-1,1]")
+    ;
+
     // zono class
-    py::class_<Zono, ConZono /* parent type */, py::smart_holder>(m, "Zono",
+    auto z_cl = py::class_<Zono, ConZono /* parent type */, py::smart_holder>(m, "Zono",
             R"pbdoc(
                 Zonotope class
                 
@@ -3217,8 +3322,26 @@ PYBIND11_MODULE(_core, m)
             py::arg("other"), py::is_operator())
     ;
 
+    // zono field properties; G, c, zero_one_form are writable (routed through the
+    // Zono constructor); A/b stay read-only since they are always empty for a Zono
+    bind_set_readonly_props(z_cl);
+    z_cl.def_property("G", &Zono::get_G,
+            [](Zono& self, const Eigen::SparseMatrix<zono_float>& G)
+            {
+                self = Zono(G, self.get_c(), self.is_0_1_form());
+            }, "scipy.sparse.csc_matrix: generator matrix")
+        .def_property("c", &Zono::get_c,
+            [](Zono& self, const Eigen::Vector<zono_float, -1>& c)
+            {
+                self = Zono(self.get_G(), c, self.is_0_1_form());
+            }, "numpy.array: center vector")
+        .def_property("zero_one_form", &Zono::is_0_1_form,
+            [](Zono& self, bool flag) { if (flag) self.to_0_1_form(); else self.to_canonical_form(); },
+            "bool: true if factors are in range [0,1], false if they are in range [-1,1]")
+    ;
+
     // point class
-    py::class_<Point, Zono /* parent type */, py::smart_holder>(m, "Point",
+    auto pt_cl = py::class_<Point, Zono /* parent type */, py::smart_holder>(m, "Point",
             R"pbdoc(
                 Point class
                 
@@ -3265,8 +3388,17 @@ PYBIND11_MODULE(_core, m)
             py::arg("box"), py::is_operator())
     ;
 
+    // point field properties; only c is writable (routed through the Point
+    // constructor). zero_one_form is re-bound read-only here, shadowing Zono's
+    // writable property: Point::convert_form() is a no-op, so an assignment would
+    // silently do nothing.
+    bind_set_readonly_props(pt_cl);
+    pt_cl.def_property("c", &Point::get_c,
+        [](Point& self, const Eigen::Vector<zono_float, -1>& c) { self = Point(c); },
+        "numpy.array: center vector");
+
     // empty set class
-    py::class_<EmptySet, ConZono, py::smart_holder>(m, "EmptySet",
+    auto es_cl = py::class_<EmptySet, ConZono, py::smart_holder>(m, "EmptySet",
             R"pbdoc(
                 Empty Set class
 
@@ -3280,6 +3412,10 @@ PYBIND11_MODULE(_core, m)
                     n (int): dimension
             )pbdoc")
     ;
+
+    // empty set field properties; every field is read-only, shadowing the writable
+    // properties inherited from ConZono/HybZono/Zono
+    bind_set_readonly_props(es_cl);
 
     // set operations
     m.def("affine_map",
