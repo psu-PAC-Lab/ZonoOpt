@@ -90,7 +90,7 @@ with plt.rc_context(rc_context):
     ax.set_yticks([0, 25, 50, 75, 100])
     ax.set_yticklabels(['0', '', '', '', '100'])
     ax.set_ylabel(r'[\%]', fontsize=textwidth_pt)
-    ax.set_title(r'Percent trials with feasible solution found', fontsize=textwidth_pt)
+    ax.set_title(r'(a) Percent trials with feasible solution found', fontsize=textwidth_pt)
     ax.grid(axis='y', which='major', alpha=0.2)
 
 
@@ -111,7 +111,7 @@ with plt.rc_context(rc_context):
         box.set_facecolor(colors[i])
         box.set_alpha(0.5)
 
-    ax.set_title(r'Suboptimality of found solution', fontsize=textwidth_pt)
+    ax.set_title(r'(b) Suboptimality of found solution', fontsize=textwidth_pt)
     ax.set_ylabel(r'[\%]', fontsize=textwidth_pt)
     ax.set_yticks([0, 25, 50, 75, 100])
     ax.set_yticklabels(['0', '', '', '', '100'])
@@ -138,7 +138,7 @@ with plt.rc_context(rc_context):
         box.set_facecolor(colors[i])
         box.set_alpha(0.5)
 
-    ax.set_title(r'Time to find a feasible solution', fontsize=textwidth_pt)
+    ax.set_title(r'(c) Time to find a feasible solution', fontsize=textwidth_pt)
     ax.set_ylabel(r'[sec]', fontsize=textwidth_pt)
     ax.set_yscale('log')
 
@@ -165,7 +165,7 @@ with plt.rc_context(rc_context):
         box.set_facecolor(colors[i])
         box.set_alpha(0.5)
 
-    ax.set_title(r'Number of iterations', fontsize=textwidth_pt)
+    ax.set_title(r'(d) Number of iterations', fontsize=textwidth_pt)
     ax.set_ylabel(r'[num]', fontsize=textwidth_pt)
     ax.set_yscale('log')
 
