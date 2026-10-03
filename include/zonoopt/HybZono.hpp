@@ -714,7 +714,7 @@ class HybZono
 
         // fields
 
-        /// generator matrix G = [Gc, Gb] (Gc and Gb are exposed as zero-copy column-block views, see below)
+        /// generator matrix G = [Gc, Gb]
         Eigen::SparseMatrix<zono_float> G = Eigen::SparseMatrix<zono_float>(0, 0);
 
         /// constraint matrix A = [Ac, Ab]
@@ -764,11 +764,10 @@ class HybZono
         /// copy a contiguous range of columns of a sparse matrix (fast path for compressed matrices)
         static Eigen::SparseMatrix<zono_float> copy_cols(const Eigen::SparseMatrix<zono_float>& M, int start, int ncols);
 
-        /// build the most specific set type from combined matrices (HybZono, ConZono, Zono, or Point).
-        /// If simplify_type is false, returns a HybZono if nGb > 0 and a ConZono otherwise.
+        /// build set type from combined matrices
         static std::unique_ptr<HybZono> from_GA(Eigen::SparseMatrix<zono_float> G, Eigen::Vector<zono_float, -1> c,
             Eigen::SparseMatrix<zono_float> A, Eigen::Vector<zono_float, -1> b,
-            int nGc, bool zero_one_form, bool simplify_type = true);
+            int nGc, bool zero_one_form);
 
         // methods
         virtual Eigen::Vector<zono_float, -1> do_optimize_over(

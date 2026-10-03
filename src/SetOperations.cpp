@@ -275,7 +275,7 @@ namespace ZonoOpt
         b.segment(Z1.nC + Z2.nC, n_rows_R) = Z2.c - (*R_ptr) * Z1.c;
 
         // return correct output type
-        return HybZono::from_GA(std::move(G), std::move(c), std::move(A), std::move(b), nGc, Z1.zero_one_form, false);
+        return HybZono::from_GA(std::move(G), std::move(c), std::move(A), std::move(b), nGc, Z1.zero_one_form);
     }
 
     std::unique_ptr<HybZono> intersection_over_dims(const HybZono& Z1,
@@ -917,7 +917,7 @@ namespace ZonoOpt
         b.segment(Z.nC, n_cons) = f - H * (*R_ptr) * Z.c - dm/two;
 
         // return correct output type
-        return HybZono::from_GA(std::move(G), std::move(c), std::move(A), std::move(b), nGc, Z.zero_one_form, false);
+        return HybZono::from_GA(std::move(G), std::move(c), std::move(A), std::move(b), nGc, Z.zero_one_form);
     }
 
     std::unique_ptr<HybZono> set_diff(const HybZono& Z1, HybZono& Z2, const zono_float delta_m,
