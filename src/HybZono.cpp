@@ -58,50 +58,89 @@ namespace ZonoOpt
             throw std::invalid_argument("HybZono: inconsistent dimensions.");
         }
 
-        this->Gc = Gc;
-        this->Gb = Gb;
-        this->Ac = Ac;
-        this->Ab = Ab;
-        this->c = c;
-        this->b = b;
-        this->nGc = static_cast<int>(Gc.cols());
-        this->nGb = static_cast<int>(Gb.cols());
-        this->nG = this->nGc + this->nGb;
-        this->nC = static_cast<int>(Ac.rows());
-        this->n = static_cast<int>(Gc.rows());
+        set_GA(hcat<zono_float>(Gc, Gb), c, hcat<zono_float>(Ac, Ab), b,
+               static_cast<int>(Gc.cols()), zero_one_form, sharp);
+    }
+
+    void HybZono::set_GA(Eigen::SparseMatrix<zono_float> G, Eigen::Vector<zono_float, -1> c,
+                         Eigen::SparseMatrix<zono_float> A, Eigen::Vector<zono_float, -1> b,
+                         const int nGc, const bool zero_one_form, const bool sharp)
+    {
+        if (G.rows() != c.size() || A.rows() != b.size() || G.cols() != A.cols() || nGc < 0 || nGc > G.cols())
+        {
+            throw std::invalid_argument("HybZono: inconsistent dimensions.");
+        }
+
+        this->G = std::move(G);
+        this->A = std::move(A);
+        this->G.makeCompressed();
+        this->A.makeCompressed();
+        this->c = std::move(c);
+        this->b = std::move(b);
+        this->n = static_cast<int>(this->G.rows());
+        this->nG = static_cast<int>(this->G.cols());
+        this->nGc = nGc;
+        this->nGb = this->nG - nGc;
+        this->nC = static_cast<int>(this->A.rows());
         this->zero_one_form = zero_one_form;
-
-        make_G_A();
-
         this->sharp = sharp;
+    }
+
+    Eigen::SparseMatrix<zono_float> HybZono::copy_cols(const Eigen::SparseMatrix<zono_float>& M, const int start,
+                                                       const int ncols)
+    {
+        if (!M.isCompressed())
+            return M.middleCols(start, ncols);
+
+        // compressed column-major storage: columns [start, start+ncols) are contiguous
+        using Index = Eigen::SparseMatrix<zono_float>::StorageIndex;
+        const Index* outer = M.outerIndexPtr();
+        const Index offset = outer[start];
+        const Index nnz = outer[start + ncols] - offset;
+
+        Eigen::SparseMatrix<zono_float> out(M.rows(), ncols);
+        out.resizeNonZeros(nnz);
+        for (int k = 0; k <= ncols; ++k)
+            out.outerIndexPtr()[k] = outer[start + k] - offset;
+        std::copy(M.innerIndexPtr() + offset, M.innerIndexPtr() + offset + nnz, out.innerIndexPtr());
+        std::copy(M.valuePtr() + offset, M.valuePtr() + offset + nnz, out.valuePtr());
+        return out;
+    }
+
+    std::unique_ptr<HybZono> HybZono::from_GA(Eigen::SparseMatrix<zono_float> G, Eigen::Vector<zono_float, -1> c,
+                                              Eigen::SparseMatrix<zono_float> A, Eigen::Vector<zono_float, -1> b,
+                                              const int nGc, const bool zero_one_form)
+    {
+        const bool has_binaries = G.cols() > nGc;
+        const bool has_constraints = A.rows() > 0;
+        const bool has_generators = G.cols() > 0;
+
+        if (has_binaries)
+        {
+            auto Z = std::make_unique<HybZono>();
+            Z->set_GA(std::move(G), std::move(c), std::move(A), std::move(b), nGc, zero_one_form, false);
+            return Z;
+        }
+        if (has_constraints)
+            return std::make_unique<ConZono>(G, c, A, b, zero_one_form);
+        if (has_generators)
+            return std::make_unique<Zono>(G, c, zero_one_form);
+        return std::make_unique<Point>(c);
     }
 
     void HybZono::convert_form()
     {
-        Eigen::Vector<zono_float, -1> c, b;
-        Eigen::SparseMatrix<zono_float> Gb, Ab, Ac, Gc;
+        const Eigen::Vector<zono_float, -1> ones = Eigen::Vector<zono_float, -1>::Ones(this->nG);
 
         if (!this->zero_one_form) // convert to [0,1] generators
         {
-            c = this->c - this->G * Eigen::Vector<zono_float, -1>::Ones(this->nG);
-            b = this->b + this->A * Eigen::Vector<zono_float, -1>::Ones(this->nG);
-            Gb = 2.0 * this->Gb;
-            Ab = 2.0 * this->Ab;
-            Gc = 2.0 * this->Gc;
-            Ac = 2.0 * this->Ac;
-
-            set(Gc, Gb, c, Ac, Ab, b, true);
+            set_GA(2.0 * this->G, this->c - this->G * ones, 2.0 * this->A, this->b + this->A * ones,
+                   this->nGc, true, this->sharp);
         }
         else // convert to [-1,1] generators
         {
-            c = this->c + 0.5 * this->G * Eigen::Vector<zono_float, -1>::Ones(this->nG);
-            b = this->b - 0.5 * this->A * Eigen::Vector<zono_float, -1>::Ones(this->nG);
-            Gb = 0.5 * this->Gb;
-            Ab = 0.5 * this->Ab;
-            Gc = 0.5 * this->Gc;
-            Ac = 0.5 * this->Ac;
-
-            set(Gc, Gb, c, Ac, Ab, b, false);
+            set_GA(0.5 * this->G, this->c + 0.5 * this->G * ones, 0.5 * this->A, this->b - 0.5 * this->A * ones,
+                   this->nGc, false, this->sharp);
         }
     }
 
@@ -147,18 +186,24 @@ namespace ZonoOpt
 
         // remove redundant constraints
         remove_redundant_constraints<zono_float>(Z_rr->A, Z_rr->b);
-        Z_rr->set_Ac_Ab_from_A();
+        Z_rr->nC = static_cast<int>(Z_rr->A.rows());
 
         // identify any unused generators
-        const std::set idx_c_to_remove = find_unused_generators(Z_rr->Gc, Z_rr->Ac);
-        const std::set idx_b_to_remove = find_unused_generators(Z_rr->Gb, Z_rr->Ab);
+        std::set<int> idx_c_to_remove, idx_b_to_remove;
+        for (const int k : find_unused_generators(Z_rr->G, Z_rr->A))
+        {
+            if (k < Z_rr->nGc)
+                idx_c_to_remove.insert(k);
+            else
+                idx_b_to_remove.insert(k - Z_rr->nGc);
+        }
 
         // remove
         Z_rr->remove_generators(idx_c_to_remove, idx_b_to_remove, box);
 
         // output
         if (Z_rr->nGb > 0)
-            return std::make_unique<HybZono>(Z_rr->Gc, Z_rr->Gb, Z_rr->c, Z_rr->Ac, Z_rr->Ab, Z_rr->b, Z_rr->zero_one_form, Z_rr->sharp);
+            return std::make_unique<HybZono>(Z_rr->Gc(), Z_rr->Gb(), Z_rr->c, Z_rr->Ac(), Z_rr->Ab(), Z_rr->b, Z_rr->zero_one_form, Z_rr->sharp);
         else if (Z_rr->nC > 0)
             return std::make_unique<ConZono>(Z_rr->G, Z_rr->c, Z_rr->A, Z_rr->b, Z_rr->zero_one_form);
         else if (Z_rr->nG > 0)
@@ -274,52 +319,6 @@ namespace ZonoOpt
         // return if nothing to do
         if (gens_to_remove.empty()) return;
 
-        // remove generators
-        std::vector<Eigen::Triplet<zono_float>> triplets;
-        triplets.reserve(std::max(this->A.nonZeros(), this->G.nonZeros()));
-
-        auto remove_gens = [&](const Eigen::SparseMatrix<zono_float>& M) -> int
-        {
-            triplets.clear();
-
-            int col_adj = 0;
-            auto it_gen = gens_to_remove.begin();
-
-            for (int k=0; k<M.outerSize(); ++k)
-            {
-                if (it_gen != gens_to_remove.end() && k == *it_gen)
-                {
-                    ++it_gen;
-                    ++col_adj;
-                }
-                else
-                {
-                    for (Eigen::SparseMatrix<zono_float>::InnerIterator it(M, k); it; ++it)
-                    {
-                        triplets.emplace_back(static_cast<int>(it.row()), static_cast<int>(it.col())-col_adj, it.value());
-                    }
-                }
-            }
-
-            return col_adj;
-        };
-
-        const int col_adj = remove_gens(this->Gc);
-        Eigen::SparseMatrix<zono_float> Gc_new (this->n, this->nGc-col_adj);
-#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
-        Gc_new.setFromSortedTriplets(triplets.begin(), triplets.end());
-#else
-        Gc_new.setFromTriplets(triplets.begin(), triplets.end());
-#endif
-
-        remove_gens(this->Ac);
-        Eigen::SparseMatrix<zono_float> Ac_new (this->nC, this->nGc-col_adj);
-#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
-        Ac_new.setFromSortedTriplets(triplets.begin(), triplets.end());
-#else
-        Ac_new.setFromTriplets(triplets.begin(), triplets.end());
-#endif
-
         // remove generators from box
         std::vector<Interval> int_vec;
         int_vec.reserve(this->nG);
@@ -337,55 +336,39 @@ namespace ZonoOpt
         }
         box = Box(int_vec);
 
+        // remove generators (all removed generators are continuous, so nGc shrinks accordingly)
+        remove_cols(this->G, gens_to_remove);
+        remove_cols(this->A, gens_to_remove);
+        const int nGc_new = this->nGc - static_cast<int>(gens_to_remove.size());
+
         // remove constraints
-        auto remove_cons = [&](const Eigen::SparseMatrix<zono_float, Eigen::RowMajor>& M) -> void
+        const int row_adj = static_cast<int>(cons.size());
+        const Eigen::SparseMatrix<zono_float, Eigen::RowMajor> A_rm2 = this->A;
+        std::vector<Eigen::Triplet<zono_float>> triplets;
+        triplets.reserve(A_rm2.nonZeros());
+
+        auto it_cons = cons.begin();
+        for (int k=0; k<A_rm2.outerSize(); ++k)
         {
-            triplets.clear();
-
-            int row_adj = 0;
-            auto it_cons = cons.begin();
-
-            for (int k=0; k<M.outerSize(); ++k)
+            if (it_cons != cons.end() && k == it_cons->first)
             {
-                if (it_cons != cons.end() && k == it_cons->first)
+                ++it_cons;
+            }
+            else
+            {
+                const int row_new = k - static_cast<int>(it_cons - cons.begin());
+                for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(A_rm2, k); it; ++it)
                 {
-                    ++it_cons;
-                    ++row_adj;
-                }
-                else
-                {
-                    for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(M, k); it; ++it)
-                    {
-                        triplets.emplace_back(static_cast<int>(it.row())-row_adj, static_cast<int>(it.col()), it.value());
-                    }
+                    triplets.emplace_back(row_new, static_cast<int>(it.col()), it.value());
                 }
             }
-        };
-
-        const int row_adj = static_cast<int>(cons.size());
-        Eigen::SparseMatrix<zono_float, Eigen::RowMajor> Ac_new_rm = Ac_new;
-        remove_cons(Ac_new_rm);
-        Ac_new_rm.resize(Ac_new.rows()-row_adj, Ac_new.cols());
-#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
-        Ac_new_rm.setFromSortedTriplets(triplets.begin(), triplets.end());
-#else
-        Ac_new_rm.setFromTriplets(triplets.begin(), triplets.end());
-#endif
-
-        if (this->Ab.nonZeros())
-            remove_cons(this->Ab);
-        else
-            triplets.clear();
-        Eigen::SparseMatrix<zono_float, Eigen::RowMajor> Ab_new_rm (this->nC-row_adj, this->nGb);
-#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
-        Ab_new_rm.setFromSortedTriplets(triplets.begin(), triplets.end());
-#else
-        Ab_new_rm.setFromTriplets(triplets.begin(), triplets.end());
-#endif
+        }
+        Eigen::SparseMatrix<zono_float, Eigen::RowMajor> A_new_rm (this->nC-row_adj, this->A.cols());
+        A_new_rm.setFromTriplets(triplets.begin(), triplets.end());
 
         std::vector<zono_float> b_vec;
-        b_vec.reserve(this->nC-static_cast<int>(cons.size()));
-        auto it_cons = cons.begin();
+        b_vec.reserve(this->nC-row_adj);
+        it_cons = cons.begin();
         for (int k=0; k<this->nC; ++k)
         {
             if (it_cons != cons.end() && k == it_cons->first)
@@ -401,7 +384,8 @@ namespace ZonoOpt
         Eigen::Vector<zono_float, -1> b_new = Eigen::Map<Eigen::Vector<zono_float, -1>>(b_vec.data(), static_cast<Eigen::Index>(b_vec.size()));
 
         // set new matrices and vectors
-        set(Gc_new, this->Gb, this->c, Ac_new_rm, Ab_new_rm, b_new, this->zero_one_form, this->sharp);
+        set_GA(this->G, this->c, Eigen::SparseMatrix<zono_float>(A_new_rm), std::move(b_new), nGc_new,
+               this->zero_one_form, this->sharp);
     }
 
     bool HybZono::rescale_generators(MI_Box& box)
@@ -429,14 +413,14 @@ namespace ZonoOpt
             }
 
             // loop through generator matrix
-            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(this->Gc, k); it; ++it)
+            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(this->G, k); it; ++it)
             {
                 this->c(it.row()) += it.value() * c_tilde;
                 it.valueRef() *= g_tilde;
             }
 
             // loop through constraint matrix
-            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(this->Ac, k); it; ++it)
+            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(this->A, k); it; ++it)
             {
                 this->b(it.row()) -= it.value() * c_tilde;
                 it.valueRef() *= g_tilde;
@@ -452,8 +436,6 @@ namespace ZonoOpt
                 box.set_element(k, Interval(-one, one));
             }
         }
-
-        set(this->Gc, this->Gb, this->c, this->Ac, this->Ab, this->b, this->zero_one_form, this->sharp);
 
         // update binary generators
         bool binaries_updated = false;
@@ -488,15 +470,15 @@ namespace ZonoOpt
     void HybZono::remove_generators(const std::set<int>& idx_c, const std::set<int>& idx_b, MI_Box& box)
     {
         // remove generators
-        if (!idx_c.empty())
+        std::set<int> idx_all = idx_c;
+        for (const int k : idx_b)
         {
-            remove_cols(this->Gc, idx_c);
-            remove_cols(this->Ac, idx_c);
+            idx_all.insert(k + this->nGc);
         }
-        if (!idx_b.empty())
+        if (!idx_all.empty())
         {
-            remove_cols(this->Gb, idx_b);
-            remove_cols(this->Ab, idx_b);
+            remove_cols(this->G, idx_all);
+            remove_cols(this->A, idx_all);
         }
 
         // update box
@@ -526,13 +508,10 @@ namespace ZonoOpt
             }
         }
 
-        // update number of generators (needs to happen before call to make_G_A())
-        this->nGc = static_cast<int>(this->Gc.cols());
-        this->nGb = static_cast<int>(this->Gb.cols());
+        // update number of generators
+        this->nGc -= static_cast<int>(idx_c.size());
+        this->nGb -= static_cast<int>(idx_b.size());
         this->nG = this->nGc + this->nGb;
-
-        // update equivalent matrices
-        make_G_A();
 
         // update box
         box = MI_Box(box_vec, {this->nGc, this->nGb}, this->zero_one_form);
@@ -586,11 +565,11 @@ namespace ZonoOpt
         ss << "nGc: " << this->nGc << std::endl;
         ss << "nGb: " << this->nGb << std::endl;
         ss << "nC: " << this->nC << std::endl;
-        ss << "Gc: " << Eigen::Matrix<zono_float, -1, -1>(this->Gc) << std::endl;
-        ss << "Gb: " << Eigen::Matrix<zono_float, -1, -1>(this->Gb) << std::endl;
+        ss << "Gc: " << Eigen::Matrix<zono_float, -1, -1>(this->Gc()) << std::endl;
+        ss << "Gb: " << Eigen::Matrix<zono_float, -1, -1>(this->Gb()) << std::endl;
         ss << "c: " << this->c << std::endl;
-        ss << "Ac: " << Eigen::Matrix<zono_float, -1, -1>(this->Ac) << std::endl;
-        ss << "Ab: " << Eigen::Matrix<zono_float, -1, -1>(this->Ab) << std::endl;
+        ss << "Ac: " << Eigen::Matrix<zono_float, -1, -1>(this->Ac()) << std::endl;
+        ss << "Ab: " << Eigen::Matrix<zono_float, -1, -1>(this->Ab()) << std::endl;
         ss << "b: " << this->b << std::endl;
         ss << "zero_one_form: " << this->zero_one_form << std::endl;
         ss << "sharp: " << this->sharp;
@@ -897,68 +876,6 @@ namespace ZonoOpt
         return unused_generators;
     }
 
-    void HybZono::make_G_A()
-    {
-        if (this->Gc.rows() != this->Gb.rows() || this->Ac.rows() != this->Ab.rows())
-            throw std::invalid_argument("Inconsistent dimensions.");
-
-        std::vector<Eigen::Triplet<zono_float>> tripvec;
-        get_triplets_offset<zono_float>(this->Gc, tripvec, 0, 0);
-        get_triplets_offset<zono_float>(this->Gb, tripvec, 0, this->nGc);
-        this->G.resize(this->Gc.rows(), this->Gc.cols() + this->Gb.cols());
-#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
-        this->G.setFromSortedTriplets(tripvec.begin(), tripvec.end());
-#else
-        this->G.setFromTriplets(tripvec.begin(), tripvec.end());
-#endif
-        tripvec.clear();
-        get_triplets_offset<zono_float>(this->Ac, tripvec, 0, 0);
-        get_triplets_offset<zono_float>(this->Ab, tripvec, 0, this->nGc);
-        this->A.resize(this->Ac.rows(), this->Ac.cols() + this->Ab.cols());
-#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
-        this->A.setFromSortedTriplets(tripvec.begin(), tripvec.end());
-#else
-        this->A.setFromTriplets(tripvec.begin(), tripvec.end());
-#endif
-    }
-
-    void HybZono::set_Ac_Ab_from_A()
-    {
-        if (this->A.rows() != this->b.size())
-            throw std::invalid_argument("Set Ac, Ab from A: inconsistent dimensions.");
-        this->nC = static_cast<int>(this->A.rows());
-
-        std::vector<Eigen::Triplet<zono_float>> triplets_Ac, triplets_Ab;
-
-        // iterate over A
-        for (int k = 0; k < this->A.outerSize(); ++k)
-        {
-            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(this->A, k); it; ++it)
-            {
-                if (it.col() < this->nGc)
-                {
-                    triplets_Ac.emplace_back(static_cast<int>(it.row()), static_cast<int>(it.col()), it.value());
-                }
-                else
-                {
-                    triplets_Ab.emplace_back(static_cast<int>(it.row()), static_cast<int>(it.col()) - this->nGc,
-                                             it.value());
-                }
-            }
-        }
-
-        // set Ac, Ab
-        this->Ac.resize(this->nC, this->nGc);
-        this->Ab.resize(this->nC, this->nGb);
-#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
-        this->Ac.setFromSortedTriplets(triplets_Ac.begin(), triplets_Ac.end());
-        this->Ab.setFromSortedTriplets(triplets_Ab.begin(), triplets_Ab.end());
-#else
-        this->Ac.setFromTriplets(triplets_Ac.begin(), triplets_Ac.end());
-        this->Ab.setFromTriplets(triplets_Ab.begin(), triplets_Ab.end());
-#endif
-    }
-
     std::vector<Eigen::Vector<zono_float, -1>> HybZono::get_bin_leaves(const SolverSettings& settings,
                                                                        std::shared_ptr<OptSolution>* solution,
                                                                        const int n_leaves) const
@@ -1004,9 +921,9 @@ namespace ZonoOpt
         std::vector<std::unique_ptr<ConZono>> leaves;
         for (auto& xi_b : bin_leaves)
         {
-            Eigen::Vector<zono_float, -1> cp = this->c + this->Gb * xi_b;
-            Eigen::Vector<zono_float, -1> bp = this->b - this->Ab * xi_b;
-            leaves.emplace_back(std::make_unique<ConZono>(this->Gc, cp, this->Ac, bp, this->zero_one_form));
+            Eigen::Vector<zono_float, -1> cp = this->c + this->Gb() * xi_b;
+            Eigen::Vector<zono_float, -1> bp = this->b - this->Ab() * xi_b;
+            leaves.emplace_back(std::make_unique<ConZono>(this->Gc(), cp, this->Ac(), bp, this->zero_one_form));
         }
         if (remove_redundancy)
         {

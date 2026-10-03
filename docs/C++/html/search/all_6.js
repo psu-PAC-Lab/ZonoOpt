@@ -1,8 +1,8 @@
 var searchData=
 [
   ['g_0',['G',['../classZonoOpt_1_1HybZono.html#aed139ecd3415d14c3fce8f09d28910a6',1,'ZonoOpt::HybZono']]],
-  ['gb_1',['Gb',['../classZonoOpt_1_1HybZono.html#a5763b63d7afbebf2783a45efe60fc5f1',1,'ZonoOpt::HybZono']]],
-  ['gc_2',['Gc',['../classZonoOpt_1_1HybZono.html#a4ef0ba60650a0e5e08563e0643b5a50c',1,'ZonoOpt::HybZono']]],
+  ['gb_1',['Gb',['../classZonoOpt_1_1HybZono.html#abb7414757a2ccbc380c8665c92451dbc',1,'ZonoOpt::HybZono']]],
+  ['gc_2',['Gc',['../classZonoOpt_1_1HybZono.html#aa3dd6aaca4bb76e5b93566e1ed197dce',1,'ZonoOpt::HybZono']]],
   ['genutilities_2ehpp_3',['GenUtilities.hpp',['../GenUtilities_8hpp.html',1,'']]],
   ['get_5fa_4',['get_A',['../classZonoOpt_1_1HybZono.html#a92fea4bedf4817e091be9d15bf0b2a2b',1,'ZonoOpt::HybZono']]],
   ['get_5fab_5',['get_Ab',['../classZonoOpt_1_1HybZono.html#a8f858ea788342f74a196e750fa3832bf',1,'ZonoOpt::HybZono']]],

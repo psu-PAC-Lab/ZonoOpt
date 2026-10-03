@@ -136,14 +136,14 @@ class HybZono
          * 
          * @return Gc
          */
-        virtual Eigen::SparseMatrix<zono_float> get_Gc() const { return this->Gc; }
+        virtual Eigen::SparseMatrix<zono_float> get_Gc() const { return copy_cols(this->G, 0, this->nGc); }
 
         /**
          * @brief Returns binary generator matrix
          * 
          * @return Gb
          */
-        virtual Eigen::SparseMatrix<zono_float> get_Gb() const { return this->Gb; }
+        virtual Eigen::SparseMatrix<zono_float> get_Gb() const { return copy_cols(this->G, this->nGc, this->nGb); }
 
         /**
          * @brief Returns generator matrix
@@ -157,14 +157,14 @@ class HybZono
          * 
          * @return Ac
          */
-        virtual Eigen::SparseMatrix<zono_float> get_Ac() const { return this->Ac; }
+        virtual Eigen::SparseMatrix<zono_float> get_Ac() const { return copy_cols(this->A, 0, this->nGc); }
 
         /**
          * @brief Returns binary constraint matrix
          * 
          * @return Ab
          */
-        virtual Eigen::SparseMatrix<zono_float> get_Ab() const { return this->Ab; }
+        virtual Eigen::SparseMatrix<zono_float> get_Ab() const { return copy_cols(this->A, this->nGc, this->nGb); }
 
         /**
          * @brief Returns constraint matrix
@@ -717,20 +717,8 @@ class HybZono
         /// generator matrix G = [Gc, Gb]
         Eigen::SparseMatrix<zono_float> G = Eigen::SparseMatrix<zono_float>(0, 0);
 
-        /// continuous generator matrix
-        Eigen::SparseMatrix<zono_float> Gc = Eigen::SparseMatrix<zono_float>(0, 0);
-
-        /// binary generator matrix
-        Eigen::SparseMatrix<zono_float> Gb = Eigen::SparseMatrix<zono_float>(0, 0);
-
         /// constraint matrix A = [Ac, Ab]
         Eigen::SparseMatrix<zono_float> A = Eigen::SparseMatrix<zono_float>(0, 0);
-
-        /// continuous constraint matrix
-        Eigen::SparseMatrix<zono_float> Ac = Eigen::SparseMatrix<zono_float>(0, 0);
-
-        /// binary constraint matrix
-        Eigen::SparseMatrix<zono_float> Ab = Eigen::SparseMatrix<zono_float>(0, 0);
 
         /// center vector
         Eigen::Vector<zono_float, -1> c = Eigen::Vector<zono_float, -1>(0);
@@ -758,6 +746,28 @@ class HybZono
 
         /// flag to indicate whether the set is known to be sharp (i.e., convex relaxation = convex hull)
         bool sharp = false;
+
+        /// zero-copy view of a contiguous column range of a sparse matrix
+        using SparseMatrixBlock = Eigen::SparseMatrix<zono_float>::ConstColsBlockXpr;
+
+        // Views into G and A. Do not hold a view across a mutation of G or A.
+        SparseMatrixBlock Gc() const { return G.leftCols(nGc); }
+        SparseMatrixBlock Gb() const { return G.middleCols(nGc, nGb); }
+        SparseMatrixBlock Ac() const { return A.leftCols(nGc); }
+        SparseMatrixBlock Ab() const { return A.middleCols(nGc, nGb); }
+
+        /// set directly from combined matrices (G = [Gc, Gb], A = [Ac, Ab])
+        void set_GA(Eigen::SparseMatrix<zono_float> G, Eigen::Vector<zono_float, -1> c,
+            Eigen::SparseMatrix<zono_float> A, Eigen::Vector<zono_float, -1> b,
+            int nGc, bool zero_one_form, bool sharp);
+
+        /// copy a contiguous range of columns of a sparse matrix (fast path for compressed matrices)
+        static Eigen::SparseMatrix<zono_float> copy_cols(const Eigen::SparseMatrix<zono_float>& M, int start, int ncols);
+
+        /// build set type from combined matrices
+        static std::unique_ptr<HybZono> from_GA(Eigen::SparseMatrix<zono_float> G, Eigen::Vector<zono_float, -1> c,
+            Eigen::SparseMatrix<zono_float> A, Eigen::Vector<zono_float, -1> b,
+            int nGc, bool zero_one_form);
 
         // methods
         virtual Eigen::Vector<zono_float, -1> do_optimize_over(
@@ -796,8 +806,6 @@ class HybZono
 
     private:
 
-        void make_G_A();
-        void set_Ac_Ab_from_A();
         std::vector<Eigen::Vector<zono_float, -1>> get_bin_leaves(const SolverSettings &settings=get_default_solver_settings(), std::shared_ptr<OptSolution>* solution=nullptr,
             int n_leaves = std::numeric_limits<int>::max()) const;
         std::vector<std::pair<int, int>> get_simplifiable_constraints() const;

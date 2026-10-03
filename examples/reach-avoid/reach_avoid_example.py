@@ -16,7 +16,7 @@ from shapely.geometry import Polygon
 ### flags
 
 # options: 'default', 'admm_fp_multirun', 'admm_fp_warmstart_sweep', 'heuristic_test'
-MODE = 'admm_fp_multirun'
+MODE = 'default'
 
 # quick end-to-end check of the heuristic_test pipeline: few seeds, short time limit,
 # results written to a separate file so the full dataset isn't overwritten
