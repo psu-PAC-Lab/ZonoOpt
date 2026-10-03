@@ -761,6 +761,12 @@ class HybZono
             Eigen::SparseMatrix<zono_float> A, Eigen::Vector<zono_float, -1> b,
             int nGc, bool zero_one_form, bool sharp);
 
+        /// build the most specific set type from combined matrices (HybZono, ConZono, Zono, or Point).
+        /// If simplify_type is false, returns a HybZono if nGb > 0 and a ConZono otherwise.
+        static std::unique_ptr<HybZono> from_GA(Eigen::SparseMatrix<zono_float> G, Eigen::Vector<zono_float, -1> c,
+            Eigen::SparseMatrix<zono_float> A, Eigen::Vector<zono_float, -1> b,
+            int nGc, bool zero_one_form, bool simplify_type = true);
+
         // methods
         virtual Eigen::Vector<zono_float, -1> do_optimize_over(
             const Eigen::SparseMatrix<zono_float> &P, const Eigen::Vector<zono_float, -1> &q, zono_float c,

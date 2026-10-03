@@ -48,19 +48,11 @@ namespace ZonoOpt
         }
 
         // apply affine map
-        Eigen::SparseMatrix<zono_float> Gc = R * Z.Gc();
-        Eigen::SparseMatrix<zono_float> Gb = R * Z.Gb();
+        Eigen::SparseMatrix<zono_float> G = R * Z.G;
         Eigen::Vector<zono_float, -1> c = R * Z.c + *s_ptr;
 
         // output correct type
-        if (Gb.cols() > 0)
-            return std::make_unique<HybZono>(Gc, Gb, c, Z.Ac(), Z.Ab(), Z.b, Z.zero_one_form);
-        else if (Z.Ac().rows() > 0)
-            return std::make_unique<ConZono>(Gc, c, Z.A, Z.b, Z.zero_one_form);
-        else if (Gc.cols() > 0)
-            return std::make_unique<Zono>(Gc, c, Z.zero_one_form);
-        else
-            return std::make_unique<Point>(c);
+        return HybZono::from_GA(std::move(G), std::move(c), Z.A, Z.b, Z.nGc, Z.zero_one_form);
     }
 
     std::unique_ptr<HybZono> affine_inclusion(const HybZono& Z, const IntervalMatrix& R,
@@ -189,36 +181,32 @@ namespace ZonoOpt
             Z2.convert_form();
         }
 
+        // continuous factors: [Z1 | Z2], binary factors: [Z1 | Z2]
+        const int nGc = Z1.nGc + Z2.nGc;
+        const int nGb = Z1.nGb + Z2.nGb;
         std::vector<Eigen::Triplet<zono_float>> tripvec;
 
-        Eigen::SparseMatrix<zono_float> Gc = hcat<zono_float>(Z1.Gc(), Z2.Gc());
-        Eigen::SparseMatrix<zono_float> Gb = hcat<zono_float>(Z1.Gb(), Z2.Gb());
-        Eigen::Vector<zono_float, -1> c = Z1.c + Z2.c;
-
-        Eigen::SparseMatrix<zono_float> Ac(Z1.nC + Z2.nC, Z1.nGc + Z2.nGc);
-        get_triplets_offset<zono_float>(Z1.Ac(), tripvec, 0, 0);
-        get_triplets_offset<zono_float>(Z2.Ac(), tripvec, Z1.nC, Z1.nGc);
-        Ac.setFromTriplets(tripvec.begin(), tripvec.end());
+        tripvec.reserve(Z1.G.nonZeros() + Z2.G.nonZeros());
+        append_factor_triplets<zono_float>(Z1.G, Z1.nGc, 0, Z2.nGc, 0, tripvec);
+        append_factor_triplets<zono_float>(Z2.G, Z2.nGc, Z1.nGc, Z1.nG, 0, tripvec);
+        Eigen::SparseMatrix<zono_float> G(Z1.n, nGc + nGb);
+        G.setFromTriplets(tripvec.begin(), tripvec.end());
 
         tripvec.clear();
-        Eigen::SparseMatrix<zono_float> Ab(Z1.nC + Z2.nC, Z1.nGb + Z2.nGb);
-        get_triplets_offset<zono_float>(Z1.Ab(), tripvec, 0, 0);
-        get_triplets_offset<zono_float>(Z2.Ab(), tripvec, Z1.nC, Z1.nGb);
-        Ab.setFromTriplets(tripvec.begin(), tripvec.end());
+        tripvec.reserve(Z1.A.nonZeros() + Z2.A.nonZeros());
+        append_factor_triplets<zono_float>(Z1.A, Z1.nGc, 0, Z2.nGc, 0, tripvec);
+        append_factor_triplets<zono_float>(Z2.A, Z2.nGc, Z1.nGc, Z1.nG, Z1.nC, tripvec);
+        Eigen::SparseMatrix<zono_float> A(Z1.nC + Z2.nC, nGc + nGb);
+        A.setFromTriplets(tripvec.begin(), tripvec.end());
+
+        Eigen::Vector<zono_float, -1> c = Z1.c + Z2.c;
 
         Eigen::Vector<zono_float, -1> b(Z1.nC + Z2.nC);
         b.segment(0, Z1.nC) = Z1.b;
         b.segment(Z1.nC, Z2.nC) = Z2.b;
 
         // return correct output type
-        if (Gb.cols() > 0)
-            return std::make_unique<HybZono>(Gc, Gb, c, Ac, Ab, b, Z1.zero_one_form);
-        else if (Ac.rows() > 0)
-            return std::make_unique<ConZono>(Gc, c, Ac, b, Z1.zero_one_form);
-        else if (Gc.cols() > 0)
-            return std::make_unique<Zono>(Gc, c, Z1.zero_one_form);
-        else
-            return std::make_unique<Point>(c);
+        return HybZono::from_GA(std::move(G), std::move(c), std::move(A), std::move(b), nGc, Z1.zero_one_form);
     }
 
     std::unique_ptr<HybZono> intersection(const HybZono& Z1, HybZono& Z2, const Eigen::SparseMatrix<zono_float>& R)
@@ -256,45 +244,38 @@ namespace ZonoOpt
         }
 
         // compute intersection
-        Eigen::SparseMatrix<zono_float> Gc = Z1.Gc();
-        Gc.conservativeResize(Z1.n, Z1.nGc + Z2.nGc);
+        // continuous factors: [Z1 | Z2], binary factors: [Z1 | Z2]
+        const int nGc = Z1.nGc + Z2.nGc;
+        const int nG = Z1.nG + Z2.nG;
+        const int n_rows_R = static_cast<int>(R_ptr->rows());
+        std::vector<Eigen::Triplet<zono_float>> tripvec;
 
-        Eigen::SparseMatrix<zono_float> Gb = Z1.Gb();
-        Gb.conservativeResize(Z1.n, Z1.nGb + Z2.nGb);
+        // generators: Z2 generators do not contribute to the output set
+        tripvec.reserve(Z1.G.nonZeros());
+        append_factor_triplets<zono_float>(Z1.G, Z1.nGc, 0, Z2.nGc, 0, tripvec);
+        Eigen::SparseMatrix<zono_float> G(Z1.n, nG);
+        G.setFromTriplets(tripvec.begin(), tripvec.end());
 
         Eigen::Vector<zono_float, -1> c = Z1.c;
 
-        std::vector<Eigen::Triplet<zono_float>> tripvec;
-        Eigen::SparseMatrix<zono_float> Ac(Z1.nC + Z2.nC + R_ptr->rows(), Z1.nGc + Z2.nGc);
-        get_triplets_offset<zono_float>(Z1.Ac(), tripvec, 0, 0);
-        get_triplets_offset<zono_float>(Z2.Ac(), tripvec, Z1.nC, Z1.nGc);
-        Eigen::SparseMatrix<zono_float> RZ1Gc = (*R_ptr) * Z1.Gc();
-        get_triplets_offset<zono_float>(RZ1Gc, tripvec, Z1.nC + Z2.nC, 0);
-        Eigen::SparseMatrix<zono_float> mZ2Gc = -Z2.Gc();
-        get_triplets_offset<zono_float>(mZ2Gc, tripvec, Z1.nC + Z2.nC, Z1.nGc);
-        Ac.setFromTriplets(tripvec.begin(), tripvec.end());
-
+        // constraints: [A1, 0; 0, A2; R*G1, -G2]
         tripvec.clear();
-        Eigen::SparseMatrix<zono_float> Ab(Z1.nC + Z2.nC + R_ptr->rows(), Z1.nGb + Z2.nGb);
-        get_triplets_offset<zono_float>(Z1.Ab(), tripvec, 0, 0);
-        get_triplets_offset<zono_float>(Z2.Ab(), tripvec, Z1.nC, Z1.nGb);
-        Eigen::SparseMatrix<zono_float> RZ1Gb = (*R_ptr) * Z1.Gb();
-        get_triplets_offset<zono_float>(RZ1Gb, tripvec, Z1.nC + Z2.nC, 0);
-        Eigen::SparseMatrix<zono_float> mZ2Gb = -Z2.Gb();
-        get_triplets_offset<zono_float>(mZ2Gb, tripvec, Z1.nC + Z2.nC, Z1.nGb);
-        Ab.setFromTriplets(tripvec.begin(), tripvec.end());
+        append_factor_triplets<zono_float>(Z1.A, Z1.nGc, 0, Z2.nGc, 0, tripvec);
+        append_factor_triplets<zono_float>(Z2.A, Z2.nGc, Z1.nGc, Z1.nG, Z1.nC, tripvec);
+        const Eigen::SparseMatrix<zono_float> RZ1G = (*R_ptr) * Z1.G;
+        append_factor_triplets<zono_float>(RZ1G, Z1.nGc, 0, Z2.nGc, Z1.nC + Z2.nC, tripvec);
+        const Eigen::SparseMatrix<zono_float> mZ2G = -Z2.G;
+        append_factor_triplets<zono_float>(mZ2G, Z2.nGc, Z1.nGc, Z1.nG, Z1.nC + Z2.nC, tripvec);
+        Eigen::SparseMatrix<zono_float> A(Z1.nC + Z2.nC + n_rows_R, nG);
+        A.setFromTriplets(tripvec.begin(), tripvec.end());
 
-
-        Eigen::Vector<zono_float, -1> b(Z1.nC + Z2.nC + R_ptr->rows());
+        Eigen::Vector<zono_float, -1> b(Z1.nC + Z2.nC + n_rows_R);
         b.segment(0, Z1.nC) = Z1.b;
         b.segment(Z1.nC, Z2.nC) = Z2.b;
-        b.segment(Z1.nC + Z2.nC, R_ptr->rows()) = Z2.c - (*R_ptr) * Z1.c;
+        b.segment(Z1.nC + Z2.nC, n_rows_R) = Z2.c - (*R_ptr) * Z1.c;
 
         // return correct output type
-        if (Gb.cols() > 0)
-            return std::make_unique<HybZono>(Gc, Gb, c, Ac, Ab, b, Z1.zero_one_form);
-        else
-            return std::make_unique<ConZono>(Gc, c, Ac, b, Z1.zero_one_form);
+        return HybZono::from_GA(std::move(G), std::move(c), std::move(A), std::move(b), nGc, Z1.zero_one_form, false);
     }
 
     std::unique_ptr<HybZono> intersection_over_dims(const HybZono& Z1,
@@ -817,50 +798,35 @@ namespace ZonoOpt
             Z2.convert_form();
         }
 
-        // declare
+        // take Cartesian product
+        // continuous factors: [Z1 | Z2], binary factors: [Z1 | Z2]
+        const int nGc = Z1.nGc + Z2.nGc;
+        const int nG = Z1.nG + Z2.nG;
         std::vector<Eigen::Triplet<zono_float>> tripvec;
 
-        // take Cartesian product
-        Eigen::SparseMatrix<zono_float> Gc(Z1.n + Z2.n, Z1.nGc + Z2.nGc);
-        get_triplets_offset<zono_float>(Z1.Gc(), tripvec, 0, 0);
-        get_triplets_offset<zono_float>(Z2.Gc(), tripvec, Z1.n, Z1.nGc);
-        Gc.setFromTriplets(tripvec.begin(), tripvec.end());
+        tripvec.reserve(Z1.G.nonZeros() + Z2.G.nonZeros());
+        append_factor_triplets<zono_float>(Z1.G, Z1.nGc, 0, Z2.nGc, 0, tripvec);
+        append_factor_triplets<zono_float>(Z2.G, Z2.nGc, Z1.nGc, Z1.nG, Z1.n, tripvec);
+        Eigen::SparseMatrix<zono_float> G(Z1.n + Z2.n, nG);
+        G.setFromTriplets(tripvec.begin(), tripvec.end());
 
         tripvec.clear();
-        Eigen::SparseMatrix<zono_float> Gb(Z1.n + Z2.n, Z1.nGb + Z2.nGb);
-        get_triplets_offset<zono_float>(Z1.Gb(), tripvec, 0, 0);
-        get_triplets_offset<zono_float>(Z2.Gb(), tripvec, Z1.n, Z1.nGb);
-        Gb.setFromTriplets(tripvec.begin(), tripvec.end());
+        tripvec.reserve(Z1.A.nonZeros() + Z2.A.nonZeros());
+        append_factor_triplets<zono_float>(Z1.A, Z1.nGc, 0, Z2.nGc, 0, tripvec);
+        append_factor_triplets<zono_float>(Z2.A, Z2.nGc, Z1.nGc, Z1.nG, Z1.nC, tripvec);
+        Eigen::SparseMatrix<zono_float> A(Z1.nC + Z2.nC, nG);
+        A.setFromTriplets(tripvec.begin(), tripvec.end());
 
         Eigen::Vector<zono_float, -1> c(Z1.n + Z2.n);
         c.segment(0, Z1.n) = Z1.c;
         c.segment(Z1.n, Z2.n) = Z2.c;
-
-        tripvec.clear();
-        Eigen::SparseMatrix<zono_float> Ac(Z1.nC + Z2.nC, Z1.nGc + Z2.nGc);
-        get_triplets_offset<zono_float>(Z1.Ac(), tripvec, 0, 0);
-        get_triplets_offset<zono_float>(Z2.Ac(), tripvec, Z1.nC, Z1.nGc);
-        Ac.setFromTriplets(tripvec.begin(), tripvec.end());
-
-        tripvec.clear();
-        Eigen::SparseMatrix<zono_float> Ab(Z1.nC + Z2.nC, Z1.nGb + Z2.nGb);
-        get_triplets_offset<zono_float>(Z1.Ab(), tripvec, 0, 0);
-        get_triplets_offset<zono_float>(Z2.Ab(), tripvec, Z1.nC, Z1.nGb);
-        Ab.setFromTriplets(tripvec.begin(), tripvec.end());
 
         Eigen::Vector<zono_float, -1> b(Z1.nC + Z2.nC);
         b.segment(0, Z1.nC) = Z1.b;
         b.segment(Z1.nC, Z2.nC) = Z2.b;
 
         // return correct output type
-        if (Gb.cols() > 0)
-            return std::make_unique<HybZono>(Gc, Gb, c, Ac, Ab, b, Z1.zero_one_form);
-        else if (Ac.rows() > 0)
-            return std::make_unique<ConZono>(Gc, c, Ac, b, Z1.zero_one_form);
-        else if (Gc.cols() > 0)
-            return std::make_unique<Zono>(Gc, c, Z1.zero_one_form);
-        else
-            return std::make_unique<Point>(c);
+        return HybZono::from_GA(std::move(G), std::move(c), std::move(A), std::move(b), nGc, Z1.zero_one_form);
     }
 
     std::unique_ptr<HybZono> constrain(HybZono& Z, const Eigen::SparseMatrix<zono_float>& H,
@@ -903,8 +869,7 @@ namespace ZonoOpt
         const int n_slack = direction == '=' ? 0 : n_cons;
 
         // re-used matrices
-        const Eigen::SparseMatrix<zono_float> HRGc = H * (*R_ptr) * Z.Gc();
-        const Eigen::SparseMatrix<zono_float> HRGb = H * (*R_ptr) * Z.Gb();
+        const Eigen::SparseMatrix<zono_float> HRG = H * (*R_ptr) * Z.G;
 
         // compute dm
         Eigen::Vector<zono_float, -1> dm;
@@ -916,67 +881,43 @@ namespace ZonoOpt
         {
             dm = f - H * (*R_ptr) * Z.c; // init
 
-            for (int k=0; k<Z.Gc().cols(); ++k)
+            for (int k=0; k<Z.nG; ++k)
             {
                 if (direction == '<')
-                    dm += (HRGc.col(k)).cwiseAbs();
+                    dm += (HRG.col(k)).cwiseAbs();
                 else
-                    dm -= (HRGc.col(k)).cwiseAbs();
-            }
-
-            for (int k=0; k<Z.Gb().cols(); ++k)
-            {
-                Eigen::Vector<zono_float, -1> Gb_k = Z.Gb().col(k);
-                if (direction == '<')
-                    dm += (HRGb.col(k)).cwiseAbs();
-                else
-                    dm -= (HRGb.col(k)).cwiseAbs();
+                    dm -= (HRG.col(k)).cwiseAbs();
             }
         }
 
-        // generators
-        Eigen::SparseMatrix<zono_float> Gc = Z.Gc();
-        Gc.conservativeResize(Z.n, Z.nGc + n_slack); // add zeros
+        // generators: slack factors are appended to the continuous factors and do not appear in G
+        const int nGc = Z.nGc + n_slack;
+        std::vector<Eigen::Triplet<zono_float>> tripvec;
+        tripvec.reserve(Z.G.nonZeros());
+        append_factor_triplets<zono_float>(Z.G, Z.nGc, 0, n_slack, 0, tripvec);
+        Eigen::SparseMatrix<zono_float> G(Z.n, Z.nG + n_slack);
+        G.setFromTriplets(tripvec.begin(), tripvec.end());
 
-        const Eigen::SparseMatrix<zono_float> Gb = Z.Gb();
-        const Eigen::Vector<zono_float, -1> c = Z.c;
+        Eigen::Vector<zono_float, -1> c = Z.c;
 
-        // constraints
-        Eigen::SparseMatrix<zono_float> Ac = Z.Ac();
-        Ac.conservativeResize(Z.nC, Z.nGc + n_slack); // add zeros
-        Eigen::SparseMatrix<zono_float> Ac_cons;
-        if (direction == '=')
+        // constraints: [A, 0; H*R*G, diag(dm/2)]
+        tripvec.clear();
+        tripvec.reserve(Z.A.nonZeros() + HRG.nonZeros() + n_slack);
+        append_factor_triplets<zono_float>(Z.A, Z.nGc, 0, n_slack, 0, tripvec);
+        append_factor_triplets<zono_float>(HRG, Z.nGc, 0, n_slack, Z.nC, tripvec);
+        for (int i = 0; i < n_slack; ++i)
         {
-            Ac_cons = HRGc;
+            tripvec.emplace_back(Z.nC + i, Z.nGc + i, dm(i)/two);
         }
-        else
-        {
-            Eigen::SparseMatrix<zono_float> dm2 (n_cons, n_cons);
-            std::vector<Eigen::Triplet<zono_float>> tripvec;
-            for (int i = 0; i < n_cons; ++i)
-            {
-                tripvec.emplace_back(i, i, dm(i)/two);
-            }
-#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
-            dm2.setFromSortedTriplets(tripvec.begin(), tripvec.end());
-#else
-            dm2.setFromTriplets(tripvec.begin(), tripvec.end());
-#endif
-            Ac_cons = hcat(HRGc, dm2);
-        }
-        Ac = vcat(Ac, Ac_cons);
-
-        const Eigen::SparseMatrix<zono_float> Ab = vcat<zono_float>(Z.Ab(), HRGb);
+        Eigen::SparseMatrix<zono_float> A(Z.nC + n_cons, Z.nG + n_slack);
+        A.setFromTriplets(tripvec.begin(), tripvec.end());
 
         Eigen::Vector<zono_float, -1> b = Z.b;
         b.conservativeResize(Z.nC + n_cons);
         b.segment(Z.nC, n_cons) = f - H * (*R_ptr) * Z.c - dm/two;
 
         // return correct output type
-        if (Gb.cols() > 0)
-            return std::make_unique<HybZono>(Gc, Gb, c, Ac, Ab, b, Z.zero_one_form, false);
-        else
-            return std::make_unique<ConZono>(Gc, c, Ac, b, Z.zero_one_form);
+        return HybZono::from_GA(std::move(G), std::move(c), std::move(A), std::move(b), nGc, Z.zero_one_form, false);
     }
 
     std::unique_ptr<HybZono> set_diff(const HybZono& Z1, HybZono& Z2, const zono_float delta_m,

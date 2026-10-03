@@ -156,6 +156,22 @@ namespace ZonoOpt::detail
         }
     }
 
+    // append triplets of a matrix whose columns are ordered [continuous | binary] into a combined matrix with
+    // the same ordering. Continuous columns are shifted by shift_c and binary columns by shift_b.
+    template <typename T>
+    void append_factor_triplets(const Eigen::SparseMatrix<T> &mat, const int nGc, const int shift_c, const int shift_b,
+                const int i_offset, std::vector<Eigen::Triplet<T>> &triplets)
+    {
+        for (int k=0; k<mat.outerSize(); ++k)
+        {
+            const int col = k < nGc ? k + shift_c : k + shift_b;
+            for (typename Eigen::SparseMatrix<T>::InnerIterator it(mat, k); it; ++it)
+            {
+                triplets.emplace_back(static_cast<int>(it.row()) + i_offset, col, it.value());
+            }
+        }
+    }
+
     // remove redundant constraints, A*x = b
     template <typename T>
     void remove_redundant_constraints(Eigen::SparseMatrix<T>& A, Eigen::Vector<T,-1>& b)

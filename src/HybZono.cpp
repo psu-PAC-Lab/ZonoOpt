@@ -86,6 +86,27 @@ namespace ZonoOpt
         this->sharp = sharp;
     }
 
+    std::unique_ptr<HybZono> HybZono::from_GA(Eigen::SparseMatrix<zono_float> G, Eigen::Vector<zono_float, -1> c,
+                                              Eigen::SparseMatrix<zono_float> A, Eigen::Vector<zono_float, -1> b,
+                                              const int nGc, const bool zero_one_form, const bool simplify_type)
+    {
+        const bool has_binaries = G.cols() > nGc;
+        const bool has_constraints = A.rows() > 0;
+        const bool has_generators = G.cols() > 0;
+
+        if (has_binaries)
+        {
+            auto Z = std::make_unique<HybZono>();
+            Z->set_GA(std::move(G), std::move(c), std::move(A), std::move(b), nGc, zero_one_form, false);
+            return Z;
+        }
+        if (has_constraints || !simplify_type)
+            return std::make_unique<ConZono>(G, c, A, b, zero_one_form);
+        if (has_generators)
+            return std::make_unique<Zono>(G, c, zero_one_form);
+        return std::make_unique<Point>(c);
+    }
+
     void HybZono::convert_form()
     {
         const Eigen::Vector<zono_float, -1> ones = Eigen::Vector<zono_float, -1>::Ones(this->nG);
