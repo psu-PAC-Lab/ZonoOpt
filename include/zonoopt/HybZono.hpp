@@ -136,14 +136,14 @@ class HybZono
          * 
          * @return Gc
          */
-        virtual Eigen::SparseMatrix<zono_float> get_Gc() const { return this->Gc(); }
+        virtual Eigen::SparseMatrix<zono_float> get_Gc() const { return copy_cols(this->G, 0, this->nGc); }
 
         /**
          * @brief Returns binary generator matrix
          * 
          * @return Gb
          */
-        virtual Eigen::SparseMatrix<zono_float> get_Gb() const { return this->Gb(); }
+        virtual Eigen::SparseMatrix<zono_float> get_Gb() const { return copy_cols(this->G, this->nGc, this->nGb); }
 
         /**
          * @brief Returns generator matrix
@@ -157,14 +157,14 @@ class HybZono
          * 
          * @return Ac
          */
-        virtual Eigen::SparseMatrix<zono_float> get_Ac() const { return this->Ac(); }
+        virtual Eigen::SparseMatrix<zono_float> get_Ac() const { return copy_cols(this->A, 0, this->nGc); }
 
         /**
          * @brief Returns binary constraint matrix
          * 
          * @return Ab
          */
-        virtual Eigen::SparseMatrix<zono_float> get_Ab() const { return this->Ab(); }
+        virtual Eigen::SparseMatrix<zono_float> get_Ab() const { return copy_cols(this->A, this->nGc, this->nGb); }
 
         /**
          * @brief Returns constraint matrix
@@ -760,6 +760,9 @@ class HybZono
         void set_GA(Eigen::SparseMatrix<zono_float> G, Eigen::Vector<zono_float, -1> c,
             Eigen::SparseMatrix<zono_float> A, Eigen::Vector<zono_float, -1> b,
             int nGc, bool zero_one_form, bool sharp);
+
+        /// copy a contiguous range of columns of a sparse matrix (fast path for compressed matrices)
+        static Eigen::SparseMatrix<zono_float> copy_cols(const Eigen::SparseMatrix<zono_float>& M, int start, int ncols);
 
         /// build the most specific set type from combined matrices (HybZono, ConZono, Zono, or Point).
         /// If simplify_type is false, returns a HybZono if nGb > 0 and a ConZono otherwise.

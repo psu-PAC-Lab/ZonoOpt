@@ -86,6 +86,27 @@ namespace ZonoOpt
         this->sharp = sharp;
     }
 
+    Eigen::SparseMatrix<zono_float> HybZono::copy_cols(const Eigen::SparseMatrix<zono_float>& M, const int start,
+                                                       const int ncols)
+    {
+        if (!M.isCompressed())
+            return M.middleCols(start, ncols);
+
+        // compressed column-major storage: columns [start, start+ncols) are contiguous
+        using Index = Eigen::SparseMatrix<zono_float>::StorageIndex;
+        const Index* outer = M.outerIndexPtr();
+        const Index offset = outer[start];
+        const Index nnz = outer[start + ncols] - offset;
+
+        Eigen::SparseMatrix<zono_float> out(M.rows(), ncols);
+        out.resizeNonZeros(nnz);
+        for (int k = 0; k <= ncols; ++k)
+            out.outerIndexPtr()[k] = outer[start + k] - offset;
+        std::copy(M.innerIndexPtr() + offset, M.innerIndexPtr() + offset + nnz, out.innerIndexPtr());
+        std::copy(M.valuePtr() + offset, M.valuePtr() + offset + nnz, out.valuePtr());
+        return out;
+    }
+
     std::unique_ptr<HybZono> HybZono::from_GA(Eigen::SparseMatrix<zono_float> G, Eigen::Vector<zono_float, -1> c,
                                               Eigen::SparseMatrix<zono_float> A, Eigen::Vector<zono_float, -1> b,
                                               const int nGc, const bool zero_one_form, const bool simplify_type)
