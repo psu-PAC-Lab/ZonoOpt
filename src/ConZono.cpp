@@ -60,10 +60,6 @@ namespace ZonoOpt
         // hybzono params
         this->nGc = this->nG;
         this->nGb = 0;
-        this->Gc = this->G;
-        this->Gb.resize(this->n, 0);
-        this->Ac = this->A;
-        this->Ab.resize(this->nC, 0);
     }
 
     void ConZono::convert_form()

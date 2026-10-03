@@ -48,14 +48,14 @@ namespace ZonoOpt
         }
 
         // apply affine map
-        Eigen::SparseMatrix<zono_float> Gc = R * Z.Gc;
-        Eigen::SparseMatrix<zono_float> Gb = R * Z.Gb;
+        Eigen::SparseMatrix<zono_float> Gc = R * Z.Gc();
+        Eigen::SparseMatrix<zono_float> Gb = R * Z.Gb();
         Eigen::Vector<zono_float, -1> c = R * Z.c + *s_ptr;
 
         // output correct type
         if (Gb.cols() > 0)
-            return std::make_unique<HybZono>(Gc, Gb, c, Z.Ac, Z.Ab, Z.b, Z.zero_one_form);
-        else if (Z.Ac.rows() > 0)
+            return std::make_unique<HybZono>(Gc, Gb, c, Z.Ac(), Z.Ab(), Z.b, Z.zero_one_form);
+        else if (Z.Ac().rows() > 0)
             return std::make_unique<ConZono>(Gc, c, Z.A, Z.b, Z.zero_one_form);
         else if (Gc.cols() > 0)
             return std::make_unique<Zono>(Gc, c, Z.zero_one_form);
@@ -191,19 +191,19 @@ namespace ZonoOpt
 
         std::vector<Eigen::Triplet<zono_float>> tripvec;
 
-        Eigen::SparseMatrix<zono_float> Gc = hcat<zono_float>(Z1.Gc, Z2.Gc);
-        Eigen::SparseMatrix<zono_float> Gb = hcat<zono_float>(Z1.Gb, Z2.Gb);
+        Eigen::SparseMatrix<zono_float> Gc = hcat<zono_float>(Z1.Gc(), Z2.Gc());
+        Eigen::SparseMatrix<zono_float> Gb = hcat<zono_float>(Z1.Gb(), Z2.Gb());
         Eigen::Vector<zono_float, -1> c = Z1.c + Z2.c;
 
         Eigen::SparseMatrix<zono_float> Ac(Z1.nC + Z2.nC, Z1.nGc + Z2.nGc);
-        get_triplets_offset<zono_float>(Z1.Ac, tripvec, 0, 0);
-        get_triplets_offset<zono_float>(Z2.Ac, tripvec, Z1.nC, Z1.nGc);
+        get_triplets_offset<zono_float>(Z1.Ac(), tripvec, 0, 0);
+        get_triplets_offset<zono_float>(Z2.Ac(), tripvec, Z1.nC, Z1.nGc);
         Ac.setFromTriplets(tripvec.begin(), tripvec.end());
 
         tripvec.clear();
         Eigen::SparseMatrix<zono_float> Ab(Z1.nC + Z2.nC, Z1.nGb + Z2.nGb);
-        get_triplets_offset<zono_float>(Z1.Ab, tripvec, 0, 0);
-        get_triplets_offset<zono_float>(Z2.Ab, tripvec, Z1.nC, Z1.nGb);
+        get_triplets_offset<zono_float>(Z1.Ab(), tripvec, 0, 0);
+        get_triplets_offset<zono_float>(Z2.Ab(), tripvec, Z1.nC, Z1.nGb);
         Ab.setFromTriplets(tripvec.begin(), tripvec.end());
 
         Eigen::Vector<zono_float, -1> b(Z1.nC + Z2.nC);
@@ -256,31 +256,31 @@ namespace ZonoOpt
         }
 
         // compute intersection
-        Eigen::SparseMatrix<zono_float> Gc = Z1.Gc;
+        Eigen::SparseMatrix<zono_float> Gc = Z1.Gc();
         Gc.conservativeResize(Z1.n, Z1.nGc + Z2.nGc);
 
-        Eigen::SparseMatrix<zono_float> Gb = Z1.Gb;
+        Eigen::SparseMatrix<zono_float> Gb = Z1.Gb();
         Gb.conservativeResize(Z1.n, Z1.nGb + Z2.nGb);
 
         Eigen::Vector<zono_float, -1> c = Z1.c;
 
         std::vector<Eigen::Triplet<zono_float>> tripvec;
         Eigen::SparseMatrix<zono_float> Ac(Z1.nC + Z2.nC + R_ptr->rows(), Z1.nGc + Z2.nGc);
-        get_triplets_offset<zono_float>(Z1.Ac, tripvec, 0, 0);
-        get_triplets_offset<zono_float>(Z2.Ac, tripvec, Z1.nC, Z1.nGc);
-        Eigen::SparseMatrix<zono_float> RZ1Gc = (*R_ptr) * Z1.Gc;
+        get_triplets_offset<zono_float>(Z1.Ac(), tripvec, 0, 0);
+        get_triplets_offset<zono_float>(Z2.Ac(), tripvec, Z1.nC, Z1.nGc);
+        Eigen::SparseMatrix<zono_float> RZ1Gc = (*R_ptr) * Z1.Gc();
         get_triplets_offset<zono_float>(RZ1Gc, tripvec, Z1.nC + Z2.nC, 0);
-        Eigen::SparseMatrix<zono_float> mZ2Gc = -Z2.Gc;
+        Eigen::SparseMatrix<zono_float> mZ2Gc = -Z2.Gc();
         get_triplets_offset<zono_float>(mZ2Gc, tripvec, Z1.nC + Z2.nC, Z1.nGc);
         Ac.setFromTriplets(tripvec.begin(), tripvec.end());
 
         tripvec.clear();
         Eigen::SparseMatrix<zono_float> Ab(Z1.nC + Z2.nC + R_ptr->rows(), Z1.nGb + Z2.nGb);
-        get_triplets_offset<zono_float>(Z1.Ab, tripvec, 0, 0);
-        get_triplets_offset<zono_float>(Z2.Ab, tripvec, Z1.nC, Z1.nGb);
-        Eigen::SparseMatrix<zono_float> RZ1Gb = (*R_ptr) * Z1.Gb;
+        get_triplets_offset<zono_float>(Z1.Ab(), tripvec, 0, 0);
+        get_triplets_offset<zono_float>(Z2.Ab(), tripvec, Z1.nC, Z1.nGb);
+        Eigen::SparseMatrix<zono_float> RZ1Gb = (*R_ptr) * Z1.Gb();
         get_triplets_offset<zono_float>(RZ1Gb, tripvec, Z1.nC + Z2.nC, 0);
-        Eigen::SparseMatrix<zono_float> mZ2Gb = -Z2.Gb;
+        Eigen::SparseMatrix<zono_float> mZ2Gb = -Z2.Gb();
         get_triplets_offset<zono_float>(mZ2Gb, tripvec, Z1.nC + Z2.nC, Z1.nGb);
         Ab.setFromTriplets(tripvec.begin(), tripvec.end());
 
@@ -511,7 +511,7 @@ namespace ZonoOpt
             for (const auto& Z : Zs)
             {
                 // equality constraints
-                get_triplets_offset<zono_float>(Z->Ac, tripvec, rows, cols);
+                get_triplets_offset<zono_float>(Z->Ac(), tripvec, rows, cols);
                 rows += Z->nC;
 
                 // identity matrices
@@ -538,7 +538,7 @@ namespace ZonoOpt
             for (const auto& Z : Zs)
             {
                 // equality constraints
-                get_triplets_offset<zono_float>(Z->Ab, tripvec, rows, cols);
+                get_triplets_offset<zono_float>(Z->Ab(), tripvec, rows, cols);
 
                 // last column
                 for (int i = 0; i < Z->nC; i++)
@@ -590,7 +590,7 @@ namespace ZonoOpt
             cols = 0;
             for (const auto& Z : Zs)
             {
-                get_triplets_offset<zono_float>(Z->Gc, tripvec, 0, cols);
+                get_triplets_offset<zono_float>(Z->Gc(), tripvec, 0, cols);
                 cols += 2 * Z->nGc + Z->nGb;
             }
             Gc.resize(n_out, cols);
@@ -601,7 +601,7 @@ namespace ZonoOpt
             cols = 0;
             for (const auto& Z : Zs)
             {
-                get_triplets_offset<zono_float>(Z->Gb, tripvec, 0, cols);
+                get_triplets_offset<zono_float>(Z->Gb(), tripvec, 0, cols);
                 cols += Z->nGb;
                 for (int i = 0; i < Z->n; i++)
                 {
@@ -641,7 +641,7 @@ namespace ZonoOpt
                 rows++;
 
                 // equality constraints
-                get_triplets_offset<zono_float>(Z->Ac, tripvec, rows, cols);
+                get_triplets_offset<zono_float>(Z->Ac(), tripvec, rows, cols);
 
                 // increment
                 rows += Z->nC;
@@ -667,7 +667,7 @@ namespace ZonoOpt
                 rows++;
 
                 // equality constraints
-                get_triplets_offset<zono_float>(Z->Ab, tripvec, rows, cols);
+                get_triplets_offset<zono_float>(Z->Ab(), tripvec, rows, cols);
 
                 // last column
                 for (int i = 0; i < Z->nC; i++)
@@ -706,7 +706,7 @@ namespace ZonoOpt
             cols = 0;
             for (const auto& Z : Zs)
             {
-                get_triplets_offset<zono_float>(Z->Gc, tripvec, 0, cols);
+                get_triplets_offset<zono_float>(Z->Gc(), tripvec, 0, cols);
                 cols += Z->nGc + 1;
             }
             Gc.resize(n_out, cols);
@@ -717,7 +717,7 @@ namespace ZonoOpt
             cols = 0;
             for (const auto& Z : Zs)
             {
-                get_triplets_offset<zono_float>(Z->Gb, tripvec, 0, cols);
+                get_triplets_offset<zono_float>(Z->Gb(), tripvec, 0, cols);
                 cols += Z->nGb;
                 for (int i = 0; i < Z->n; i++)
                 {
@@ -822,14 +822,14 @@ namespace ZonoOpt
 
         // take Cartesian product
         Eigen::SparseMatrix<zono_float> Gc(Z1.n + Z2.n, Z1.nGc + Z2.nGc);
-        get_triplets_offset<zono_float>(Z1.Gc, tripvec, 0, 0);
-        get_triplets_offset<zono_float>(Z2.Gc, tripvec, Z1.n, Z1.nGc);
+        get_triplets_offset<zono_float>(Z1.Gc(), tripvec, 0, 0);
+        get_triplets_offset<zono_float>(Z2.Gc(), tripvec, Z1.n, Z1.nGc);
         Gc.setFromTriplets(tripvec.begin(), tripvec.end());
 
         tripvec.clear();
         Eigen::SparseMatrix<zono_float> Gb(Z1.n + Z2.n, Z1.nGb + Z2.nGb);
-        get_triplets_offset<zono_float>(Z1.Gb, tripvec, 0, 0);
-        get_triplets_offset<zono_float>(Z2.Gb, tripvec, Z1.n, Z1.nGb);
+        get_triplets_offset<zono_float>(Z1.Gb(), tripvec, 0, 0);
+        get_triplets_offset<zono_float>(Z2.Gb(), tripvec, Z1.n, Z1.nGb);
         Gb.setFromTriplets(tripvec.begin(), tripvec.end());
 
         Eigen::Vector<zono_float, -1> c(Z1.n + Z2.n);
@@ -838,14 +838,14 @@ namespace ZonoOpt
 
         tripvec.clear();
         Eigen::SparseMatrix<zono_float> Ac(Z1.nC + Z2.nC, Z1.nGc + Z2.nGc);
-        get_triplets_offset<zono_float>(Z1.Ac, tripvec, 0, 0);
-        get_triplets_offset<zono_float>(Z2.Ac, tripvec, Z1.nC, Z1.nGc);
+        get_triplets_offset<zono_float>(Z1.Ac(), tripvec, 0, 0);
+        get_triplets_offset<zono_float>(Z2.Ac(), tripvec, Z1.nC, Z1.nGc);
         Ac.setFromTriplets(tripvec.begin(), tripvec.end());
 
         tripvec.clear();
         Eigen::SparseMatrix<zono_float> Ab(Z1.nC + Z2.nC, Z1.nGb + Z2.nGb);
-        get_triplets_offset<zono_float>(Z1.Ab, tripvec, 0, 0);
-        get_triplets_offset<zono_float>(Z2.Ab, tripvec, Z1.nC, Z1.nGb);
+        get_triplets_offset<zono_float>(Z1.Ab(), tripvec, 0, 0);
+        get_triplets_offset<zono_float>(Z2.Ab(), tripvec, Z1.nC, Z1.nGb);
         Ab.setFromTriplets(tripvec.begin(), tripvec.end());
 
         Eigen::Vector<zono_float, -1> b(Z1.nC + Z2.nC);
@@ -903,8 +903,8 @@ namespace ZonoOpt
         const int n_slack = direction == '=' ? 0 : n_cons;
 
         // re-used matrices
-        const Eigen::SparseMatrix<zono_float> HRGc = H * (*R_ptr) * Z.Gc;
-        const Eigen::SparseMatrix<zono_float> HRGb = H * (*R_ptr) * Z.Gb;
+        const Eigen::SparseMatrix<zono_float> HRGc = H * (*R_ptr) * Z.Gc();
+        const Eigen::SparseMatrix<zono_float> HRGb = H * (*R_ptr) * Z.Gb();
 
         // compute dm
         Eigen::Vector<zono_float, -1> dm;
@@ -916,7 +916,7 @@ namespace ZonoOpt
         {
             dm = f - H * (*R_ptr) * Z.c; // init
 
-            for (int k=0; k<Z.Gc.cols(); ++k)
+            for (int k=0; k<Z.Gc().cols(); ++k)
             {
                 if (direction == '<')
                     dm += (HRGc.col(k)).cwiseAbs();
@@ -924,9 +924,9 @@ namespace ZonoOpt
                     dm -= (HRGc.col(k)).cwiseAbs();
             }
 
-            for (int k=0; k<Z.Gb.cols(); ++k)
+            for (int k=0; k<Z.Gb().cols(); ++k)
             {
-                Eigen::Vector<zono_float, -1> Gb_k = Z.Gb.col(k);
+                Eigen::Vector<zono_float, -1> Gb_k = Z.Gb().col(k);
                 if (direction == '<')
                     dm += (HRGb.col(k)).cwiseAbs();
                 else
@@ -935,14 +935,14 @@ namespace ZonoOpt
         }
 
         // generators
-        Eigen::SparseMatrix<zono_float> Gc = Z.Gc;
+        Eigen::SparseMatrix<zono_float> Gc = Z.Gc();
         Gc.conservativeResize(Z.n, Z.nGc + n_slack); // add zeros
 
-        const Eigen::SparseMatrix<zono_float> Gb = Z.Gb;
+        const Eigen::SparseMatrix<zono_float> Gb = Z.Gb();
         const Eigen::Vector<zono_float, -1> c = Z.c;
 
         // constraints
-        Eigen::SparseMatrix<zono_float> Ac = Z.Ac;
+        Eigen::SparseMatrix<zono_float> Ac = Z.Ac();
         Ac.conservativeResize(Z.nC, Z.nGc + n_slack); // add zeros
         Eigen::SparseMatrix<zono_float> Ac_cons;
         if (direction == '=')
@@ -966,7 +966,7 @@ namespace ZonoOpt
         }
         Ac = vcat(Ac, Ac_cons);
 
-        const Eigen::SparseMatrix<zono_float> Ab = vcat(Z.Ab, HRGb);
+        const Eigen::SparseMatrix<zono_float> Ab = vcat<zono_float>(Z.Ab(), HRGb);
 
         Eigen::Vector<zono_float, -1> b = Z.b;
         b.conservativeResize(Z.nC + n_cons);

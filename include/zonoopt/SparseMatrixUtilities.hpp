@@ -105,6 +105,57 @@ namespace ZonoOpt::detail
         }
     }
 
+    // overloads accepting any compressed sparse expression (e.g., column-block views) without materializing a copy
+    template <typename T, typename Derived>
+    Eigen::SparseMatrix<T> hcat(const Eigen::SparseCompressedBase<Derived> &A, const Eigen::SparseCompressedBase<Derived> &B)
+    {
+        if (A.rows() != B.rows())
+        {
+            throw std::invalid_argument("hcat: number of rows must match.");
+        }
+
+        Eigen::SparseMatrix<T> C(A.rows(), A.cols() + B.cols());
+        std::vector<Eigen::Triplet<T>> tripvec;
+        tripvec.reserve(A.nonZeros() + B.nonZeros());
+
+        for (int k=0; k<A.derived().outerSize(); ++k)
+        {
+            for (typename Derived::InnerIterator it(A.derived(), k); it; ++it)
+            {
+                tripvec.emplace_back(static_cast<int>(it.row()), static_cast<int>(it.col()), it.value());
+            }
+        }
+
+        for (int k=0; k<B.derived().outerSize(); ++k)
+        {
+            for (typename Derived::InnerIterator it(B.derived(), k); it; ++it)
+            {
+                tripvec.emplace_back(static_cast<int>(it.row()), static_cast<int>(it.col()+A.cols()), it.value());
+            }
+        }
+
+        C.setFromTriplets(tripvec.begin(), tripvec.end());
+        return C;
+    }
+
+    template <typename T, typename Derived>
+    void get_triplets_offset(const Eigen::SparseCompressedBase<Derived> &mat, std::vector<Eigen::Triplet<T>> &triplets,
+                const int i_offset, const int j_offset)
+    {
+        if (i_offset < 0 || j_offset < 0)
+        {
+            throw std::invalid_argument("get_triplets_offset: offsets must be non-negative.");
+        }
+
+        for (int k=0; k<mat.derived().outerSize(); ++k)
+        {
+            for (typename Derived::InnerIterator it(mat.derived(), k); it; ++it)
+            {
+                triplets.emplace_back(static_cast<int>(it.row() + i_offset), static_cast<int>(it.col() + j_offset), it.value());
+            }
+        }
+    }
+
     // remove redundant constraints, A*x = b
     template <typename T>
     void remove_redundant_constraints(Eigen::SparseMatrix<T>& A, Eigen::Vector<T,-1>& b)

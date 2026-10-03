@@ -35,11 +35,7 @@ namespace ZonoOpt
         this->nGc = this->nG;
         this->nGb = 0;
         this->nC = 0;
-        this->Gc = this->G;
-        this->Gb.resize(this->n, 0);
         this->A.resize(0, this->nG);
-        this->Ac = this->A;
-        this->Ab.resize(0, 0);
         this->b.resize(0);
         this->zero_one_form = false;
     }
