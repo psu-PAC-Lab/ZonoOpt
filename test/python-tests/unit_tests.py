@@ -1396,6 +1396,41 @@ def test_zono_hull():
     _test_inconsistent_dimensions()
     print('Passed: Zono Hull')
 
+def test_reduce_order():
+
+    # regular 16-sided zonotope (8 generators), centered away from the origin
+    Z = zono.make_regular_zono_2D(1., 16, False, np.array([1., -2.]))
+    G = Z.G.toarray()
+    directions = [np.array([np.cos(th), np.sin(th)]) for th in np.linspace(0., 2.*np.pi, 16, endpoint=False)]
+
+    # reduced set contains the original: check random points x = G xi + c with xi uniform in [-1, 1]^nG
+    rng = np.random.default_rng(0)
+    for n_o in [2, 3, 5, 7]:
+        Zr = Z.reduce_order(n_o)
+        assert Zr.nG == n_o, f'reduce_order: expected {n_o} generators, got {Zr.nG}'
+        for _ in range(50):
+            x = G @ rng.uniform(-1., 1., Z.nG) + Z.c
+            assert Zr.contains_point(x), f'reduce_order (n_o = {n_o}): reduced set must contain sample {x}'
+
+    # no reduction needed: the set is unchanged and its generators are sorted by decreasing norm
+    for n_o in [8, 13]:
+        Zr = Z.reduce_order(n_o)
+        assert Zr.nG == Z.nG, f'reduce_order (n_o = {n_o}): number of generators must be unchanged'
+        for d in directions:
+            assert abs(Zr.support(d) - Z.support(d)) < 1e-9, f'reduce_order (n_o = {n_o}): set must be unchanged'
+        norms = np.linalg.norm(Zr.G.toarray(), axis=0)
+        assert np.all(norms[:-1] >= norms[1:] - 1e-12), \
+            f'reduce_order (n_o = {n_o}): generators must be sorted by decreasing norm'
+
+    # order less than the dimension of the set
+    try:
+        Z.reduce_order(1)
+        raise AssertionError('reduce_order: an order less than the dimension should raise ValueError')
+    except ValueError:
+        pass
+
+    print('Passed: Reduce Order')
+
 def test_zono_union():
 
     def _zono(G, c):
@@ -1810,6 +1845,7 @@ if __name__ == '__main__':
         test_remove_redundancy,
         test_overapproximation,
         test_zono_hull,
+        test_reduce_order,
         test_zono_union,
         test_optimize_over,
         test_set_difference,
