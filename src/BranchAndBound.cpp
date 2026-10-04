@@ -96,6 +96,10 @@ namespace ZonoOpt::detail
         // set flags
         this->done = false;
         this->converged = false;
+        {
+            std::lock_guard<std::mutex> lock(exception_mtx);
+            this->thread_exception = nullptr;
+        }
 
         // verbosity
         std::stringstream ss;
@@ -286,96 +290,103 @@ namespace ZonoOpt::detail
         for (int i = 0; i < this->data.admm_data->settings.n_threads_admm_fp; i++)
         {
             auto admm_fp_node = std::make_unique<ADMM_FP_solver>(*pump);
+            admm_fp_node->set_rng_stream(static_cast<unsigned int>(i) + 1); // independent random stream per thread
             fp_threads.emplace_back([this, node=std::move(admm_fp_node)]() mutable { admm_fp_loop(std::move(node)); });
         }
 
-        // push root to node queue
-        this->push_node(std::move(root));
-
-        // loop and check for exit conditions
-        int print_iter = 0;
-        if (this->data.admm_data->settings.verbose)
+        // exceptions here are recorded so the worker threads are always stopped and joined before rethrowing
+        try
         {
-            ss << std::endl << std::setw(13) << "Iter" << std::setw(13) << "Queue" << std::setw(13) <<
-                "ADMM-FP Iter" << std::setw(13) <<
-                "Time [s]" << std::setw(13) << "J_min" << std::setw(13) <<
-                "J_max" << std::setw(13) << "Gap [%]" << std::setw(13) << "Feasible" << std::setw(13) <<
-                "ADMM-FP sol" << std::endl;
-            print_str(ss);
-        }
+            // push root to node queue
+            this->push_node(std::move(root));
 
-        while (!this->done)
-        {
-            // check for timeout
-            run_time = 1e-6 * static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(
-                std::chrono::high_resolution_clock::now() - start).count());
-            if (run_time > this->data.admm_data->settings.t_max)
+            // loop and check for exit conditions
+            int print_iter = 0;
+            if (this->data.admm_data->settings.verbose)
             {
-                this->done = true;
-            }
-
-            // check for max nodes
-            int queue_size = 0;
-            {
-                std::lock_guard<std::mutex> lock(pq_mtx);
-                queue_size = static_cast<int>(this->node_queue.size() + this->dive_queue.size());
-            }
-            if (queue_size > this->data.admm_data->settings.max_nodes)
-            {
-                this->done = true;
-            }
-
-            // check for max iterations
-            if (this->iter >= this->data.admm_data->settings.k_max_bnb)
-            {
-                this->done = true;
-            }
-
-            // check for convergence
-
-            // get lower bound / check if there are no nodes remaining
-            zono_float J_min = get_lower_bound();
-
-            // check for convergence based on lower and upper bounds
-            zono_float gap_percent = 0;
-            if (!this->multi_sol)
-            {
-                const zono_float gap = std::abs(this->J_max - J_min);
-                gap_percent = std::abs(this->J_max - J_min) / std::abs(this->J_max);
-                if ((gap_percent < this->data.admm_data->settings.eps_r) || (gap < this->data.admm_data->settings.
-                    eps_a))
-                {
-                    this->done = true;
-                    this->converged = true;
-                }
-            }
-            else if (this->solutions.size() >= static_cast<size_t>(max_sols)) // check based on number of solutions
-            {
-                this->done = true;
-                this->converged = true;
-            }
-
-            // verbosity
-            if (this->data.admm_data->settings.verbose && (this->iter >= print_iter))
-            {
-                ss << std::setw(13) << this->iter << std::setw(13) << queue_size << std::setw(13)
-                    << this->iter_admm_fp << std::setw(13) << run_time << std::setw(13)
-                    << J_min << std::setw(13) << this->J_max << std::setw(13)
-                    << gap_percent * 100.0f << std::setw(13)
-                    << (this->feasible ? "true" : "false") << std::setw(13)
-                    << (this->feasible ? (this->admm_fp_incumbent ? "true" : "false") : "") << std::endl;
+                ss << std::endl << std::setw(13) << "Iter" << std::setw(13) << "Queue" << std::setw(13) <<
+                    "ADMM-FP Iter" << std::setw(13) <<
+                    "Time [s]" << std::setw(13) << "J_min" << std::setw(13) <<
+                    "J_max" << std::setw(13) << "Gap [%]" << std::setw(13) << "Feasible" << std::setw(13) <<
+                    "ADMM-FP sol" << std::endl;
                 print_str(ss);
-                print_iter += this->data.admm_data->settings.verbosity_interval;
             }
 
-            // small sleep
-            std::this_thread::sleep_for(std::chrono::microseconds(100));
+            while (!this->done)
+            {
+                // check for timeout
+                run_time = 1e-6 * static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(
+                    std::chrono::high_resolution_clock::now() - start).count());
+                if (run_time > this->data.admm_data->settings.t_max)
+                {
+                    this->stop_threads();
+                }
+
+                // check for max nodes
+                int queue_size = 0;
+                {
+                    std::lock_guard<std::mutex> lock(pq_mtx);
+                    queue_size = static_cast<int>(this->node_queue.size() + this->dive_queue.size());
+                }
+                if (queue_size > this->data.admm_data->settings.max_nodes)
+                {
+                    this->stop_threads();
+                }
+
+                // check for max iterations
+                if (this->iter >= this->data.admm_data->settings.k_max_bnb)
+                {
+                    this->stop_threads();
+                }
+
+                // check for convergence
+
+                // get lower bound / check if there are no nodes remaining
+                zono_float J_min = get_lower_bound();
+
+                // check for convergence based on lower and upper bounds
+                zono_float gap_percent = 0;
+                if (!this->multi_sol)
+                {
+                    const zono_float gap = std::abs(this->J_max - J_min);
+                    gap_percent = std::abs(this->J_max - J_min) / std::abs(this->J_max);
+                    if ((gap_percent < this->data.admm_data->settings.eps_r) || (gap < this->data.admm_data->settings.
+                        eps_a))
+                    {
+                        this->converged = true;
+                        this->stop_threads();
+                    }
+                }
+                else if (this->solutions.size() >= static_cast<size_t>(max_sols)) // check based on number of solutions
+                {
+                    this->converged = true;
+                    this->stop_threads();
+                }
+
+                // verbosity
+                if (this->data.admm_data->settings.verbose && (this->iter >= print_iter))
+                {
+                    ss << std::setw(13) << this->iter << std::setw(13) << queue_size << std::setw(13)
+                        << this->iter_admm_fp << std::setw(13) << run_time << std::setw(13)
+                        << J_min << std::setw(13) << this->J_max << std::setw(13)
+                        << gap_percent * 100.0f << std::setw(13)
+                        << (this->feasible ? "true" : "false") << std::setw(13)
+                        << (this->feasible ? (this->admm_fp_incumbent ? "true" : "false") : "") << std::endl;
+                    print_str(ss);
+                    print_iter += this->data.admm_data->settings.verbosity_interval;
+                }
+
+                // small sleep
+                std::this_thread::sleep_for(std::chrono::microseconds(100));
+            }
+        }
+        catch (...)
+        {
+            this->record_exception(std::current_exception());
         }
 
         // clean up
-        this->done = true;
-        pq_cv_bnb.notify_all(); // notify all threads to stop waiting
-        pq_cv_admm_fp.notify_all();
+        this->stop_threads(); // set done and wake all waiting threads
 
         for (auto& thread : bnb_threads)
         {
@@ -392,6 +403,10 @@ namespace ZonoOpt::detail
             this->dive_queue.clear();
         }
         this->J_threads.clear();
+
+        // rethrow the first exception from any thread, now that all threads are joined and nodes freed
+        if (this->thread_exception)
+            std::rethrow_exception(this->thread_exception);
 
         // assemble solution
         OptSolution solution;
@@ -726,45 +741,82 @@ namespace ZonoOpt::detail
 
     void BranchAndBound::worker_loop()
     {
-        while (!this->done)
+        // an exception escaping a std::thread calls std::terminate, so record it and stop the search instead;
+        // locks, nodes, and thread tags are released during unwinding before the handler runs
+        try
         {
-            std::unique_ptr<Node, NodeDeleter> node(nullptr, NodeDeleter(&pool));
-            ThreadGuard<std::pair<int, zono_float>, JThreadCompare> guard(this->J_threads);
+            while (!this->done)
             {
-                std::unique_lock<std::mutex> lock(pq_mtx);
-                pq_cv_bnb.wait(lock, [this]() {
-                    return this->done || !this->dive_queue.empty() || !this->node_queue.empty();
-                });
-                if (this->done) return;
-                if (!this->dive_queue.empty())
-                    node = this->dive_queue.pop_top();
-                else
-                    node = this->node_queue.pop_top();
-                guard.specify_tag({this->uniform_dist(this->rng), node->solution.J});
+                std::unique_ptr<Node, NodeDeleter> node(nullptr, NodeDeleter(&pool));
+                ThreadGuard<std::pair<int, zono_float>, JThreadCompare> guard(this->J_threads);
+                {
+                    std::unique_lock<std::mutex> lock(pq_mtx);
+                    pq_cv_bnb.wait(lock, [this]() {
+                        return this->done || !this->dive_queue.empty() || !this->node_queue.empty();
+                    });
+                    if (this->done) return;
+                    if (!this->dive_queue.empty())
+                        node = this->dive_queue.pop_top();
+                    else
+                        node = this->node_queue.pop_top();
+                    guard.specify_tag({this->uniform_dist(this->rng), node->solution.J});
+                }
+                if (node)
+                {
+                    solve_and_branch(node);
+                }
             }
-            if (node)
-            {
-                solve_and_branch(node);
-            }
+        }
+        catch (...)
+        {
+            this->record_exception(std::current_exception());
         }
     }
 
     void BranchAndBound::admm_fp_loop(std::unique_ptr<ADMM_FP_solver>&& node)
     {
-        admm_fp_solve(node); // warm-started with root relaxation solution
-        while (!this->done)
+        // see worker_loop for exception handling
+        try
         {
+            admm_fp_solve(node); // warm-started with root relaxation solution
+            while (!this->done)
             {
-                std::unique_lock<std::mutex> lock(pq_mtx);
-                pq_cv_admm_fp.wait(lock, [this]() {
-                    return this->done || !this->dive_queue.empty() || !this->node_queue.empty();
-                });
-                if (this->done) return;
-                const auto& top = !this->dive_queue.empty() ? this->dive_queue.top() : this->node_queue.top();
-                node->warmstart(top->solution.z, top->solution.u);
+                {
+                    std::unique_lock<std::mutex> lock(pq_mtx);
+                    pq_cv_admm_fp.wait(lock, [this]() {
+                        return this->done || !this->dive_queue.empty() || !this->node_queue.empty();
+                    });
+                    if (this->done) return;
+                    const auto& top = !this->dive_queue.empty() ? this->dive_queue.top() : this->node_queue.top();
+                    node->warmstart(top->solution.z, top->solution.u);
+                }
+                admm_fp_solve(node);
             }
-            admm_fp_solve(node);
         }
+        catch (...)
+        {
+            this->record_exception(std::current_exception());
+        }
+    }
+
+    void BranchAndBound::stop_threads()
+    {
+        // setting done and notifying while holding pq_mtx guarantees that a thread which has just evaluated its
+        // wait predicate (done == false) is already waiting when notified, so the wakeup cannot be lost
+        std::lock_guard<std::mutex> lock(pq_mtx);
+        this->done = true;
+        pq_cv_bnb.notify_all();
+        pq_cv_admm_fp.notify_all();
+    }
+
+    void BranchAndBound::record_exception(std::exception_ptr e)
+    {
+        {
+            std::lock_guard<std::mutex> lock(exception_mtx);
+            if (!this->thread_exception)
+                this->thread_exception = std::move(e);
+        }
+        this->stop_threads();
     }
 
     void BranchAndBound::push_node(std::unique_ptr<Node, NodeDeleter>&& node)
@@ -824,6 +876,8 @@ namespace ZonoOpt::detail
             {
                 this->done = true; // no nodes remaining
                 this->converged = true;
+                pq_cv_bnb.notify_all(); // notify while holding pq_mtx so no waiting thread misses it
+                pq_cv_admm_fp.notify_all();
                 return -std::numeric_limits<zono_float>::infinity();
             }
 

@@ -18,6 +18,7 @@
 #include <memory_resource>
 #include <cmath>
 #include <random>
+#include <exception>
 
 #include "BnbDataStructures.hpp"
 #include "Defines.hpp"
@@ -142,6 +143,10 @@ namespace ZonoOpt::detail
         std::uniform_int_distribution<int> uniform_dist{0, std::numeric_limits<int>::max()};
         std::mt19937 rng{0};
 
+        // first exception thrown by a worker thread or the monitoring loop, rethrown from solve()
+        std::exception_ptr thread_exception;
+        std::mutex exception_mtx;
+
         // warmstart variables
         Eigen::Vector<zono_float, -1> xi_ws, u_ws;
 
@@ -169,6 +174,12 @@ namespace ZonoOpt::detail
         void worker_loop();
 
         void admm_fp_loop(std::unique_ptr<ADMM_FP_solver>&& node);
+
+        // set done and wake all waiting threads; must not be called while holding pq_mtx
+        void stop_threads();
+
+        // store the first exception from any thread and stop the search
+        void record_exception(std::exception_ptr e);
 
         // push node to queue
         void push_node(std::unique_ptr<Node, NodeDeleter>&& node);
