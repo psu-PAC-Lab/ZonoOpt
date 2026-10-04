@@ -1444,6 +1444,43 @@ def test_zono_hull():
     _test_inconsistent_dimensions()
     print('Passed: Zono Hull')
 
+def test_default_solver_settings():
+
+    try:
+        # nominal: a fresh program defaults to OptSettings
+        zono.set_default_solver_settings(zono.OptSettings())
+        s = zono.get_default_solver_settings()
+        assert isinstance(s, zono.OptSettings), 'get_default_solver_settings: expected OptSettings'
+        default_rho = s.rho
+
+        # the returned object stays valid after the default is replaced
+        new_default = zono.OptSettings()
+        new_default.rho = 2. * default_rho
+        zono.set_default_solver_settings(new_default)
+        assert s.rho == default_rho, 'get_default_solver_settings: returned object should be an unchanged snapshot'
+        assert zono.get_default_solver_settings().rho == 2. * default_rho, \
+            'get_default_solver_settings: should reflect the new default'
+
+        # modifying the returned object does not change the default
+        s2 = zono.get_default_solver_settings()
+        s2.rho = 123.
+        assert zono.get_default_solver_settings().rho == 2. * default_rho, \
+            'get_default_solver_settings: modifying the returned copy should not change the default'
+
+        # the copy keeps its subclass (skipped if SCIP cannot be loaded)
+        try:
+            scip_settings = zono.SCIPSettings()
+        except RuntimeError:
+            scip_settings = None
+        if scip_settings is not None:
+            zono.set_default_solver_settings(scip_settings)
+            assert isinstance(zono.get_default_solver_settings(), zono.SCIPSettings), \
+                'get_default_solver_settings: expected SCIPSettings'
+    finally:
+        zono.set_default_solver_settings(zono.OptSettings())
+
+    print('Passed: Default Solver Settings')
+
 def test_reduce_order():
 
     # regular 16-sided zonotope (8 generators), centered away from the origin
@@ -1910,6 +1947,7 @@ if __name__ == '__main__':
         test_remove_redundancy,
         test_overapproximation,
         test_zono_hull,
+        test_default_solver_settings,
         test_reduce_order,
         test_zono_union,
         test_optimize_over,

@@ -3870,15 +3870,18 @@ PYBIND11_MODULE(_core, m)
                 >>> Z.support(d)   # now uses Gurobi by default
         )pbdoc");
 
-    m.def("get_default_solver_settings", &get_default_solver_settings,
-        py::return_value_policy::reference,
+    // Return an owned polymorphic copy. Returning a reference would leave Python holding a dangling
+    // pointer once set_default_solver_settings replaces the default, and would let callers edit the
+    // library-wide default through what is meant to be a read-only accessor.
+    m.def("get_default_solver_settings",
+        []() -> std::unique_ptr<SolverSettings> { return get_default_solver_settings().clone(); },
         R"pbdoc(
-            Return a reference to the current program-wide default solver settings.
+            Return a copy of the current program-wide default solver settings.
 
-            The returned object is the same instance held by the library; it remains valid
-            until set_default_solver_settings is called again.
+            The returned object is a snapshot: modifying it does not change the default.
+            To change the default, modify the copy and pass it to set_default_solver_settings.
 
             Returns:
-                SolverSettings: the current default (OptSettings on a fresh program).
+                SolverSettings: a copy of the current default (OptSettings on a fresh program).
         )pbdoc");
 }
