@@ -984,13 +984,19 @@ namespace ZonoOpt
             Gd = Zs[i]->G.toDense();
             for (int j = 0; j < n_gens; j++)
             {
-                // check if the generator is already in S_vec
-                auto generator_equal = [&](const Eigen::Matrix<zono_float, -1, 1>& s) -> bool
+                // look for an equal generator in S_vec that zonotope i does not already use;
+                // reusing one that zonotope i already uses would merge two of its factors into one
+                int idx = -1;
+                for (int k = 0; k < static_cast<int>(S_vec.size()); ++k)
                 {
-                    return (s - Gd.col(j)).norm() < zono_eps;
-                };
+                    if (M_vec[k](i) == 0 && (S_vec[k] - Gd.col(j)).norm() < zono_eps)
+                    {
+                        idx = k;
+                        break;
+                    }
+                }
 
-                if (auto it_S = std::find_if(S_vec.begin(), S_vec.end(), generator_equal); it_S == S_vec.end())
+                if (idx < 0)
                 {
                     S_vec.emplace_back(Gd.col(j));
                     M_row.setZero();
@@ -999,7 +1005,6 @@ namespace ZonoOpt
                 }
                 else
                 {
-                    const int idx = static_cast<int>(std::distance(S_vec.begin(), it_S));
                     M_vec[idx](i) = 1;
                 }
             }

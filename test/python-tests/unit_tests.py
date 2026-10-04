@@ -1396,6 +1396,35 @@ def test_zono_hull():
     _test_inconsistent_dimensions()
     print('Passed: Zono Hull')
 
+def test_zono_union():
+
+    def _zono(G, c):
+        return zono.Zono(sparse.csc_matrix(np.array(G, dtype=float)), np.array(c, dtype=float))
+
+    # distinct generators: unit box at the origin union a diamond centered at (5, 0)
+    U = zono.zono_union_2_hybzono([_zono([[1., 0.], [0., 1.]], [0., 0.]), _zono([[1., 1.], [1., -1.]], [5., 0.])])
+    for p in [[0.5, -0.5], [-0.9, 0.9], [6.5, 0.], [5., 1.5]]:
+        assert U.contains_point(np.array(p)), f'zono_union (distinct generators): {p} should be in the union'
+    for p in [[2.5, 0.], [6.5, 1.], [0., 1.5]]:
+        assert not U.contains_point(np.array(p)), f'zono_union (distinct generators): {p} should not be in the union'
+
+    # duplicated generators between zonotopes: unit box at the origin union the box [4, 6] x [-2, 2],
+    # which share the generator [1, 0]^T, giving 3 unique generators, each with one factor and one slack factor
+    U = zono.zono_union_2_hybzono([_zono([[1., 0.], [0., 1.]], [0., 0.]), _zono([[1., 0.], [0., 2.]], [5., 0.])])
+    assert U.nGc == 6, 'zono_union (generators between zonotopes): equal generators should be shared'
+    for p in [[0.5, -0.5], [-0.9, 0.9], [5.5, 1.5], [4.5, -1.8]]:
+        assert U.contains_point(np.array(p)), f'zono_union (generators between zonotopes): {p} should be in the union'
+    for p in [[2.5, 0.], [0., 1.5], [6.5, 0.]]:
+        assert not U.contains_point(np.array(p)), f'zono_union (generators between zonotopes): {p} should not be in the union'
+
+    # duplicated generator in one zonotope: G = [[1, 1, 0], [0, 0, 1]] is the box [-2, 2] x [-1, 1]
+    U = zono.zono_union_2_hybzono([_zono([[1., 1., 0.], [0., 0., 1.]], [0., 0.])])
+    for p in [[1.5, 0.5], [-1.5, -0.5]]:
+        assert U.contains_point(np.array(p)), f'zono_union (duplicated generator): {p} should be in the union'
+    assert not U.contains_point(np.array([2.5, 0.])), 'zono_union (duplicated generator): (2.5, 0) should not be in the union'
+
+    print('Passed: Zono Union')
+
 def test_optimize_over():
 
     # infeasible problems must return a NaN point with the set dimension n (here n = 2 differs from nG = 3)
@@ -1781,6 +1810,7 @@ if __name__ == '__main__':
         test_remove_redundancy,
         test_overapproximation,
         test_zono_hull,
+        test_zono_union,
         test_optimize_over,
         test_set_difference,
         test_box_set_operations,
