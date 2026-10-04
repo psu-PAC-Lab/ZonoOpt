@@ -51,3 +51,35 @@ TEST(OptimizeOver, InfeasibleHybZonoReturnsNaN)
 
     expect_nan_point(Z, "HybZono");
 }
+
+TEST(OptimizeOver, TimeoutIsNotInfeasible)
+{
+    // feasible hybrid zonotope: Cartesian product of unions of offset regular zonotopes
+    std::vector<std::shared_ptr<Zono>> Zs;
+    for (int i = 0; i < 20; ++i)
+    {
+        Eigen::Vector<zono_float, 2> c;
+        c << static_cast<zono_float>(3 * i), static_cast<zono_float>(i % 2);
+        Zs.push_back(make_regular_zono_2D(1, 8, false, c));
+    }
+    std::unique_ptr<HybZono> U = zono_union_2_hybzono(Zs);
+    std::unique_ptr<HybZono> Z = cartesian_product(*U, *U);
+    for (int i = 0; i < 3; ++i)
+        Z = cartesian_product(*Z, *U);
+
+    // time limit too short to find a solution
+    OptSettings settings;
+    settings.t_max = 1e-9;
+
+    Eigen::SparseMatrix<zono_float> P(Z->get_n(), Z->get_n());
+    P.setIdentity();
+    const Eigen::Vector<zono_float, -1> q = Eigen::Vector<zono_float, -1>::Zero(Z->get_n());
+
+    std::shared_ptr<OptSolution> sol;
+    const Eigen::Vector<zono_float, -1> x = Z->optimize_over(P, q, 0, settings, &sol);
+
+    ASSERT_TRUE(sol);
+    EXPECT_FALSE(sol->infeasible) << "a timeout must not be reported as proven infeasibility";
+    EXPECT_FALSE(sol->converged);
+    EXPECT_EQ(x.size(), Z->get_n());
+}

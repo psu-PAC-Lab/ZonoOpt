@@ -417,10 +417,18 @@ namespace ZonoOpt::detail
         solution.startup_time = startup_time;
         solution.iter = this->iter;
         solution.converged = this->converged;
-        solution.infeasible = !this->feasible;
+        solution.infeasible = !this->feasible && this->converged; // only proven if the search completed
 
         solution.x = this->x.get();
         solution.u = this->u.get();
+        if (!this->feasible)
+        {
+            const auto nan_vec = Eigen::Vector<zono_float, -1>::Constant(this->data.admm_data->n_x,
+                std::numeric_limits<zono_float>::quiet_NaN());
+            solution.z = nan_vec;
+            solution.x = nan_vec;
+            solution.u = nan_vec;
+        }
         solution.primal_residual = this->primal_residual;
         solution.dual_residual = this->dual_residual;
 
@@ -489,6 +497,10 @@ namespace ZonoOpt::detail
                                                         this->data.admm_data->settings.eps_dual);
                     node->warmstart(node->solution.z, node->solution.u);
                     node->solve();
+
+                    // restore search tolerances so they are not inherited by children if the node is branched
+                    node->update_convergence_tolerances(this->bnb_data->settings.eps_prim,
+                                                        this->bnb_data->settings.eps_dual);
                 }
 
                 // make sure still integer feasible after refining

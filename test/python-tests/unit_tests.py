@@ -1569,6 +1569,20 @@ def test_optimize_over():
     Ab = sparse.csc_matrix((1, 1))
     _check_infeasible(zono.HybZono(Gc, Gb, np.zeros(2), Ac, Ab, np.array([5.])), 'HybZono')
 
+    # timeout on a feasible problem must not be reported as proven infeasibility
+    Zs = [zono.make_regular_zono_2D(radius=1., n_sides=8, c=np.array([3.*i, i % 2])) for i in range(20)]
+    U = zono.zono_union_2_hybzono(Zs)
+    Z = zono.cartesian_product(U, U)
+    for _ in range(3):
+        Z = zono.cartesian_product(Z, U)
+    settings = zono.OptSettings()
+    settings.t_max = 1e-9  # too short to find a solution
+    sol = zono.OptSolution()
+    x = Z.optimize_over(sparse.identity(Z.n, format='csc'), np.zeros(Z.n), settings=settings, solution=sol)
+    assert not sol.infeasible, 'optimize_over (timeout): a timeout must not be reported as proven infeasibility'
+    assert not sol.converged, 'optimize_over (timeout): a timeout must not be reported as converged'
+    assert x.size == Z.n, 'optimize_over (timeout): result must have the set dimension n'
+
     print('Passed: Optimize Over')
 
 def test_set_difference():
