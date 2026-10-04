@@ -122,9 +122,9 @@ namespace ZonoOpt
         OptSolution sol = this->qp_opt(std::move(P_fact), std::move(q_fact), c + delta_c, this->A, this->b,
                                        settings, solution, warm_start_params);
 
-        // check feasibility and return solution
+        // check feasibility and return solution (NaN point of dimension n if infeasible, consistent with EmptySet)
         if (sol.infeasible)
-            return Eigen::Vector<zono_float, -1>(this->nG);
+            return Eigen::Vector<zono_float, -1>::Constant(this->n, std::numeric_limits<zono_float>::quiet_NaN());
         else
             return this->G * sol.z + this->c;
     }

@@ -1396,6 +1396,32 @@ def test_zono_hull():
     _test_inconsistent_dimensions()
     print('Passed: Zono Hull')
 
+def test_optimize_over():
+
+    # infeasible problems must return a NaN point with the set dimension n (here n = 2 differs from nG = 3)
+    def _check_infeasible(Z, name):
+        P = sparse.identity(Z.n, format='csc')
+        q = np.zeros(Z.n)
+        sol = zono.OptSolution()
+        x = Z.optimize_over(P, q, solution=sol)
+        assert sol.infeasible, f'optimize_over ({name}): expected the problem to be reported infeasible'
+        assert x.size == Z.n, f'optimize_over ({name}): result must have the set dimension n, not nG'
+        assert np.all(np.isnan(x)), f'optimize_over ({name}): infeasible result must be all NaN'
+
+    # ConZono: the constraint xi_0 = 5 cannot hold for xi in [-1, 1]^3
+    G = sparse.csc_matrix(np.array([[1., 0., 1.], [0., 1., 1.]]))
+    A = sparse.csc_matrix(np.array([[1., 0., 0.]]))
+    _check_infeasible(zono.ConZono(G, np.zeros(2), A, np.array([5.])), 'ConZono')
+
+    # HybZono: the constraint xi_c0 = 5 cannot hold for xi_c in [-1, 1]^2
+    Gc = sparse.csc_matrix(np.eye(2))
+    Gb = sparse.csc_matrix(np.array([[1.], [0.]]))
+    Ac = sparse.csc_matrix(np.array([[1., 0.]]))
+    Ab = sparse.csc_matrix((1, 1))
+    _check_infeasible(zono.HybZono(Gc, Gb, np.zeros(2), Ac, Ab, np.array([5.])), 'HybZono')
+
+    print('Passed: Optimize Over')
+
 def test_set_difference():
 
     delta_m = 10.
@@ -1755,6 +1781,7 @@ if __name__ == '__main__':
         test_remove_redundancy,
         test_overapproximation,
         test_zono_hull,
+        test_optimize_over,
         test_set_difference,
         test_box_set_operations,
         test_box_operator_semantics,
