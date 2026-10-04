@@ -73,3 +73,30 @@ TEST(IntervalArithmetic, FractionalExponent)
     a = Interval(-3., -0.5);
     EXPECT_THROW(a.pow(456./123.), std::domain_error);
 }
+TEST(IntervalMatrix, FromTriplets)
+{
+    // entries at the same position are summed; positions without triplets are [0, 0]
+    const std::vector<Eigen::Triplet<Interval>> triplets = {
+        {0, 1, Interval(1, 2)}, {1, 2, Interval(-3, -1)}, {0, 1, Interval(0.5, 0.5)}};
+    const IntervalMatrix M(2, 3, triplets);
+    const auto vals = M.to_array();
+
+    ASSERT_EQ(vals.size(), 2u);
+    ASSERT_EQ(vals[0].size(), 3u);
+    EXPECT_DOUBLE_EQ(vals[0][1].lower(), 1.5);
+    EXPECT_DOUBLE_EQ(vals[0][1].upper(), 2.5);
+    EXPECT_DOUBLE_EQ(vals[1][2].lower(), -3);
+    EXPECT_DOUBLE_EQ(vals[1][2].upper(), -1);
+    EXPECT_DOUBLE_EQ(vals[1][0].lower(), 0);
+    EXPECT_DOUBLE_EQ(vals[1][0].upper(), 0);
+}
+
+TEST(IntervalMatrix, FromTripletsOutOfRangeThrows)
+{
+    const Interval iv(0, 1);
+    for (const auto& [row, col] : std::vector<std::pair<int, int>>{{2, 0}, {0, 3}, {-1, 0}, {0, -1}})
+    {
+        const std::vector<Eigen::Triplet<Interval>> triplets = {{row, col, iv}};
+        EXPECT_THROW(IntervalMatrix(2, 3, triplets), std::out_of_range) << "index (" << row << ", " << col << ")";
+    }
+}

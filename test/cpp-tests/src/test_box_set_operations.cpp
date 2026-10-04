@@ -550,3 +550,28 @@ TEST(BoxSetOperations, IntersectionOverDimsThrows)
     EXPECT_THROW(b.intersection_over_dims(other, {3, 0}), std::invalid_argument);
     EXPECT_THROW(b.intersection_over_dims(other, {0}), std::invalid_argument); // dims.size() != other.size()
 }
+
+TEST(BoxSetOperations, ElementAccess)
+{
+    Box box(Eigen::Vector<zono_float, 3>(0, 1, 2), Eigen::Vector<zono_float, 3>(1, 3, 5));
+    EXPECT_DOUBLE_EQ(box.get_element(1).lower(), 1);
+    EXPECT_DOUBLE_EQ(box.get_element(1).upper(), 3);
+
+    box.set_element(2, Interval(-1, 4));
+    EXPECT_DOUBLE_EQ(box.get_element(2).lower(), -1);
+    EXPECT_DOUBLE_EQ(box.get_element(2).upper(), 4);
+}
+
+TEST(BoxSetOperations, ElementAccessOutOfRangeThrows)
+{
+    Box box(Eigen::Vector<zono_float, 3>(0, 1, 2), Eigen::Vector<zono_float, 3>(1, 3, 5));
+    for (const int i : {-1, 3})
+    {
+        EXPECT_THROW(box.get_element(i), std::out_of_range) << "get_element(" << i << ")";
+        EXPECT_THROW(box.set_element(i, Interval(0, 1)), std::out_of_range) << "set_element(" << i << ")";
+    }
+
+    // a failed set leaves the box unchanged
+    EXPECT_DOUBLE_EQ(box.get_element(2).lower(), 2);
+    EXPECT_DOUBLE_EQ(box.get_element(2).upper(), 5);
+}

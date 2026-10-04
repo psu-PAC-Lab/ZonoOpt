@@ -498,6 +498,32 @@ def test_interval_arithmetic():
     # fractional power test
     _test_exponent()
 
+    # IntervalMatrix construction from triplets
+    # entries at the same position are summed; positions without triplets are [0, 0]
+    M = zono.IntervalMatrix.from_triplets(2, 3, [(0, 1, zono.Interval(1., 2.)), (1, 2, zono.Interval(-3., -1.)),
+                                                 (0, 1, zono.Interval(0.5, 0.5))])
+    vals = M.to_array()
+    assert len(vals) == 2 and len(vals[0]) == 3, 'IntervalMatrix.from_triplets: wrong dimensions'
+    assert vals[0][1].lower() == 1.5 and vals[0][1].upper() == 2.5, 'IntervalMatrix.from_triplets: duplicates should sum'
+    assert vals[1][2].lower() == -3. and vals[1][2].upper() == -1., 'IntervalMatrix.from_triplets: wrong entry'
+    assert vals[1][0].lower() == 0. and vals[1][0].upper() == 0., 'IntervalMatrix.from_triplets: missing entry should be [0, 0]'
+
+    # out-of-range triplet indices
+    for row, col in [(2, 0), (0, 3), (-1, 0), (0, -1)]:
+        try:
+            zono.IntervalMatrix.from_triplets(2, 3, [(row, col, zono.Interval(0., 1.))])
+            raise AssertionError(f'IntervalMatrix.from_triplets: index ({row}, {col}) should raise IndexError')
+        except IndexError:
+            pass
+
+    # negative dimensions
+    for rows, cols in [(-1, 3), (2, -1)]:
+        try:
+            zono.IntervalMatrix.from_triplets(rows, cols, [])
+            raise AssertionError(f'IntervalMatrix.from_triplets: dimensions ({rows}, {cols}) should raise ValueError')
+        except ValueError:
+            pass
+
     print('Passed: Interval Arithmetic')
 
 def test_affine_inclusion():
@@ -1269,6 +1295,27 @@ def test_json():
         assert TestUtilities.eq_hzs(Z, Z_read), f'_test_empty_set: expected {Z}, got {Z_read}'
         assert Z_read.is_empty_set(), f'_test_empty_set: expected result to be an empty set'
 
+    def _test_out_of_bounds_index(tmp_path):
+        import json
+        Z = zono.make_regular_zono_2D(3., 12)
+        filename = str(tmp_path / 'test_bad_index.json')
+        zono.to_json(Z, filename)
+        with open(filename) as f:
+            data = json.load(f)
+
+        # replace one generator triplet index and check that loading the file raises
+        for key, value in [('trip_rows', -1), ('trip_cols', -1),
+                           ('trip_rows', data['Gc']['rows']), ('trip_cols', data['Gc']['cols'])]:
+            bad = json.loads(json.dumps(data))
+            bad['Gc'][key][0] = value
+            with open(filename, 'w') as f:
+                json.dump(bad, f)
+            try:
+                zono.from_json(filename)
+                raise AssertionError(f'_test_out_of_bounds_index: {key} = {value} should raise ValueError')
+            except ValueError:
+                pass
+
     with tempfile.TemporaryDirectory() as tmp_dir:
         tmp_path = Path(tmp_dir)
         _test_zono(tmp_path)
@@ -1276,6 +1323,7 @@ def test_json():
         _test_conzono(tmp_path)
         _test_point(tmp_path)
         _test_empty_set(tmp_path)
+        _test_out_of_bounds_index(tmp_path)
     print('Passed: JSON')
 
 def test_overapproximation():
@@ -1633,6 +1681,23 @@ def test_box_set_operations():
         raise AssertionError('interval_hull: expected empty list to throw')
     except ValueError:
         pass
+
+    # element access
+    b = zono.Box(np.array([0., 1., 2.]), np.array([1., 3., 5.]))
+    assert b[1].lower() == 1. and b[1].upper() == 3., 'Box: wrong element'
+    b[2] = zono.Interval(-1., 4.)
+    assert b[2].lower() == -1. and b[2].upper() == 4., 'Box: element assignment failed'
+    for i in [-1, 3]:
+        try:
+            b[i]
+            raise AssertionError(f'Box: b[{i}] should raise IndexError')
+        except IndexError:
+            pass
+        try:
+            b[i] = zono.Interval(0., 1.)
+            raise AssertionError(f'Box: assigning b[{i}] should raise IndexError')
+        except IndexError:
+            pass
 
     print('Passed: Box Set Operations')
 

@@ -139,6 +139,8 @@ namespace detail
         const std::vector<int> trip_cols = j["trip_cols"].get<std::vector<int>>();
         const std::vector<zono_float> trip_vals = j["trip_vals"].get<std::vector<zono_float>>();
 
+        if (rows < 0 || cols < 0)
+            throw std::invalid_argument("json_to_sparse: matrix dimensions must be non-negative.");
         if (trip_rows.size() != trip_cols.size() || trip_rows.size() != trip_vals.size())
             throw std::invalid_argument("json_to_sparse: triplet vectors must have the same size.");
 
@@ -147,9 +149,10 @@ namespace detail
         triplets.reserve(trip_rows.size());
         for (int i=0; i<static_cast<int>(trip_rows.size()); ++i)
         {
-            if (trip_rows[i] >= rows)
+            // Eigen's own index checks are compiled out in release builds, so validate here
+            if (trip_rows[i] < 0 || trip_rows[i] >= rows)
                 throw std::invalid_argument("json_to_sparse: triplet row index out of bounds.");
-            if (trip_cols[i] >= cols)
+            if (trip_cols[i] < 0 || trip_cols[i] >= cols)
                 throw std::invalid_argument("json_to_sparse: triplet column index out of bounds.");
             triplets.emplace_back(trip_rows[i], trip_cols[i], trip_vals[i]);
         }

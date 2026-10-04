@@ -286,7 +286,7 @@ namespace ZonoOpt
         return simplifiable_constraints;
     }
 
-    void HybZono::apply_constraint_simplification(const std::vector<std::pair<int, int>>& cons, Box& box)
+    void HybZono::apply_constraint_simplification(const std::vector<std::pair<int, int>>& cons, MI_Box& box)
     {
         // get constraints in row-major form
         const Eigen::SparseMatrix<zono_float, Eigen::RowMajor> A_rm = this->A;
@@ -334,12 +334,15 @@ namespace ZonoOpt
                 int_vec.push_back(box.get_element(k));
             }
         }
-        box = Box(int_vec);
 
         // remove generators (all removed generators are continuous, so nGc shrinks accordingly)
         remove_cols(this->G, gens_to_remove);
         remove_cols(this->A, gens_to_remove);
         const int nGc_new = this->nGc - static_cast<int>(gens_to_remove.size());
+
+        // rebuild the full MI_Box so its binary index range matches the reduced generator set;
+        // assigning a plain Box would update only the bounds and leave idx_b stale
+        box = MI_Box(int_vec, {nGc_new, this->nGb}, this->zero_one_form);
 
         // remove constraints
         const int row_adj = static_cast<int>(cons.size());

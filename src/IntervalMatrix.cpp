@@ -23,6 +23,19 @@ namespace ZonoOpt
         this->rows_ = rows;
         this->cols_ = cols;
 
+        // validate indices before writing to internal storage
+        for (const auto& triplet : triplets)
+        {
+            if (triplet.row() < 0 || static_cast<size_t>(triplet.row()) >= rows ||
+                triplet.col() < 0 || static_cast<size_t>(triplet.col()) >= cols)
+            {
+                std::stringstream ss;
+                ss << "IntervalMatrix: triplet index (" << triplet.row() << ", " << triplet.col()
+                    << ") is out of range for a " << rows << " x " << cols << " matrix.";
+                throw std::out_of_range(ss.str());
+            }
+        }
+
         // build internal storage
         this->mat_.resize(rows);
         for (const auto& triplet : triplets)

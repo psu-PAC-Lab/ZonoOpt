@@ -809,7 +809,7 @@ class HybZono
         std::vector<Eigen::Vector<zono_float, -1>> get_bin_leaves(const SolverSettings &settings=get_default_solver_settings(), std::shared_ptr<OptSolution>* solution=nullptr,
             int n_leaves = std::numeric_limits<int>::max()) const;
         std::vector<std::pair<int, int>> get_simplifiable_constraints() const;
-        void apply_constraint_simplification(const std::vector<std::pair<int, int>>& cons, Box& box);
+        void apply_constraint_simplification(const std::vector<std::pair<int, int>>& cons, MI_Box& box);
         bool rescale_generators(MI_Box& box); // returns false if empty set detected
         void remove_generators(const std::set<int>& idx_c, const std::set<int>& idx_b, MI_Box& box);
         void remove_fixed_vars(MI_Box& box);

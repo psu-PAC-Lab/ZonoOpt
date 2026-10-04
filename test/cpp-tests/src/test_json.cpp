@@ -1,6 +1,7 @@
 #include "ZonoOpt.hpp"
 #include "unit_test_utilities.hpp"
 #include <filesystem>
+#include <fstream>
 
 using namespace ZonoOpt;
 
@@ -133,4 +134,34 @@ TEST_F(JsonTest, EmptySet)
     ss << "sets are not equal, expected " << Z << ", got " << *Z_read;
     EXPECT_TRUE(hz_eq(Z, *Z_read)) << ss.str();
     EXPECT_TRUE(Z_read->is_empty_set()) << "expected set to be of type EmptySet";
+}
+TEST_F(JsonTest, OutOfBoundsTripletIndexThrows)
+{
+    const ZonoPtr Z = make_regular_zono_2D(3., 12);
+    const std::string filename = (tmp_dir() / "test_bad_index.json").string();
+    to_json(*Z, filename);
+
+    nlohmann::json data;
+    {
+        std::ifstream in(filename);
+        in >> data;
+    }
+
+    // write a copy of the file with one generator triplet index replaced, and check that loading it throws
+    auto expect_throw_with = [&](const std::string& key, const int value)
+    {
+        nlohmann::json bad = data;
+        ASSERT_FALSE(bad["Gc"][key].empty());
+        bad["Gc"][key][0] = value;
+        {
+            std::ofstream out(filename);
+            out << bad;
+        }
+        EXPECT_THROW(from_json(filename), std::invalid_argument) << key << " = " << value;
+    };
+
+    expect_throw_with("trip_rows", -1);
+    expect_throw_with("trip_cols", -1);
+    expect_throw_with("trip_rows", static_cast<int>(data["Gc"]["rows"]));
+    expect_throw_with("trip_cols", static_cast<int>(data["Gc"]["cols"]));
 }

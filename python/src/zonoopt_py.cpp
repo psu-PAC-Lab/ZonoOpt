@@ -1660,6 +1660,10 @@ PYBIND11_MODULE(_core, m)
             )pbdoc")
         .def_static("from_triplets", [](int rows, int cols, const std::vector<std::tuple<int, int, Interval>>& triplets) -> IntervalMatrix
             {
+                // negative dimensions would wrap around when cast to size_t
+                if (rows < 0 || cols < 0)
+                    throw std::invalid_argument("IntervalMatrix.from_triplets: rows and cols must be non-negative.");
+
                 // convert to Eigen triplets
                 std::vector<Eigen::Triplet<Interval>> eig_triplets;
                 eig_triplets.reserve(triplets.size());
