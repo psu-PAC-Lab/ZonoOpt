@@ -1396,6 +1396,64 @@ def test_zono_hull():
     _test_inconsistent_dimensions()
     print('Passed: Zono Hull')
 
+def test_set_difference():
+
+    delta_m = 10.
+
+    def _check_set_diff_2d(G, name):
+        D = zono.interval_2_zono(zono.Box(np.array([-3., -1.]), np.array([3., 1.])))
+        Z = zono.Zono(sparse.csc_matrix(G), np.zeros(2))
+        D_minus_Z = zono.set_diff(D, Z, delta_m)
+
+        G_inv = np.linalg.inv(G)
+        n_out = 0
+        n_in = 0
+        for x in np.arange(-2.75, 2.751, 0.5):
+            for y in np.arange(-0.75, 0.751, 0.25):
+                p = np.array([x, y])
+                r = np.max(np.abs(G_inv @ p))  # exact factor norm
+                if r > 1.05:
+                    n_out += 1
+                    assert D_minus_Z.contains_point(p), \
+                        f'set_diff ({name}): point {p} is in D and outside Z, so it must be in D \\ Z'
+                elif r < 0.95:
+                    n_in += 1
+                    assert not D_minus_Z.contains_point(p), \
+                        f'set_diff ({name}): point {p} is in the interior of Z, so it must not be in D \\ Z'
+        assert n_out > 0 and n_in > 0, f'set_diff ({name}): grid did not sample both regions'
+
+        # outside the domain
+        assert not D_minus_Z.contains_point(np.array([5., 0.])), f'set_diff ({name}): point outside D'
+        assert not D_minus_Z.contains_point(np.array([0., 3.])), f'set_diff ({name}): point outside D'
+
+    # cancelling generators: M = G^T = [[-4, 1], [1, 0]] admits lambda = (1, 5), so lambda_m must be at least 5
+    _check_set_diff_2d(np.array([[-4., 1.], [1., 0.]]), 'cancelling generators')
+
+    # positive diagonal generators
+    _check_set_diff_2d(np.array([[2., 0.], [0., 0.5]]), 'positive diagonal generators')
+
+    # redundant constraints: unit box with an extra generator fixed to zero by two linearly dependent constraints
+    G = sparse.csc_matrix(np.array([[1., 0., 1.], [0., 1., 0.]]))
+    A = sparse.csc_matrix(np.array([[0., 0., 1.], [0., 0., 2.]]))
+    Z = zono.ConZono(G, np.zeros(2), A, np.zeros(2))
+    D = zono.interval_2_zono(zono.Box(np.array([-3., -3.]), np.array([3., 3.])))
+    D_minus_Z = zono.set_diff(D, Z, delta_m)
+    assert D_minus_Z.contains_point(np.array([1.5, 0.])), 'set_diff (redundant constraints): (1.5, 0) should be in D \\ Z'
+    assert D_minus_Z.contains_point(np.array([-2.5, 2.])), 'set_diff (redundant constraints): (-2.5, 2) should be in D \\ Z'
+    assert not D_minus_Z.contains_point(np.array([0., 0.])), 'set_diff (redundant constraints): (0, 0) should not be in D \\ Z'
+    assert not D_minus_Z.contains_point(np.array([0.5, -0.5])), 'set_diff (redundant constraints): (0.5, -0.5) should not be in D \\ Z'
+    assert not D_minus_Z.contains_point(np.array([4., 0.])), 'set_diff (redundant constraints): (4, 0) is outside D'
+
+    # not full-dimensional: a segment in 2D, so [G; A] = [1; 0] does not have full row rank
+    Z = zono.Zono(sparse.csc_matrix(np.array([[1.], [0.]])), np.zeros(2))
+    try:
+        zono.set_diff(D, Z, delta_m)
+        raise AssertionError('set_diff: a set that is not full-dimensional should raise ValueError')
+    except ValueError:
+        pass
+
+    print('Passed: Set Difference')
+
 def test_box_set_operations():
 
     def _box_vertices(b):
@@ -1697,6 +1755,7 @@ if __name__ == '__main__':
         test_remove_redundancy,
         test_overapproximation,
         test_zono_hull,
+        test_set_difference,
         test_box_set_operations,
         test_box_operator_semantics,
         test_box_hybzono_overload_dispatch,

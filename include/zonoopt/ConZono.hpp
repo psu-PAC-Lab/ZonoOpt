@@ -165,6 +165,10 @@ namespace ZonoOpt
 
         std::unique_ptr<HybZono> do_complement(zono_float delta_m, bool, const SolverSettings&,
                                                std::shared_ptr<OptSolution>*, int, int) override;
+
+    private:
+        // builds the complement per Bird and Jain (2022), Proposition 2; assumes redundancy already removed
+        std::unique_ptr<HybZono> complement_core(zono_float delta_m);
     };
 
     // forward declarations
