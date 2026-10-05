@@ -344,14 +344,7 @@ PYBIND11_MODULE(_core, m)
     ;
 
     py::class_<GetLeavesParams>(m, "GetLeavesParams",
-        R"pbdoc(
-            Parameters controlling leaf enumeration in get_leaves, complement, and set_diff.
-
-            Attributes:
-                remove_redundancy (bool): call remove_redundancy on each identified leaf
-                n_leaves (int): maximum number of leaves to find
-                contractor_iter (int): number of interval contractor iterations to run if using remove_redundancy
-        )pbdoc")
+        "Parameters controlling leaf enumeration in get_leaves, complement, and set_diff.")
         .def(py::init([](bool remove_redundancy, int n_leaves, int contractor_iter)
             { return GetLeavesParams{remove_redundancy, n_leaves, contractor_iter}; }),
             py::arg("remove_redundancy")=false, py::arg("n_leaves")=std::numeric_limits<int>::max(),

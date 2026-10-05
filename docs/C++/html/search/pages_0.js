@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['zonoopt_0',['ZonoOpt',['../index.html',1,'']]]
+  ['deprecated_20list_0',['Deprecated List',['../deprecated.html',1,'']]]
 ];
