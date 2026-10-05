@@ -886,6 +886,11 @@ namespace ZonoOpt::detail
                 J_min = min_val_pair.second;
             else if (this->node_queue.empty() && this->dive_queue.empty())
             {
+                // if the search was already stopped (e.g., timeout), nodes may have been dropped without branching,
+                // so an empty tree does not mean it was fully explored
+                if (this->done)
+                    return J_min;
+
                 this->done = true; // no nodes remaining
                 this->converged = true;
                 pq_cv_bnb.notify_all(); // notify while holding pq_mtx so no waiting thread misses it
