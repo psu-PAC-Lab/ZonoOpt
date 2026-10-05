@@ -34,7 +34,7 @@ MathJax.Hub.Config({
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">ZonoOpt<span id="projectnumber">&#160;2.4.1</span>
+   <div id="projectname">ZonoOpt<span id="projectnumber">&#160;2.5.0</span>
    </div>
   </td>
  </tr>
@@ -276,23 +276,25 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span> </div>
 <div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>            ADMM_FP_solver(<span class="keyword">const</span> ADMM_FP_solver&amp; other) = <span class="keywordflow">default</span>;</div>
 <div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span> </div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        <span class="keyword">protected</span>:</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>            <span class="keyword">enum</span> FP_Phase</div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>            {</div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>                Phase1,</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>                Phase2</div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>            };</div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span> </div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>            <span class="comment">// solve core method</span></div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>            <span class="keywordtype">void</span> solve_core(<span class="keyword">const</span> Box&amp; x_box, OptSolution&amp; solution, std::atomic&lt;bool&gt;* stop) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>            <span class="keywordtype">void</span> set_rng_stream(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> stream);</div>
 <div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span> </div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>            <span class="keywordtype">void</span> ADMM_FP_core(<span class="keyword">const</span> MI_Box&amp; x_box, OptSolution&amp; solution, std::atomic&lt;bool&gt;* stop, FP_Phase phase);</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        };</div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    } <span class="comment">// end namespace detail</span></div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>} <span class="comment">// end namespace ZonoOpt</span></div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        <span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>            <span class="keyword">enum</span> FP_Phase</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>            {</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>                Phase1,</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>                Phase2</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>            };</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span> </div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>            <span class="comment">// solve core method</span></div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>            <span class="keywordtype">void</span> solve_core(<span class="keyword">const</span> Box&amp; x_box, OptSolution&amp; solution, std::atomic&lt;bool&gt;* stop) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span> </div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>            <span class="keywordtype">void</span> ADMM_FP_core(<span class="keyword">const</span> MI_Box&amp; x_box, OptSolution&amp; solution, std::atomic&lt;bool&gt;* stop, FP_Phase phase);</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        };</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    } <span class="comment">// end namespace detail</span></div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>} <span class="comment">// end namespace ZonoOpt</span></div>
 <div class="ttc" id="aBox_8hpp_html"><div class="ttname"><a href="Box_8hpp.html">Box.hpp</a></div><div class="ttdoc">Box classe.</div></div>
 <div class="ttc" id="aCholeskyUtilities_8hpp_html"><div class="ttname"><a href="CholeskyUtilities_8hpp.html">CholeskyUtilities.hpp</a></div><div class="ttdoc">Internal utilities for Cholesky factorization using Eigen's LDLT solver.</div></div>
-<div class="ttc" id="aGurobiSolver_8cpp_html_a796c11f736da9e40044021d2b21229b2"><div class="ttname"><a href="GurobiSolver_8cpp.html#a796c11f736da9e40044021d2b21229b2">A_rm</a></div><div class="ttdeci">Eigen::SparseMatrix&lt; double, Eigen::RowMajor &gt; A_rm</div><div class="ttdef"><b>Definition</b> GurobiSolver.cpp:372</div></div>
+<div class="ttc" id="aGurobiSolver_8cpp_html_a796c11f736da9e40044021d2b21229b2"><div class="ttname"><a href="GurobiSolver_8cpp.html#a796c11f736da9e40044021d2b21229b2">A_rm</a></div><div class="ttdeci">Eigen::SparseMatrix&lt; double, Eigen::RowMajor &gt; A_rm</div><div class="ttdef"><b>Definition</b> GurobiSolver.cpp:370</div></div>
 <div class="ttc" id="aSolverDataStructures_8hpp_html"><div class="ttname"><a href="SolverDataStructures_8hpp.html">SolverDataStructures.hpp</a></div><div class="ttdoc">Optimization settings and solution data structures for ZonoOpt library.</div></div>
 <div class="ttc" id="agroup__ZonoOpt__PreprocessorMacros_html_ga10f9d95aa3b7fa4dca1699582aa53598"><div class="ttname"><a href="group__ZonoOpt__PreprocessorMacros.html#ga10f9d95aa3b7fa4dca1699582aa53598">zono_float</a></div><div class="ttdeci">#define zono_float</div><div class="ttdoc">Defines the floating-point type used in ZonoOpt.</div><div class="ttdef"><b>Definition</b> Defines.hpp:22</div></div>
 <div class="ttc" id="anamespaceZonoOpt_html"><div class="ttname"><a href="namespaceZonoOpt.html">ZonoOpt</a></div><div class="ttdef"><b>Definition</b> ZonoOpt.hpp:51</div></div>

@@ -921,10 +921,8 @@ namespace ZonoOpt
     }
 
     std::unique_ptr<HybZono> set_diff(const HybZono& Z1, HybZono& Z2, const zono_float delta_m,
-                                      const bool remove_redundancy,
-                                      const SolverSettings& settings, std::shared_ptr<OptSolution>* solution,
-                                      const int n_leaves,
-                                      const int contractor_iter)
+                                      const GetLeavesParams& get_leaves_params,
+                                      const SolverSettings& settings, std::shared_ptr<OptSolution>* solution)
     {
         // trivial case
         if (Z2.is_empty_set())
@@ -933,10 +931,19 @@ namespace ZonoOpt
         }
 
         // get complement of Z2
-        auto Z2_comp = Z2.complement(delta_m, remove_redundancy, settings, solution, n_leaves, contractor_iter);
+        auto Z2_comp = Z2.complement(delta_m, get_leaves_params, settings, solution);
 
         // set difference
         return intersection(Z1, *Z2_comp);
+    }
+
+    std::unique_ptr<HybZono> set_diff(const HybZono& Z1, HybZono& Z2, const zono_float delta_m,
+                                      const bool remove_redundancy,
+                                      const SolverSettings& settings, std::shared_ptr<OptSolution>* solution,
+                                      const int n_leaves, const int contractor_iter)
+    {
+        return set_diff(Z1, Z2, delta_m, GetLeavesParams{remove_redundancy, n_leaves, contractor_iter}, settings,
+                        solution);
     }
 
     std::unique_ptr<HybZono> zono_union_2_hybzono(std::vector<std::shared_ptr<Zono>>& Zs, const bool expose_indicators)
@@ -984,13 +991,19 @@ namespace ZonoOpt
             Gd = Zs[i]->G.toDense();
             for (int j = 0; j < n_gens; j++)
             {
-                // check if the generator is already in S_vec
-                auto generator_equal = [&](const Eigen::Matrix<zono_float, -1, 1>& s) -> bool
+                // look for an equal generator in S_vec that zonotope i does not already use;
+                // reusing one that zonotope i already uses would merge two of its factors into one
+                int idx = -1;
+                for (int k = 0; k < static_cast<int>(S_vec.size()); ++k)
                 {
-                    return (s - Gd.col(j)).norm() < zono_eps;
-                };
+                    if (M_vec[k](i) == 0 && (S_vec[k] - Gd.col(j)).norm() < zono_eps)
+                    {
+                        idx = k;
+                        break;
+                    }
+                }
 
-                if (auto it_S = std::find_if(S_vec.begin(), S_vec.end(), generator_equal); it_S == S_vec.end())
+                if (idx < 0)
                 {
                     S_vec.emplace_back(Gd.col(j));
                     M_row.setZero();
@@ -999,7 +1012,6 @@ namespace ZonoOpt
                 }
                 else
                 {
-                    const int idx = static_cast<int>(std::distance(S_vec.begin(), it_S));
                     M_vec[idx](i) = 1;
                 }
             }

@@ -122,9 +122,9 @@ namespace ZonoOpt
         OptSolution sol = this->qp_opt(std::move(P_fact), std::move(q_fact), c + delta_c, this->A, this->b,
                                        settings, solution, warm_start_params);
 
-        // check feasibility and return solution
+        // check feasibility and return solution (NaN point of dimension n if infeasible, consistent with EmptySet)
         if (sol.infeasible)
-            return Eigen::Vector<zono_float, -1>(this->nG);
+            return Eigen::Vector<zono_float, -1>::Constant(this->n, std::numeric_limits<zono_float>::quiet_NaN());
         else
             return this->G * sol.z + this->c;
     }
@@ -717,42 +717,43 @@ namespace ZonoOpt
         return std::make_unique<ConZono>(G, c, A, b, true);
     }
 
-    std::unique_ptr<HybZono> ConZono::do_complement(const zono_float delta_m, bool, const SolverSettings&,
-                                                    std::shared_ptr<OptSolution>*, int, int)
+    std::unique_ptr<HybZono> ConZono::do_complement(const zono_float delta_m,
+                                                    const GetLeavesParams& get_leaves_params,
+                                                    const SolverSettings& settings,
+                                                    std::shared_ptr<OptSolution>* solution)
+    {
+        // Bird and Jain (2022), Proposition 2, assumes a full-dimensional, nonempty set with linearly
+        // independent equality constraints, so remove_redundancy() is always applied to the input.
+        const auto Z_rr = this->remove_redundancy(get_leaves_params.contractor_iter);
+        if (Z_rr->is_empty_set())
+            return Z_rr->complement(delta_m, get_leaves_params, settings, solution);
+
+        // Z_rr is a ConZono, Zono, or Point here; work on a ConZono copy so the input is not modified
+        ConZono Z(Z_rr->get_G(), Z_rr->get_c(), Z_rr->get_A(), Z_rr->get_b(), Z_rr->is_0_1_form());
+        return Z.complement_core(delta_m);
+    }
+
+    std::unique_ptr<HybZono> ConZono::complement_core(const zono_float delta_m)
     {
         // make sure in [-1,1] form
         if (this->is_0_1_form()) this->convert_form();
 
-        // get a value lambda_m such that lambda_m >= max{ ||lambda||_infty : |[G^T A^T] lambda| <= 1 }
-
-        // construct the matrix [G^T A^T]
+        // Proposition 2 requires a positive scalar lambda_m >= max{ ||lambda||_inf : |[G^T A^T] lambda| <= 1 }.
+        // For a full-dimensional set with independent constraints, M = [G^T A^T] has full column rank, so
+        // lambda = pinv(M) * (M * lambda) and |lambda_j| <= ||row j of pinv(M)||_1 whenever |M * lambda| <= 1.
+        // Hence ||pinv(M)||_inf (max absolute row sum) satisfies the requirement, with equality when M is square.
         const auto GT = this->G.transpose();
         const auto AT = this->A.transpose();
         const Eigen::SparseMatrix<zono_float, Eigen::RowMajor> GTAT = hcat<zono_float>(GT, AT); // convert to row-major
 
-        // get the smallest non-zero element in the matrix, making sure that all rows have at least one non-zero element
-        zono_float min_non_zero = std::numeric_limits<zono_float>::max();
-        for (int row = 0; row < GTAT.outerSize(); ++row)
+        const Eigen::Matrix<zono_float, -1, -1> M(GTAT);
+        const Eigen::CompleteOrthogonalDecomposition<Eigen::Matrix<zono_float, -1, -1>> cod(M);
+        if (cod.rank() < M.cols())
         {
-            bool value_exists = false;
-            for (Eigen::SparseMatrix<zono_float, Eigen::RowMajor>::InnerIterator it(GTAT, row); it; ++it)
-            {
-                if (it.value() < min_non_zero && std::abs(it.value()) > zono_eps)
-                {
-                    min_non_zero = it.value();
-                }
-                value_exists = true;
-            }
-            if (!value_exists)
-            {
-                std::stringstream ss;
-                ss << "ConZono complement: row " << row << " of [G^T A^T] has no non-zero elements.";
-                throw std::runtime_error(ss.str());
-            }
+            throw std::invalid_argument("ConZono complement: the set must be full-dimensional with linearly "
+                                        "independent constraints, i.e. [G; A] must have full row rank.");
         }
-
-        // value for lambda_m
-        const zono_float lambda_m = 1 / min_non_zero;
+        const zono_float lambda_m = cod.pseudoInverse().cwiseAbs().rowwise().sum().maxCoeff();
 
         // m value
         const zono_float m = delta_m + 1;

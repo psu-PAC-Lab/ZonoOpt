@@ -36,6 +36,14 @@ bool scip_available();
  * variable t and the quadratic constraint 0.5 * xi^T P xi - t <= 0, then minimize
  * q^T xi + t (constant c is added back to OptSolution::J).
  *
+ * Limitation of the epigraph reformulation: SCIP bounds the quadratic constraint with
+ * outer-approximation cuts, which can fail to close the optimality gap when the optimal
+ * objective is near zero. To avoid running until the time limit, QPs with nonzero P are
+ * solved with a solution limit of 1, so SCIP returns the first feasible point it finds.
+ * That point is not guaranteed to be optimal (e.g., if xi = 0 is feasible, SCIP may
+ * return it directly), so OptSolution::converged is false whenever the first found
+ * solution is not shown to be optimal.
+ *
  * @throws std::runtime_error if the SCIP API is unavailable or a fatal SCIP API error occurs during model construction or solve.
  */
 OptSolution solve_qp_scip(const Eigen::SparseMatrix<zono_float>& P,

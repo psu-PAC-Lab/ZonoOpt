@@ -261,6 +261,16 @@ namespace ZonoOpt
              */
             ADMM_FP_solver(const ADMM_FP_solver& other) = default;
 
+            /**
+             * @brief Reseed the random number generator for an independent stream, e.g. one per thread.
+             *
+             * If settings.enable_rng_seed is true, the seed is derived from settings.rng_seed and stream, so results
+             * are reproducible. Otherwise a nondeterministic seed is drawn.
+             *
+             * @param stream stream index
+             */
+            void set_rng_stream(unsigned int stream);
+
         protected:
             enum FP_Phase
             {

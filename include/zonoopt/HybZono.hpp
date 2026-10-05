@@ -252,11 +252,9 @@ class HybZono
          * @brief Computes the complement of the set Z.
          *
          * @param delta_m parameter defining range of complement
-         * @param remove_redundancy remove redundant constraints and unused generators in get_leaves function call
+         * @param get_leaves_params parameters for get_leaves function call (remove_redundancy, n_leaves, contractor_iter)
          * @param settings optimization settings for get_leaves function call
          * @param solution optimization solution for get_leaves function call
-         * @param n_leaves maximum number of leaves to return in get_leaves function call
-         * @param contractor_iter number of interval contractor iterations in remove_redundancy if using
          * @return Hybrid zonotope complement of the given set
          *
          * Computes the complement according to the method of Bird and Jain:
@@ -267,10 +265,24 @@ class HybZono
          *
          * @throws std::runtime_error if the set is empty.
          */
-        virtual std::unique_ptr<HybZono> complement(const zono_float delta_m = 100, const bool remove_redundancy=true, const SolverSettings &settings=get_default_solver_settings(),
-            std::shared_ptr<OptSolution>* solution=nullptr, const int n_leaves = std::numeric_limits<int>::max(), const int contractor_iter=10)
+        virtual std::unique_ptr<HybZono> complement(const zono_float delta_m = 100,
+            const GetLeavesParams& get_leaves_params = GetLeavesParams{true},
+            const SolverSettings &settings=get_default_solver_settings(),
+            std::shared_ptr<OptSolution>* solution=nullptr)
         {
-            return do_complement(delta_m, remove_redundancy, settings, solution, n_leaves, contractor_iter);
+            return do_complement(delta_m, get_leaves_params, settings, solution);
+        }
+
+        /**
+         * @deprecated use the overload taking GetLeavesParams instead
+         */
+        [[deprecated("use GetLeavesParams instead")]]
+        std::unique_ptr<HybZono> complement(const zono_float delta_m, const bool remove_redundancy,
+            const SolverSettings &settings=get_default_solver_settings(),
+            std::shared_ptr<OptSolution>* solution=nullptr, const int n_leaves = std::numeric_limits<int>::max(),
+            const int contractor_iter=10)
+        {
+            return do_complement(delta_m, GetLeavesParams{remove_redundancy, n_leaves, contractor_iter}, settings, solution);
         }
 
         // type checking
@@ -434,11 +446,9 @@ class HybZono
         /**
          * @brief Computes individual constrained zonotopes whose union is the hybrid zonotope object.
          * 
-         * @param remove_redundancy flag to make call to remove_redundancy for each identified leaf (default false)
+         * @param get_leaves_params leaf enumeration parameters (remove_redundancy defaults to false)
          * @param settings optimization settings structure
          * @param solution optimization solution structure pointer, populated with result
-         * @param n_leaves max number of leaves to find
-         * @param contractor_iter number of interval contractor iterations to run if using remove_redundancy
          * @return vector of constrained zonotopes [Z0, Z1, ...] such that Zi is a subset of the current set for all i
          *
          * Searches for constrained zonotopes that correspond to feasible combinations of the hybrid zonotope binary variables.
@@ -448,8 +458,19 @@ class HybZono
          * Branch and bound search is used to find all leaves of the hybrid zonotope tree. If any threads are allocated
          * for ADMM-FP, these will instead be used for branch and bound search.
          */
-        std::vector<std::unique_ptr<ConZono>> get_leaves(bool remove_redundancy=false, const SolverSettings &settings=get_default_solver_settings(),
-            std::shared_ptr<OptSolution>* solution=nullptr, int n_leaves = std::numeric_limits<int>::max(), int contractor_iter=10) const;
+        std::vector<std::unique_ptr<ConZono>> get_leaves(const GetLeavesParams& get_leaves_params=GetLeavesParams(),
+            const SolverSettings &settings=get_default_solver_settings(),
+            std::shared_ptr<OptSolution>* solution=nullptr) const;
+
+        /**
+         * @deprecated use the overload taking GetLeavesParams instead
+         */
+        [[deprecated("use GetLeavesParams instead")]]
+        std::vector<std::unique_ptr<ConZono>> get_leaves(bool remove_redundancy, const SolverSettings &settings=get_default_solver_settings(),
+            std::shared_ptr<OptSolution>* solution=nullptr, int n_leaves = std::numeric_limits<int>::max(), int contractor_iter=10) const
+        {
+            return get_leaves(GetLeavesParams{remove_redundancy, n_leaves, contractor_iter}, settings, solution);
+        }
 
         // friend function declarations
         friend std::unique_ptr<HybZono> affine_map(const HybZono& Z,
@@ -469,8 +490,6 @@ class HybZono
         friend std::unique_ptr<HybZono> cartesian_product(const HybZono& Z1, HybZono& Z2);
         friend std::unique_ptr<HybZono> constrain(HybZono& Z, const Eigen::SparseMatrix<zono_float>& H,
             const Eigen::Vector<zono_float, -1>& f, char direction, const Eigen::SparseMatrix<zono_float>& R);
-        friend std::unique_ptr<HybZono> set_diff(const HybZono& Z1, HybZono& Z2, zono_float delta_m, bool remove_redundancy,
-            const SolverSettings &settings, std::shared_ptr<OptSolution>* solution, const WarmStartParams& warm_start_params, int n_leaves, int contractor_iter);
         friend std::unique_ptr<HybZono> vrep_2_hybzono(const std::vector<Eigen::Matrix<zono_float, -1, -1>> &Vpolys, bool expose_indicators);
         friend std::unique_ptr<HybZono> zono_union_2_hybzono(std::vector<std::shared_ptr<Zono>> &Zs, bool expose_indicators);
 
@@ -790,8 +809,8 @@ class HybZono
         virtual Box do_bounding_box(const SolverSettings &settings, std::shared_ptr<OptSolution>* solution,
             const WarmStartParams& warm_start_params);
 
-        virtual std::unique_ptr<HybZono> do_complement(zono_float, bool remove_redundancy, const SolverSettings &settings,
-            std::shared_ptr<OptSolution>* solution, int n_leaves, int contractor_iter);
+        virtual std::unique_ptr<HybZono> do_complement(zono_float, const GetLeavesParams& get_leaves_params,
+            const SolverSettings &settings, std::shared_ptr<OptSolution>* solution);
 
 
         static void remove_cols(Eigen::SparseMatrix<zono_float>& M, const std::set<int>& idx_to_remove);
@@ -809,7 +828,7 @@ class HybZono
         std::vector<Eigen::Vector<zono_float, -1>> get_bin_leaves(const SolverSettings &settings=get_default_solver_settings(), std::shared_ptr<OptSolution>* solution=nullptr,
             int n_leaves = std::numeric_limits<int>::max()) const;
         std::vector<std::pair<int, int>> get_simplifiable_constraints() const;
-        void apply_constraint_simplification(const std::vector<std::pair<int, int>>& cons, Box& box);
+        void apply_constraint_simplification(const std::vector<std::pair<int, int>>& cons, MI_Box& box);
         bool rescale_generators(MI_Box& box); // returns false if empty set detected
         void remove_generators(const std::set<int>& idx_c, const std::set<int>& idx_b, MI_Box& box);
         void remove_fixed_vars(MI_Box& box);
@@ -997,15 +1016,22 @@ std::unique_ptr<HybZono> constrain(HybZono& Z, const Eigen::SparseMatrix<zono_fl
  * @param Z1 zonotopic set
  * @param Z2 zonotopic set
  * @param delta_m parameter defining range of complement
- * @param remove_redundancy remove redundant constraints and unused generators in get_leaves function call
+ * @param get_leaves_params parameters for get_leaves function call (remove_redundancy, n_leaves, contractor_iter)
  * @param settings optimization settings for get_leaves function call
  * @param solution optimization solution for get_leaves function call
- * @param n_leaves maximum number of leaves to return in get_leaves function call
- * @param contractor_iter number of interval contractor iterations to run if using remove_redundancy
  * @return zonotopic set
  * @ingroup ZonoOpt_SetOperations
  */
-std::unique_ptr<HybZono> set_diff(const HybZono& Z1, HybZono& Z2, zono_float delta_m = 100, bool remove_redundancy=true,
+std::unique_ptr<HybZono> set_diff(const HybZono& Z1, HybZono& Z2, zono_float delta_m = 100,
+    const GetLeavesParams& get_leaves_params = GetLeavesParams{true},
+    const SolverSettings &settings=get_default_solver_settings(), std::shared_ptr<OptSolution>* solution=nullptr);
+
+/**
+ * @deprecated use the overload taking GetLeavesParams instead
+ * @ingroup ZonoOpt_SetOperations
+ */
+[[deprecated("use GetLeavesParams instead")]]
+std::unique_ptr<HybZono> set_diff(const HybZono& Z1, HybZono& Z2, zono_float delta_m, bool remove_redundancy,
     const SolverSettings &settings=get_default_solver_settings(), std::shared_ptr<OptSolution>* solution=nullptr,
     int n_leaves = std::numeric_limits<int>::max(), int contractor_iter = 10);
 

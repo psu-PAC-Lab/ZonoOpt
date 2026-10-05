@@ -1877,6 +1877,21 @@ class ExternalSolverResults:
     def __init__(self, *args, **kwargs) -> None:
         """Initialize self.  See help(type(self)) for accurate signature."""
 
+class GetLeavesParams:
+    """Parameters controlling leaf enumeration in get_leaves, complement, and set_diff."""
+    contractor_iter: int
+    n_leaves: int
+    remove_redundancy: bool
+    def __init__(self, remove_redundancy: bool = ..., n_leaves: typing.SupportsInt | typing.SupportsIndex = ..., contractor_iter: typing.SupportsInt | typing.SupportsIndex = ...) -> None:
+        """__init__(self: zonoopt._core.GetLeavesParams, remove_redundancy: bool = False, n_leaves: typing.SupportsInt | typing.SupportsIndex = 2147483647, contractor_iter: typing.SupportsInt | typing.SupportsIndex = 10) -> None"""
+    def copy(self) -> GetLeavesParams:
+        """copy(self: zonoopt._core.GetLeavesParams) -> zonoopt._core.GetLeavesParams
+
+
+                        Copy get leaves parameters object
+            
+        """
+
 class GurobiSettings(SolverSettings):
     """Settings for the dynamically-loaded Gurobi solver backend. Every typed field is Optional; leave it as None to use Gurobi's default. For Gurobi parameters not exposed as typed fields, use int_params / dbl_params / str_params (keyed by Gurobi's documented parameter name)
 
@@ -1967,7 +1982,7 @@ class HybZono:
             
         '''
     def bounding_box(self, settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> Box:
-        """bounding_box(self: zonoopt._core.HybZono, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x724c8c2787b0>) -> zonoopt._core.Box
+        """bounding_box(self: zonoopt._core.HybZono, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7245d8bb7a30>) -> zonoopt._core.Box
 
 
                         Computes a bounding box of the set object as a Box object.
@@ -1983,19 +1998,20 @@ class HybZono:
                         In general, solves 2*n support optimizations where n is the set dimension to compute a bounding box.
             
         """
-    def complement(self, delta_m: typing.SupportsFloat | typing.SupportsIndex = ..., remove_redundancy: bool = ..., settings: object = ..., solution: OptSolution = ..., n_leaves: typing.SupportsInt | typing.SupportsIndex = ..., contractor_iter: typing.SupportsInt | typing.SupportsIndex = ...) -> HybZono:
-        '''complement(self: zonoopt._core.HybZono, delta_m: typing.SupportsFloat | typing.SupportsIndex = 100, remove_redundancy: bool = True, settings: object = None, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt | typing.SupportsIndex = 2147483647, contractor_iter: typing.SupportsInt | typing.SupportsIndex = 100) -> zonoopt._core.HybZono
+    def complement(self, delta_m: typing.SupportsFloat | typing.SupportsIndex = ..., remove_redundancy: bool | None = ..., settings: object = ..., solution: OptSolution = ..., n_leaves: typing.SupportsInt | typing.SupportsIndex | None = ..., contractor_iter: typing.SupportsInt | typing.SupportsIndex | None = ..., get_leaves_params: object = ...) -> HybZono:
+        '''complement(self: zonoopt._core.HybZono, delta_m: typing.SupportsFloat | typing.SupportsIndex = 100, remove_redundancy: bool | None = None, settings: object = None, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt | typing.SupportsIndex | None = None, contractor_iter: typing.SupportsInt | typing.SupportsIndex | None = None, get_leaves_params: object = None) -> zonoopt._core.HybZono
 
 
                     Computes the complement of the set Z.
             
                     Args:
                         delta_m (float, optional): parameter defining range of complement
-                        remove_redundancy (bool, optional): remove redundant constraints and unused generators in get_leaves function call
+                        remove_redundancy (bool, optional): deprecated, use get_leaves_params; remove redundant constraints and unused generators in get_leaves function call
                         settings (OptSettings, optional): optimization settings for get_leaves function call
                         solution (OptSolution, optional): optimization solution for get_leaves function call
-                        n_leaves (int, optional): maximum number of leaves to return in get_leaves function call
-                        contractor_iter (int, optional): number of interval contractor iterations in remove_redundancy if using
+                        n_leaves (int, optional): deprecated, use get_leaves_params; maximum number of leaves to return in get_leaves function call
+                        contractor_iter (int, optional): deprecated, use get_leaves_params; number of interval contractor iterations in remove_redundancy if using
+                        get_leaves_params (GetLeavesParams, optional): parameters for get_leaves function call; cannot be combined with the deprecated arguments above
             
                     Returns:
                         HybZono: Hybrid zonotope complement of the given set
@@ -2008,7 +2024,7 @@ class HybZono:
             
         '''
     def contains_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x724c891bf6f0>) -> bool
+        '''contains_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7245dabcc1f0>) -> bool
 
 
                         Checks whether the point x is contained in the set object.
@@ -2141,17 +2157,18 @@ class HybZono:
             
         '''
     def get_leaves(self, *args, **kwargs):
-        """get_leaves(self: zonoopt._core.HybZono, remove_redundancy: bool = False, settings: object = None, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt | typing.SupportsIndex = 2147483647, contractor_iter: typing.SupportsInt | typing.SupportsIndex = 100) -> list[ZonoOpt::ConZono]
+        """get_leaves(self: zonoopt._core.HybZono, remove_redundancy: bool | None = None, settings: object = None, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt | typing.SupportsIndex | None = None, contractor_iter: typing.SupportsInt | typing.SupportsIndex | None = None, get_leaves_params: object = None) -> list[ZonoOpt::ConZono]
 
 
                         Computes individual constrained zonotopes whose union is the hybrid zonotope object.
                 
                         Args:
-                            remove_redundancy (bool, optional): flag to make call to remove_redundancy for each identified leaf (default false)
+                            remove_redundancy (bool, optional): deprecated, use get_leaves_params; flag to make call to remove_redundancy for each identified leaf (default false)
                             settings (OptSettings, optional): optimization settings structure
                             solution (OptSolution, optional): optimization solution structure pointer, populated with result
-                            n_leaves (int, optional): max number of leaves to find
-                            contractor_iter (int, optional): number of interval contractor iterations to run if using remove_redundancy
+                            n_leaves (int, optional): deprecated, use get_leaves_params; max number of leaves to find
+                            contractor_iter (int, optional): deprecated, use get_leaves_params; number of interval contractor iterations to run if using remove_redundancy
+                            get_leaves_params (GetLeavesParams, optional): leaf enumeration parameters; cannot be combined with the deprecated arguments above
 
                         Returns:
                             list[ConZono]: vector of constrained zonotopes [Z0, Z1, ...] such that Zi is a subset of the current set for all i
@@ -2235,7 +2252,7 @@ class HybZono:
             
         """
     def is_empty(self, settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> bool:
-        """is_empty(self: zonoopt._core.HybZono, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x724c8c2888f0>) -> bool
+        """is_empty(self: zonoopt._core.HybZono, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7245dabe0670>) -> bool
 
 
                         Returns true if the set is provably empty, false otherwise.
@@ -2300,7 +2317,7 @@ class HybZono:
             
         """
     def optimize_over(self, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], c: typing.SupportsFloat | typing.SupportsIndex = ..., settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x724c8c267270>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''optimize_over(self: zonoopt._core.HybZono, P: scipy.sparse.csc_matrix[numpy.float64], q: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], c: typing.SupportsFloat | typing.SupportsIndex = 0, settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7245dabaf730>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Solves optimization problem with quadratic objective over the current set
@@ -2320,7 +2337,7 @@ class HybZono:
             
         '''
     def project_point(self, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], '[m, 1]']:
-        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x724c8c758af0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
+        '''project_point(self: zonoopt._core.HybZono, x: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7245d8bb76f0>) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]
 
 
                         Returns the projection of the point x onto the set object.
@@ -2373,7 +2390,7 @@ class HybZono:
             
         '''
     def support(self, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], settings: object = ..., solution: OptSolution = ..., warm_start_params: WarmStartParams = ...) -> float:
-        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x724c8c264df0>) -> float
+        '''support(self: zonoopt._core.HybZono, d: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, 1]"], settings: object = None, solution: zonoopt._core.OptSolution = None, warm_start_params: zonoopt._core.WarmStartParams = <zonoopt._core.WarmStartParams object at 0x7245dabaf9f0>) -> float
 
 
                         Computes support function of the set in the direction d.
@@ -7415,13 +7432,13 @@ def get_default_solver_settings() -> SolverSettings:
     """get_default_solver_settings() -> zonoopt._core.SolverSettings
 
 
-                Return a reference to the current program-wide default solver settings.
+                Return a copy of the current program-wide default solver settings.
 
-                The returned object is the same instance held by the library; it remains valid
-                until set_default_solver_settings is called again.
+                The returned object is a snapshot: modifying it does not change the default.
+                To change the default, modify the copy and pass it to set_default_solver_settings.
 
                 Returns:
-                    SolverSettings: the current default (OptSettings on a fresh program).
+                    SolverSettings: a copy of the current default (OptSettings on a fresh program).
         
     """
 def halfspace_intersection(Z: HybZono, H: scipy.sparse.csc_matrix[numpy.float64], f: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, '[m, 1]'], R: scipy.sparse.csc_matrix[numpy.float64] = ...) -> HybZono:
@@ -7889,8 +7906,8 @@ def set_default_solver_settings(settings: SolverSettings) -> None:
                     >>> Z.support(d)   # now uses Gurobi by default
         
     """
-def set_diff(Z1: HybZono, Z2: HybZono, delta_m: typing.SupportsFloat | typing.SupportsIndex = ..., remove_redundancy: bool = ..., settings: object = ..., solution: OptSolution = ..., n_leaves: typing.SupportsInt | typing.SupportsIndex = ..., contractor_iter: typing.SupportsInt | typing.SupportsIndex = ...) -> HybZono:
-    """set_diff(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono, delta_m: typing.SupportsFloat | typing.SupportsIndex = 100, remove_redundancy: bool = True, settings: object = None, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt | typing.SupportsIndex = 2147483647, contractor_iter: typing.SupportsInt | typing.SupportsIndex = 10) -> zonoopt._core.HybZono
+def set_diff(Z1: HybZono, Z2: HybZono, delta_m: typing.SupportsFloat | typing.SupportsIndex = ..., remove_redundancy: bool | None = ..., settings: object = ..., solution: OptSolution = ..., n_leaves: typing.SupportsInt | typing.SupportsIndex | None = ..., contractor_iter: typing.SupportsInt | typing.SupportsIndex | None = ..., get_leaves_params: object = ...) -> HybZono:
+    """set_diff(Z1: zonoopt._core.HybZono, Z2: zonoopt._core.HybZono, delta_m: typing.SupportsFloat | typing.SupportsIndex = 100, remove_redundancy: bool | None = None, settings: object = None, solution: zonoopt._core.OptSolution = None, n_leaves: typing.SupportsInt | typing.SupportsIndex | None = None, contractor_iter: typing.SupportsInt | typing.SupportsIndex | None = None, get_leaves_params: object = None) -> zonoopt._core.HybZono
 
 
                 Set difference Z1 \\\\ Z2
@@ -7899,11 +7916,12 @@ def set_diff(Z1: HybZono, Z2: HybZono, delta_m: typing.SupportsFloat | typing.Su
                     Z1 (HybZono): zonotopic set
                     Z2 (HybZono): zonotopic set
                     delta_m (float, optional): parameter defining range of complement
-                    remove_redundancy (bool, optional): remove redundant constraints and unused generators in get_leaves function call
+                    remove_redundancy (bool, optional): deprecated, use get_leaves_params; remove redundant constraints and unused generators in get_leaves function call
                     settings (OptSettings, optional): optimization settings for get_leaves function call
                     solution (OptSolution, optional): optimization solution for get_leaves function call
-                    n_leaves (int, optional): maximum number of leaves to return in get_leaves function call
-                    contractor_iter (int, optional): number of interval contractor iterations if using remove_redundancy
+                    n_leaves (int, optional): deprecated, use get_leaves_params; maximum number of leaves to return in get_leaves function call
+                    contractor_iter (int, optional): deprecated, use get_leaves_params; number of interval contractor iterations if using remove_redundancy
+                    get_leaves_params (GetLeavesParams, optional): parameters for get_leaves function call; cannot be combined with the deprecated arguments above
 
                 Returns:
                     HybZono: zonotopic set

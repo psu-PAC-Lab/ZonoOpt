@@ -586,6 +586,20 @@ namespace ZonoOpt
         this->rand_gen = std::mt19937(seed);
     }
 
+    void ADMM_FP_solver::set_rng_stream(const unsigned int stream)
+    {
+        if (this->data->settings.enable_rng_seed)
+        {
+            std::seed_seq seq{this->data->settings.rng_seed, stream};
+            this->rand_gen.seed(seq);
+        }
+        else
+        {
+            std::random_device rd;
+            this->rand_gen.seed(rd());
+        }
+    }
+
     ADMM_FP_solver::ADMM_FP_solver(const std::shared_ptr<ADMM_data>& data)
         : ADMM_solver(data)
     {

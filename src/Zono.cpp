@@ -136,13 +136,8 @@ namespace ZonoOpt
         return {l, u};
     }
 
-    std::unique_ptr<Zono> Zono::reduce_order(int n_o)
+    std::unique_ptr<Zono> Zono::reduce_order(const int n_o)
     {
-
-        // if n_o > nG, truncate to nG and this function sorts the generators
-        if (n_o > this->nG)
-            n_o = this->nG;
-
         // check validity
         if (n_o < this->n)
             throw std::invalid_argument("Zono reduce_order: desired order is less than dimension of set");
@@ -166,42 +161,37 @@ namespace ZonoOpt
         };
         std::sort(sort_vec.begin(), sort_vec.end(), comp);
 
+        // generator matrix made of the sorted columns in positions [begin, end)
+        auto sorted_columns = [&](const int begin, const int end) -> Eigen::SparseMatrix<zono_float>
+        {
+            Eigen::SparseMatrix<zono_float> G_out(this->n, end - begin);
+            std::vector<Eigen::Triplet<zono_float>> triplets;
+            for (int i = begin; i < end; ++i)
+            {
+                const int k = sort_vec[static_cast<size_t>(i)].first; // column
+                for (Eigen::SparseMatrix<zono_float>::InnerIterator it(this->G, k); it; ++it)
+                {
+                    triplets.emplace_back(static_cast<int>(it.row()), i - begin, it.value());
+                }
+            }
+#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
+            G_out.setFromSortedTriplets(triplets.begin(), triplets.end());
+#else
+            G_out.setFromTriplets(triplets.begin(), triplets.end());
+#endif
+            return G_out;
+        };
+
+        // no reduction needed: return the same set with its generators sorted
+        if (n_o >= this->nG)
+            return std::make_unique<Zono>(sorted_columns(0, this->nG), this->c, false);
+
         // zonotope to keep
         const int n_K = n_o - this->n;
-        Eigen::SparseMatrix<zono_float> G_K(this->n, n_K);
-        std::vector<Eigen::Triplet<zono_float>> triplets;
-        for (int i = 0; i < n_K; ++i)
-        {
-            const int k = sort_vec[static_cast<size_t>(i)].first; // column
-            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(this->G, k); it; ++it)
-            {
-                triplets.emplace_back(static_cast<int>(it.row()), i, it.value());
-            }
-        }
-#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
-        G_K.setFromSortedTriplets(triplets.begin(), triplets.end());
-#else
-        G_K.setFromTriplets(triplets.begin(), triplets.end());
-#endif
-        const Zono K(G_K, this->c);
+        const Zono K(sorted_columns(0, n_K), this->c);
 
         // zonotope to over-approximate
-        Eigen::SparseMatrix<zono_float> G_L(this->n, this->nG - n_K);
-        triplets.clear();
-        for (int i = n_K; i < this->nG; ++i)
-        {
-            const int k = sort_vec[static_cast<size_t>(i)].first; // column
-            for (Eigen::SparseMatrix<zono_float>::InnerIterator it(this->G, k); it; ++it)
-            {
-                triplets.emplace_back(static_cast<int>(it.row()), i - n_K, it.value());
-            }
-        }
-#if EIGEN_VERSION_AT_LEAST(5, 0, 0)
-        G_L.setFromSortedTriplets(triplets.begin(), triplets.end());
-#else
-        G_L.setFromTriplets(triplets.begin(), triplets.end());
-#endif
-        Zono L(G_L, Eigen::Vector<zono_float, -1>::Zero(this->n));
+        Zono L(sorted_columns(n_K, this->nG), Eigen::Vector<zono_float, -1>::Zero(this->n));
 
         // get bounding box
         const auto L_R = interval_2_zono(L.bounding_box());

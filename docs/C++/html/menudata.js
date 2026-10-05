@@ -24,6 +24,7 @@
 */
 var menudata={children:[
 {text:"Main Page",url:"index.html"},
+{text:"Related Pages",url:"pages.html"},
 {text:"Topics",url:"topics.html"},
 {text:"Namespaces",url:"namespaces.html",children:[
 {text:"Namespace List",url:"namespaces.html"},
@@ -151,7 +152,6 @@ var menudata={children:[
 {text:"m",url:"functions_rela.html#index_m"},
 {text:"o",url:"functions_rela.html#index_o"},
 {text:"p",url:"functions_rela.html#index_p"},
-{text:"s",url:"functions_rela.html#index_s"},
 {text:"u",url:"functions_rela.html#index_u"},
 {text:"v",url:"functions_rela.html#index_v"},
 {text:"z",url:"functions_rela.html#index_z"}]}]}]},

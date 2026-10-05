@@ -23,6 +23,19 @@ namespace ZonoOpt
         this->rows_ = rows;
         this->cols_ = cols;
 
+        // validate indices before writing to internal storage
+        for (const auto& triplet : triplets)
+        {
+            if (triplet.row() < 0 || static_cast<size_t>(triplet.row()) >= rows ||
+                triplet.col() < 0 || static_cast<size_t>(triplet.col()) >= cols)
+            {
+                std::stringstream ss;
+                ss << "IntervalMatrix: triplet index (" << triplet.row() << ", " << triplet.col()
+                    << ") is out of range for a " << rows << " x " << cols << " matrix.";
+                throw std::out_of_range(ss.str());
+            }
+        }
+
         // build internal storage
         this->mat_.resize(rows);
         for (const auto& triplet : triplets)
@@ -69,7 +82,8 @@ namespace ZonoOpt
         {
             for (int j = 0; j < mat_lb.cols(); j++)
             {
-                if (std::abs(mat_lb(i, j)) > zono_eps || std::abs(mat_ub(i, j)) > zono_eps)
+                // written so that NaN bounds are stored rather than treated as zero
+                if (!(std::abs(mat_lb(i, j)) <= zono_eps && std::abs(mat_ub(i, j)) <= zono_eps))
                     triplets.emplace_back(i, j, Interval(mat_lb(i, j), mat_ub(i, j)));
             }
         }
@@ -88,7 +102,8 @@ namespace ZonoOpt
         {
             for (int j = 0; j < mat.cols(); j++)
             {
-                if (std::abs(mat(i, j).lower()) > zono_eps || std::abs(mat(i, j).upper()) > zono_eps)
+                // written so that empty elements (NaN bounds) are stored rather than treated as zero
+                if (!(std::abs(mat(i, j).lower()) <= zono_eps && std::abs(mat(i, j).upper()) <= zono_eps))
                     triplets.emplace_back(i, j, mat(i, j));
             }
         }
@@ -180,6 +195,43 @@ namespace ZonoOpt
     IntervalMatrix operator+(const Interval& interval, const IntervalMatrix& mat)
     {
         return mat + interval;
+    }
+
+    IntervalMatrix IntervalMatrix::apply_elementwise(const std::function<Interval(const Interval&)>& f) const
+    {
+        // result for implicit zero elements; NaN (empty) results compare false and are stored
+        const Interval f_zero = f(Interval(zero, zero));
+        const bool keep_implicit = std::abs(f_zero.lower()) <= zono_eps && std::abs(f_zero.upper()) <= zono_eps;
+
+        IntervalMatrix mat(*this);
+        for (size_t i = 0; i < mat.rows_; ++i)
+        {
+            if (keep_implicit)
+            {
+                for (auto& [j, val] : mat.mat_[i])
+                    val = f(val);
+                continue;
+            }
+
+            // merge stored elements with implicit ones, which become f([0, 0]); rows are sorted by column index
+            std::vector<std::pair<size_t, Interval>> row;
+            row.reserve(mat.cols_);
+            auto it = mat.mat_[i].begin();
+            for (size_t j = 0; j < mat.cols_; ++j)
+            {
+                if (it != mat.mat_[i].end() && it->first == j)
+                {
+                    row.emplace_back(j, f(it->second));
+                    ++it;
+                }
+                else
+                {
+                    row.emplace_back(j, f_zero);
+                }
+            }
+            mat.mat_[i] = std::move(row);
+        }
+        return mat;
     }
 
     IntervalMatrix IntervalMatrix::operator*(zono_float alpha) const
@@ -404,15 +456,7 @@ namespace ZonoOpt
 
     IntervalMatrix IntervalMatrix::operator+(const Interval& interval) const
     {
-        IntervalMatrix mat(*this);
-        for (int i=0; i<static_cast<int>(mat.rows()); ++i)
-        {
-            for (auto it = mat.mat_[i].begin(); it != mat.mat_[i].end(); ++it)
-            {
-                it->second += interval;
-            }
-        }
-        return mat;
+        return this->apply_elementwise([&](const Interval& x) { return x + interval; });
     }
 
     void IntervalMatrix::operator+=(const Interval& interval)
@@ -422,15 +466,7 @@ namespace ZonoOpt
 
     IntervalMatrix IntervalMatrix::operator+(zono_float alpha) const
     {
-        IntervalMatrix mat(*this);
-        for (int i=0; i<static_cast<int>(mat.rows()); ++i)
-        {
-            for (auto it = mat.mat_[i].begin(); it != mat.mat_[i].end(); ++it)
-            {
-                it->second += alpha;
-            }
-        }
-        return mat;
+        return this->apply_elementwise([&](const Interval& x) { return x + alpha; });
     }
 
     void IntervalMatrix::operator+=(zono_float alpha)
@@ -454,15 +490,7 @@ namespace ZonoOpt
 
     IntervalMatrix IntervalMatrix::operator-(const Interval& interval) const
     {
-        IntervalMatrix mat(*this);
-        for (int i=0; i<static_cast<int>(mat.rows()); ++i)
-        {
-            for (auto it = mat.mat_[i].begin(); it != mat.mat_[i].end(); ++it)
-            {
-                it->second -= interval;
-            }
-        }
-        return mat;
+        return this->apply_elementwise([&](const Interval& x) { return x - interval; });
     }
 
     void IntervalMatrix::operator-=(const Interval& interval)
@@ -472,15 +500,7 @@ namespace ZonoOpt
 
     IntervalMatrix IntervalMatrix::operator-(zono_float alpha) const
     {
-        IntervalMatrix mat(*this);
-        for (int i=0; i<static_cast<int>(mat.rows()); ++i)
-        {
-            for (auto it = mat.mat_[i].begin(); it != mat.mat_[i].end(); ++it)
-            {
-                it->second -= alpha;
-            }
-        }
-        return mat;
+        return this->apply_elementwise([&](const Interval& x) { return x - alpha; });
     }
 
     void IntervalMatrix::operator-=(zono_float alpha)
@@ -495,28 +515,12 @@ namespace ZonoOpt
 
     IntervalMatrix operator/(zono_float alpha, const IntervalMatrix& A)
     {
-        IntervalMatrix mat(A);
-        for (int i=0; i<static_cast<int>(mat.rows()); ++i)
-        {
-            for (auto it = mat.mat_[i].begin(); it != mat.mat_[i].end(); ++it)
-            {
-                it->second = alpha / it->second;
-            }
-        }
-        return mat;
+        return A.apply_elementwise([&](const Interval& x) { return alpha / x; });
     }
 
     IntervalMatrix operator/(const Interval& interval, const IntervalMatrix& A)
     {
-        IntervalMatrix mat(A);
-        for (int i=0; i<static_cast<int>(mat.rows()); ++i)
-        {
-            for (auto it = mat.mat_[i].begin(); it != mat.mat_[i].end(); ++it)
-            {
-                it->second = interval / it->second;
-            }
-        }
-        return mat;
+        return A.apply_elementwise([&](const Interval& x) { return interval / x; });
     }
 
     IntervalMatrix IntervalMatrix::operator-() const
@@ -609,7 +613,10 @@ namespace ZonoOpt
         {
             for (auto it = this->mat_[i].begin(); it != this->mat_[i].end(); ++it)
             {
-                w = std::max(w, it->second.width());
+                const zono_float w_i = it->second.width();
+                if (std::isnan(w_i)) // empty element; std::max would silently discard the NaN
+                    return w_i;
+                w = std::max(w, w_i);
             }
         }
         return w;

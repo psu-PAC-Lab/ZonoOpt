@@ -301,8 +301,9 @@ ScipProblem build_scip_problem(const Eigen::SparseMatrix<double>& P_d,
     // cutting plane separator can fail to close the gap when the optimal objective is
     // near zero: dual stays at 0 (the epigraph variable's lower bound) while primal
     // hovers at some small positive value, leaving the relative gap infinite indefinitely.
-    // SCIP's sub-NLP heuristic finds the actual optimum on iteration 1, so terminate
-    // after the first feasible solution. Skip this for MIP/MIQP (still need branch-and-bound
+    // Terminate after the first feasible solution. This is typically the optimum, but due to
+    // the epigraph formulation the first feasible solution identified is not necessarily
+    // optimal. Skip this for MIP/MIQP (still need branch-and-bound
     // to enumerate integer assignments) and for pure LP (no quadratic constraint, gap closes
     // immediately at the root, and the first feasible is generally NOT the LP optimum).
     const bool has_binary = std::any_of(vtype.begin(), vtype.end(),
@@ -348,7 +349,7 @@ ScipProblem build_scip_problem(const Eigen::SparseMatrix<double>& P_d,
     }
 
     // ---- Linear equality constraints -------------------------------------
-    if (A_d.nonZeros() > 0)
+    // empty rows are added too: 0 = b_k with b_k != 0 makes the problem infeasible
     {
         Eigen::SparseMatrix<double, Eigen::RowMajor> A_rm(A_d);
         for (int row = 0; row < A_rm.outerSize(); ++row)
@@ -360,7 +361,6 @@ ScipProblem build_scip_problem(const Eigen::SparseMatrix<double>& P_d,
                 linvars.push_back(prob.vars[it.col()].var);
                 lincoefs.push_back(it.value());
             }
-            if (linvars.empty()) continue;
             SCIPApi::ConsPtr c = nullptr;
             const std::string name = "eq" + std::to_string(row);
             const double rhs = b_d(row);
@@ -436,9 +436,9 @@ SolveResult solve_once(ScipProblem& prob)
     SolveResult res;
     res.runtime = std::chrono::duration<double>(t_end - t_start).count();
     res.status  = api.SCIPgetStatus(scip);
+    // a solution limit stop does not prove optimality
     res.optimal = (res.status == api.SCIP_STATUS_OPTIMAL
-                || res.status == api.SCIP_STATUS_GAPLIMIT
-                || res.status == api.SCIP_STATUS_SOLLIMIT);
+                || res.status == api.SCIP_STATUS_GAPLIMIT);
     res.infeasible = (res.status == api.SCIP_STATUS_INFEASIBLE
                    || res.status == api.SCIP_STATUS_INFORUNBD);
 
@@ -551,7 +551,12 @@ OptSolution solve_qp_scip(const Eigen::SparseMatrix<zono_float>& P,
     const int n = static_cast<int>(q.size());
     Eigen::Vector<zono_float, -1> z = Eigen::Vector<zono_float, -1>::Zero(n);
     if (sr.got_solution) z = sr.y.cast<zono_float>();
-    return build_opt_solution(sr, z, c + static_cast<zono_float>(prep.const_shift));
+    OptSolution sol = build_opt_solution(sr, z, c + static_cast<zono_float>(prep.const_shift));
+
+    // the epigraph variable can exceed 0.5 xi^T P xi at a non-optimal solution, so evaluate the objective at z
+    if (sr.got_solution && !sr.infeasible)
+        sol.J = static_cast<zono_float>(0.5) * z.dot(P * z) + q.dot(z) + c;
+    return sol;
 }
 
 OptSolution solve_miqp_scip(const Eigen::SparseMatrix<zono_float>& P,
@@ -572,7 +577,12 @@ OptSolution solve_miqp_scip(const Eigen::SparseMatrix<zono_float>& P,
     const int n = static_cast<int>(q.size());
     Eigen::Vector<zono_float, -1> z = Eigen::Vector<zono_float, -1>::Zero(n);
     if (sr.got_solution) z = prep.recover_xi(sr.y).cast<zono_float>();
-    return build_opt_solution(sr, z, c + static_cast<zono_float>(prep.const_shift));
+    OptSolution sol = build_opt_solution(sr, z, c + static_cast<zono_float>(prep.const_shift));
+
+    // the epigraph variable can exceed 0.5 xi^T P xi at a non-optimal solution, so evaluate the objective at z
+    if (sr.got_solution && !sr.infeasible)
+        sol.J = static_cast<zono_float>(0.5) * z.dot(P * z) + q.dot(z) + c;
+    return sol;
 }
 
 std::vector<OptSolution> solve_miqp_scip_multisol(const Eigen::SparseMatrix<zono_float>& P,
@@ -595,7 +605,6 @@ std::vector<OptSolution> solve_miqp_scip_multisol(const Eigen::SparseMatrix<zono
 
     MiqpPrep prep = prep_miqp(P, q, A, b, xi_lb, xi_ub, bin_start, bin_count, zero_one_form);
     const int n = static_cast<int>(q.size());
-    const zono_float offset = c + static_cast<zono_float>(prep.const_shift);
 
     // With no binary variables there's nothing to enumerate; return the QP optimum.
     if (bin_count == 0)
@@ -661,13 +670,27 @@ std::vector<OptSolution> solve_miqp_scip_multisol(const Eigen::SparseMatrix<zono
         for (int i = bin_start; i < bin_start + bin_count; ++i)
             y(i) = std::round(sr.y(i));
 
+        // solve the continuous problem with the binaries fixed to get z and J
+        const Eigen::Vector<zono_float, -1> xi_fixed = prep.recover_xi(y).cast<zono_float>();
+        Eigen::Vector<zono_float, -1> xi_lb_fixed = xi_lb, xi_ub_fixed = xi_ub;
+        xi_lb_fixed.segment(bin_start, bin_count) = xi_fixed.segment(bin_start, bin_count);
+        xi_ub_fixed.segment(bin_start, bin_count) = xi_fixed.segment(bin_start, bin_count);
+        SCIPSettings qp_settings = settings;
+        if (settings.TimeLimit)
+        {
+            const double elapsed = std::chrono::duration<double>(
+                std::chrono::steady_clock::now() - t_global_start).count();
+            qp_settings.TimeLimit = (std::max)(*settings.TimeLimit - elapsed, 0.0);
+        }
+        const OptSolution qp_sol = solve_qp_scip(P, q, c, A, b, xi_lb_fixed, xi_ub_fixed, qp_settings);
+
         OptSolution sol;
-        sol.z = prep.recover_xi(y).cast<zono_float>();
-        sol.J = offset;
-        sol.converged = true;  // overwritten on the last entry after the loop
+        sol.z = qp_sol.infeasible ? xi_fixed : qp_sol.z; // binaries are still valid if the QP solve fails
+        sol.J = qp_sol.J;
+        sol.converged = qp_sol.converged;  // combined with the enumeration status on the last entry after the loop
         sol.infeasible = false;
         sol.iter = 0;
-        sol.run_time = sr.runtime;
+        sol.run_time = sr.runtime + qp_sol.run_time;
         {
             auto sres = std::make_shared<SCIPSolverResults>();
             sres->status      = sr.status;
@@ -753,7 +776,7 @@ std::vector<OptSolution> solve_miqp_scip_multisol(const Eigen::SparseMatrix<zono
     }
 
     // Mark the last solution with the overall convergence status.
-    sols.back().converged = converged;
+    sols.back().converged = sols.back().converged && converged;
     return sols;
 }
 

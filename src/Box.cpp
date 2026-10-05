@@ -125,13 +125,15 @@ namespace ZonoOpt {
 
     Interval Box::get_element(const int i) const
     {
-        if (i >= x_lb.size())
+        if (i < 0 || i >= x_lb.size())
             throw std::out_of_range("Index out of range");
         return {x_lb(i), x_ub(i)};
     }
 
     void Box::set_element(const int i, const Interval& val)
     {
+        if (i < 0 || i >= x_lb.size())
+            throw std::out_of_range("Index out of range");
         this->x_lb(i) = val.lower();
         this->x_ub(i) = val.upper();
     }

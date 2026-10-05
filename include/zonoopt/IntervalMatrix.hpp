@@ -11,6 +11,7 @@
  *
  */
 
+#include <functional>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -501,6 +502,9 @@ namespace ZonoOpt
     private:
         size_t rows_, cols_;
         std::vector<std::vector<std::pair<size_t, Interval>>> mat_; // rows->cols->vals
+
+        // apply f elementwise, including to implicit zero elements; these are only stored if f([0, 0]) != [0, 0]
+        IntervalMatrix apply_elementwise(const std::function<Interval(const Interval&)>& f) const;
     };
 
 }

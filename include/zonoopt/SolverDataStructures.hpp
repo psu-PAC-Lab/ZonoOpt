@@ -187,11 +187,12 @@ namespace ZonoOpt
         {
             const bool general_valid = t_max > 0 && verbosity_interval > 0;
             const bool admm_valid = (rho > 0 && k_max_admm > 0 &&
-                eps_dual >= 0 && eps_prim >= 0 && k_inf_check >= 0 && contractor_iter > 0);
+                eps_dual >= 0 && eps_prim >= 0 && k_inf_check > 0 && contractor_iter > 0);
             const bool mi_valid = (eps_r >= 0 && eps_a >= 0 && eps_dual_search > 0 && eps_prim_search > 0 &&
                 k_max_bnb > 0 && n_threads_bnb >= 0 && n_threads_admm_fp >= 0 && max_nodes > 0 &&
                 contractor_tree_search_depth > 0 &&
-                k_max_admm_fp_ph1 > 0 && cycle_detection_buffer_size > 0 &&
+                k_max_admm_fp_ph1 > 0 && k_max_admm_fp_ph2 > 0 && k_restart > 0 &&
+                cycle_detection_buffer_size > 0 &&
                 (search_mode == 0 || search_mode == 1) &&
                 eps_perturb > 0);
 
@@ -421,6 +422,21 @@ namespace ZonoOpt
 
         /// dual variable
         Eigen::Vector<zono_float, -1> u;
+    };
+
+    /**
+     * @brief Parameters controlling leaf enumeration in get_leaves, complement, and set_diff.
+     */
+    struct GetLeavesParams
+    {
+        /// call remove_redundancy on each identified leaf
+        bool remove_redundancy = false;
+
+        /// maximum number of leaves to find
+        int n_leaves = std::numeric_limits<int>::max();
+
+        /// number of interval contractor iterations to run if using remove_redundancy
+        int contractor_iter = 10;
     };
 
 } // end namespace ZonoOpt

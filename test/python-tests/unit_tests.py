@@ -486,6 +486,38 @@ def test_interval_arithmetic():
         except ValueError:
             pass
 
+        # exponents whose rational approximations need very large denominators
+        a = zono.Interval(0.5, 3.)
+        for p in [np.pi, 0.50000000001]:
+            b = a**p
+            assert np.abs(b.lower() - 0.5**p) < 1e-6, f'test_exponent lower bound is incorrect for exponent {p}'
+            assert np.abs(b.upper() - 3.0**p) < 1e-6, f'test_exponent upper bound is incorrect for exponent {p}'
+
+    def _test_containment():
+        a = zono.Interval(0., 10.)
+        b = zono.Interval(1., 2.)
+        assert a.contains_set(b) and not b.contains_set(a), 'contains_set: incorrect for nonempty intervals'
+        assert b <= a and a >= b, 'interval comparison: incorrect for nonempty intervals'
+        assert b == zono.Interval(1., 2.) and not a == b, 'interval equality: incorrect for nonempty intervals'
+
+        # the empty set is a subset of every set, and only the empty set is a subset of it
+        e = zono.Interval(0., 1.).intersect(zono.Interval(2., 3.))
+        assert e.is_empty()
+        assert e == e, 'interval equality: the empty set should equal itself'
+        assert a.contains_set(e) and e <= a, 'contains_set: the empty set should be contained in every set'
+        assert not e.contains_set(a) and not e == a, 'contains_set: the empty set should not contain a nonempty set'
+
+        # width of an interval matrix with an empty element is not a number
+        M = zono.IntervalMatrix.from_triplets(1, 2, [(0, 0, e), (0, 1, a)])
+        assert np.isnan(M.width()), 'IntervalMatrix.width: should be NaN with an empty element'
+
+        # NaN bounds give an empty element rather than an implicit zero
+        M = zono.IntervalMatrix(np.array([[np.nan, 1.]]), np.array([[np.nan, 2.]]))
+        assert M.is_empty(), 'IntervalMatrix: NaN bounds should give an empty element'
+        M = zono.IntervalMatrix(np.array([[1., 0.]]), np.array([[2., 0.]]))
+        assert not M.is_empty(), 'IntervalMatrix: should not be empty'
+        assert M.to_array()[0][1].lower() == 0. and M.to_array()[0][1].upper() == 0., 'IntervalMatrix: zero element should be [0, 0]'
+
     # Case 1: positive range
     _run_interval_test(0.1, 0.2)
     
@@ -497,6 +529,35 @@ def test_interval_arithmetic():
 
     # fractional power test
     _test_exponent()
+
+    # set containment and equality
+    _test_containment()
+
+    # IntervalMatrix construction from triplets
+    # entries at the same position are summed; positions without triplets are [0, 0]
+    M = zono.IntervalMatrix.from_triplets(2, 3, [(0, 1, zono.Interval(1., 2.)), (1, 2, zono.Interval(-3., -1.)),
+                                                 (0, 1, zono.Interval(0.5, 0.5))])
+    vals = M.to_array()
+    assert len(vals) == 2 and len(vals[0]) == 3, 'IntervalMatrix.from_triplets: wrong dimensions'
+    assert vals[0][1].lower() == 1.5 and vals[0][1].upper() == 2.5, 'IntervalMatrix.from_triplets: duplicates should sum'
+    assert vals[1][2].lower() == -3. and vals[1][2].upper() == -1., 'IntervalMatrix.from_triplets: wrong entry'
+    assert vals[1][0].lower() == 0. and vals[1][0].upper() == 0., 'IntervalMatrix.from_triplets: missing entry should be [0, 0]'
+
+    # out-of-range triplet indices
+    for row, col in [(2, 0), (0, 3), (-1, 0), (0, -1)]:
+        try:
+            zono.IntervalMatrix.from_triplets(2, 3, [(row, col, zono.Interval(0., 1.))])
+            raise AssertionError(f'IntervalMatrix.from_triplets: index ({row}, {col}) should raise IndexError')
+        except IndexError:
+            pass
+
+    # negative dimensions
+    for rows, cols in [(-1, 3), (2, -1)]:
+        try:
+            zono.IntervalMatrix.from_triplets(rows, cols, [])
+            raise AssertionError(f'IntervalMatrix.from_triplets: dimensions ({rows}, {cols}) should raise ValueError')
+        except ValueError:
+            pass
 
     print('Passed: Interval Arithmetic')
 
@@ -1269,6 +1330,27 @@ def test_json():
         assert TestUtilities.eq_hzs(Z, Z_read), f'_test_empty_set: expected {Z}, got {Z_read}'
         assert Z_read.is_empty_set(), f'_test_empty_set: expected result to be an empty set'
 
+    def _test_out_of_bounds_index(tmp_path):
+        import json
+        Z = zono.make_regular_zono_2D(3., 12)
+        filename = str(tmp_path / 'test_bad_index.json')
+        zono.to_json(Z, filename)
+        with open(filename) as f:
+            data = json.load(f)
+
+        # replace one generator triplet index and check that loading the file raises
+        for key, value in [('trip_rows', -1), ('trip_cols', -1),
+                           ('trip_rows', data['Gc']['rows']), ('trip_cols', data['Gc']['cols'])]:
+            bad = json.loads(json.dumps(data))
+            bad['Gc'][key][0] = value
+            with open(filename, 'w') as f:
+                json.dump(bad, f)
+            try:
+                zono.from_json(filename)
+                raise AssertionError(f'_test_out_of_bounds_index: {key} = {value} should raise ValueError')
+            except ValueError:
+                pass
+
     with tempfile.TemporaryDirectory() as tmp_dir:
         tmp_path = Path(tmp_dir)
         _test_zono(tmp_path)
@@ -1276,6 +1358,7 @@ def test_json():
         _test_conzono(tmp_path)
         _test_point(tmp_path)
         _test_empty_set(tmp_path)
+        _test_out_of_bounds_index(tmp_path)
     print('Passed: JSON')
 
 def test_overapproximation():
@@ -1396,6 +1479,205 @@ def test_zono_hull():
     _test_inconsistent_dimensions()
     print('Passed: Zono Hull')
 
+def test_default_solver_settings():
+
+    try:
+        # nominal: a fresh program defaults to OptSettings
+        zono.set_default_solver_settings(zono.OptSettings())
+        s = zono.get_default_solver_settings()
+        assert isinstance(s, zono.OptSettings), 'get_default_solver_settings: expected OptSettings'
+        default_rho = s.rho
+
+        # the returned object stays valid after the default is replaced
+        new_default = zono.OptSettings()
+        new_default.rho = 2. * default_rho
+        zono.set_default_solver_settings(new_default)
+        assert s.rho == default_rho, 'get_default_solver_settings: returned object should be an unchanged snapshot'
+        assert zono.get_default_solver_settings().rho == 2. * default_rho, \
+            'get_default_solver_settings: should reflect the new default'
+
+        # modifying the returned object does not change the default
+        s2 = zono.get_default_solver_settings()
+        s2.rho = 123.
+        assert zono.get_default_solver_settings().rho == 2. * default_rho, \
+            'get_default_solver_settings: modifying the returned copy should not change the default'
+
+        # the copy keeps its subclass (skipped if SCIP cannot be loaded)
+        try:
+            scip_settings = zono.SCIPSettings()
+        except RuntimeError:
+            scip_settings = None
+        if scip_settings is not None:
+            zono.set_default_solver_settings(scip_settings)
+            assert isinstance(zono.get_default_solver_settings(), zono.SCIPSettings), \
+                'get_default_solver_settings: expected SCIPSettings'
+    finally:
+        zono.set_default_solver_settings(zono.OptSettings())
+
+    print('Passed: Default Solver Settings')
+
+def test_reduce_order():
+
+    # regular 16-sided zonotope (8 generators), centered away from the origin
+    Z = zono.make_regular_zono_2D(1., 16, False, np.array([1., -2.]))
+    G = Z.G.toarray()
+    directions = [np.array([np.cos(th), np.sin(th)]) for th in np.linspace(0., 2.*np.pi, 16, endpoint=False)]
+
+    # reduced set contains the original: check random points x = G xi + c with xi uniform in [-1, 1]^nG
+    rng = np.random.default_rng(0)
+    for n_o in [2, 3, 5, 7]:
+        Zr = Z.reduce_order(n_o)
+        assert Zr.nG == n_o, f'reduce_order: expected {n_o} generators, got {Zr.nG}'
+        for _ in range(50):
+            x = G @ rng.uniform(-1., 1., Z.nG) + Z.c
+            assert Zr.contains_point(x), f'reduce_order (n_o = {n_o}): reduced set must contain sample {x}'
+
+    # no reduction needed: the set is unchanged and its generators are sorted by decreasing norm
+    for n_o in [8, 13]:
+        Zr = Z.reduce_order(n_o)
+        assert Zr.nG == Z.nG, f'reduce_order (n_o = {n_o}): number of generators must be unchanged'
+        for d in directions:
+            assert abs(Zr.support(d) - Z.support(d)) < 1e-9, f'reduce_order (n_o = {n_o}): set must be unchanged'
+        norms = np.linalg.norm(Zr.G.toarray(), axis=0)
+        assert np.all(norms[:-1] >= norms[1:] - 1e-12), \
+            f'reduce_order (n_o = {n_o}): generators must be sorted by decreasing norm'
+
+    # order less than the dimension of the set
+    try:
+        Z.reduce_order(1)
+        raise AssertionError('reduce_order: an order less than the dimension should raise ValueError')
+    except ValueError:
+        pass
+
+    print('Passed: Reduce Order')
+
+def test_zono_union():
+
+    def _zono(G, c):
+        return zono.Zono(sparse.csc_matrix(np.array(G, dtype=float)), np.array(c, dtype=float))
+
+    # distinct generators: unit box at the origin union a diamond centered at (5, 0)
+    U = zono.zono_union_2_hybzono([_zono([[1., 0.], [0., 1.]], [0., 0.]), _zono([[1., 1.], [1., -1.]], [5., 0.])])
+    for p in [[0.5, -0.5], [-0.9, 0.9], [6.5, 0.], [5., 1.5]]:
+        assert U.contains_point(np.array(p)), f'zono_union (distinct generators): {p} should be in the union'
+    for p in [[2.5, 0.], [6.5, 1.], [0., 1.5]]:
+        assert not U.contains_point(np.array(p)), f'zono_union (distinct generators): {p} should not be in the union'
+
+    # duplicated generators between zonotopes: unit box at the origin union the box [4, 6] x [-2, 2],
+    # which share the generator [1, 0]^T, giving 3 unique generators, each with one factor and one slack factor
+    U = zono.zono_union_2_hybzono([_zono([[1., 0.], [0., 1.]], [0., 0.]), _zono([[1., 0.], [0., 2.]], [5., 0.])])
+    assert U.nGc == 6, 'zono_union (generators between zonotopes): equal generators should be shared'
+    for p in [[0.5, -0.5], [-0.9, 0.9], [5.5, 1.5], [4.5, -1.8]]:
+        assert U.contains_point(np.array(p)), f'zono_union (generators between zonotopes): {p} should be in the union'
+    for p in [[2.5, 0.], [0., 1.5], [6.5, 0.]]:
+        assert not U.contains_point(np.array(p)), f'zono_union (generators between zonotopes): {p} should not be in the union'
+
+    # duplicated generator in one zonotope: G = [[1, 1, 0], [0, 0, 1]] is the box [-2, 2] x [-1, 1]
+    U = zono.zono_union_2_hybzono([_zono([[1., 1., 0.], [0., 0., 1.]], [0., 0.])])
+    for p in [[1.5, 0.5], [-1.5, -0.5]]:
+        assert U.contains_point(np.array(p)), f'zono_union (duplicated generator): {p} should be in the union'
+    assert not U.contains_point(np.array([2.5, 0.])), 'zono_union (duplicated generator): (2.5, 0) should not be in the union'
+
+    print('Passed: Zono Union')
+
+def test_optimize_over():
+
+    # infeasible problems must return a NaN point with the set dimension n (here n = 2 differs from nG = 3)
+    def _check_infeasible(Z, name):
+        P = sparse.identity(Z.n, format='csc')
+        q = np.zeros(Z.n)
+        sol = zono.OptSolution()
+        x = Z.optimize_over(P, q, solution=sol)
+        assert sol.infeasible, f'optimize_over ({name}): expected the problem to be reported infeasible'
+        assert x.size == Z.n, f'optimize_over ({name}): result must have the set dimension n, not nG'
+        assert np.all(np.isnan(x)), f'optimize_over ({name}): infeasible result must be all NaN'
+
+    # ConZono: the constraint xi_0 = 5 cannot hold for xi in [-1, 1]^3
+    G = sparse.csc_matrix(np.array([[1., 0., 1.], [0., 1., 1.]]))
+    A = sparse.csc_matrix(np.array([[1., 0., 0.]]))
+    _check_infeasible(zono.ConZono(G, np.zeros(2), A, np.array([5.])), 'ConZono')
+
+    # HybZono: the constraint xi_c0 = 5 cannot hold for xi_c in [-1, 1]^2
+    Gc = sparse.csc_matrix(np.eye(2))
+    Gb = sparse.csc_matrix(np.array([[1.], [0.]]))
+    Ac = sparse.csc_matrix(np.array([[1., 0.]]))
+    Ab = sparse.csc_matrix((1, 1))
+    _check_infeasible(zono.HybZono(Gc, Gb, np.zeros(2), Ac, Ab, np.array([5.])), 'HybZono')
+
+    # timeout on a feasible problem must not be reported as proven infeasibility
+    Zs = [zono.make_regular_zono_2D(radius=1., n_sides=8, c=np.array([3.*i, i % 2])) for i in range(20)]
+    U = zono.zono_union_2_hybzono(Zs)
+    Z = zono.cartesian_product(U, U)
+    for _ in range(3):
+        Z = zono.cartesian_product(Z, U)
+    settings = zono.OptSettings()
+    settings.t_max = 1e-9  # too short to find a solution
+    sol = zono.OptSolution()
+    x = Z.optimize_over(sparse.identity(Z.n, format='csc'), np.zeros(Z.n), settings=settings, solution=sol)
+    assert not sol.infeasible, 'optimize_over (timeout): a timeout must not be reported as proven infeasibility'
+    assert not sol.converged, 'optimize_over (timeout): a timeout must not be reported as converged'
+    assert x.size == Z.n, 'optimize_over (timeout): result must have the set dimension n'
+
+    print('Passed: Optimize Over')
+
+def test_set_difference():
+
+    delta_m = 10.
+
+    def _check_set_diff_2d(G, name):
+        D = zono.interval_2_zono(zono.Box(np.array([-3., -1.]), np.array([3., 1.])))
+        Z = zono.Zono(sparse.csc_matrix(G), np.zeros(2))
+        D_minus_Z = zono.set_diff(D, Z, delta_m)
+
+        G_inv = np.linalg.inv(G)
+        n_out = 0
+        n_in = 0
+        for x in np.arange(-2.75, 2.751, 0.5):
+            for y in np.arange(-0.75, 0.751, 0.25):
+                p = np.array([x, y])
+                r = np.max(np.abs(G_inv @ p))  # exact factor norm
+                if r > 1.05:
+                    n_out += 1
+                    assert D_minus_Z.contains_point(p), \
+                        f'set_diff ({name}): point {p} is in D and outside Z, so it must be in D \\ Z'
+                elif r < 0.95:
+                    n_in += 1
+                    assert not D_minus_Z.contains_point(p), \
+                        f'set_diff ({name}): point {p} is in the interior of Z, so it must not be in D \\ Z'
+        assert n_out > 0 and n_in > 0, f'set_diff ({name}): grid did not sample both regions'
+
+        # outside the domain
+        assert not D_minus_Z.contains_point(np.array([5., 0.])), f'set_diff ({name}): point outside D'
+        assert not D_minus_Z.contains_point(np.array([0., 3.])), f'set_diff ({name}): point outside D'
+
+    # cancelling generators: M = G^T = [[-4, 1], [1, 0]] admits lambda = (1, 5), so lambda_m must be at least 5
+    _check_set_diff_2d(np.array([[-4., 1.], [1., 0.]]), 'cancelling generators')
+
+    # positive diagonal generators
+    _check_set_diff_2d(np.array([[2., 0.], [0., 0.5]]), 'positive diagonal generators')
+
+    # redundant constraints: unit box with an extra generator fixed to zero by two linearly dependent constraints
+    G = sparse.csc_matrix(np.array([[1., 0., 1.], [0., 1., 0.]]))
+    A = sparse.csc_matrix(np.array([[0., 0., 1.], [0., 0., 2.]]))
+    Z = zono.ConZono(G, np.zeros(2), A, np.zeros(2))
+    D = zono.interval_2_zono(zono.Box(np.array([-3., -3.]), np.array([3., 3.])))
+    D_minus_Z = zono.set_diff(D, Z, delta_m)
+    assert D_minus_Z.contains_point(np.array([1.5, 0.])), 'set_diff (redundant constraints): (1.5, 0) should be in D \\ Z'
+    assert D_minus_Z.contains_point(np.array([-2.5, 2.])), 'set_diff (redundant constraints): (-2.5, 2) should be in D \\ Z'
+    assert not D_minus_Z.contains_point(np.array([0., 0.])), 'set_diff (redundant constraints): (0, 0) should not be in D \\ Z'
+    assert not D_minus_Z.contains_point(np.array([0.5, -0.5])), 'set_diff (redundant constraints): (0.5, -0.5) should not be in D \\ Z'
+    assert not D_minus_Z.contains_point(np.array([4., 0.])), 'set_diff (redundant constraints): (4, 0) is outside D'
+
+    # not full-dimensional: a segment in 2D, so [G; A] = [1; 0] does not have full row rank
+    Z = zono.Zono(sparse.csc_matrix(np.array([[1.], [0.]])), np.zeros(2))
+    try:
+        zono.set_diff(D, Z, delta_m)
+        raise AssertionError('set_diff: a set that is not full-dimensional should raise ValueError')
+    except ValueError:
+        pass
+
+    print('Passed: Set Difference')
+
 def test_box_set_operations():
 
     def _box_vertices(b):
@@ -1485,6 +1767,23 @@ def test_box_set_operations():
         raise AssertionError('interval_hull: expected empty list to throw')
     except ValueError:
         pass
+
+    # element access
+    b = zono.Box(np.array([0., 1., 2.]), np.array([1., 3., 5.]))
+    assert b[1].lower() == 1. and b[1].upper() == 3., 'Box: wrong element'
+    b[2] = zono.Interval(-1., 4.)
+    assert b[2].lower() == -1. and b[2].upper() == 4., 'Box: element assignment failed'
+    for i in [-1, 3]:
+        try:
+            b[i]
+            raise AssertionError(f'Box: b[{i}] should raise IndexError')
+        except IndexError:
+            pass
+        try:
+            b[i] = zono.Interval(0., 1.)
+            raise AssertionError(f'Box: assigning b[{i}] should raise IndexError')
+        except IndexError:
+            pass
 
     print('Passed: Box Set Operations')
 
@@ -1697,6 +1996,11 @@ if __name__ == '__main__':
         test_remove_redundancy,
         test_overapproximation,
         test_zono_hull,
+        test_default_solver_settings,
+        test_reduce_order,
+        test_zono_union,
+        test_optimize_over,
+        test_set_difference,
         test_box_set_operations,
         test_box_operator_semantics,
         test_box_hybzono_overload_dispatch,

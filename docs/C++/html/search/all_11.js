@@ -7,7 +7,7 @@ var searchData=
   ['references_4',['References',['../index.html#autotoc_md7',1,'']]],
   ['related_20projects_5',['Related Projects',['../index.html#autotoc_md11',1,'']]],
   ['remove_5fcols_6',['remove_cols',['../classZonoOpt_1_1HybZono.html#abc0ef4a673aaf8cc0424b598de9900f2',1,'ZonoOpt::HybZono']]],
-  ['remove_5fredundancy_7',['remove_redundancy',['../classZonoOpt_1_1Point.html#a4aeeab49744e090529df98044a562e48',1,'ZonoOpt::Point::remove_redundancy()'],['../classZonoOpt_1_1HybZono.html#af1a5102a6ee696b6984bdeeab5a3eb85',1,'ZonoOpt::HybZono::remove_redundancy()']]],
+  ['remove_5fredundancy_7',['remove_redundancy',['../classZonoOpt_1_1HybZono.html#af1a5102a6ee696b6984bdeeab5a3eb85',1,'ZonoOpt::HybZono::remove_redundancy()'],['../classZonoOpt_1_1Point.html#a4aeeab49744e090529df98044a562e48',1,'ZonoOpt::Point::remove_redundancy()'],['../structZonoOpt_1_1GetLeavesParams.html#ab9f3fee300ce68ad65313b231ab2223d',1,'ZonoOpt::GetLeavesParams::remove_redundancy']]],
   ['rho_8',['rho',['../structZonoOpt_1_1OptSettings.html#aa9daad3982cfea491e0aa34451dc53dd',1,'ZonoOpt::OptSettings']]],
   ['rng_5fseed_9',['rng_seed',['../structZonoOpt_1_1OptSettings.html#a461a2b8cf4bcfa6010ab06b4a00209e3',1,'ZonoOpt::OptSettings']]],
   ['rows_10',['rows',['../classZonoOpt_1_1IntervalMatrix.html#a0bc12d80aa6560a114c9a0560aaf99d8',1,'ZonoOpt::IntervalMatrix']]],

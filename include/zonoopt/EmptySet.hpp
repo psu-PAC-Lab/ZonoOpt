@@ -77,9 +77,8 @@ namespace ZonoOpt
         bool do_is_empty(const SolverSettings&, std::shared_ptr<OptSolution>* sol,
                          const WarmStartParams&) const override;
 
-        std::unique_ptr<HybZono> do_complement(zono_float delta_m, bool, const SolverSettings&,
-                                               std::shared_ptr<OptSolution>* sol,
-                                               int, int) override;
+        std::unique_ptr<HybZono> do_complement(zono_float delta_m, const GetLeavesParams&, const SolverSettings&,
+                                               std::shared_ptr<OptSolution>* sol) override;
 
     private:
         void make_default_solution(std::shared_ptr<OptSolution>* sol) const;

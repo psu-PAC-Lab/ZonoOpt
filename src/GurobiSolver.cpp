@@ -170,11 +170,9 @@ PreparedModel prepare_model(const Eigen::SparseMatrix<double, Eigen::RowMajor>& 
             ind.push_back(static_cast<int>(it.col()));
             val.push_back(it.value());
         }
-        if (!ind.empty())
-        {
-            api.add_constr(pm.model, static_cast<int>(ind.size()), ind.data(), val.data(),
-                           '=', b_d(k));
-        }
+        // add empty rows too: 0 = b_k with b_k != 0 makes the problem infeasible
+        api.add_constr(pm.model, static_cast<int>(ind.size()), ind.data(), val.data(),
+                       '=', b_d(k));
     }
 
     if (P_rm.nonZeros() > 0)
