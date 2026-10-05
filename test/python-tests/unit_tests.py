@@ -486,6 +486,38 @@ def test_interval_arithmetic():
         except ValueError:
             pass
 
+        # exponents whose rational approximations need very large denominators
+        a = zono.Interval(0.5, 3.)
+        for p in [np.pi, 0.50000000001]:
+            b = a**p
+            assert np.abs(b.lower() - 0.5**p) < 1e-6, f'test_exponent lower bound is incorrect for exponent {p}'
+            assert np.abs(b.upper() - 3.0**p) < 1e-6, f'test_exponent upper bound is incorrect for exponent {p}'
+
+    def _test_containment():
+        a = zono.Interval(0., 10.)
+        b = zono.Interval(1., 2.)
+        assert a.contains_set(b) and not b.contains_set(a), 'contains_set: incorrect for nonempty intervals'
+        assert b <= a and a >= b, 'interval comparison: incorrect for nonempty intervals'
+        assert b == zono.Interval(1., 2.) and not a == b, 'interval equality: incorrect for nonempty intervals'
+
+        # the empty set is a subset of every set, and only the empty set is a subset of it
+        e = zono.Interval(0., 1.).intersect(zono.Interval(2., 3.))
+        assert e.is_empty()
+        assert e == e, 'interval equality: the empty set should equal itself'
+        assert a.contains_set(e) and e <= a, 'contains_set: the empty set should be contained in every set'
+        assert not e.contains_set(a) and not e == a, 'contains_set: the empty set should not contain a nonempty set'
+
+        # width of an interval matrix with an empty element is not a number
+        M = zono.IntervalMatrix.from_triplets(1, 2, [(0, 0, e), (0, 1, a)])
+        assert np.isnan(M.width()), 'IntervalMatrix.width: should be NaN with an empty element'
+
+        # NaN bounds give an empty element rather than an implicit zero
+        M = zono.IntervalMatrix(np.array([[np.nan, 1.]]), np.array([[np.nan, 2.]]))
+        assert M.is_empty(), 'IntervalMatrix: NaN bounds should give an empty element'
+        M = zono.IntervalMatrix(np.array([[1., 0.]]), np.array([[2., 0.]]))
+        assert not M.is_empty(), 'IntervalMatrix: should not be empty'
+        assert M.to_array()[0][1].lower() == 0. and M.to_array()[0][1].upper() == 0., 'IntervalMatrix: zero element should be [0, 0]'
+
     # Case 1: positive range
     _run_interval_test(0.1, 0.2)
     
@@ -497,6 +529,9 @@ def test_interval_arithmetic():
 
     # fractional power test
     _test_exponent()
+
+    # set containment and equality
+    _test_containment()
 
     # IntervalMatrix construction from triplets
     # entries at the same position are summed; positions without triplets are [0, 0]

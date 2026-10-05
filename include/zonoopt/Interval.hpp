@@ -373,7 +373,7 @@ namespace ZonoOpt
          * @return enclosure of this^f
          *
          * Calls integer power if f is an integer within numerical tolerance.
-         * Calls nth_root if f is a positive rational number within numerical tolerance.
+         * Otherwise computed as exp(f * log(this)).
          *
          * @throws std::domain_error if the interval contains negative values and f is a non-integer power.
          */
@@ -495,8 +495,6 @@ namespace ZonoOpt
         boost::numeric::interval<zono_float, interval_policy> _val;
 
         explicit Interval(const boost::numeric::interval<zono_float, interval_policy>& val) : _val(val) {}
-
-        static std::pair<int, int> get_rational(zono_float x);
     };
 
 } // namespace ZonoOpt
