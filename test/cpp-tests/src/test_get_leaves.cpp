@@ -38,3 +38,25 @@ TEST(GetLeaves, LeavesCount)
             << "Expected " << n_CZs * n_CZs << " leaves using SCIP, got " << leaves_scip.size();
     }
 }
+
+TEST(GetLeaves, ScipSolutionSatisfiesConstraints)
+{
+    if (!detail::scip_available())
+        GTEST_SKIP() << "SCIP not available";
+
+    // union of two offset boxes, so the continuous factors of a solution are nonzero
+    std::vector<std::shared_ptr<Zono>> Zs;
+    Zs.push_back(make_regular_zono_2D(1, 4, false, Eigen::Vector<zono_float, 2>(3, 0)));
+    Zs.push_back(make_regular_zono_2D(1, 4, false, Eigen::Vector<zono_float, 2>(-3, 0)));
+    const auto Z = zono_union_2_hybzono(Zs);
+
+    std::shared_ptr<OptSolution> sol;
+    const auto leaves = Z->get_leaves(false, SCIPSettings(), &sol);
+    EXPECT_EQ(leaves.size(), 2u);
+
+    // get_leaves solves min 0.5 xi^T xi s.t. A xi = b
+    ASSERT_TRUE(sol);
+    EXPECT_LT((Z->get_A() * sol->z - Z->get_b()).cwiseAbs().maxCoeff(), 1e-4)
+        << "SCIP multisol solution must satisfy A xi = b";
+    EXPECT_NEAR(sol->J, 0.5 * sol->z.squaredNorm(), 1e-4) << "SCIP multisol objective must match its solution";
+}
