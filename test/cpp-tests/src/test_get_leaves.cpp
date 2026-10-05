@@ -27,13 +27,13 @@ TEST(GetLeaves, LeavesCount)
 
     if (detail::gurobi_available())
     {
-        const auto leaves_grb = Z->get_leaves(false, GurobiSettings());
+        const auto leaves_grb = Z->get_leaves(GetLeavesParams(), GurobiSettings());
         EXPECT_EQ(leaves_grb.size(), static_cast<size_t>(n_CZs * n_CZs))
             << "Expected " << n_CZs * n_CZs << " leaves using Gurobi, got " << leaves_grb.size();
     }
     if (detail::scip_available())
     {
-        const auto leaves_scip = Z->get_leaves(false, SCIPSettings());
+        const auto leaves_scip = Z->get_leaves(GetLeavesParams(), SCIPSettings());
         EXPECT_EQ(leaves_scip.size(), static_cast<size_t>(n_CZs * n_CZs))
             << "Expected " << n_CZs * n_CZs << " leaves using SCIP, got " << leaves_scip.size();
     }
@@ -51,7 +51,7 @@ TEST(GetLeaves, ScipSolutionSatisfiesConstraints)
     const auto Z = zono_union_2_hybzono(Zs);
 
     std::shared_ptr<OptSolution> sol;
-    const auto leaves = Z->get_leaves(false, SCIPSettings(), &sol);
+    const auto leaves = Z->get_leaves(GetLeavesParams(), SCIPSettings(), &sol);
     EXPECT_EQ(leaves.size(), 2u);
 
     // get_leaves solves min 0.5 xi^T xi s.t. A xi = b

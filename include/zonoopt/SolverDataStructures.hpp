@@ -424,4 +424,19 @@ namespace ZonoOpt
         Eigen::Vector<zono_float, -1> u;
     };
 
+    /**
+     * @brief Parameters controlling leaf enumeration in get_leaves, complement, and set_diff.
+     */
+    struct GetLeavesParams
+    {
+        /// call remove_redundancy on each identified leaf
+        bool remove_redundancy = false;
+
+        /// maximum number of leaves to find
+        int n_leaves = std::numeric_limits<int>::max();
+
+        /// number of interval contractor iterations to run if using remove_redundancy
+        int contractor_iter = 10;
+    };
+
 } // end namespace ZonoOpt

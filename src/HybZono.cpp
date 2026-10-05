@@ -904,9 +904,9 @@ namespace ZonoOpt
         return bin_leaves;
     }
 
-    std::vector<std::unique_ptr<ConZono>> HybZono::get_leaves(const bool remove_redundancy, const SolverSettings& settings,
-                                             std::shared_ptr<OptSolution>* solution, const int n_leaves,
-                                             const int contractor_iter) const
+    std::vector<std::unique_ptr<ConZono>> HybZono::get_leaves(const GetLeavesParams& get_leaves_params,
+                                             const SolverSettings& settings,
+                                             std::shared_ptr<OptSolution>* solution) const
     {
         // For the internal solver, allocate all threads to branch and bound and use best-dive search.
         // For external solvers (e.g., Gurobi), pass settings through unchanged.
@@ -917,11 +917,11 @@ namespace ZonoOpt
             settings_get_leaves.n_threads_bnb += opt_ptr->n_threads_admm_fp;
             settings_get_leaves.n_threads_admm_fp = 0;
             settings_get_leaves.search_mode = 1;
-            bin_leaves = this->get_bin_leaves(settings_get_leaves, solution, n_leaves);
+            bin_leaves = this->get_bin_leaves(settings_get_leaves, solution, get_leaves_params.n_leaves);
         }
         else
         {
-            bin_leaves = this->get_bin_leaves(settings, solution, n_leaves);
+            bin_leaves = this->get_bin_leaves(settings, solution, get_leaves_params.n_leaves);
         }
         std::vector<std::unique_ptr<ConZono>> leaves;
         for (auto& xi_b : bin_leaves)
@@ -930,11 +930,11 @@ namespace ZonoOpt
             Eigen::Vector<zono_float, -1> bp = this->b - this->Ab() * xi_b;
             leaves.emplace_back(std::make_unique<ConZono>(this->Gc(), cp, this->Ac(), bp, this->zero_one_form));
         }
-        if (remove_redundancy)
+        if (get_leaves_params.remove_redundancy)
         {
             for (auto& leaf : leaves)
             {
-                auto leaf_rr = leaf->remove_redundancy(contractor_iter);
+                auto leaf_rr = leaf->remove_redundancy(get_leaves_params.contractor_iter);
                 if (!leaf_rr || leaf_rr->is_hybzono())
                 {
                     throw std::runtime_error("Redundancy removal failed or resulted in a HybZono, which should not happen.");
@@ -1213,16 +1213,16 @@ namespace ZonoOpt
         return box;
     }
 
-    std::unique_ptr<HybZono> HybZono::do_complement(const zono_float delta_m, const bool remove_redundancy,
+    std::unique_ptr<HybZono> HybZono::do_complement(const zono_float delta_m,
+                                                    const GetLeavesParams& get_leaves_params,
                                                     const SolverSettings& settings,
-                                                    std::shared_ptr<OptSolution>* solution, const int n_leaves,
-                                                    const int contractor_iter)
+                                                    std::shared_ptr<OptSolution>* solution)
     {
         // make sure set in [-1,1] form
         if (this->is_0_1_form()) this->convert_form();
 
         // need to get leaves and do complement for each leaf if Z is a hybzono
-        auto leaves = this->get_leaves(remove_redundancy, settings, solution, n_leaves, contractor_iter);
+        auto leaves = this->get_leaves(get_leaves_params, settings, solution);
         if (leaves.empty())
         {
             throw std::runtime_error("HybZono complement: set is empty.");

@@ -92,9 +92,8 @@ namespace ZonoOpt
         return true;
     }
 
-    std::unique_ptr<HybZono> EmptySet::do_complement(zono_float delta_m, bool, const SolverSettings&,
-                                                     std::shared_ptr<OptSolution>* sol,
-                                                     int, int)
+    std::unique_ptr<HybZono> EmptySet::do_complement(zono_float delta_m, const GetLeavesParams&, const SolverSettings&,
+                                                     std::shared_ptr<OptSolution>* sol)
     {
         const zono_float m = delta_m + 1; // box width
         const Eigen::Vector<zono_float, -1> x_l = -Eigen::Vector<zono_float, -1>::Constant(this->n, m);

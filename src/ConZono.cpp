@@ -717,16 +717,16 @@ namespace ZonoOpt
         return std::make_unique<ConZono>(G, c, A, b, true);
     }
 
-    std::unique_ptr<HybZono> ConZono::do_complement(const zono_float delta_m, const bool remove_redundancy,
+    std::unique_ptr<HybZono> ConZono::do_complement(const zono_float delta_m,
+                                                    const GetLeavesParams& get_leaves_params,
                                                     const SolverSettings& settings,
-                                                    std::shared_ptr<OptSolution>* solution, const int n_leaves,
-                                                    const int contractor_iter)
+                                                    std::shared_ptr<OptSolution>* solution)
     {
         // Bird and Jain (2022), Proposition 2, assumes a full-dimensional, nonempty set with linearly
         // independent equality constraints, so remove_redundancy() is always applied to the input.
-        const auto Z_rr = this->remove_redundancy(contractor_iter);
+        const auto Z_rr = this->remove_redundancy(get_leaves_params.contractor_iter);
         if (Z_rr->is_empty_set())
-            return Z_rr->complement(delta_m, remove_redundancy, settings, solution, n_leaves, contractor_iter);
+            return Z_rr->complement(delta_m, get_leaves_params, settings, solution);
 
         // Z_rr is a ConZono, Zono, or Point here; work on a ConZono copy so the input is not modified
         ConZono Z(Z_rr->get_G(), Z_rr->get_c(), Z_rr->get_A(), Z_rr->get_b(), Z_rr->is_0_1_form());

@@ -921,10 +921,8 @@ namespace ZonoOpt
     }
 
     std::unique_ptr<HybZono> set_diff(const HybZono& Z1, HybZono& Z2, const zono_float delta_m,
-                                      const bool remove_redundancy,
-                                      const SolverSettings& settings, std::shared_ptr<OptSolution>* solution,
-                                      const int n_leaves,
-                                      const int contractor_iter)
+                                      const GetLeavesParams& get_leaves_params,
+                                      const SolverSettings& settings, std::shared_ptr<OptSolution>* solution)
     {
         // trivial case
         if (Z2.is_empty_set())
@@ -933,10 +931,19 @@ namespace ZonoOpt
         }
 
         // get complement of Z2
-        auto Z2_comp = Z2.complement(delta_m, remove_redundancy, settings, solution, n_leaves, contractor_iter);
+        auto Z2_comp = Z2.complement(delta_m, get_leaves_params, settings, solution);
 
         // set difference
         return intersection(Z1, *Z2_comp);
+    }
+
+    std::unique_ptr<HybZono> set_diff(const HybZono& Z1, HybZono& Z2, const zono_float delta_m,
+                                      const bool remove_redundancy,
+                                      const SolverSettings& settings, std::shared_ptr<OptSolution>* solution,
+                                      const int n_leaves, const int contractor_iter)
+    {
+        return set_diff(Z1, Z2, delta_m, GetLeavesParams{remove_redundancy, n_leaves, contractor_iter}, settings,
+                        solution);
     }
 
     std::unique_ptr<HybZono> zono_union_2_hybzono(std::vector<std::shared_ptr<Zono>>& Zs, const bool expose_indicators)

@@ -1,5 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/eigen.h>
+#include <optional>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 namespace py = pybind11;
@@ -28,6 +29,24 @@ const SolverSettings& resolve_solver_settings(const py::object& obj)
 {
     if (obj.is_none()) return get_default_solver_settings();
     return obj.cast<const SolverSettings&>();
+}
+
+// Resolve GetLeavesParams from either the struct or the deprecated flat arguments. `params`
+// holds the legacy per-function defaults used when the struct is not given.
+GetLeavesParams resolve_get_leaves_params(const py::object& params_obj, const std::optional<bool>& remove_redundancy,
+    const std::optional<int>& n_leaves, const std::optional<int>& contractor_iter, GetLeavesParams params)
+{
+    const bool flat_given = remove_redundancy || n_leaves || contractor_iter;
+    if (!params_obj.is_none())
+    {
+        if (flat_given)
+            throw std::invalid_argument("get_leaves_params cannot be combined with remove_redundancy, n_leaves, or contractor_iter");
+        return params_obj.cast<GetLeavesParams>();
+    }
+    if (remove_redundancy) params.remove_redundancy = *remove_redundancy;
+    if (n_leaves) params.n_leaves = *n_leaves;
+    if (contractor_iter) params.contractor_iter = *contractor_iter;
+    return params;
 }
 
 // Attaches HybZono's field set as read-only properties to any class in the
@@ -321,6 +340,29 @@ PYBIND11_MODULE(_core, m)
 
                 Returns:
                     OptSolution: copy of solution
+            )pbdoc")
+    ;
+
+    py::class_<GetLeavesParams>(m, "GetLeavesParams",
+        R"pbdoc(
+            Parameters controlling leaf enumeration in get_leaves, complement, and set_diff.
+
+            Attributes:
+                remove_redundancy (bool): call remove_redundancy on each identified leaf
+                n_leaves (int): maximum number of leaves to find
+                contractor_iter (int): number of interval contractor iterations to run if using remove_redundancy
+        )pbdoc")
+        .def(py::init([](bool remove_redundancy, int n_leaves, int contractor_iter)
+            { return GetLeavesParams{remove_redundancy, n_leaves, contractor_iter}; }),
+            py::arg("remove_redundancy")=false, py::arg("n_leaves")=std::numeric_limits<int>::max(),
+            py::arg("contractor_iter")=10)
+        .def_readwrite("remove_redundancy", &GetLeavesParams::remove_redundancy, "call remove_redundancy on each identified leaf")
+        .def_readwrite("n_leaves", &GetLeavesParams::n_leaves, "maximum number of leaves to find")
+        .def_readwrite("contractor_iter", &GetLeavesParams::contractor_iter, "number of interval contractor iterations to run if using remove_redundancy")
+        .def("copy", [](const GetLeavesParams& self) -> GetLeavesParams
+            { return self; },
+            R"pbdoc(
+                Copy get leaves parameters object
             )pbdoc")
     ;
 
@@ -2692,28 +2734,33 @@ PYBIND11_MODULE(_core, m)
                 This method returns the convex relaxation of the hybrid zonotope.
                 If the set is sharp, the convex relaxation is the convex hull.
             )pbdoc")
-        .def("get_leaves", [](const HybZono& self, bool remove_redundancy,
+        .def("get_leaves", [](const HybZono& self, std::optional<bool> remove_redundancy,
             py::object settings_obj, OptSolution* solution,
-            int n_leaves, int contractor_iter) -> std::vector<std::unique_ptr<ConZono>>
+            std::optional<int> n_leaves, std::optional<int> contractor_iter,
+            const py::object& get_leaves_params_obj) -> std::vector<std::unique_ptr<ConZono>>
             {
                 const SolverSettings& settings = resolve_solver_settings(settings_obj);
+                const GetLeavesParams get_leaves_params = resolve_get_leaves_params(get_leaves_params_obj,
+                    remove_redundancy, n_leaves, contractor_iter, GetLeavesParams{false, std::numeric_limits<int>::max(), 100});
                 auto sol_shared = std::make_shared<OptSolution>();
-                auto leaves = self.get_leaves(remove_redundancy, settings, &sol_shared, n_leaves, contractor_iter);
+                auto leaves = self.get_leaves(get_leaves_params, settings, &sol_shared);
                 if (solution)
                     *solution = *sol_shared;
                 return leaves;
             },
-            py::arg("remove_redundancy")=false, py::arg("settings")=py::none(), py::arg("solution")=nullptr,
-            py::arg("n_leaves")=std::numeric_limits<int>::max(), py::arg("contractor_iter")=100, 
+            py::arg("remove_redundancy")=py::none(), py::arg("settings")=py::none(), py::arg("solution")=nullptr,
+            py::arg("n_leaves")=py::none(), py::arg("contractor_iter")=py::none(),
+            py::arg("get_leaves_params")=py::none(),
             R"pbdoc(
                 Computes individual constrained zonotopes whose union is the hybrid zonotope object.
                 
                 Args:
-                    remove_redundancy (bool, optional): flag to make call to remove_redundancy for each identified leaf (default false)
+                    remove_redundancy (bool, optional): deprecated, use get_leaves_params; flag to make call to remove_redundancy for each identified leaf (default false)
                     settings (OptSettings, optional): optimization settings structure
                     solution (OptSolution, optional): optimization solution structure pointer, populated with result
-                    n_leaves (int, optional): max number of leaves to find
-                    contractor_iter (int, optional): number of interval contractor iterations to run if using remove_redundancy
+                    n_leaves (int, optional): deprecated, use get_leaves_params; max number of leaves to find
+                    contractor_iter (int, optional): deprecated, use get_leaves_params; number of interval contractor iterations to run if using remove_redundancy
+                    get_leaves_params (GetLeavesParams, optional): leaf enumeration parameters; cannot be combined with the deprecated arguments above
 
                 Returns:
                     list[ConZono]: vector of constrained zonotopes [Z0, Z1, ...] such that Zi is a subset of the current set for all i
@@ -2726,28 +2773,33 @@ PYBIND11_MODULE(_core, m)
                 for ADMM-FP, these will instead be used for branch and bound search.
             )pbdoc")
         .def("complement", [](HybZono& self, zono_float delta_m,
-            bool remove_redundancy, py::object settings_obj, OptSolution* solution,
-            int n_leaves, int contractor_iter) -> std::unique_ptr<HybZono>
+            std::optional<bool> remove_redundancy, py::object settings_obj, OptSolution* solution,
+            std::optional<int> n_leaves, std::optional<int> contractor_iter,
+            const py::object& get_leaves_params_obj) -> std::unique_ptr<HybZono>
             {
                 const SolverSettings& settings = resolve_solver_settings(settings_obj);
+                const GetLeavesParams get_leaves_params = resolve_get_leaves_params(get_leaves_params_obj,
+                    remove_redundancy, n_leaves, contractor_iter, GetLeavesParams{true, std::numeric_limits<int>::max(), 100});
                 auto sol_shared = std::make_shared<OptSolution>();
-                auto Z = self.complement(delta_m, remove_redundancy, settings, &sol_shared, n_leaves, contractor_iter);
+                auto Z = self.complement(delta_m, get_leaves_params, settings, &sol_shared);
                 if (solution)
                     *solution = *sol_shared;
                 return Z;
             },
-            py::arg("delta_m")=100, py::arg("remove_redundancy")=true, py::arg("settings")=py::none(),
-            py::arg("solution")=nullptr, py::arg("n_leaves")=std::numeric_limits<int>::max(), py::arg("contractor_iter")=100,
+            py::arg("delta_m")=100, py::arg("remove_redundancy")=py::none(), py::arg("settings")=py::none(),
+            py::arg("solution")=nullptr, py::arg("n_leaves")=py::none(), py::arg("contractor_iter")=py::none(),
+            py::arg("get_leaves_params")=py::none(),
             R"pbdoc(
             Computes the complement of the set Z.
             
             Args:
                 delta_m (float, optional): parameter defining range of complement
-                remove_redundancy (bool, optional): remove redundant constraints and unused generators in get_leaves function call
+                remove_redundancy (bool, optional): deprecated, use get_leaves_params; remove redundant constraints and unused generators in get_leaves function call
                 settings (OptSettings, optional): optimization settings for get_leaves function call
                 solution (OptSolution, optional): optimization solution for get_leaves function call
-                n_leaves (int, optional): maximum number of leaves to return in get_leaves function call
-                contractor_iter (int, optional): number of interval contractor iterations in remove_redundancy if using
+                n_leaves (int, optional): deprecated, use get_leaves_params; maximum number of leaves to return in get_leaves function call
+                contractor_iter (int, optional): deprecated, use get_leaves_params; number of interval contractor iterations in remove_redundancy if using
+                get_leaves_params (GetLeavesParams, optional): parameters for get_leaves function call; cannot be combined with the deprecated arguments above
             
             Returns:
                 HybZono: Hybrid zonotope complement of the given set
@@ -3706,18 +3758,22 @@ PYBIND11_MODULE(_core, m)
                 HybZono: zonotopic set
         )pbdoc");
     m.def("set_diff", [](const HybZono& Z1, HybZono& Z2, zono_float delta_m,
-            bool remove_redundancy, py::object settings_obj, OptSolution* solution,
-            int n_leaves, int contractor_iter) -> std::unique_ptr<HybZono>
+            std::optional<bool> remove_redundancy, py::object settings_obj, OptSolution* solution,
+            std::optional<int> n_leaves, std::optional<int> contractor_iter,
+            const py::object& get_leaves_params_obj) -> std::unique_ptr<HybZono>
             {
                 const SolverSettings& settings = resolve_solver_settings(settings_obj);
+                const GetLeavesParams get_leaves_params = resolve_get_leaves_params(get_leaves_params_obj,
+                    remove_redundancy, n_leaves, contractor_iter, GetLeavesParams{true, std::numeric_limits<int>::max(), 10});
                 auto sol_shared = std::make_shared<OptSolution>();
-                auto Z = set_diff(Z1, Z2, delta_m, remove_redundancy, settings, &sol_shared, n_leaves, contractor_iter);
+                auto Z = set_diff(Z1, Z2, delta_m, get_leaves_params, settings, &sol_shared);
                 if (solution)
                     *solution = *sol_shared;
                 return Z;
             },
-            py::arg("Z1"), py::arg("Z2"), py::arg("delta_m")=100, py::arg("remove_redundancy")=true,
-            py::arg("settings")=py::none(), py::arg("solution")=nullptr, py::arg("n_leaves")=std::numeric_limits<int>::max(), py::arg("contractor_iter")=10,
+            py::arg("Z1"), py::arg("Z2"), py::arg("delta_m")=100, py::arg("remove_redundancy")=py::none(),
+            py::arg("settings")=py::none(), py::arg("solution")=nullptr, py::arg("n_leaves")=py::none(), py::arg("contractor_iter")=py::none(),
+            py::arg("get_leaves_params")=py::none(),
             R"pbdoc(
             Set difference Z1 \\ Z2
 
@@ -3725,11 +3781,12 @@ PYBIND11_MODULE(_core, m)
                 Z1 (HybZono): zonotopic set
                 Z2 (HybZono): zonotopic set
                 delta_m (float, optional): parameter defining range of complement
-                remove_redundancy (bool, optional): remove redundant constraints and unused generators in get_leaves function call
+                remove_redundancy (bool, optional): deprecated, use get_leaves_params; remove redundant constraints and unused generators in get_leaves function call
                 settings (OptSettings, optional): optimization settings for get_leaves function call
                 solution (OptSolution, optional): optimization solution for get_leaves function call
-                n_leaves (int, optional): maximum number of leaves to return in get_leaves function call
-                contractor_iter (int, optional): number of interval contractor iterations if using remove_redundancy
+                n_leaves (int, optional): deprecated, use get_leaves_params; maximum number of leaves to return in get_leaves function call
+                contractor_iter (int, optional): deprecated, use get_leaves_params; number of interval contractor iterations if using remove_redundancy
+                get_leaves_params (GetLeavesParams, optional): parameters for get_leaves function call; cannot be combined with the deprecated arguments above
 
             Returns:
                 HybZono: zonotopic set
